@@ -6,7 +6,7 @@ Cada familia recibirá un enlace privado para consultar la información del even
 
 ## Estado actual
 
-El proyecto completó **Project Foundation** y avanza en la fase **Supabase Schema**. Existe landing temporal, clientes Supabase, schema versionado y seed local. Aún no hay flujo RSVP real en la UI, autenticación administrativa ni panel admin.
+El proyecto está en la fase **RSVP Flow**. Existe landing temporal, schema Supabase, seed local y confirmación de asistencia en `/i/[token]`. Aún no hay autenticación administrativa ni panel admin.
 
 El alcance autorizado y su checklist se encuentran en [`docs/current-phase.md`](docs/current-phase.md).
 
@@ -77,11 +77,11 @@ supabase db reset   # aplica migraciones + seed.sql
 Tokens de desarrollo del seed (solo local):
 
 ```text
-dev-family-ejemplo
-dev-family-demo
+dev-family-ejemplo  →  http://localhost:3000/i/dev-family-ejemplo
+dev-family-demo     →  http://localhost:3000/i/dev-family-demo
 ```
 
-El hash SHA-256 de esos tokens es lo que queda guardado en `families.invitation_token_hash`.
+El hash SHA-256 de esos tokens es lo que queda guardado en `families.invitation_token_hash`. Recuerda copiar las claves de `supabase status` a `.env.local` antes de probar el RSVP.
 
 ## Arquitectura y documentación
 

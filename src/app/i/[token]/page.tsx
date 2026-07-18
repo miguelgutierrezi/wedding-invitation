@@ -1,7 +1,11 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
-import { weddingConfig } from "@/config/wedding";
-import type { FamilyInvitation } from "@/types/family";
+import { RsvpForm } from "@/components/rsvp/rsvp-form";
+import {
+  getInvitationByToken,
+  markInvitationOpened,
+} from "@/services/invitations/get-invitation-by-token";
 
 type InvitationPageProps = {
   params: Promise<{
@@ -9,19 +13,21 @@ type InvitationPageProps = {
   }>;
 };
 
-const mockFamily: FamilyInvitation = {
-  id: "mock-family-id",
-  displayName: "Familia Ejemplo",
-  maximumGuests: 3,
-  customMessage:
-    "Nos emociona mucho compartir este día con ustedes. Esta vista es un mock local para desarrollo.",
-  status: "pending",
-  isEnabled: true,
-};
-
 export default async function InvitationPage({ params }: InvitationPageProps) {
   const { token } = await params;
-  const { couple, event } = weddingConfig;
+  const invitation = await getInvitationByToken(token);
+
+  if (!invitation) {
+    notFound();
+  }
+
+  try {
+    await markInvitationOpened(invitation.familyId, invitation.event.id);
+  } catch {
+    // Opening metrics should not block the invitation experience.
+  }
+
+  const { event } = invitation;
 
   return (
     <div className="relative flex flex-1 flex-col overflow-hidden">
@@ -43,11 +49,11 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
         </p>
 
         <h1 className="mt-4 font-[family-name:var(--font-display)] text-4xl leading-tight font-medium tracking-tight text-foreground sm:text-5xl">
-          {mockFamily.displayName}
+          {invitation.displayName}
         </h1>
 
         <p className="mt-3 text-base text-muted">
-          {couple.partnerOne} & {couple.partnerTwo} · {event.dateLabel}
+          {event.partnerOneName} & {event.partnerTwoName}
         </p>
 
         <section className="mt-8 space-y-6 rounded-2xl border border-[color:var(--ring)] bg-surface p-6 backdrop-blur-sm sm:p-8">
@@ -56,33 +62,32 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
               Cupos reservados
             </h2>
             <p className="mt-2 text-2xl font-medium text-foreground">
-              {mockFamily.maximumGuests} lugares
+              {invitation.maximumGuests} lugares
             </p>
           </div>
 
-          <div>
-            <h2 className="text-sm font-semibold tracking-wide text-accent uppercase">
-              Mensaje
-            </h2>
-            <p className="mt-2 text-base leading-relaxed text-foreground">
-              {mockFamily.customMessage}
-            </p>
-          </div>
-
-          <div className="rounded-xl bg-[rgba(31,42,36,0.04)] p-4">
-            <h2 className="text-sm font-semibold tracking-wide text-muted uppercase">
-              Token (solo desarrollo)
-            </h2>
-            <p className="mt-2 break-all font-mono text-sm text-foreground">
-              {token}
-            </p>
-          </div>
+          {invitation.customMessage ? (
+            <div>
+              <h2 className="text-sm font-semibold tracking-wide text-accent uppercase">
+                Mensaje
+              </h2>
+              <p className="mt-2 text-base leading-relaxed text-foreground">
+                {invitation.customMessage}
+              </p>
+            </div>
+          ) : null}
         </section>
 
-        <p className="mt-8 text-sm text-muted">
-          Esta ruta usa datos mock y no consulta Supabase. El formulario RSVP real
-          llegará en una fase posterior.
-        </p>
+        <section className="mt-10 rounded-2xl border border-[color:var(--ring)] bg-surface p-6 backdrop-blur-sm sm:p-8">
+          <RsvpForm
+            token={token}
+            maximumGuests={invitation.maximumGuests}
+            guests={invitation.guests}
+            existingRsvp={invitation.existingRsvp}
+            canSubmitRsvp={invitation.canSubmitRsvp}
+            closedReason={invitation.closedReason}
+          />
+        </section>
       </main>
     </div>
   );

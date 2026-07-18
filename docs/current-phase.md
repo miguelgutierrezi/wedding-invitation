@@ -1,4 +1,4 @@
-# Current phase: Project Foundation
+# Current phase: Supabase Schema
 
 **Status:** completed
 
@@ -8,112 +8,82 @@
 
 ## Objective
 
-Prepare a clean, typed, documented, and executable foundation for the wedding invitation project.
+Version the initial domain database schema for the wedding invitation app using SQL migrations, Row Level Security, and fictional seed data.
 
-Do not implement the real RSVP flow, domain database migrations, administration panel, authentication, email delivery, or production deployment in this phase.
+Do not implement RSVP mutations, invitation token resolution in the Next.js UI, admin authentication, email delivery, or remote Supabase provisioning in this phase.
 
-## Verified starting state
+## Approved schema decisions
 
-At the start of this phase:
+These decisions close the open questions in `docs/architecture.md` for this phase:
 
-- The Next.js project existed and used App Router, TypeScript, Tailwind CSS, `src/`, and pnpm.
-- Supabase CLI had been initialized in `supabase/`.
-- The default `create-next-app` page and metadata were still present.
-- Foundation stubs existed but were empty.
-- `.env.example`, `src/lib/utils.ts`, and `src/app/i/[token]/page.tsx` did not exist.
-- `package.json` did not yet provide a `typecheck` script.
+1. **Events:** the schema supports multiple events via `event_id` foreign keys for reuse. Product v1 will typically use a single event row; the database does not enforce a singleton.
+2. **Attendance source of truth:** the latest `rsvp_responses` / `rsvp_response_guests` rows are authoritative for a submitted RSVP. `guests.attendance_status` is a denormalized mirror for admin listing and starts as `pending`.
+3. **RSVP persistence:** one `rsvp_responses` row per family (`unique(family_id)`), updated in place. Guest lines live in `rsvp_response_guests` and are replaced or updated as part of a later application transaction.
+4. **Tokens:** store `invitation_token_hash` (SHA-256 hex) and a short `invitation_token_preview`. Never store the raw token. Disable invitations with `is_enabled` / `status`; no token expiry column in v1.
+5. **RLS:** enable RLS on all domain tables. Do not grant useful anon/authenticated policies yet. Privileged access during early development uses the service-role client from the Next.js server. Token-scoped RPCs can arrive in the RSVP phase.
+6. **Seed data:** fictional placeholders only (aligned with `src/config/wedding.ts` naming style). Include at least one event, two families, guests, and one sample RSVP.
 
 ## Checklist
 
-- [x] Verify the current project starts with `pnpm dev`.
-- [x] Verify the current lint baseline with `pnpm lint`.
-- [x] Add `"typecheck": "tsc --noEmit"` to `package.json`.
-- [x] Install `@supabase/ssr`; do not reinstall dependencies that are already present.
-- [x] Complete the Prettier configuration and create `.prettierignore`.
-- [x] Create `.env.example` without real credentials.
-- [x] Implement typed centralized wedding configuration in `src/config/wedding.ts`.
-- [x] Implement browser, server, and admin Supabase clients.
-- [x] Create `src/lib/utils.ts` with the shared `cn` utility.
-- [x] Implement the base TypeScript types without prematurely finalizing the database schema.
-- [x] Replace the default Next.js page with a polished temporary landing page.
-- [x] Replace the default metadata and set the document language appropriately.
-- [x] Create the mocked `/i/[token]` route.
-- [x] Run lint, typecheck, and build and fix errors caused by the phase.
+- [x] Document this phase as the authorized scope in `docs/current-phase.md`.
+- [x] Record the approved schema decisions in `docs/architecture.md`.
+- [x] Create the initial SQL migration for domain tables, constraints, indexes, and `updated_at` triggers.
+- [x] Enable RLS on all domain tables with deny-by-default for `anon` / `authenticated`.
+- [x] Create `supabase/seed.sql` with fictional placeholder data and a known development token hash.
+- [x] Apply locally with `supabase db reset` (or equivalent) and verify tables exist.
+- [x] Align base TypeScript domain types with the migrated schema without inventing persistence services.
+- [x] Update `README.md` with migration/seed commands if needed.
+- [x] Run `pnpm lint`, `pnpm typecheck`, and `pnpm build`.
 
 ## Completion report
 
 ### Files created
 
-- `.env.example`
-- `.prettierignore`
-- `src/lib/utils.ts`
-- `src/lib/supabase/env.ts`
-- `src/app/i/[token]/page.tsx`
+- `supabase/migrations/20260718175317_initial_domain_schema.sql`
+- `supabase/seed.sql`
 
 ### Files modified
 
-- `.prettierrc`
-- `package.json`
-- `pnpm-lock.yaml`
+- `docs/current-phase.md`
+- `docs/architecture.md`
 - `README.md`
-- `src/app/layout.tsx`
-- `src/app/page.tsx`
-- `src/app/globals.css`
-- `src/config/wedding.ts`
-- `src/lib/supabase/client.ts`
-- `src/lib/supabase/server.ts`
-- `src/lib/supabase/admin.ts`
 - `src/types/event.ts`
 - `src/types/family.ts`
 - `src/types/guest.ts`
 - `src/types/rsvp.ts`
-- `docs/current-phase.md`
-
-### Dependencies added
-
-- `@supabase/ssr`
-- `server-only`
 
 ### Important technical decisions
 
-- Shared public Supabase env validation lives in `src/lib/supabase/env.ts` so client and server entry points fail consistently without logging secrets.
-- The admin client imports `server-only` and uses the service-role key with session persistence disabled.
-- Domain types remain intentionally small and presentation-oriented; they do not finalize the SQL schema.
-- The `/i/[token]` route uses local mock family data and does not query Supabase.
-- Document language is Spanish (`lang="es"`). Wedding copy stays in `src/config/wedding.ts`.
+- Domain tables: `events`, `families`, `guests`, `rsvp_responses`, `rsvp_response_guests`, `audit_events`.
+- RLS enabled on all domain tables; `anon` / `authenticated` revoked; `service_role` granted.
+- Seed tokens for local use only: `dev-family-ejemplo`, `dev-family-demo` (stored as SHA-256 hashes).
 
 ### Commands executed
 
 ```bash
+supabase db reset
 pnpm lint
-pnpm add @supabase/ssr
-pnpm add server-only
 pnpm typecheck
 pnpm build
 ```
 
 ### Validation results
 
+- `supabase db reset`: passed (migration + seed applied).
+- Verified 6 public tables with RLS enabled.
+- Seed: 2 families, 5 guests, 1 RSVP response.
 - `pnpm lint`: passed
 - `pnpm typecheck`: passed
 - `pnpm build`: passed
 
-### Manual verification
-
-- Root route `/` renders the temporary under-construction landing from centralized config.
-- Sample route `/i/example-token` renders mock family details and the raw token for development.
-
 ### Known limitations
 
-- Supabase clients are ready but unused by the UI.
-- No database migrations, RSVP mutations, authentication, or admin panel.
-- Invitation tokens are not hashed or validated against persistence.
-- Remote Supabase is not required for this phase; local env values come from `supabase status`.
+- `/i/[token]` still uses mock data and does not query Supabase.
+- No RSVP mutations, admin auth policies, or token-lookup RPCs yet.
+- Remote Supabase / Vercel database wiring is not part of this phase.
 
 ### Recommended next phase
 
-**Design System**: define visual tokens, reusable UI primitives, and invitation section scaffolding using the temporary landing as the visual starting point—still without real RSVP persistence.
+**RSVP flow**: resolve invitations by token hash, submit/update RSVP through server actions with Zod validation, and keep the UI wired to the new schema.
 
-Alternative if data is preferred first: **Supabase Schema** (migrations, RLS direction, seed placeholders).
-
-Do not begin the next phase until this document is replaced or updated with a new authorized scope.
+Alternative: **Design System** if visual invitation sections should come before persistence wiring.

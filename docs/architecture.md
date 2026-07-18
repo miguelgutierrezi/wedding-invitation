@@ -1,8 +1,8 @@
 # Architecture
 
-**Status:** foundation baseline
+**Status:** schema baseline
 
-**Last reviewed:** 2026-07-16
+**Last reviewed:** 2026-07-18
 
 This document describes the intended technical architecture and its boundaries. It does not authorize implementation beyond `current-phase.md`.
 
@@ -87,15 +87,14 @@ The expected domain entities are:
 - `rsvp_response_guests`
 - `audit_events`
 
-The field lists in `product-spec.md` are exploratory. Before the database phase, define and approve:
+The field lists in `product-spec.md` are exploratory. Approved decisions for the initial schema:
 
-- SQL types, nullability, defaults, constraints, indexes, and foreign-key behavior.
-- Whether one event is an enforced product constraint or the schema supports multiple events for reuse.
-- The source of truth for guest attendance.
-- Whether RSVP records are updated in place or versioned.
-- Idempotency and concurrency behavior for submissions.
-- Token rotation, revocation, and expiry behavior.
-- Exact RLS policies and the operations allowed to anonymous guests.
+- **Events:** multiple events are allowed via `event_id` foreign keys for reuse. Product v1 typically uses one event row; the database does not enforce a singleton.
+- **Attendance source of truth:** the latest `rsvp_responses` / `rsvp_response_guests` rows are authoritative after submission. `guests.attendance_status` is a denormalized mirror for admin listing.
+- **RSVP persistence:** one `rsvp_responses` row per family (`unique(family_id)`), updated in place. Guest answers live in `rsvp_response_guests`.
+- **Idempotency / concurrency:** application mutations must upsert the single family response inside one transaction; deeper locking strategy belongs to the RSVP phase.
+- **Tokens:** store SHA-256 `invitation_token_hash` plus a short `invitation_token_preview`. Never store the raw token. Revoke with `is_enabled` / `status`. No token expiry column in v1.
+- **RLS:** enabled on all domain tables with deny-by-default for `anon` and `authenticated`. Early privileged access uses the service-role server client. Token-scoped RPCs or narrow policies belong to the RSVP phase.
 
 Every schema change must be a SQL migration. Seed data must use fictional placeholders.
 

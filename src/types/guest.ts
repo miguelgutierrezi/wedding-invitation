@@ -6,6 +6,11 @@ export type Guest = {
   familyId: string;
   fullName: string;
   isPrimaryContact: boolean;
+  email: string | null;
+  phone: string | null;
   attendanceStatus: AttendanceStatus;
   dietaryRestrictions: string | null;
+  menuOption: string | null;
+  createdAt: string;
+  updatedAt: string;
 };

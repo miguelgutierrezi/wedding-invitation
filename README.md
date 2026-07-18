@@ -6,7 +6,7 @@ Cada familia recibirá un enlace privado para consultar la información del even
 
 ## Estado actual
 
-El proyecto se encuentra en la fase **Project Foundation**. Ya existe una landing temporal, configuración centralizada, clientes Supabase y una ruta mock `/i/[token]`. Aún no hay flujo RSVP real, autenticación, migraciones del dominio ni panel administrativo.
+El proyecto completó **Project Foundation** y avanza en la fase **Supabase Schema**. Existe landing temporal, clientes Supabase, schema versionado y seed local. Aún no hay flujo RSVP real en la UI, autenticación administrativa ni panel admin.
 
 El alcance autorizado y su checklist se encuentran en [`docs/current-phase.md`](docs/current-phase.md).
 
@@ -71,8 +71,17 @@ Comandos locales de Supabase:
 supabase start
 supabase status
 supabase stop
-supabase db reset
+supabase db reset   # aplica migraciones + seed.sql
 ```
+
+Tokens de desarrollo del seed (solo local):
+
+```text
+dev-family-ejemplo
+dev-family-demo
+```
+
+El hash SHA-256 de esos tokens es lo que queda guardado en `families.invitation_token_hash`.
 
 ## Arquitectura y documentación
 

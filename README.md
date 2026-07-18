@@ -6,7 +6,7 @@ Cada familia recibirá un enlace privado para consultar la información del even
 
 ## Estado actual
 
-El proyecto se encuentra en la fase **Project Foundation**. La aplicación fue creada con Next.js, pero todavía conserva la portada inicial y no tiene un flujo RSVP real, autenticación, migraciones del dominio ni panel administrativo.
+El proyecto se encuentra en la fase **Project Foundation**. Ya existe una landing temporal, configuración centralizada, clientes Supabase y una ruta mock `/i/[token]`. Aún no hay flujo RSVP real, autenticación, migraciones del dominio ni panel administrativo.
 
 El alcance autorizado y su checklist se encuentran en [`docs/current-phase.md`](docs/current-phase.md).
 
@@ -61,7 +61,7 @@ ADMIN_NOTIFICATION_EMAIL=
 ```bash
 pnpm dev       # servidor de desarrollo
 pnpm lint      # ESLint
-pnpm typecheck # TypeScript; se añadirá en la fase actual
+pnpm typecheck # TypeScript sin emitir archivos
 pnpm build     # build de producción
 ```
 

@@ -1,8 +1,8 @@
 # Current phase: Project Foundation
 
-**Status:** in progress
+**Status:** completed
 
-**Last reviewed:** 2026-07-16
+**Last reviewed:** 2026-07-18
 
 **Authorized scope:** only the work listed in this document
 
@@ -14,113 +14,106 @@ Do not implement the real RSVP flow, domain database migrations, administration 
 
 ## Verified starting state
 
-- The Next.js project exists and uses App Router, TypeScript, Tailwind CSS, `src/`, and pnpm.
-- Supabase CLI has been initialized in `supabase/`.
-- The default `create-next-app` page and metadata are still present.
-- `.prettierrc` exists with the Tailwind plugin, but `.prettierignore` is missing.
-- The base Supabase, form, validation, and UI utility dependencies are installed except for `@supabase/ssr`.
-- `src/config/wedding.ts`, the three Supabase client files, and the base type files exist but are empty; they are not implemented.
-- `.env.example`, `src/lib/utils.ts`, and `src/app/i/[token]/page.tsx` do not exist.
-- `package.json` does not yet provide a `typecheck` script.
-- No validation result should be assumed until the commands are executed during this phase.
+At the start of this phase:
 
-If the repository changes after this review, inspect the implementation and update this list before acting on it.
+- The Next.js project existed and used App Router, TypeScript, Tailwind CSS, `src/`, and pnpm.
+- Supabase CLI had been initialized in `supabase/`.
+- The default `create-next-app` page and metadata were still present.
+- Foundation stubs existed but were empty.
+- `.env.example`, `src/lib/utils.ts`, and `src/app/i/[token]/page.tsx` did not exist.
+- `package.json` did not yet provide a `typecheck` script.
 
 ## Checklist
 
-- [ ] Verify the current project starts with `pnpm dev`.
-- [ ] Verify the current lint baseline with `pnpm lint`.
-- [ ] Add `"typecheck": "tsc --noEmit"` to `package.json`.
-- [ ] Install `@supabase/ssr`; do not reinstall dependencies that are already present.
-- [ ] Complete the Prettier configuration and create `.prettierignore`.
-- [ ] Create `.env.example` without real credentials.
-- [ ] Implement typed centralized wedding configuration in `src/config/wedding.ts`.
-- [ ] Implement browser, server, and admin Supabase clients.
-- [ ] Create `src/lib/utils.ts` with the shared `cn` utility.
-- [ ] Implement the base TypeScript types without prematurely finalizing the database schema.
-- [ ] Replace the default Next.js page with a polished temporary landing page.
-- [ ] Replace the default metadata and set the document language appropriately.
-- [ ] Create the mocked `/i/[token]` route.
-- [ ] Run lint, typecheck, and build and fix errors caused by the phase.
+- [x] Verify the current project starts with `pnpm dev`.
+- [x] Verify the current lint baseline with `pnpm lint`.
+- [x] Add `"typecheck": "tsc --noEmit"` to `package.json`.
+- [x] Install `@supabase/ssr`; do not reinstall dependencies that are already present.
+- [x] Complete the Prettier configuration and create `.prettierignore`.
+- [x] Create `.env.example` without real credentials.
+- [x] Implement typed centralized wedding configuration in `src/config/wedding.ts`.
+- [x] Implement browser, server, and admin Supabase clients.
+- [x] Create `src/lib/utils.ts` with the shared `cn` utility.
+- [x] Implement the base TypeScript types without prematurely finalizing the database schema.
+- [x] Replace the default Next.js page with a polished temporary landing page.
+- [x] Replace the default metadata and set the document language appropriately.
+- [x] Create the mocked `/i/[token]` route.
+- [x] Run lint, typecheck, and build and fix errors caused by the phase.
 
-## Files in scope
+## Completion report
 
-```text
-.env.example
-.prettierrc
-.prettierignore
-package.json
-pnpm-lock.yaml
-README.md
-src/app/layout.tsx
-src/app/page.tsx
-src/app/globals.css
-src/app/i/[token]/page.tsx
-src/config/wedding.ts
-src/lib/supabase/client.ts
-src/lib/supabase/server.ts
-src/lib/supabase/admin.ts
-src/lib/utils.ts
-src/types/event.ts
-src/types/family.ts
-src/types/guest.ts
-src/types/rsvp.ts
-```
+### Files created
 
-Other files may be changed only when directly required to complete this phase. Do not create empty folders merely to match the future target structure.
+- `.env.example`
+- `.prettierignore`
+- `src/lib/utils.ts`
+- `src/lib/supabase/env.ts`
+- `src/app/i/[token]/page.tsx`
 
-## Implementation requirements
+### Files modified
 
-### Temporary landing page
+- `.prettierrc`
+- `package.json`
+- `pnpm-lock.yaml`
+- `README.md`
+- `src/app/layout.tsx`
+- `src/app/page.tsx`
+- `src/app/globals.css`
+- `src/config/wedding.ts`
+- `src/lib/supabase/client.ts`
+- `src/lib/supabase/server.ts`
+- `src/lib/supabase/admin.ts`
+- `src/types/event.ts`
+- `src/types/family.ts`
+- `src/types/guest.ts`
+- `src/types/rsvp.ts`
+- `docs/current-phase.md`
 
-Show placeholder couple names, a placeholder wedding date, and a clear message that the invitation is under construction. Keep it responsive, accessible, and visually restrained. Do not build the final invitation sections yet.
+### Dependencies added
 
-Use centralized configuration rather than repeating event text in the page. Configure basic Next.js metadata and use Spanish as the current document language.
+- `@supabase/ssr`
+- `server-only`
 
-### Mock invitation route
+### Important technical decisions
 
-`/i/[token]` must use local mock data and must not query Supabase. Show:
+- Shared public Supabase env validation lives in `src/lib/supabase/env.ts` so client and server entry points fail consistently without logging secrets.
+- The admin client imports `server-only` and uses the service-role key with session persistence disabled.
+- Domain types remain intentionally small and presentation-oriented; they do not finalize the SQL schema.
+- The `/i/[token]` route uses local mock family data and does not query Supabase.
+- Document language is Spanish (`lang="es"`). Wedding copy stays in `src/config/wedding.ts`.
 
-- An example family name.
-- Assigned guest capacity.
-- A personalized example message.
-- The received token for development visibility only.
-
-Showing the raw token is a temporary diagnostic requirement for this mocked phase and must not be treated as a production UI requirement.
-
-### Supabase clients
-
-- Browser client: public URL and anonymous key only.
-- Server client: cookie-aware `@supabase/ssr` client for Server Components, Server Actions, and Route Handlers.
-- Admin client: service-role key, explicitly server-only, and never importable into a Client Component.
-- Fail with useful errors when required variables are missing.
-- Do not log environment variable values.
-
-### Base types
-
-Create small domain types that support the current mocks and configuration. The model in `product-spec.md` is directional, not authorization to implement migrations or a complete persistence model.
-
-## Completion requirements
-
-Run:
+### Commands executed
 
 ```bash
 pnpm lint
+pnpm add @supabase/ssr
+pnpm add server-only
 pnpm typecheck
 pnpm build
 ```
 
-Also verify the root page and a sample route such as `/i/example-token` locally when practical.
+### Validation results
 
-At completion, update this document or create the next authorized phase. Report:
+- `pnpm lint`: passed
+- `pnpm typecheck`: passed
+- `pnpm build`: passed
 
-- Files created and modified.
-- Dependencies added.
-- Important technical decisions.
-- Commands executed.
-- Lint, TypeScript, and build results.
-- Manual verification performed.
-- Known limitations.
-- Recommended next phase.
+### Manual verification
 
-Do not mark this phase complete while a required checklist item remains unfinished.
+- Root route `/` renders the temporary under-construction landing from centralized config.
+- Sample route `/i/example-token` renders mock family details and the raw token for development.
+
+### Known limitations
+
+- Supabase clients are ready but unused by the UI.
+- No database migrations, RSVP mutations, authentication, or admin panel.
+- Invitation tokens are not hashed or validated against persistence.
+- Remote Supabase is not required for this phase; local env values come from `supabase status`.
+
+### Recommended next phase
+
+**Design System**: define visual tokens, reusable UI primitives, and invitation section scaffolding using the temporary landing as the visual starting point—still without real RSVP persistence.
+
+Alternative if data is preferred first: **Supabase Schema** (migrations, RLS direction, seed placeholders).
+
+Do not begin the next phase until this document is replaced or updated with a new authorized scope.

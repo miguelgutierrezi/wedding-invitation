@@ -32,6 +32,18 @@ export async function AdminShell({ children, title }: AdminShellProps) {
               Resumen
             </Link>
             <Link
+              href="/admin/analytics"
+              className="inline-flex min-h-11 items-center rounded-full px-4 text-sm font-medium text-accent hover:bg-cream"
+            >
+              Analytics
+            </Link>
+            <Link
+              href="/admin/guests"
+              className="inline-flex min-h-11 items-center rounded-full px-4 text-sm font-medium text-accent hover:bg-cream"
+            >
+              Invitados
+            </Link>
+            <Link
               href="/admin/families"
               className="inline-flex min-h-11 items-center rounded-full px-4 text-sm font-medium text-accent hover:bg-cream"
             >

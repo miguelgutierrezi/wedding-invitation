@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { AdminShell } from "@/components/admin/admin-shell";
 import { getDashboardMetrics } from "@/services/admin/families";
 
@@ -51,6 +53,26 @@ export default async function AdminDashboardPage() {
             </p>
           </div>
         ))}
+      </div>
+      <div className="mt-10 flex flex-wrap gap-3">
+        <Link
+          href="/admin/analytics"
+          className="inline-flex min-h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-on-dark"
+        >
+          Ver analytics
+        </Link>
+        <Link
+          href="/admin/guests"
+          className="inline-flex min-h-11 items-center rounded-full border border-[color:var(--ring)] px-5 text-sm font-medium"
+        >
+          Ver invitados
+        </Link>
+        <Link
+          href="/admin/families"
+          className="inline-flex min-h-11 items-center rounded-full border border-[color:var(--ring)] px-5 text-sm font-medium"
+        >
+          Ver familias
+        </Link>
       </div>
     </AdminShell>
   );

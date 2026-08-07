@@ -18,6 +18,7 @@ export type RsvpResponseGuest = {
   rsvpResponseId: string;
   guestId: string;
   willAttend: boolean;
+  needsTransport: boolean;
   dietaryRestrictions: string | null;
   menuOption: string | null;
   createdAt: string;

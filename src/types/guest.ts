@@ -11,6 +11,7 @@ export type Guest = {
   attendanceStatus: AttendanceStatus;
   dietaryRestrictions: string | null;
   menuOption: string | null;
+  needsTransport: boolean;
   createdAt: string;
   updatedAt: string;
 };

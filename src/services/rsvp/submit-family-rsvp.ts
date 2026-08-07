@@ -55,6 +55,8 @@ export async function submitFamilyRsvp(
   const guestResponses = input.guests.map((guest) => ({
     guest_id: guest.guestId,
     will_attend: input.willAttend ? guest.willAttend : false,
+    needs_transport:
+      input.willAttend && guest.willAttend ? guest.needsTransport : false,
     dietary_restrictions: guest.dietaryRestrictions || null,
     menu_option: guest.menuOption || null,
   }));

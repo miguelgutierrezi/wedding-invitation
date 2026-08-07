@@ -11,11 +11,13 @@ export type InvitationGuest = {
   attendanceStatus: AttendanceStatus;
   dietaryRestrictions: string | null;
   menuOption: string | null;
+  needsTransport: boolean;
 };
 
 export type InvitationRsvpGuest = {
   guestId: string;
   willAttend: boolean;
+  needsTransport: boolean;
   dietaryRestrictions: string | null;
   menuOption: string | null;
 };
@@ -82,6 +84,7 @@ type GuestRow = {
   attendance_status: AttendanceStatus;
   dietary_restrictions: string | null;
   menu_option: string | null;
+  needs_transport: boolean;
 };
 
 type RsvpRow = {
@@ -98,6 +101,7 @@ type RsvpRow = {
 type RsvpGuestRow = {
   guest_id: string;
   will_attend: boolean;
+  needs_transport: boolean;
   dietary_restrictions: string | null;
   menu_option: string | null;
 };
@@ -161,7 +165,7 @@ export async function getInvitationByToken(
   const { data: guests, error: guestsError } = await supabase
     .from("guests")
     .select(
-      "id, full_name, is_primary_contact, attendance_status, dietary_restrictions, menu_option",
+      "id, full_name, is_primary_contact, attendance_status, dietary_restrictions, menu_option, needs_transport",
     )
     .eq("family_id", family.id)
     .order("is_primary_contact", { ascending: false })
@@ -189,7 +193,9 @@ export async function getInvitationByToken(
   if (rsvp) {
     const { data: rsvpGuests, error: rsvpGuestsError } = await supabase
       .from("rsvp_response_guests")
-      .select("guest_id, will_attend, dietary_restrictions, menu_option")
+      .select(
+        "guest_id, will_attend, needs_transport, dietary_restrictions, menu_option",
+      )
       .eq("rsvp_response_id", rsvp.id)
       .returns<RsvpGuestRow[]>();
 
@@ -208,6 +214,7 @@ export async function getInvitationByToken(
       guests: (rsvpGuests ?? []).map((guest) => ({
         guestId: guest.guest_id,
         willAttend: guest.will_attend,
+        needsTransport: guest.needs_transport,
         dietaryRestrictions: guest.dietary_restrictions,
         menuOption: guest.menu_option,
       })),
@@ -241,6 +248,7 @@ export async function getInvitationByToken(
       attendanceStatus: guest.attendance_status,
       dietaryRestrictions: guest.dietary_restrictions,
       menuOption: guest.menu_option,
+      needsTransport: guest.needs_transport,
     })),
     existingRsvp,
     canSubmitRsvp: closedReason === null,

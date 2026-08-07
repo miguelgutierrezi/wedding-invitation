@@ -27,6 +27,7 @@ export default async function AdminDashboardPage() {
     { label: "Asistentes", value: metrics.guestsAttending },
     { label: "No asisten", value: metrics.guestsNotAttending },
     { label: "Invitados sin responder", value: metrics.guestsPending },
+    { label: "Cupos de bus", value: metrics.guestsNeedingTransport },
   ] as const;
 
   return (

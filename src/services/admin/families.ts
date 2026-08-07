@@ -10,6 +10,7 @@ export type DashboardMetrics = {
   guestsAttending: number;
   guestsNotAttending: number;
   guestsPending: number;
+  guestsNeedingTransport: number;
   rsvpDeadline: string | null;
   eventName: string | null;
 };
@@ -34,11 +35,13 @@ export type AdminGuestDetail = {
   isPrimaryContact: boolean;
   attendanceStatus: "pending" | "attending" | "not_attending";
   dietaryRestrictions: string | null;
+  needsTransport: boolean;
 };
 
 export type AdminFamilyDetail = AdminFamilyListItem & {
   customMessage: string | null;
   guests: AdminGuestDetail[];
+  guestsTransportCount: number;
   rsvpMessage: string | null;
   contactEmail: string | null;
   contactPhone: string | null;
@@ -72,6 +75,7 @@ type GuestRow = {
   is_primary_contact: boolean;
   attendance_status: "pending" | "attending" | "not_attending";
   dietary_restrictions: string | null;
+  needs_transport: boolean;
 };
 
 type EventRow = {
@@ -118,8 +122,8 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       >(),
     supabase
       .from("guests")
-      .select("attendance_status")
-      .returns<{ attendance_status: string }[]>(),
+      .select("attendance_status, needs_transport")
+      .returns<{ attendance_status: string; needs_transport: boolean }[]>(),
     supabase
       .from("events")
       .select("name, rsvp_deadline")
@@ -148,6 +152,9 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     ).length,
     guestsPending: guestRows.filter((g) => g.attendance_status === "pending")
       .length,
+    guestsNeedingTransport: guestRows.filter(
+      (g) => g.needs_transport && g.attendance_status === "attending",
+    ).length,
     rsvpDeadline: event?.rsvp_deadline ?? null,
     eventName: event?.name ?? null,
   };
@@ -184,7 +191,7 @@ export async function listFamilies(): Promise<AdminFamilyListItem[]> {
       ? supabase
           .from("guests")
           .select(
-            "id, family_id, full_name, is_primary_contact, attendance_status, dietary_restrictions",
+            "id, family_id, full_name, is_primary_contact, attendance_status, dietary_restrictions, needs_transport",
           )
           .in("family_id", familyIds)
           .returns<GuestRow[]>()
@@ -246,7 +253,7 @@ export async function getFamilyById(
       supabase
         .from("guests")
         .select(
-          "id, family_id, full_name, is_primary_contact, attendance_status, dietary_restrictions",
+          "id, family_id, full_name, is_primary_contact, attendance_status, dietary_restrictions, needs_transport",
         )
         .eq("family_id", familyId)
         .order("is_primary_contact", { ascending: false })
@@ -284,7 +291,10 @@ export async function getFamilyById(
       isPrimaryContact: guest.is_primary_contact,
       attendanceStatus: guest.attendance_status,
       dietaryRestrictions: guest.dietary_restrictions,
+      needsTransport: guest.needs_transport,
     })),
+    guestsTransportCount: (guests ?? []).filter((guest) => guest.needs_transport)
+      .length,
     rsvpMessage: rsvp?.message ?? null,
     contactEmail: rsvp?.contact_email ?? null,
     contactPhone: rsvp?.contact_phone ?? null,

@@ -48,6 +48,8 @@ function buildDefaultValues(
         guestId: guest.id,
         willAttend:
           existing?.willAttend ?? guest.attendanceStatus === "attending",
+        needsTransport:
+          existing?.needsTransport ?? guest.needsTransport ?? false,
         dietaryRestrictions:
           existing?.dietaryRestrictions ?? guest.dietaryRestrictions ?? "",
         menuOption: existing?.menuOption ?? guest.menuOption ?? "",
@@ -213,13 +215,19 @@ export function RsvpForm({
                         type="checkbox"
                         className="size-4 accent-[color:var(--accent)]"
                         checked={Boolean(guestValues[index]?.willAttend)}
-                        onChange={(event) =>
-                          setValue(
-                            `guests.${index}.willAttend`,
-                            event.target.checked,
-                            { shouldDirty: true, shouldValidate: true },
-                          )
-                        }
+                        onChange={(event) => {
+                          const checked = event.target.checked;
+                          setValue(`guests.${index}.willAttend`, checked, {
+                            shouldDirty: true,
+                            shouldValidate: true,
+                          });
+                          if (!checked) {
+                            setValue(`guests.${index}.needsTransport`, false, {
+                              shouldDirty: true,
+                              shouldValidate: true,
+                            });
+                          }
+                        }}
                       />
                       <span className="text-sm">Asistirá</span>
                     </label>
@@ -231,8 +239,28 @@ export function RsvpForm({
                   {...register(`guests.${index}.guestId`)}
                 />
 
-                {willAttend ? (
+                {willAttend && guestValues[index]?.willAttend ? (
                   <div className="mt-4 grid gap-3">
+                    <label className="inline-flex min-h-11 cursor-pointer items-center gap-3">
+                      <input
+                        type="checkbox"
+                        className="size-4 accent-[color:var(--accent)]"
+                        checked={Boolean(guestValues[index]?.needsTransport)}
+                        onChange={(event) =>
+                          setValue(
+                            `guests.${index}.needsTransport`,
+                            event.target.checked,
+                            { shouldDirty: true, shouldValidate: true },
+                          )
+                        }
+                      />
+                      <span className="text-sm">Usará el transporte (bus)</span>
+                    </label>
+                    {errors.guests?.[index]?.needsTransport ? (
+                      <p className="text-sm text-red-700" role="alert">
+                        {errors.guests[index].needsTransport.message}
+                      </p>
+                    ) : null}
                     <label className="grid gap-1.5 text-sm">
                       <span className="text-muted">
                         Restricciones alimentarias

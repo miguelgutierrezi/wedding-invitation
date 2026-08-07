@@ -3,6 +3,7 @@ import { z } from "zod";
 export const rsvpGuestInputSchema = z.object({
   guestId: z.string().uuid(),
   willAttend: z.boolean(),
+  needsTransport: z.boolean(),
   dietaryRestrictions: z.string().trim().max(500),
   menuOption: z.string().trim().max(120),
 });
@@ -45,6 +46,16 @@ export const submitRsvpSchema = z
         });
       }
     }
+
+    value.guests.forEach((guest, index) => {
+      if (guest.needsTransport && (!value.willAttend || !guest.willAttend)) {
+        ctx.addIssue({
+          code: "custom",
+          message: "El transporte solo aplica si el invitado asiste.",
+          path: ["guests", index, "needsTransport"],
+        });
+      }
+    });
   });
 
 export type SubmitRsvpInput = z.infer<typeof submitRsvpSchema>;

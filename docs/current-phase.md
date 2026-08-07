@@ -1,90 +1,60 @@
-# Current phase: RSVP Flow
+# Current phase: Invitation UI
 
-**Status:** completed
+**Status:** in progress
 
-**Last reviewed:** 2026-07-18
+**Last reviewed:** 2026-08-06
 
 **Authorized scope:** only the work listed in this document
 
 ## Objective
 
-Wire personalized invitation links to Supabase and allow families to submit or update an RSVP through a validated server mutation.
+Implement the public invitation presentation for `/i/[token]` based on the approved Canva designs: personalized cover gate, scrollable invitation sections, mobile-first responsive layout, and integration of the existing RSVP form.
 
-Do not implement the administration panel, admin authentication UI, email delivery, design-system invitation sections beyond what the RSVP page needs, or remote Supabase provisioning.
+Do not implement the administration panel, admin authentication UI, email delivery, CSV export, remote Supabase provisioning, or rate limiting beyond what already exists.
 
 ## Approved behavior
 
-1. Resolve invitations by hashing the URL token (SHA-256) and looking up `families.invitation_token_hash` with the service-role server client.
-2. Invalid, unknown, and disabled invitations return the same not-found experience.
-3. Validate RSVP open state and deadline from the related `events` row.
-4. Validate guest membership, capacity (`maximum_guests`), and input with Zod on the server.
-5. Persist one `rsvp_responses` row per family (upsert in place), sync `rsvp_response_guests`, mirror `guests.attendance_status`, set family `status` to `responded`, and write an audit event.
-6. Prefer a single database transaction (SQL function) for the mutation.
+1. Keep invitation resolution and RSVP mutation from the completed RSVP Flow phase.
+2. Present a full-viewport cover with personalized greeting (`display_name`) and a “Ver Invitación” action that reveals the invitation content.
+3. Render invitation sections from centralized presentation config (`src/config/wedding.ts`), not hard-coded strings in components.
+4. Use the event date from the invitation payload for the countdown and RSVP gating; use presentation config for venue copy, transport, dress code, gifts, and decorative assets.
+5. Mobile-first layout that scales cleanly on tablet/desktop without a fixed phone frame.
+6. Preserve accessibility baselines: legible contrast, `prefers-reduced-motion`, touch targets ≥ 44px, safe areas where relevant.
 7. Do not log raw tokens, secrets, or full contact/dietary payloads.
+8. Do not invent additional real wedding data beyond what is already in config/design placeholders; final production photography and confirmed copy may arrive later as assets.
 
 ## Checklist
 
 - [x] Authorize this phase in `docs/current-phase.md`.
-- [x] Add token hashing helper and invitation lookup service.
-- [x] Add Zod RSVP schemas and a Server Action for submit/update.
-- [x] Add an atomic SQL mutation (migration) invoked by the server.
-- [x] Replace the mock `/i/[token]` page with Supabase-backed invitation + RSVP UI.
-- [x] Record `last_opened_at` when an invitation is opened successfully.
-- [x] Update README with local RSVP test tokens/routes as needed.
+- [x] Expand `weddingConfig` with presentation data for invitation sections.
+- [x] Establish design tokens (colors, fonts, section rhythm) aligned with the Canva palette.
+- [x] Build invitation cover (gate) with personalized greeting and CTA.
+- [x] Scaffold invitation sections: hero, countdown, venue, transport, photo, dress code, gallery, gifts, RSVP, footer.
+- [x] Wire existing `RsvpForm` into the invitation RSVP section.
+- [x] Update README with the new phase status and any local preview notes.
 - [x] Run `pnpm lint`, `pnpm typecheck`, and `pnpm build`.
+- [ ] Drop in final images/icons from Canva exports under `public/invitation/`.
+- [ ] Refine section spacing, torn-paper transitions, and desktop polish after assets arrive.
+
+## Out of scope
+
+- Admin panel (`/admin`)
+- Invitation email delivery
+- CSV export
+- Production deployment
+- Changing RSVP server rules, schema, or token security
+
+## Important technical decisions
+
+- Presentation copy lives in `src/config/wedding.ts`; family-specific data still comes from Supabase via the token lookup.
+- Missing media uses intentional CSS placeholders so the layout can ship without binary assets.
+- Countdown is a small Client Component; the rest of the invitation remains Server Components where possible.
+- Cover “open” interaction is client-side scroll/reveal only; no extra API.
+
+## Recommended next step after completion
+
+Admin panel (login + families/guests + copy invitation links), or production asset pass + remote Supabase/Vercel hardening.
 
 ## Completion report
 
-### Files created
-
-- `supabase/migrations/20260718215030_submit_family_rsvp.sql`
-- `src/lib/security/invitation-token.ts`
-- `src/lib/validation/rsvp.ts`
-- `src/services/invitations/get-invitation-by-token.ts`
-- `src/services/rsvp/submit-family-rsvp.ts`
-- `src/actions/rsvp/submit-rsvp.ts`
-- `src/components/rsvp/rsvp-form.tsx`
-- `src/app/i/[token]/not-found.tsx`
-
-### Files modified
-
-- `docs/current-phase.md`
-- `README.md`
-- `src/app/i/[token]/page.tsx`
-- `src/app/page.tsx`
-
-### Important technical decisions
-
-- Invitation reads and RSVP writes use the service-role admin client while RLS remains deny-by-default for anon/authenticated.
-- Mutation is atomic via `public.submit_family_rsvp(...)`.
-- Client validation uses React Hook Form + Zod; server re-validates with the same schema.
-- Honeypot field `website` rejects bot-like submissions.
-- Unknown/disabled tokens share the same `not-found` page.
-
-### Commands executed
-
-```bash
-supabase migration up
-pnpm lint
-pnpm typecheck
-pnpm build
-```
-
-### Validation results
-
-- `pnpm lint`: passed
-- `pnpm typecheck`: passed
-- `pnpm build`: passed
-- SQL RPC smoke test for `dev-family-demo`: passed
-- HTTP: `/i/dev-family-demo` and `/i/dev-family-ejemplo` → 200; invalid token → 404
-
-### Known limitations
-
-- No admin panel to create families or copy links yet.
-- No rate limiting beyond honeypot.
-- Presentation still uses event data from the database for RSVP gating, while the public landing still relies on `weddingConfig` placeholders.
-- Remote Supabase is not wired; local `.env.local` must point at `supabase status` keys.
-
-### Recommended next phase
-
-**Admin panel** (login + families/guests management + copy invitation links), or **Design System / public invitation sections** if visual polish is the priority before operations tooling.
+_Pending phase completion._

@@ -6,9 +6,17 @@ Cada familia recibirá un enlace privado para consultar la información del even
 
 ## Estado actual
 
-El proyecto está en la fase **RSVP Flow**. Existe landing temporal, schema Supabase, seed local y confirmación de asistencia en `/i/[token]`. Aún no hay autenticación administrativa ni panel admin.
+El proyecto está en la fase **Invitation UI**. Existe landing temporal, schema Supabase, seed local, RSVP funcional y un montaje inicial del diseño de invitación en `/i/[token]` (portada + secciones + form). Aún faltan assets finales de Canva y no hay panel admin.
 
 El alcance autorizado y su checklist se encuentran en [`docs/current-phase.md`](docs/current-phase.md).
+
+Assets de invitación (cuando los exportes):
+
+```text
+public/invitation/
+```
+
+Rutas esperadas documentadas en `public/invitation/` y enlazadas desde `src/config/wedding.ts` (`assets`).
 
 ## Stack
 
@@ -73,6 +81,19 @@ supabase status
 supabase stop
 supabase db reset   # aplica migraciones + seed.sql
 ```
+
+### CI (GitHub Actions)
+
+| Workflow | Cuándo | Qué hace |
+|----------|--------|----------|
+| [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | Todo push y PR a `main` | `pnpm lint`, `pnpm typecheck`, `pnpm build` |
+| [`.github/workflows/supabase-migrate.yml`](.github/workflows/supabase-migrate.yml) | Push a `main` si cambian migraciones, o manual | `supabase db push` al proyecto cloud |
+
+Migraciones **no** corren en cada push de UI: solo cuando tocas `supabase/migrations/**` (o *Run workflow*). Así no intentas `db push` en cada cambio de componente.
+
+Secrets de migraciones: `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_REF`, `SUPABASE_DB_PASSWORD`.
+
+Vercel despliega la app; no aplica SQL. El seed local (`seed.sql`) no se ejecuta en CI.
 
 Tokens de desarrollo del seed (solo local):
 

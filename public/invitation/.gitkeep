@@ -1,0 +1,30 @@
+# Invitation media
+
+Export final assets from Canva into this folder and wire the paths in `src/config/wedding.ts` under `assets`.
+
+Recommended filenames:
+
+```text
+cover-forest.jpg      # cover gate background
+hero.jpg              # couple hero photo
+venue-forest.jpg      # venue section background
+couple.jpg            # mid-page couple photo
+gallery-1.jpg
+gallery-2.jpg
+footer-forest.jpg     # footer background
+```
+
+Example config:
+
+```ts
+assets: {
+  coverBackground: "/invitation/cover-forest.jpg",
+  heroPhoto: "/invitation/hero.jpg",
+  venueBackground: "/invitation/venue-forest.jpg",
+  couplePhoto: "/invitation/couple.jpg",
+  gallery: ["/invitation/gallery-1.jpg", "/invitation/gallery-2.jpg"],
+  footerBackground: "/invitation/footer-forest.jpg",
+},
+```
+
+Until files exist, the UI shows intentional CSS placeholders.

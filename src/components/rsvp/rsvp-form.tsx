@@ -125,9 +125,6 @@ export function RsvpForm({
   return (
     <form onSubmit={onSubmit} className="space-y-8" noValidate>
       <div className="space-y-3">
-        <h2 className="font-[family-name:var(--font-display)] text-2xl font-medium text-foreground">
-          Confirmar asistencia
-        </h2>
         <p className="text-sm text-muted">
           Cupos reservados: {maximumGuests}. Puedes actualizar tu respuesta
           mientras el RSVP esté abierto.

@@ -11,6 +11,15 @@ type MediaFrameProps = {
   label?: string;
 };
 
+/** Encode each path segment so spaces and & work in CSS url("..."). */
+function toCssBackgroundUrl(path: string): string {
+  const encoded = path
+    .split("/")
+    .map((segment) => (segment === "" ? "" : encodeURIComponent(segment)))
+    .join("/");
+  return `url("${encoded}")`;
+}
+
 /**
  * Full-bleed media surface. Uses a CSS placeholder when no asset path is set.
  * Swap `src` under public/invitation once Canva exports land.
@@ -35,9 +44,9 @@ export function MediaFrame({
         className,
       )}
       style={
-        hasSrc
+        hasSrc && src
           ? {
-              backgroundImage: `url(${src})`,
+              backgroundImage: toCssBackgroundUrl(src),
               backgroundSize: "cover",
               backgroundPosition: "center",
             }

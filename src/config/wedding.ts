@@ -10,12 +10,13 @@ export const weddingConfig = {
     partnerTwo: "Nombre 2",
   },
   event: {
-    date: "2027-01-01T16:00:00-05:00",
-    dateLabel: "Fecha por definir",
-    dateChipLabel: "Fecha por definir",
+    /** Colombia (America/Bogota). Hora provisional 16:00 hasta definir ceremonia. */
+    date: "2026-10-24T16:00:00-05:00",
+    dateLabel: "24 de octubre de 2026",
+    dateChipLabel: "24 de octubre de 2026",
     timezone: "America/Bogota",
-    rsvpDeadline: "2026-12-01T23:59:59-05:00",
-    rsvpDeadlineLabel: "fecha por definir",
+    rsvpDeadline: "2026-09-04T23:59:59-05:00",
+    rsvpDeadlineLabel: "4 de septiembre de 2026",
   },
   ceremony: {
     name: "Lugar de la ceremonia",
@@ -119,14 +120,22 @@ export const weddingConfig = {
   },
   /**
    * Paths relative to /public. Empty string = CSS placeholder until assets arrive.
+   * Filenames with spaces or & are fine; MediaFrame URL-encodes them for CSS.
    */
   assets: {
-    coverBackground: "",
-    heroPhoto: "",
-    venueBackground: "",
-    couplePhoto: "",
-    gallery: ["", ""] as const,
-    footerBackground: "",
+    coverBackground: "/invitation/Boda 1.jpg",
+    heroPhoto: "/invitation/Boda 2.jpg",
+    venueBackground: "/invitation/Boda 19.jpg",
+    couplePhoto: "/invitation/Boda 3.jpg",
+    gallery: [
+      "/invitation/Boda 4.jpg",
+      "/invitation/Boda 5.jpg",
+      "/invitation/Boda 6.jpg",
+      "/invitation/Boda 7.jpg",
+      "/invitation/Boda 8.jpg",
+      "/invitation/Boda 9.jpg",
+    ] as const,
+    footerBackground: "/invitation/Nychol & Migue.png",
   },
   features: {
     countdown: true,

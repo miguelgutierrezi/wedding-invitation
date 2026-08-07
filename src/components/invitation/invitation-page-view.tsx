@@ -48,15 +48,14 @@ export function InvitationPageView({
   invitation,
 }: InvitationPageViewProps) {
   const { event } = invitation;
+  // Prefer DB ISO dates for live formatting; config labels override when non-empty.
   const dateChipLabel =
-    weddingConfig.event.dateChipLabel === "Fecha por definir"
-      ? formatSpanishDate(event.eventDate, event.timezone)
-      : weddingConfig.event.dateChipLabel;
+    weddingConfig.event.dateChipLabel ||
+    formatSpanishDate(event.eventDate, event.timezone);
 
   const rsvpDeadlineLabel =
-    weddingConfig.event.rsvpDeadlineLabel === "fecha por definir"
-      ? formatShortDeadline(event.rsvpDeadline, event.timezone)
-      : weddingConfig.event.rsvpDeadlineLabel;
+    weddingConfig.event.rsvpDeadlineLabel ||
+    formatShortDeadline(event.rsvpDeadline, event.timezone);
 
   return (
     <div className="flex min-h-full flex-1 flex-col bg-background">

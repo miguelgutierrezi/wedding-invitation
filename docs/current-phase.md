@@ -1,4 +1,4 @@
-# Current phase: Invitation UI
+# Current phase: Admin panel
 
 **Status:** in progress
 
@@ -8,53 +8,86 @@
 
 ## Objective
 
-Implement the public invitation presentation for `/i/[token]` based on the approved Canva designs: personalized cover gate, scrollable invitation sections, mobile-first responsive layout, and integration of the existing RSVP form.
+Add a private administration area so the couple can sign in, list families, create families with guests and capacity, generate personalized invitation links, copy those links, and see basic RSVP status.
 
-Do not implement the administration panel, admin authentication UI, email delivery, CSV export, remote Supabase provisioning, or rate limiting beyond what already exists.
+Do not implement CSV export, email delivery, full settings UI, dress-code asset management, or public invitation design polish beyond what already ships.
+
+## Prior phase note
+
+Invitation UI remains usable in production. Final Canva media under `public/invitation/` can land in a later polish pass without blocking admin work.
 
 ## Approved behavior
 
-1. Keep invitation resolution and RSVP mutation from the completed RSVP Flow phase.
-2. Present a full-viewport cover with personalized greeting (`display_name`) and a “Ver Invitación” action that reveals the invitation content.
-3. Render invitation sections from centralized presentation config (`src/config/wedding.ts`), not hard-coded strings in components.
-4. Use the event date from the invitation payload for the countdown and RSVP gating; use presentation config for venue copy, transport, dress code, gifts, and decorative assets.
-5. Mobile-first layout that scales cleanly on tablet/desktop without a fixed phone frame.
-6. Preserve accessibility baselines: legible contrast, `prefers-reduced-motion`, touch targets ≥ 44px, safe areas where relevant.
-7. Do not log raw tokens, secrets, or full contact/dietary payloads.
-8. Do not invent additional real wedding data beyond what is already in config/design placeholders; final production photography and confirmed copy may arrive later as assets.
+1. Admin authentication uses Supabase Auth (email + password), cookie session via `@supabase/ssr`.
+2. All `/admin` routes except `/admin/login` require a signed-in user; otherwise redirect to login.
+3. Admin allowlist is fixed in `src/config/admin.ts` (`migueangel97@hotmail.com`, `nycholpg@gmail.com`). Optional extra emails may be added via `ADMIN_EMAIL` / `ADMIN_EMAILS`.
+4. Domain data reads/writes after auth use the **service-role** server client; never expose service-role to the browser.
+5. Invitation tokens are generated cryptographically; only the hash + short preview are stored.
+6. Raw invitation URL is shown only at creation time (and on explicit regenerate), so it can be copied. Regenerating invalidates the previous token.
+7. Creating a family creates guest rows; family detail allows editing names, capacity, enable flag.
+8. Dashboard shows counts: families, assigned seats, attending / not attending / pending guests, responded vs pending families.
+9. Do not log tokens, secrets, or full dietary/contact payloads.
 
 ## Checklist
 
 - [x] Authorize this phase in `docs/current-phase.md`.
-- [x] Expand `weddingConfig` with presentation data for invitation sections.
-- [x] Establish design tokens (colors, fonts, section rhythm) aligned with the Canva palette.
-- [x] Build invitation cover (gate) with personalized greeting and CTA.
-- [x] Scaffold invitation sections: hero, countdown, venue, transport, photo, dress code, gallery, gifts, RSVP, footer.
-- [x] Wire existing `RsvpForm` into the invitation RSVP section.
-- [x] Update README with the new phase status and any local preview notes.
+- [x] Add auth helpers, middleware, and admin session guards.
+- [x] Add `/admin/login` and sign-out.
+- [x] Add dashboard with summary metrics.
+- [x] List families with RSVP-related status.
+- [x] Create family + guests + generate invitation URL (copy once).
+- [x] Family detail: guests, status, regenerate/copy flow, enable/disable.
+- [x] Document local admin user creation in README.
 - [x] Run `pnpm lint`, `pnpm typecheck`, and `pnpm build`.
-- [ ] Drop in final images/icons from Canva exports under `public/invitation/`.
-- [ ] Refine section spacing, torn-paper transitions, and desktop polish after assets arrive.
+- [ ] Optional polish after smoke test in production (confirm `ADMIN_EMAIL` + first real family).
 
 ## Out of scope
 
-- Admin panel (`/admin`)
-- Invitation email delivery
 - CSV export
-- Production deployment
-- Changing RSVP server rules, schema, or token security
+- Email / Resend
+- Admin multi-user roles beyond a single allowlisted email
+- `/admin/settings` event editor
+- Public invitation asset polish
 
 ## Important technical decisions
 
-- Presentation copy lives in `src/config/wedding.ts`; family-specific data still comes from Supabase via the token lookup.
-- Missing media uses intentional CSS placeholders so the layout can ship without binary assets.
-- Countdown is a small Client Component; the rest of the invitation remains Server Components where possible.
-- Cover “open” interaction is client-side scroll/reveal only; no extra API.
+- Auth gate uses the cookie-aware server client; privileged CRUD uses `createAdminClient()` only after the gate passes.
+- RLS remains deny-by-default for anon/authenticated on domain tables; service role bypasses RLS on the server.
+- Invitation raw tokens are not persisted by design.
+
+## Known limitations
+
+- Guest delete may fail if RSVP response rows still reference the guest.
+- Event metadata is not editable in admin (row must already exist, e.g. seed).
+- Middleware deprecation warning in Next.js 16 (`middleware` → future `proxy`); still functional.
 
 ## Recommended next step after completion
 
-Admin panel (login + families/guests + copy invitation links), or production asset pass + remote Supabase/Vercel hardening.
+CSV export + filters, or Canva asset polish.
 
 ## Completion report
 
-_Pending phase completion._
+### Files created
+
+- `src/middleware.ts`
+- `src/lib/auth/require-admin.ts`
+- `src/lib/security/generate-invitation-token.ts`
+- `src/lib/validation/admin-family.ts`
+- `src/services/admin/families.ts`
+- `src/actions/admin/auth.ts`
+- `src/components/admin/*`
+- `src/app/admin/**`
+
+### Commands executed
+
+```bash
+pnpm lint
+pnpm typecheck
+pnpm build
+```
+
+### Validation results
+
+- `pnpm lint`: passed
+- `pnpm typecheck`: passed
+- `pnpm build`: passed

@@ -160,7 +160,11 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 RESEND_API_KEY=
 ADMIN_NOTIFICATION_EMAIL=
+ADMIN_EMAIL=
+ADMIN_EMAILS=
 ```
+
+Fixed admin emails live in `src/config/admin.ts`. `ADMIN_EMAIL` / `ADMIN_EMAILS` only add extras.
 
 Rules:
 

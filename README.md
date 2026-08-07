@@ -6,9 +6,17 @@ Cada familia recibirá un enlace privado para consultar la información del even
 
 ## Estado actual
 
-El proyecto está en la fase **Invitation UI**. Existe landing temporal, schema Supabase, seed local, RSVP funcional y un montaje inicial del diseño de invitación en `/i/[token]` (portada + secciones + form). Aún faltan assets finales de Canva y no hay panel admin.
+El proyecto está en la fase **Admin panel**. Hay invitación pública en `/i/[token]`, RSVP, schema Supabase y despliegue cloud. El panel `/admin` gestiona familias e invitaciones (login Supabase Auth).
 
 El alcance autorizado y su checklist se encuentran en [`docs/current-phase.md`](docs/current-phase.md).
+
+### Usuario administrador (local o cloud)
+
+1. Crea en Supabase **Authentication → Users** las cuentas con email:
+   - `migueangel97@hotmail.com`
+   - `nycholpg@gmail.com`
+   (ambos están siempre en la allowlist de `src/config/admin.ts`).
+2. Abre [http://localhost:3000/admin/login](http://localhost:3000/admin/login) (o tu dominio + `/admin/login`).
 
 Assets de invitación (cuando los exportes):
 

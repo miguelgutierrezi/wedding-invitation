@@ -95,13 +95,16 @@ supabase db reset   # aplica migraciones + seed.sql
 | Workflow | Cuándo | Qué hace |
 |----------|--------|----------|
 | [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | Todo push y PR a `main` | `pnpm lint`, `pnpm typecheck`, `pnpm build` |
-| [`.github/workflows/supabase-migrate.yml`](.github/workflows/supabase-migrate.yml) | Push a `main` si cambian migraciones, o manual | `supabase db push` al proyecto cloud |
+| [`.github/workflows/supabase-migrate.yml`](.github/workflows/supabase-migrate.yml) | Push a `main` si cambian migraciones, o manual | `supabase db push --db-url …` al proyecto cloud |
 
 Migraciones **no** corren en cada push de UI: solo cuando tocas `supabase/migrations/**` (o *Run workflow*). Así no intentas `db push` en cada cambio de componente.
 
-Secrets de migraciones: `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_REF`, `SUPABASE_DB_PASSWORD`.
+El workflow **no usa** `supabase link` (la CLI en CI a veces falla parseando la API de keys). Construye la URL de Postgres con:
 
-Vercel despliega la app; no aplica SQL. El seed local (`seed.sql`) no se ejecuta en CI.
+- Secrets: `SUPABASE_PROJECT_REF` + `SUPABASE_DB_PASSWORD`
+- Opcional: `SUPABASE_DB_URL` (URI completa del dashboard; tiene prioridad)
+
+`SUPABASE_ACCESS_TOKEN` ya no es necesario para migrar.
 
 Tokens de desarrollo del seed (solo local):
 

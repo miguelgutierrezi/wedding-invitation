@@ -1,14 +1,21 @@
-# Applies pending SQL under supabase/migrations/ to the linked Supabase project.
+# Applies pending SQL under supabase/migrations/ to the remote Supabase project.
+#
+# Avoids `supabase link` (CLI can fail on Management API key metadata in CI).
+# Uses a direct Postgres URL built from project ref + DB password instead.
 #
 # Runs only when migration files change on main (or via manual dispatch).
-# Quality checks (lint/typecheck/build) live in ci.yml and run on every push/PR.
+# Quality checks live in ci.yml.
 #
-# Required repository secrets (Settings → Secrets and variables → Actions):
-#   SUPABASE_ACCESS_TOKEN  — Account → Access Tokens
+# Required repository secrets:
 #   SUPABASE_PROJECT_REF   — Project Settings → General → Reference ID
 #   SUPABASE_DB_PASSWORD   — Project Settings → Database → database password
 #
-# Does not seed data. Does not deploy the Next.js app (Vercel does that).
+# Optional (overrides the URL built from ref + password):
+#   SUPABASE_DB_URL        — full Postgres URI from Dashboard → Database → Connect
+#
+# SUPABASE_ACCESS_TOKEN is no longer required for this workflow.
+#
+# Does not seed data. Does not deploy Next.js (Vercel does that).
 
 name: Supabase migrate
 
@@ -32,9 +39,12 @@ jobs:
     name: supabase db push
     runs-on: ubuntu-latest
     env:
-      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
       SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+      # Optional full URI; if set, takes precedence over ref+password.
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      # Pooler host region for this project (us-east-1).
+      SUPABASE_POOLER_HOST: aws-0-us-east-1.pooler.supabase.com
 
     steps:
       - name: Checkout
@@ -45,11 +55,40 @@ jobs:
         with:
           version: latest
 
-      - name: Link project
-        run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
+      - name: Build database URL
+        id: db
+        run: |
+          set -euo pipefail
+          if [ -n "${SUPABASE_DB_URL:-}" ]; then
+            echo "Using SUPABASE_DB_URL secret"
+            {
+              echo "url<<EOF"
+              echo "$SUPABASE_DB_URL"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ -z "${SUPABASE_PROJECT_REF:-}" ] || [ -z "${SUPABASE_DB_PASSWORD:-}" ]; then
+            echo "Missing SUPABASE_PROJECT_REF or SUPABASE_DB_PASSWORD (or set SUPABASE_DB_URL)."
+            exit 1
+          fi
+
+          # URL-encode password (handles special characters)
+          ENCODED_PASSWORD=$(
+            node -e "process.stdout.write(encodeURIComponent(process.env.SUPABASE_DB_PASSWORD))"
+          )
+
+          # Session mode pooler (port 5432) works well from GitHub-hosted runners (IPv4).
+          URL="postgresql://postgres.${SUPABASE_PROJECT_REF}:${ENCODED_PASSWORD}@${SUPABASE_POOLER_HOST}:5432/postgres"
+          {
+            echo "url<<EOF"
+            echo "$URL"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Push migrations
-        run: supabase db push
+        run: supabase db push --yes --db-url "${{ steps.db.outputs.url }}"
 
       - name: Show migration status
-        run: supabase migration list
+        run: supabase migration list --db-url "${{ steps.db.outputs.url }}"

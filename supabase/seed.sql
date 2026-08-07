@@ -1,7 +1,7 @@
 -- Fictional placeholder seed data for local development only.
--- Known development invitation tokens (never use in production):
---   Familia Ejemplo  -> dev-family-ejemplo
---   Familia Demo     -> dev-family-demo
+-- Known development invitation slugs:
+--   Familia Ejemplo  -> familia-ejemplo
+--   Familia Demo     -> familia-demo
 
 insert into public.events (
   id,
@@ -48,6 +48,7 @@ insert into public.families (
   id,
   event_id,
   display_name,
+  invitation_slug,
   invitation_token_hash,
   invitation_token_preview,
   maximum_guests,
@@ -60,8 +61,9 @@ values
     '22222222-2222-4222-8222-222222222221',
     '11111111-1111-4111-8111-111111111111',
     'Familia Ejemplo',
-    encode(extensions.digest('dev-family-ejemplo', 'sha256'), 'hex'),
-    'empl',
+    'familia-ejemplo',
+    encode(extensions.digest('familia-ejemplo', 'sha256'), 'hex'),
+    'familia-ejemplo',
     3,
     'Nos emociona mucho compartir este día con ustedes.',
     'responded',
@@ -71,8 +73,9 @@ values
     '22222222-2222-4222-8222-222222222222',
     '11111111-1111-4111-8111-111111111111',
     'Familia Demo',
-    encode(extensions.digest('dev-family-demo', 'sha256'), 'hex'),
-    'demo',
+    'familia-demo',
+    encode(extensions.digest('familia-demo', 'sha256'), 'hex'),
+    'familia-demo',
     2,
     'Hemos reservado lugares para su familia.',
     'pending',

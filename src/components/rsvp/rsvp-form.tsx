@@ -17,7 +17,7 @@ import type {
 } from "@/services/invitations/get-invitation-by-token";
 
 type RsvpFormProps = {
-  token: string;
+  slug: string;
   maximumGuests: number;
   guests: InvitationGuest[];
   existingRsvp: InvitationRsvp | null;
@@ -26,7 +26,7 @@ type RsvpFormProps = {
 };
 
 function buildDefaultValues(
-  token: string,
+  slug: string,
   guests: InvitationGuest[],
   existingRsvp: InvitationRsvp | null,
 ): SubmitRsvpInput {
@@ -35,7 +35,7 @@ function buildDefaultValues(
   );
 
   return {
-    token,
+    slug,
     willAttend: existingRsvp?.willAttend ?? true,
     contactEmail: existingRsvp?.contactEmail ?? "",
     contactPhone: existingRsvp?.contactPhone ?? "",
@@ -59,7 +59,7 @@ function buildDefaultValues(
 }
 
 export function RsvpForm({
-  token,
+  slug,
   maximumGuests,
   guests,
   existingRsvp,
@@ -72,8 +72,8 @@ export function RsvpForm({
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const defaultValues = useMemo(
-    () => buildDefaultValues(token, guests, existingRsvp),
-    [token, guests, existingRsvp],
+    () => buildDefaultValues(slug, guests, existingRsvp),
+    [slug, guests, existingRsvp],
   );
 
   const {

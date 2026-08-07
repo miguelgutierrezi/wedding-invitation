@@ -1,7 +1,6 @@
 import "server-only";
 
 import { createAdminClient } from "@/lib/supabase/admin";
-import { hashInvitationToken } from "@/lib/security/invitation-token";
 import type { AttendanceStatus } from "@/types/guest";
 
 export type InvitationGuest = {
@@ -46,6 +45,7 @@ export type InvitationEvent = {
 export type FamilyInvitationView = {
   familyId: string;
   displayName: string;
+  invitationSlug: string;
   maximumGuests: number;
   customMessage: string | null;
   status: "pending" | "responded" | "disabled";
@@ -60,6 +60,7 @@ export type FamilyInvitationView = {
 type FamilyRow = {
   id: string;
   display_name: string;
+  invitation_slug: string;
   maximum_guests: number;
   custom_message: string | null;
   status: "pending" | "responded" | "disabled";
@@ -118,24 +119,27 @@ function getClosedReason(event: InvitationEvent): "closed" | "deadline" | null {
   return null;
 }
 
-export async function getInvitationByToken(
-  token: string,
+/**
+ * Loads a family invitation by public path slug (e.g. familia-gutierrez-panqueva).
+ * Returns null for unknown, disabled, or blank slugs (same status for all miss cases).
+ */
+export async function getInvitationBySlug(
+  slug: string,
 ): Promise<FamilyInvitationView | null> {
-  const normalizedToken = token.trim();
+  const normalizedSlug = slug.trim().toLowerCase();
 
-  if (!normalizedToken) {
+  if (!normalizedSlug) {
     return null;
   }
 
-  const tokenHash = hashInvitationToken(normalizedToken);
   const supabase = createAdminClient();
 
   const { data: family, error: familyError } = await supabase
     .from("families")
     .select(
-      "id, display_name, maximum_guests, custom_message, status, is_enabled, event_id",
+      "id, display_name, invitation_slug, maximum_guests, custom_message, status, is_enabled, event_id",
     )
-    .eq("invitation_token_hash", tokenHash)
+    .eq("invitation_slug", normalizedSlug)
     .maybeSingle<FamilyRow>();
 
   if (familyError) {
@@ -236,6 +240,7 @@ export async function getInvitationByToken(
   return {
     familyId: family.id,
     displayName: family.display_name,
+    invitationSlug: family.invitation_slug,
     maximumGuests: family.maximum_guests,
     customMessage: family.custom_message,
     status: family.status,
@@ -282,3 +287,6 @@ export async function markInvitationOpened(
     throw new Error("No se pudo registrar el evento de auditoría.");
   }
 }
+
+/** @deprecated Prefer getInvitationBySlug */
+export const getInvitationByToken = getInvitationBySlug;

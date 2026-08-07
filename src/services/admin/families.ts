@@ -1,5 +1,11 @@
 import "server-only";
 
+import {
+  buildInvitationUrl,
+  hashInvitationSlug,
+  normalizeInvitationSlug,
+  slugFromDisplayName,
+} from "@/lib/security/generate-invitation-slug";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export type DashboardMetrics = {
@@ -22,7 +28,8 @@ export type AdminFamilyListItem = {
   status: "pending" | "responded" | "disabled";
   isEnabled: boolean;
   lastOpenedAt: string | null;
-  tokenPreview: string;
+  invitationSlug: string;
+  invitationUrl: string;
   confirmedGuestCount: number | null;
   guestCount: number;
   willAttend: boolean | null;
@@ -54,7 +61,7 @@ type FamilyRow = {
   status: "pending" | "responded" | "disabled";
   is_enabled: boolean;
   last_opened_at: string | null;
-  invitation_token_preview: string;
+  invitation_slug: string;
   custom_message: string | null;
 };
 
@@ -166,7 +173,7 @@ export async function listFamilies(): Promise<AdminFamilyListItem[]> {
   const { data: families, error: familiesError } = await supabase
     .from("families")
     .select(
-      "id, display_name, maximum_guests, status, is_enabled, last_opened_at, invitation_token_preview, custom_message",
+      "id, display_name, maximum_guests, status, is_enabled, last_opened_at, invitation_slug, custom_message",
     )
     .order("display_name", { ascending: true })
     .returns<FamilyRow[]>();
@@ -218,7 +225,8 @@ export async function listFamilies(): Promise<AdminFamilyListItem[]> {
       status: family.status,
       isEnabled: family.is_enabled,
       lastOpenedAt: family.last_opened_at,
-      tokenPreview: family.invitation_token_preview,
+      invitationSlug: family.invitation_slug,
+      invitationUrl: buildInvitationUrl(family.invitation_slug),
       confirmedGuestCount: rsvp?.confirmed_guest_count ?? null,
       guestCount: guestCountByFamily.get(family.id) ?? 0,
       willAttend: rsvp?.will_attend ?? null,
@@ -235,7 +243,7 @@ export async function getFamilyById(
   const { data: family, error } = await supabase
     .from("families")
     .select(
-      "id, display_name, maximum_guests, status, is_enabled, last_opened_at, invitation_token_preview, custom_message",
+      "id, display_name, maximum_guests, status, is_enabled, last_opened_at, invitation_slug, custom_message",
     )
     .eq("id", familyId)
     .maybeSingle<FamilyRow>();
@@ -279,7 +287,8 @@ export async function getFamilyById(
     status: family.status,
     isEnabled: family.is_enabled,
     lastOpenedAt: family.last_opened_at,
-    tokenPreview: family.invitation_token_preview,
+    invitationSlug: family.invitation_slug,
+    invitationUrl: buildInvitationUrl(family.invitation_slug),
     customMessage: family.custom_message,
     confirmedGuestCount: rsvp?.confirmed_guest_count ?? null,
     guestCount: (guests ?? []).length,
@@ -304,17 +313,52 @@ export async function getFamilyById(
 export type CreateFamilyResult = {
   familyId: string;
   invitationUrl: string;
-  tokenPreview: string;
+  invitationSlug: string;
 };
+
+async function allocateUniqueInvitationSlug(
+  supabase: ReturnType<typeof createAdminClient>,
+  preferredBase: string,
+  excludeFamilyId?: string,
+): Promise<string> {
+  const base = normalizeInvitationSlug(preferredBase);
+  let candidate = base;
+  let suffix = 2;
+
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    let query = supabase
+      .from("families")
+      .select("id")
+      .eq("invitation_slug", candidate)
+      .limit(1);
+
+    if (excludeFamilyId) {
+      query = query.neq("id", excludeFamilyId);
+    }
+
+    const { data, error } = await query.maybeSingle<{ id: string }>();
+
+    if (error) {
+      throw new Error("No se pudo validar el slug de la invitación.");
+    }
+
+    if (!data) {
+      return candidate;
+    }
+
+    candidate = `${base}-${suffix}`;
+    suffix += 1;
+  }
+
+  throw new Error("No se pudo generar un slug único para la familia.");
+}
 
 export async function createFamily(input: {
   displayName: string;
   maximumGuests: number;
   customMessage: string | null;
   guestNames: string[];
-  tokenHash: string;
-  tokenPreview: string;
-  invitationUrl: string;
+  invitationSlug?: string;
 }): Promise<CreateFamilyResult> {
   const supabase = createAdminClient();
   const eventId = await getPrimaryEventId(supabase);
@@ -325,13 +369,22 @@ export async function createFamily(input: {
     );
   }
 
+  const preferred =
+    input.invitationSlug?.trim() || slugFromDisplayName(input.displayName);
+  const invitationSlug = await allocateUniqueInvitationSlug(
+    supabase,
+    preferred,
+  );
+  const tokenHash = hashInvitationSlug(invitationSlug);
+
   const { data: family, error: familyError } = await supabase
     .from("families")
     .insert({
       event_id: eventId,
       display_name: input.displayName,
-      invitation_token_hash: input.tokenHash,
-      invitation_token_preview: input.tokenPreview,
+      invitation_slug: invitationSlug,
+      invitation_token_hash: tokenHash,
+      invitation_token_preview: invitationSlug.slice(0, 24),
       maximum_guests: input.maximumGuests,
       custom_message: input.customMessage,
       status: "pending",
@@ -341,6 +394,9 @@ export async function createFamily(input: {
     .single<{ id: string }>();
 
   if (familyError || !family) {
+    if (familyError?.message?.includes("invitation_slug")) {
+      throw new Error("Ese slug de invitación ya está en uso.");
+    }
     throw new Error("No se pudo crear la familia.");
   }
 
@@ -365,23 +421,29 @@ export async function createFamily(input: {
     metadata: {
       maximum_guests: input.maximumGuests,
       guest_count: input.guestNames.length,
+      invitation_slug: invitationSlug,
       source: "admin",
     },
   });
 
   return {
     familyId: family.id,
-    invitationUrl: input.invitationUrl,
-    tokenPreview: input.tokenPreview,
+    invitationUrl: buildInvitationUrl(invitationSlug),
+    invitationSlug,
   };
 }
 
-export async function regenerateFamilyToken(
+export async function updateFamilyInvitationSlug(
   familyId: string,
-  tokenHash: string,
-  tokenPreview: string,
-): Promise<void> {
+  rawSlug: string,
+): Promise<string> {
   const supabase = createAdminClient();
+  const invitationSlug = await allocateUniqueInvitationSlug(
+    supabase,
+    rawSlug,
+    familyId,
+  );
+  const tokenHash = hashInvitationSlug(invitationSlug);
 
   const { data: family, error: loadError } = await supabase
     .from("families")
@@ -396,21 +458,43 @@ export async function regenerateFamilyToken(
   const { error } = await supabase
     .from("families")
     .update({
+      invitation_slug: invitationSlug,
       invitation_token_hash: tokenHash,
-      invitation_token_preview: tokenPreview,
+      invitation_token_preview: invitationSlug.slice(0, 24),
     })
     .eq("id", familyId);
 
   if (error) {
-    throw new Error("No se pudo regenerar el enlace de invitación.");
+    throw new Error("No se pudo actualizar el enlace de invitación.");
   }
 
   await supabase.from("audit_events").insert({
     event_id: family.event_id,
     family_id: familyId,
     action: "invitation_token_regenerated",
-    metadata: { source: "admin" },
+    metadata: { source: "admin", invitation_slug: invitationSlug },
   });
+
+  return invitationSlug;
+}
+
+/** Regenerates invitation slug from the family display name. */
+export async function regenerateFamilyToken(familyId: string): Promise<void> {
+  const supabase = createAdminClient();
+  const { data: family } = await supabase
+    .from("families")
+    .select("display_name")
+    .eq("id", familyId)
+    .maybeSingle<{ display_name: string }>();
+
+  if (!family) {
+    throw new Error("No se encontró la familia.");
+  }
+
+  await updateFamilyInvitationSlug(
+    familyId,
+    slugFromDisplayName(family.display_name),
+  );
 }
 
 export async function updateFamily(input: {
@@ -420,6 +504,7 @@ export async function updateFamily(input: {
   customMessage: string | null;
   isEnabled: boolean;
   guestNames: string[];
+  invitationSlug?: string;
 }): Promise<void> {
   const supabase = createAdminClient();
 
@@ -431,9 +516,14 @@ export async function updateFamily(input: {
 
   const { data: family, error: loadError } = await supabase
     .from("families")
-    .select("id, event_id, status")
+    .select("id, event_id, status, invitation_slug")
     .eq("id", input.familyId)
-    .maybeSingle<{ id: string; event_id: string; status: string }>();
+    .maybeSingle<{
+      id: string;
+      event_id: string;
+      status: string;
+      invitation_slug: string;
+    }>();
 
   if (loadError || !family) {
     throw new Error("No se encontró la familia.");
@@ -446,6 +536,20 @@ export async function updateFamily(input: {
         ? "pending"
         : family.status;
 
+  let invitationSlug = family.invitation_slug;
+  let tokenHash: string | undefined;
+  let tokenPreview: string | undefined;
+
+  if (input.invitationSlug?.trim()) {
+    invitationSlug = await allocateUniqueInvitationSlug(
+      supabase,
+      input.invitationSlug,
+      input.familyId,
+    );
+    tokenHash = hashInvitationSlug(invitationSlug);
+    tokenPreview = invitationSlug.slice(0, 24);
+  }
+
   const { error: updateError } = await supabase
     .from("families")
     .update({
@@ -454,10 +558,20 @@ export async function updateFamily(input: {
       custom_message: input.customMessage,
       is_enabled: input.isEnabled,
       status,
+      invitation_slug: invitationSlug,
+      ...(tokenHash
+        ? {
+            invitation_token_hash: tokenHash,
+            invitation_token_preview: tokenPreview,
+          }
+        : {}),
     })
     .eq("id", input.familyId);
 
   if (updateError) {
+    if (updateError.message.includes("invitation_slug")) {
+      throw new Error("Ese slug de invitación ya está en uso.");
+    }
     throw new Error("No se pudo actualizar la familia.");
   }
 
@@ -537,6 +651,7 @@ export async function updateFamily(input: {
       maximum_guests: input.maximumGuests,
       guest_count: input.guestNames.length,
       is_enabled: input.isEnabled,
+      invitation_slug: invitationSlug,
       source: "admin",
     },
   });

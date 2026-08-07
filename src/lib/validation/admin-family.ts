@@ -37,6 +37,17 @@ export const updateFamilySchema = z.object({
   customMessage: z.string().trim().max(1000).optional().or(z.literal("")),
   isEnabled: z.boolean(),
   guestNames: z.array(guestNameSchema).min(1).max(30),
+  invitationSlug: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .regex(
+      /^$|^[a-z0-9]+(-[a-z0-9]+)*$/,
+      "Usa solo minúsculas, números y guiones (ej. familia-gutierrez-panqueva).",
+    )
+    .max(80)
+    .optional()
+    .or(z.literal("")),
 });
 
 export type UpdateFamilyInput = z.infer<typeof updateFamilySchema>;

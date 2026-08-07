@@ -109,8 +109,8 @@ El workflow **no usa** `supabase link` (la CLI en CI a veces falla parseando la 
 Tokens de desarrollo del seed (solo local):
 
 ```text
-dev-family-ejemplo  →  http://localhost:3000/i/dev-family-ejemplo
-dev-family-demo     →  http://localhost:3000/i/dev-family-demo
+familia-ejemplo  →  http://localhost:3000/i/familia-ejemplo
+familia-demo     →  http://localhost:3000/i/familia-demo
 ```
 
 El hash SHA-256 de esos tokens es lo que queda guardado en `families.invitation_token_hash`. Recuerda copiar las claves de `supabase status` a `.env.local` antes de probar el RSVP.

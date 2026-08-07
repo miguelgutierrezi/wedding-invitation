@@ -1,35 +1,24 @@
-"use client";
+import Link from "next/link";
 
-import { weddingConfig } from "@/config/wedding";
 import { MediaFrame } from "@/components/invitation/media-frame";
+import { weddingConfig } from "@/config/wedding";
 
 type InvitationCoverProps = {
   displayName: string;
+  /** Public invitation path segment (lowercase family slug). */
+  slug: string;
 };
 
-export function InvitationCover({ displayName }: InvitationCoverProps) {
+/**
+ * Full-viewport greeting gate. Lives on its own route; CTA navigates to the invitation body.
+ */
+export function InvitationCover({ displayName, slug }: InvitationCoverProps) {
   const { cover, assets } = weddingConfig;
-
-  function openInvitation() {
-    const target = document.getElementById("invitacion");
-    if (!target) {
-      return;
-    }
-
-    const prefersReduced =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    target.scrollIntoView({
-      behavior: prefersReduced ? "auto" : "smooth",
-      block: "start",
-    });
-  }
 
   return (
     <section
       aria-label="Portada de la invitación"
-      className="relative flex min-h-[100dvh] items-center justify-center px-6 py-16 sm:px-10"
+      className="relative flex min-h-[100dvh] flex-1 items-center justify-center px-6 py-16 sm:px-10"
     >
       <MediaFrame
         src={assets.coverBackground || undefined}
@@ -48,15 +37,14 @@ export function InvitationCover({ displayName }: InvitationCoverProps) {
           {cover.subtitle}
         </p>
 
-        <button
-          type="button"
-          onClick={openInvitation}
+        <Link
+          href={`/i/${encodeURIComponent(slug)}/invitacion`}
           className="mt-12 inline-flex min-h-12 min-w-[12.5rem] items-center justify-center rounded-full border border-forest/40 bg-cream/95 px-8 text-base font-medium text-accent-deep shadow-[0_12px_40px_-18px_rgba(0,0,0,0.55)] transition-[transform,background-color] hover:bg-cream focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-transparent focus-visible:outline-none active:scale-[0.98]"
         >
           <span className="underline decoration-accent-deep/70 underline-offset-6">
             {cover.ctaLabel}
           </span>
-        </button>
+        </Link>
       </div>
     </section>
   );

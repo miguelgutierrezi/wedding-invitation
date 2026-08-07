@@ -43,7 +43,8 @@ export async function submitRsvpAction(
   try {
     const result = await submitFamilyRsvp(parsed.data);
 
-    revalidatePath(`/i/${parsed.data.token}`);
+    revalidatePath(`/i/${parsed.data.slug}`);
+    revalidatePath(`/i/${parsed.data.slug}/invitacion`);
 
     return {
       ok: true,

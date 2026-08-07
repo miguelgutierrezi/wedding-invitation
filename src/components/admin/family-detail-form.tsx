@@ -21,17 +21,20 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
   );
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const [invitationUrl, setInvitationUrl] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   return (
     <div className="space-y-10">
-      {invitationUrl ? (
-        <div className="space-y-3 rounded-2xl border border-accent/25 bg-cream p-5">
-          <p className="text-sm font-medium text-accent">Nuevo enlace</p>
-          <CopyInvitationLink url={invitationUrl} />
-        </div>
-      ) : null}
+      <div className="space-y-3 rounded-2xl border border-accent/25 bg-cream p-5">
+        <p className="text-sm font-medium text-accent">Enlace de invitación</p>
+        <p className="text-sm text-muted">
+          Slug:{" "}
+          <code className="rounded bg-white/70 px-1.5 py-0.5">
+            {family.invitationSlug}
+          </code>
+        </p>
+        <CopyInvitationLink url={family.invitationUrl} />
+      </div>
 
       <form
         className="space-y-6"
@@ -59,6 +62,21 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
             defaultValue={family.displayName}
             className="min-h-11 rounded-xl border border-[color:var(--ring)] bg-white/80 px-3 outline-none focus-visible:ring-2 focus-visible:ring-accent"
           />
+        </label>
+
+        <label className="grid gap-1.5 text-sm">
+          <span className="text-muted">Slug de la URL (minúsculas)</span>
+          <input
+            name="invitationSlug"
+            required
+            defaultValue={family.invitationSlug}
+            pattern="[a-z0-9]+(-[a-z0-9]+)*"
+            className="min-h-11 rounded-xl border border-[color:var(--ring)] bg-white/80 px-3 font-mono text-sm outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            placeholder="familia-gutierrez-panqueva"
+          />
+          <span className="text-xs text-muted">
+            La invitación queda en /i/{family.invitationSlug}
+          </span>
         </label>
 
         <label className="grid gap-1.5 text-sm">
@@ -143,14 +161,12 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
 
       <div className="border-t border-[color:var(--ring)] pt-8">
         <h2 className="font-[family-name:var(--font-display)] text-xl text-accent">
-          Enlace de invitación
+          Regenerar slug desde el nombre
         </h2>
         <p className="mt-2 text-sm text-muted">
-          Preview del token:{" "}
-          <code className="rounded bg-cream px-1.5 py-0.5">
-            {family.tokenPreview}…
-          </code>
-          . El token completo no se almacena; regenera si lo perdiste.
+          Vuelve a generar el slug a partir del nombre de la familia (p. ej. Familia
+          Gutiérrez Panqueva → familia-gutierrez-panqueva). El enlace anterior deja
+          de funcionar.
         </p>
         <button
           type="button"
@@ -164,14 +180,13 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
                 setError(result.error);
                 return;
               }
-              setInvitationUrl(result.invitationUrl ?? null);
               setMessage(result.message ?? null);
               router.refresh();
             });
           }}
           className="mt-4 inline-flex min-h-11 items-center justify-center rounded-full border border-[color:var(--ring)] px-5 text-sm font-medium disabled:opacity-60"
         >
-          Regenerar enlace
+          Regenerar slug
         </button>
       </div>
     </div>

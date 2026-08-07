@@ -1,8 +1,6 @@
 import "server-only";
 
 import { createAdminClient } from "@/lib/supabase/admin";
-import { hashInvitationToken } from "@/lib/security/invitation-token";
-import type { SubmitRsvpInput } from "@/lib/validation/rsvp";
 
 export type SubmitFamilyRsvpResult = {
   responseId: string;
@@ -46,11 +44,22 @@ function mapRpcError(message: string): string {
   return "No se pudo guardar la confirmación. Inténtalo de nuevo.";
 }
 
-export async function submitFamilyRsvp(
-  input: SubmitRsvpInput,
-): Promise<SubmitFamilyRsvpResult> {
+export async function submitFamilyRsvp(input: {
+  slug: string;
+  willAttend: boolean;
+  guests: Array<{
+    guestId: string;
+    willAttend: boolean;
+    needsTransport: boolean;
+    dietaryRestrictions: string;
+    menuOption: string;
+  }>;
+  contactEmail: string;
+  contactPhone: string;
+  message: string;
+}): Promise<SubmitFamilyRsvpResult> {
   const supabase = createAdminClient();
-  const tokenHash = hashInvitationToken(input.token.trim());
+  const invitationSlug = input.slug.trim().toLowerCase();
 
   const guestResponses = input.guests.map((guest) => ({
     guest_id: guest.guestId,
@@ -62,7 +71,7 @@ export async function submitFamilyRsvp(
   }));
 
   const { data, error } = await supabase.rpc("submit_family_rsvp", {
-    p_token_hash: tokenHash,
+    p_invitation_slug: invitationSlug,
     p_will_attend: input.willAttend,
     p_guest_responses: guestResponses,
     p_contact_email: input.contactEmail || null,

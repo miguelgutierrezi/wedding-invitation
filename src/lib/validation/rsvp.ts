@@ -10,7 +10,14 @@ export const rsvpGuestInputSchema = z.object({
 
 export const submitRsvpSchema = z
   .object({
-    token: z.string().trim().min(8).max(200),
+    /** Public invitation path segment (family slug). */
+    slug: z
+      .string()
+      .trim()
+      .toLowerCase()
+      .min(2)
+      .max(80)
+      .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/),
     willAttend: z.boolean(),
     guests: z.array(rsvpGuestInputSchema).min(1),
     contactEmail: z

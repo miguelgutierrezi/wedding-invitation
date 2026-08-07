@@ -1,6 +1,5 @@
 import { InvitationCountdown } from "@/components/invitation/invitation-countdown";
 import { InvitationCouplePhoto } from "@/components/invitation/invitation-couple-photo";
-import { InvitationCover } from "@/components/invitation/invitation-cover";
 import { InvitationDressCode } from "@/components/invitation/invitation-dress-code";
 import { InvitationFooter } from "@/components/invitation/invitation-footer";
 import { InvitationGallery } from "@/components/invitation/invitation-gallery";
@@ -14,7 +13,7 @@ import { weddingConfig } from "@/config/wedding";
 import type { FamilyInvitationView } from "@/services/invitations/get-invitation-by-token";
 
 type InvitationPageViewProps = {
-  token: string;
+  slug: string;
   invitation: FamilyInvitationView;
 };
 
@@ -43,12 +42,12 @@ function formatShortDeadline(isoDate: string, timezone: string): string {
   }
 }
 
+/** Body of the invitation (hero → RSVP). Shown on `/i/[slug]/invitacion`. */
 export function InvitationPageView({
-  token,
+  slug,
   invitation,
 }: InvitationPageViewProps) {
   const { event } = invitation;
-  // Prefer DB ISO dates for live formatting; config labels override when non-empty.
   const dateChipLabel =
     weddingConfig.event.dateChipLabel ||
     formatSpanishDate(event.eventDate, event.timezone);
@@ -59,8 +58,6 @@ export function InvitationPageView({
 
   return (
     <div className="flex min-h-full flex-1 flex-col bg-background">
-      <InvitationCover displayName={invitation.displayName} />
-
       <InvitationHero
         partnerOneName={event.partnerOneName}
         partnerTwoName={event.partnerTwoName}
@@ -87,7 +84,7 @@ export function InvitationPageView({
 
       <InvitationRsvpSection rsvpDeadlineLabel={rsvpDeadlineLabel}>
         <RsvpForm
-          token={token}
+          slug={slug}
           maximumGuests={invitation.maximumGuests}
           guests={invitation.guests}
           existingRsvp={invitation.existingRsvp}

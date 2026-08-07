@@ -4,8 +4,8 @@ import { redirect } from "next/navigation";
 
 import {
   buildInvitationUrl,
-  generateInvitationToken,
-} from "@/lib/security/generate-invitation-token";
+  slugFromDisplayName,
+} from "@/lib/security/generate-invitation-slug";
 import {
   isEmailAllowed,
   requireAdmin,
@@ -17,8 +17,8 @@ import {
 } from "@/lib/validation/admin-family";
 import {
   createFamily,
-  regenerateFamilyToken,
   updateFamily,
+  updateFamilyInvitationSlug,
 } from "@/services/admin/families";
 
 export type AdminActionResult =
@@ -97,24 +97,18 @@ export async function createFamilyAction(
   }
 
   try {
-    const { token, tokenHash, tokenPreview } = generateInvitationToken();
-    const invitationUrl = buildInvitationUrl(token);
-
     const result = await createFamily({
       displayName: parsed.data.displayName,
       maximumGuests: parsed.data.maximumGuests,
       customMessage: parsed.data.customMessage || null,
       guestNames: parsed.data.guestNames,
-      tokenHash,
-      tokenPreview,
-      invitationUrl,
     });
 
     return {
       ok: true,
       familyId: result.familyId,
       invitationUrl: result.invitationUrl,
-      message: "Familia creada. Copia el enlace ahora; no se volverá a mostrar.",
+      message: "Familia creada. Puedes copiar y compartir el enlace cuando quieras.",
     };
   } catch (error) {
     return {
@@ -144,6 +138,7 @@ export async function updateFamilyAction(
     customMessage: formData.get("customMessage") ?? "",
     isEnabled: formData.get("isEnabled") === "on" || formData.get("isEnabled") === "true",
     guestNames,
+    invitationSlug: formData.get("invitationSlug") ?? "",
   });
 
   if (!parsed.success) {
@@ -161,6 +156,7 @@ export async function updateFamilyAction(
       customMessage: parsed.data.customMessage || null,
       isEnabled: parsed.data.isEnabled,
       guestNames: parsed.data.guestNames,
+      invitationSlug: parsed.data.invitationSlug || undefined,
     });
 
     return { ok: true, message: "Familia actualizada." };
@@ -185,14 +181,23 @@ export async function regenerateInvitationAction(
   }
 
   try {
-    const { token, tokenHash, tokenPreview } = generateInvitationToken();
-    await regenerateFamilyToken(familyId, tokenHash, tokenPreview);
+    const { getFamilyById } = await import("@/services/admin/families");
+    const family = await getFamilyById(familyId);
+
+    if (!family) {
+      return { ok: false, error: "Familia no encontrada." };
+    }
+
+    const slug = await updateFamilyInvitationSlug(
+      familyId,
+      slugFromDisplayName(family.displayName),
+    );
 
     return {
       ok: true,
-      invitationUrl: buildInvitationUrl(token),
+      invitationUrl: buildInvitationUrl(slug),
       message:
-        "Enlace regenerado. Copia el nuevo enlace; el anterior dejó de funcionar.",
+        "Slug regenerado a partir del nombre de la familia. El enlace anterior deja de funcionar si era distinto.",
     };
   } catch (error) {
     return {

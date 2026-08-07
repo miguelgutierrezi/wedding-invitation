@@ -57,9 +57,12 @@ export default async function AdminFamiliesPage() {
                   className="border-b border-[color:var(--ring)] last:border-0"
                 >
                   <td className="px-4 py-3 font-medium text-foreground">
-                    {family.displayName}
+                    <div>{family.displayName}</div>
+                    <div className="mt-0.5 font-mono text-xs font-normal text-muted">
+                      /i/{family.invitationSlug}
+                    </div>
                     {!family.isEnabled ? (
-                      <span className="ml-2 text-xs text-red-700">off</span>
+                      <span className="ml-0 text-xs text-red-700">off</span>
                     ) : null}
                   </td>
                   <td className="px-4 py-3 text-muted">

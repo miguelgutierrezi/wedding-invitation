@@ -5,6 +5,7 @@ export type Family = {
   id: FamilyId;
   eventId: string;
   displayName: string;
+  invitationSlug: string;
   invitationTokenHash: string;
   invitationTokenPreview: string;
   maximumGuests: number;
@@ -21,6 +22,7 @@ export type FamilyInvitation = Pick<
   Family,
   | "id"
   | "displayName"
+  | "invitationSlug"
   | "maximumGuests"
   | "customMessage"
   | "status"

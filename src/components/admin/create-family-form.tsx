@@ -22,8 +22,8 @@ export function CreateFamilyForm() {
             Familia creada correctamente
           </p>
           <p className="mt-1 text-sm text-muted">
-            Copia el enlace ahora. Por seguridad no se vuelve a almacenar el
-            token en texto plano.
+            Copia el enlace para enviarlo por WhatsApp. Puedes verlo de nuevo en el
+            detalle de la familia.
           </p>
         </div>
         <CopyInvitationLink url={invitationUrl} />

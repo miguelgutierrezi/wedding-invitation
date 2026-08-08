@@ -6,6 +6,7 @@ import { useMemo, useState, useTransition } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 
 import { submitRsvpAction } from "@/actions/rsvp/submit-rsvp";
+import { weddingConfig } from "@/config/wedding";
 import { cn } from "@/lib/utils";
 import {
   submitRsvpSchema,
@@ -24,6 +25,26 @@ type RsvpFormProps = {
   canSubmitRsvp: boolean;
   closedReason: "closed" | "deadline" | null;
 };
+
+const labelClass =
+  "font-[family-name:var(--font-timer)] text-[clamp(1rem,2vw,1.25rem)] leading-7 text-cover-cta-fg";
+
+const fieldLabelClass = `${labelClass} font-bold`;
+
+const inputClass =
+  "min-h-11 w-full rounded-full border-2 border-cover-cta-fg/35 bg-white/80 px-4 font-[family-name:var(--font-timer)] text-[clamp(1rem,2vw,1.125rem)] text-cover-cta-fg outline-none transition-[border-color,box-shadow] placeholder:text-cover-cta-fg/45 focus-visible:border-cover-cta-fg focus-visible:ring-2 focus-visible:ring-accent";
+
+const textareaClass =
+  "w-full rounded-3xl border-2 border-cover-cta-fg/35 bg-white/80 px-4 py-3 font-[family-name:var(--font-timer)] text-[clamp(1rem,2vw,1.125rem)] text-cover-cta-fg outline-none transition-[border-color,box-shadow] placeholder:text-cover-cta-fg/45 focus-visible:border-cover-cta-fg focus-visible:ring-2 focus-visible:ring-accent";
+
+const choiceClass =
+  "inline-flex min-h-11 cursor-pointer items-center gap-3 rounded-full border-2 border-cover-cta-fg/40 bg-white/50 px-5 py-2.5 font-[family-name:var(--font-timer)] text-[clamp(1rem,2vw,1.125rem)] text-cover-cta-fg transition-[background-color,border-color] has-[:checked]:border-cover-cta-fg has-[:checked]:bg-accent/35";
+
+const sectionLegendClass =
+  "font-[family-name:var(--font-timer)] text-[clamp(1.125rem,2.4vw,1.375rem)] leading-8 font-bold text-cover-cta-fg";
+
+const statusBoxClass =
+  "rounded-2xl border-2 border-cover-cta-fg/25 bg-white/50 px-4 py-3 font-[family-name:var(--font-timer)] text-[clamp(1rem,2vw,1.125rem)] leading-7 text-cover-cta-fg";
 
 function buildDefaultValues(
   slug: string,
@@ -67,6 +88,7 @@ export function RsvpForm({
   closedReason,
 }: RsvpFormProps) {
   const router = useRouter();
+  const { rsvp } = weddingConfig;
   const [isPending, startTransition] = useTransition();
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -125,25 +147,24 @@ export function RsvpForm({
   });
 
   return (
-    <form onSubmit={onSubmit} className="space-y-8" noValidate>
-      <div className="space-y-3">
-        <p className="text-sm text-muted">
-          Cupos reservados: {maximumGuests}. Puedes actualizar tu respuesta
-          mientras el RSVP esté abierto.
-        </p>
-      </div>
+    <form
+      onSubmit={onSubmit}
+      className="space-y-8 font-[family-name:var(--font-timer)] text-cover-cta-fg"
+      noValidate
+    >
+      <p className={`${labelClass} text-center text-cover-cta-fg/85`}>
+        Cupos de esta invitación: {maximumGuests}. Puedes actualizar tu
+        respuesta mientras el RSVP esté abierto.
+      </p>
 
       {closedMessage ? (
-        <p
-          className="rounded-xl border border-[color:var(--ring)] bg-[rgba(31,42,36,0.04)] px-4 py-3 text-sm text-muted"
-          role="status"
-        >
+        <p className={statusBoxClass} role="status">
           {closedMessage}
         </p>
       ) : null}
 
       {existingRsvp ? (
-        <p className="rounded-xl border border-[color:var(--ring)] bg-surface px-4 py-3 text-sm text-foreground">
+        <p className={statusBoxClass} role="status">
           Ya registraron una respuesta
           {existingRsvp.willAttend
             ? ` con ${existingRsvp.confirmedGuestCount} asistente(s)`
@@ -152,40 +173,38 @@ export function RsvpForm({
         </p>
       ) : null}
 
-      <fieldset className="space-y-3" disabled={!canSubmitRsvp || isPending}>
-        <legend className="text-sm font-semibold tracking-wide text-accent uppercase">
-          ¿Podrán acompañarnos?
-        </legend>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <label className="inline-flex min-h-11 cursor-pointer items-center gap-3 rounded-full border border-[color:var(--ring)] px-4 py-2">
+      <fieldset className="space-y-4" disabled={!canSubmitRsvp || isPending}>
+        <legend className={sectionLegendClass}>¿Podrán acompañarnos?</legend>
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
+          <label className={choiceClass}>
             <input
               type="radio"
-              className="size-4 accent-[color:var(--accent)]"
+              className="size-4 accent-[color:var(--accent-deep)]"
               checked={willAttend}
-              onChange={() => setValue("willAttend", true, { shouldDirty: true })}
+              onChange={() =>
+                setValue("willAttend", true, { shouldDirty: true })
+              }
             />
-            <span className="text-sm font-medium">Sí, asistiremos</span>
+            <span>Sí, asistiremos</span>
           </label>
-          <label className="inline-flex min-h-11 cursor-pointer items-center gap-3 rounded-full border border-[color:var(--ring)] px-4 py-2">
+          <label className={choiceClass}>
             <input
               type="radio"
-              className="size-4 accent-[color:var(--accent)]"
+              className="size-4 accent-[color:var(--accent-deep)]"
               checked={!willAttend}
               onChange={() =>
                 setValue("willAttend", false, { shouldDirty: true })
               }
             />
-            <span className="text-sm font-medium">No podremos asistir</span>
+            <span>No podremos asistir</span>
           </label>
         </div>
       </fieldset>
 
       <fieldset className="space-y-4" disabled={!canSubmitRsvp || isPending}>
-        <legend className="text-sm font-semibold tracking-wide text-accent uppercase">
-          Invitados
-        </legend>
+        <legend className={sectionLegendClass}>Invitados</legend>
         {willAttend ? (
-          <p className="text-sm text-muted">
+          <p className={`${labelClass} text-cover-cta-fg/85`}>
             Seleccionados: {attendingCount} / {maximumGuests}
           </p>
         ) : null}
@@ -196,24 +215,24 @@ export function RsvpForm({
             return (
               <div
                 key={field.id}
-                className="rounded-2xl border border-[color:var(--ring)] bg-surface p-4 sm:p-5"
+                className="rounded-3xl border-2 border-cover-cta-fg/20 bg-white/55 p-4 sm:p-5"
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <p className="font-medium text-foreground">
+                    <p className={`${labelClass} font-bold`}>
                       {guest?.fullName ?? `Invitado ${index + 1}`}
                     </p>
                     {guest?.isPrimaryContact ? (
-                      <p className="text-xs tracking-wide text-muted uppercase">
+                      <p className="mt-1 font-[family-name:var(--font-timer)] text-sm tracking-wide text-cover-cta-fg/70 uppercase">
                         Contacto principal
                       </p>
                     ) : null}
                   </div>
                   {willAttend ? (
-                    <label className="inline-flex min-h-11 cursor-pointer items-center gap-3">
+                    <label className={choiceClass}>
                       <input
                         type="checkbox"
-                        className="size-4 accent-[color:var(--accent)]"
+                        className="size-4 accent-[color:var(--accent-deep)]"
                         checked={Boolean(guestValues[index]?.willAttend)}
                         onChange={(event) => {
                           const checked = event.target.checked;
@@ -229,7 +248,7 @@ export function RsvpForm({
                           }
                         }}
                       />
-                      <span className="text-sm">Asistirá</span>
+                      <span>Asistirá</span>
                     </label>
                   ) : null}
                 </div>
@@ -241,10 +260,10 @@ export function RsvpForm({
 
                 {willAttend && guestValues[index]?.willAttend ? (
                   <div className="mt-4 grid gap-3">
-                    <label className="inline-flex min-h-11 cursor-pointer items-center gap-3">
+                    <label className={choiceClass}>
                       <input
                         type="checkbox"
-                        className="size-4 accent-[color:var(--accent)]"
+                        className="size-4 accent-[color:var(--accent-deep)]"
                         checked={Boolean(guestValues[index]?.needsTransport)}
                         onChange={(event) =>
                           setValue(
@@ -254,20 +273,20 @@ export function RsvpForm({
                           )
                         }
                       />
-                      <span className="text-sm">Usará el transporte (bus)</span>
+                      <span>Usará el transporte (bus)</span>
                     </label>
                     {errors.guests?.[index]?.needsTransport ? (
-                      <p className="text-sm text-red-700" role="alert">
+                      <p className="text-sm text-red-800" role="alert">
                         {errors.guests[index].needsTransport.message}
                       </p>
                     ) : null}
-                    <label className="grid gap-1.5 text-sm">
-                      <span className="text-muted">
+                    <label className="grid gap-2">
+                      <span className={fieldLabelClass}>
                         Restricciones alimentarias
                       </span>
                       <input
                         type="text"
-                        className="min-h-11 rounded-xl border border-[color:var(--ring)] bg-white/70 px-3 text-foreground outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                        className={inputClass}
                         placeholder="Opcional"
                         {...register(`guests.${index}.dietaryRestrictions`)}
                       />
@@ -279,42 +298,42 @@ export function RsvpForm({
           })}
         </div>
         {errors.guests?.message || errors.guests?.root?.message ? (
-          <p className="text-sm text-red-700" role="alert">
+          <p className="text-sm text-red-800" role="alert">
             {errors.guests.message ?? errors.guests.root?.message}
           </p>
         ) : null}
       </fieldset>
 
       <fieldset className="grid gap-4" disabled={!canSubmitRsvp || isPending}>
-        <legend className="text-sm font-semibold tracking-wide text-accent uppercase">
-          Contacto y mensaje
-        </legend>
-        <label className="grid gap-1.5 text-sm">
-          <span className="text-muted">Correo (opcional)</span>
+        <legend className={sectionLegendClass}>Contacto y mensaje</legend>
+        <label className="grid gap-2">
+          <span className={fieldLabelClass}>Correo (opcional)</span>
           <input
             type="email"
             autoComplete="email"
-            className="min-h-11 rounded-xl border border-[color:var(--ring)] bg-white/70 px-3 outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className={inputClass}
             {...register("contactEmail")}
           />
           {errors.contactEmail ? (
-            <span className="text-red-700">{errors.contactEmail.message}</span>
+            <span className="text-sm text-red-800">
+              {errors.contactEmail.message}
+            </span>
           ) : null}
         </label>
-        <label className="grid gap-1.5 text-sm">
-          <span className="text-muted">Teléfono (opcional)</span>
+        <label className="grid gap-2">
+          <span className={fieldLabelClass}>Teléfono (opcional)</span>
           <input
             type="tel"
             autoComplete="tel"
-            className="min-h-11 rounded-xl border border-[color:var(--ring)] bg-white/70 px-3 outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className={inputClass}
             {...register("contactPhone")}
           />
         </label>
-        <label className="grid gap-1.5 text-sm">
-          <span className="text-muted">Mensaje (opcional)</span>
+        <label className="grid gap-2">
+          <span className={fieldLabelClass}>Mensaje (opcional)</span>
           <textarea
             rows={4}
-            className="rounded-xl border border-[color:var(--ring)] bg-white/70 px-3 py-3 outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className={textareaClass}
             {...register("message")}
           />
         </label>
@@ -333,31 +352,36 @@ export function RsvpForm({
       </div>
 
       {formError ? (
-        <p className="text-sm text-red-700" role="alert">
+        <p className="text-center text-sm text-red-800" role="alert">
           {formError}
         </p>
       ) : null}
 
       {successMessage ? (
-        <p className="text-sm text-accent" role="status">
+        <p
+          className="text-center font-[family-name:var(--font-timer)] text-[clamp(1rem,2vw,1.25rem)] font-bold text-cover-cta-fg"
+          role="status"
+        >
           {successMessage}
         </p>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={!canSubmitRsvp || isPending}
-        className={cn(
-          "inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium tracking-wide text-foreground transition-opacity",
-          (!canSubmitRsvp || isPending) && "cursor-not-allowed opacity-60",
-        )}
-      >
-        {isPending
-          ? "Guardando..."
-          : existingRsvp
-            ? "Actualizar confirmación"
-            : "Enviar confirmación"}
-      </button>
+      <div className="flex justify-center pt-2">
+        <button
+          type="submit"
+          disabled={!canSubmitRsvp || isPending}
+          className={cn(
+            "inline-flex min-h-11 items-center justify-center rounded-full border-2 border-cover-cta-fg bg-accent px-8 py-4 font-[family-name:var(--font-timer)] text-[clamp(1.125rem,3vw,2rem)] leading-none text-cover-cta-fg transition-[transform,opacity] hover:opacity-90 focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none active:scale-[0.98] sm:min-h-14 sm:px-12 sm:py-6",
+            (!canSubmitRsvp || isPending) && "cursor-not-allowed opacity-60",
+          )}
+        >
+          {isPending
+            ? "Guardando..."
+            : existingRsvp
+              ? rsvp.updateCtaLabel
+              : rsvp.ctaLabel}
+        </button>
+      </div>
     </form>
   );
 }

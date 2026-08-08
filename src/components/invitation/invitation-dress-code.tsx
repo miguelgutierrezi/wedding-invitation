@@ -49,7 +49,10 @@ type GenderBlockProps = {
   inspirationLabel: string;
 };
 
-/** Shared column shell so ELLAS / ELLOS match width and alignment on narrow screens. */
+/**
+ * Centered content column: keeps title/list/CTA as one block so ultra-wide
+ * side columns do not pin the copy to the outer edges.
+ */
 function GenderBlock({
   title,
   items,
@@ -57,13 +60,18 @@ function GenderBlock({
   inspirationLabel,
 }: GenderBlockProps) {
   return (
-    <div className="mx-auto flex w-full max-w-md flex-col items-center gap-6 lg:mx-0 lg:max-w-none lg:items-stretch">
-      <h3 className="w-full text-center font-[family-name:var(--font-timer)] text-[clamp(1.125rem,2.4vw,1.75rem)] leading-8 font-bold">
-        {title}
-      </h3>
-      <GuidanceList items={items} />
-      <div className="flex w-full justify-center">
-        <InspirationCta href={inspirationHref}>{inspirationLabel}</InspirationCta>
+    <div className="flex h-full w-full justify-center">
+      <div className="flex h-full w-full max-w-[18rem] flex-col items-center gap-6 sm:max-w-xs xl:max-w-sm">
+        <h3 className="w-full text-center font-[family-name:var(--font-timer)] text-[clamp(1.125rem,2.4vw,1.75rem)] leading-8 font-bold">
+          {title}
+        </h3>
+        <GuidanceList items={items} />
+        {/* Stretch + mt-auto keeps both CTAs on the same baseline at lg+. */}
+        <div className="mt-auto flex w-full justify-center pt-2">
+          <InspirationCta href={inspirationHref}>
+            {inspirationLabel}
+          </InspirationCta>
+        </div>
       </div>
     </div>
   );
@@ -73,16 +81,17 @@ function DressCodePhoto({ className }: { className?: string }) {
   const src = weddingConfig.assets.dressCodePhoto;
   if (!src) return null;
 
+  // Natural art is ~745×1033; object-cover was cropping feet.
   return (
-    <div
-      className={`relative mx-auto aspect-[347/439] w-full max-w-xs overflow-hidden ${className ?? ""}`}
-    >
+    <div className={`mx-auto w-full max-w-xs ${className ?? ""}`}>
       <Image
         src={src}
         alt="Referencia de vestimenta formal elegante"
-        fill
-        className="object-cover object-top"
+        width={745}
+        height={1033}
+        className="h-auto w-full object-contain object-top"
         sizes="(max-width: 1024px) 80vw, 320px"
+        unoptimized
       />
     </div>
   );
@@ -90,7 +99,7 @@ function DressCodePhoto({ className }: { className?: string }) {
 
 /**
  * Dress code section (Figma Wireframe - 3): cream board, olive Times type,
- * ELLAS | foto | ELLOS on desktop; dress photo under subtitle on mobile/portrait tablet.
+ * ELLAS/ELLOS columns (ELLOS | foto | ELLAS on desktop); dress photo under subtitle on mobile/portrait tablet.
  */
 export function InvitationDressCode() {
   const { dressCode, assets } = weddingConfig;
@@ -98,9 +107,9 @@ export function InvitationDressCode() {
   return (
     <section
       aria-label={dressCode.title}
-      className="bg-cream-figma px-6 py-14 text-cover-cta-fg sm:px-10 sm:py-16 overflow-x-hidden"
+      className="overflow-x-hidden bg-cream-figma px-6 py-14 text-cover-cta-fg sm:px-10 sm:py-16"
     >
-      <div className="mx-auto flex w-full min-w-0 flex-col items-center">
+      <div className="mx-auto flex w-full min-w-0 max-w-6xl flex-col items-center">
         <h2 className="text-center font-[family-name:var(--font-timer)] text-[clamp(2.5rem,6vw,4rem)] leading-none font-bold">
           {dressCode.title}
         </h2>
@@ -115,23 +124,24 @@ export function InvitationDressCode() {
           {dressCode.description}
         </p>
 
-        {/* Desktop: 3 columns (ELLAS | foto | ELLOS). Mobile: women then men. */}
-        <div className="mt-12 grid w-full min-w-0 max-w-full gap-10 lg:grid-cols-[1fr_minmax(0,20rem)_1fr] lg:items-start lg:gap-8 [&>*]:min-w-0">
-          <GenderBlock
-            title={dressCode.women.title}
-            items={dressCode.women.items}
-            inspirationHref={dressCode.inspirationUrls.women}
-            inspirationLabel={dressCode.inspirationLabel}
-          />
-
-          <div className="hidden w-full max-w-none lg:block">
-            <DressCodePhoto className="max-w-none" />
-          </div>
-
+        {/* Desktop: 3 columns (ELLOS | foto | ELLAS). Mobile: men then women.
+            Capped width + centered blocks keep side copy near the photo. */}
+        <div className="mt-12 grid w-full min-w-0 max-w-5xl gap-10 lg:grid-cols-[1fr_minmax(0,16rem)_1fr] lg:items-stretch lg:gap-6 xl:max-w-6xl xl:gap-10 [&>*]:min-w-0">
           <GenderBlock
             title={dressCode.men.title}
             items={dressCode.men.items}
             inspirationHref={dressCode.inspirationUrls.men}
+            inspirationLabel={dressCode.inspirationLabel}
+          />
+
+          <div className="hidden w-full self-start lg:block">
+            <DressCodePhoto className="max-w-none" />
+          </div>
+
+          <GenderBlock
+            title={dressCode.women.title}
+            items={dressCode.women.items}
+            inspirationHref={dressCode.inspirationUrls.women}
             inspirationLabel={dressCode.inspirationLabel}
           />
         </div>
@@ -142,14 +152,14 @@ export function InvitationDressCode() {
               <p className="font-[family-name:var(--font-timer)] text-[clamp(1.125rem,2.4vw,1.75rem)] leading-8 font-bold">
                 {dressCode.allowedPaletteTitle}
               </p>
-              <div className="mt-5 w-full">
+              <div className="mx-auto mt-5 w-full max-w-md sm:max-w-lg md:max-w-xl">
                 <Image
                   src={assets.allowedPaletteImage}
                   alt="Paleta de colores sugeridos para el código de vestimenta"
                   width={1228}
                   height={118}
                   className="mx-auto h-auto w-full object-contain"
-                  sizes="(max-width: 1024px) 100vw, 64rem"
+                  sizes="(max-width: 640px) 90vw, (max-width: 768px) 32rem, 36rem"
                 />
               </div>
             </div>
@@ -166,14 +176,16 @@ export function InvitationDressCode() {
                 </p>
               ) : null}
               {assets.forbiddenPaletteImage ? (
-                <Image
-                  src={assets.forbiddenPaletteImage}
-                  alt="Paleta de colores no permitidos en el código de vestimenta"
-                  width={1167}
-                  height={81}
-                  className="mx-auto h-auto w-full object-contain"
-                  sizes="(max-width: 1024px) 100vw, 64rem"
-                />
+                <div className="mx-auto w-full max-w-md sm:max-w-lg md:max-w-xl">
+                  <Image
+                    src={assets.forbiddenPaletteImage}
+                    alt="Paleta de colores no permitidos en el código de vestimenta"
+                    width={1167}
+                    height={81}
+                    className="mx-auto h-auto w-full object-contain"
+                    sizes="(max-width: 640px) 90vw, (max-width: 768px) 32rem, 36rem"
+                  />
+                </div>
               ) : null}
             </div>
           ) : null}

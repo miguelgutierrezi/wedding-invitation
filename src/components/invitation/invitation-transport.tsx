@@ -2,20 +2,31 @@ import Image from "next/image";
 
 import { weddingConfig } from "@/config/wedding";
 
+const CHIVA_WIDTH = 1081;
+const CHIVA_HEIGHT = 1087;
+
 function TransportBusPhoto({ className }: { className?: string }) {
   const { assets } = weddingConfig;
   if (!assets.busPhoto) return null;
 
   return (
     <div
-      className={`relative aspect-[509/286] w-full max-w-lg overflow-hidden ${className ?? ""}`}
+      className={[
+        // Mobile: modest width. Desktop: fixed 20rem box (chiva is square).
+        "mx-auto w-full max-w-[16rem] shrink-0 lg:max-w-[20rem] lg:w-[20rem]",
+        className ?? "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
       <Image
         src={assets.busPhoto}
-        alt="Autobús del transporte para invitados"
-        fill
-        className="object-cover"
-        sizes="(max-width: 1024px) 100vw, 509px"
+        alt="Chiva del transporte para invitados"
+        width={CHIVA_WIDTH}
+        height={CHIVA_HEIGHT}
+        className="mx-auto h-auto w-full object-contain"
+        sizes="(max-width: 1023px) 16rem, 20rem"
+        unoptimized
         priority={false}
       />
     </div>
@@ -26,6 +37,7 @@ function TransportBusPhoto({ className }: { className?: string }) {
  * Transport section (Figma Wireframe - 1): brand yellow, Times white type.
  * Desktop: intro + bus left, details right.
  * Mobile / tablet portrait: intro → details → bus last.
+ * Content capped so large screens keep the two columns close.
  */
 export function InvitationTransport() {
   const { transport } = weddingConfig;
@@ -33,9 +45,9 @@ export function InvitationTransport() {
   return (
     <section
       aria-label={transport.title}
-      className="bg-accent px-6 py-16 text-white sm:px-10 sm:py-20 overflow-x-hidden"
+      className="overflow-x-hidden bg-accent px-6 py-16 text-white sm:px-10 sm:py-20"
     >
-      <div className="mx-auto grid w-full min-w-0 max-w-full gap-12 lg:grid-cols-2 lg:items-start lg:gap-16 [&>*]:min-w-0">
+      <div className="mx-auto grid w-full min-w-0 max-w-5xl gap-12 lg:max-w-6xl lg:grid-cols-2 lg:items-start lg:gap-12 xl:gap-16 [&>*]:min-w-0">
         <div className="flex flex-col items-center text-center">
           <h2 className="font-[family-name:var(--font-timer)] text-[clamp(2.5rem,6vw,4rem)] leading-none font-bold">
             {transport.title}
@@ -45,11 +57,11 @@ export function InvitationTransport() {
             {transport.body}
           </p>
 
-          {/* Desktop / landscape: bus under the intro (left column). */}
+          {/* Desktop: bus under the intro (left column). */}
           <TransportBusPhoto className="mt-10 hidden lg:block" />
         </div>
 
-        <div className="min-w-0 font-[family-name:var(--font-timer)] text-[clamp(1.0625rem,2.2vw,1.75rem)] leading-8 break-words text-white">
+        <div className="min-w-0 break-words font-[family-name:var(--font-timer)] text-[clamp(1.0625rem,2.2vw,1.75rem)] leading-8 text-white">
           <div className="space-y-6">
             {transport.meetingPoints.map((point) => (
               <div key={point.title}>

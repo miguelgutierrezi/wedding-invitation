@@ -87,7 +87,7 @@ export const weddingConfig = {
     men: {
       title: "ELLOS",
       items: [
-        "Traje formal completo sin chaleco (preferiblemente oscuro)",
+        "Traje formal completo sin chaleco",
         "Corbata",
         "Calzado formal (por favor no tenis)",
         "Accesorios al gusto",
@@ -109,17 +109,22 @@ export const weddingConfig = {
     title: "Mesa de regalos",
     subtitle: "Lluvia de sobres",
     description:
-      "Tu presencia es nuestro mejor regalo. Si deseas hacernos un detalle, preferimos lluvia de sobres.",
+      "Su presencia es nuestro mejor regalo. Si desean hacernos un presente adicional para comenzar este nuevo capítulo, contaremos con lluvia de sobres el día del evento",
   },
   rsvp: {
-    title: "Confirmación de asistencia",
-    intro:
-      "Confirma tu asistencia con anticipación. Los cupos están reservados únicamente para las personas invitadas.",
+    title: "Confirmación de asistencia y pases asignados",
+    deadlinePrefix: "Fecha límite para confirmar",
+    seatsNote:
+      "Cupos: Reservados estrictamente para las personas indicadas en esta invitación.",
+    extraNote:
+      "Agradecemos no asistir con personas adicionales, ya que el evento no cuenta con disponibilidad para pases extra. ¡Esperamos celebrar juntos!",
     ctaLabel: "Confirmar asistencia",
+    updateCtaLabel: "Actualizar confirmación",
   },
   footer: {
     message: "Esperamos contar con tu compañía",
-    closing: "¡Nos vemos pronto!",
+    /** `{date}` is replaced with the event date label. */
+    closingTemplate: "¡Nos vemos el {date}!",
   },
   copy: {
     tagline: "Nos casamos",
@@ -135,19 +140,20 @@ export const weddingConfig = {
     heroPhoto: "/invitation/Boda 3.jpg",
     venueBackground: "/invitation/Boda 19.jpg",
     couplePhoto: "/invitation/Imagen recortada.png",
-    busPhoto: "/invitation/bus.png",
+    busPhoto: "/invitation/chiva.png",
     gallery: [
       // First pair always (Figma / product request).
       "/invitation/Boda 10.jpg",
       "/invitation/Boda 15.jpg",
-      // Remaining Boda photos (excludes 3, 10, 15, 22).
+      // Remaining Boda photos (excludes 3, 8, 10, 15, 22).
       "/invitation/Boda 1.jpg",
       "/invitation/Boda 2.jpg",
       "/invitation/Boda 4.jpg",
       "/invitation/Boda 5.jpg",
       "/invitation/Boda 6.jpg",
       "/invitation/Boda 7.jpg",
-      "/invitation/Boda 8.jpg",
+      // 23 occupies former slot of 8; 8 is not shown in the carousel.
+      "/invitation/Boda 23.jpg",
       "/invitation/Boda 9.jpg",
       "/invitation/Boda 11.jpg",
       "/invitation/Boda 12.jpg",
@@ -159,7 +165,6 @@ export const weddingConfig = {
       "/invitation/Boda 20.jpg",
       "/invitation/Boda 21.jpg",
       "/invitation/Boda 19.jpg",
-      "/invitation/Boda 23.jpg",
     ] as const,
     footerBackground: "/invitation/Nychol & Migue.png",
     dressCodePhoto: "/invitation/cabezas.png",

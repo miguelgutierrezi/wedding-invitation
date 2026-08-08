@@ -11,6 +11,7 @@ type InvitationVenueProps = {
 /**
  * Venue band (Figma Desktop - 2): cream Times copy on photo + gray pill CTA.
  * Background photo comes from config; styles only match Figma tokens.
+ * Content is capped and centered so large viewports don't pin copy/CTA to far edges.
  */
 export function InvitationVenue({
   venueName,
@@ -21,7 +22,7 @@ export function InvitationVenue({
   const { venue, assets } = weddingConfig;
 
   const ctaClassName =
-    "inline-flex min-h-11 items-center justify-center rounded-full bg-cover-cta-bg px-8 py-4 font-[family-name:var(--font-timer)] text-[clamp(1.125rem,3.2vw,2.5rem)] leading-none text-cover-cta-fg transition-[transform,background-color] hover:bg-[#d8d8d8] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-transparent focus-visible:outline-none active:scale-[0.98] sm:min-h-14 sm:px-12 sm:py-8";
+    "inline-flex min-h-11 shrink-0 items-center justify-center rounded-full bg-cover-cta-bg px-8 py-4 font-[family-name:var(--font-timer)] text-[clamp(1.125rem,3.2vw,2.5rem)] leading-none text-cover-cta-fg transition-[transform,background-color] hover:bg-[#d8d8d8] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-transparent focus-visible:outline-none active:scale-[0.98] sm:min-h-14 sm:px-12 sm:py-8";
 
   return (
     <section aria-label={venue.title} className="relative">
@@ -32,8 +33,8 @@ export function InvitationVenue({
         overlayClassName="forest-overlay"
         label="Fondo lugar"
       >
-        <div className="relative z-10 mx-auto flex w-full min-w-0 flex-col items-center justify-between gap-10 text-center md:flex-row md:gap-12">
-          <p className="max-w-full min-w-0 break-words font-[family-name:var(--font-timer)] text-[clamp(1.25rem,3.5vw,2.5rem)] leading-snug font-normal text-cream-figma text-center md:max-w-xl">
+        <div className="relative z-10 mx-auto flex w-full min-w-0 max-w-4xl flex-col items-center justify-center gap-8 text-center md:flex-row md:gap-10 lg:max-w-5xl lg:gap-14 xl:max-w-6xl">
+          <p className="min-w-0 max-w-xl break-words text-center font-[family-name:var(--font-timer)] text-[clamp(1.25rem,3.5vw,2.5rem)] leading-snug font-normal text-cream-figma md:text-left">
             <span className="block">
               Lugar: {venueName}
               {venueAddress ? ` ${venueAddress}` : null}

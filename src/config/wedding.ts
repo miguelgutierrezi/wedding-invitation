@@ -74,23 +74,36 @@ export const weddingConfig = {
   dressCode: {
     title: "Código de vestimenta",
     subtitle: "FORMAL ELEGANTE",
-    description: "Detalles del código de vestimenta por definir.",
+    description:
+      "Queremos que todos luzcan espectaculares y muy elegantes en nuestro gran día. Por favor tener en cuenta las siguientes recomendaciones para tu vestuario:",
     women: {
-      title: "Ellas",
-      guidance: "Vestido largo o formal elegante.",
+      title: "ELLAS",
+      items: [
+        "Vestido formal largo sin estampados",
+        "Tacones o sandalias (recomendamos tacón ancho para poder caminar en zonas verdes)",
+        "Accesorios al gusto",
+      ],
     },
     men: {
-      title: "Ellos",
-      guidance: "Traje completo formal.",
+      title: "ELLOS",
+      items: [
+        "Traje formal completo (preferiblemente oscuro)",
+        "Corbata",
+        "Calzado formal (por favor no tenis)",
+        "Accesorios al gusto",
+      ],
     },
     inspirationLabel: "Ver Inspiración",
     inspirationUrls: {
       women: "",
       men: "",
     },
-    allowedPalette: [] as string[],
-    /** Empty when using assets.forbiddenPaletteImage from Canva export. */
-    forbiddenPalette: [] as string[],
+    allowedPaletteTitle: "PALETA DE COLORES SUGERIDOS",
+    forbiddenTitle: "NO PERMITIDO:",
+    forbiddenDescription:
+      "Por logística e imagen del evento, la siguiente paleta de colores está totalmente reservada:\nBlanco / Beige / Crema / Marfil / Plateado / Pasteles ultra claros / Verde en cualquier tonalidad",
+    closingNote:
+      "Agradecemos enormemente tu cariño y comprensión al elegir tu vestuario dentro de los tonos permitidos. Para cuidar cada detalle de nuestra celebración, te pedimos respetar esta paleta, ya que el cumplimiento del dress code será indispensable para acompañarnos este día.",
   },
   gifts: {
     title: "Mesa de regalos",
@@ -121,7 +134,7 @@ export const weddingConfig = {
     coverBackground: "/invitation/Nychol & Migue.png",
     heroPhoto: "/invitation/Boda 3.jpg",
     venueBackground: "/invitation/Boda 19.jpg",
-    couplePhoto: "/invitation/Boda 3.jpg",
+    couplePhoto: "/invitation/Imagen recortada.png",
     busPhoto: "/invitation/bus.png",
     gallery: [
       "/invitation/Boda 4.jpg",
@@ -132,6 +145,7 @@ export const weddingConfig = {
       "/invitation/Boda 9.jpg",
     ] as const,
     footerBackground: "/invitation/Nychol & Migue.png",
+    dressCodePhoto: "/invitation/vestido.png",
     allowedPaletteImage: "/invitation/paleta sugerida.png",
     forbiddenPaletteImage: "/invitation/paleta colores.png",
   },

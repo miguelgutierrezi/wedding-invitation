@@ -1,16 +1,28 @@
-import { weddingConfig } from "@/config/wedding";
-import { MediaFrame } from "@/components/invitation/media-frame";
+import Image from "next/image";
 
+import { weddingConfig } from "@/config/wedding";
+
+/**
+ * Full-width couple photo (Figma Wireframe - 2).
+ * Uses a pre-masked PNG so torn/cropped edges render without CSS clipping.
+ */
 export function InvitationCouplePhoto() {
   const { couple, assets } = weddingConfig;
 
+  if (!assets.couplePhoto) {
+    return null;
+  }
+
   return (
-    <section aria-label="Foto de la pareja" className="bg-cream">
-      <MediaFrame
-        src={assets.couplePhoto || undefined}
+    <section aria-label="Foto de la pareja" className="w-full">
+      <Image
+        src={assets.couplePhoto}
         alt={`${couple.partnerOne} y ${couple.partnerTwo}`}
-        className="mx-auto aspect-[4/5] w-full max-w-lg sm:aspect-[5/6]"
-        label="Foto pareja"
+        width={1954}
+        height={1208}
+        className="block h-auto w-full"
+        sizes="100vw"
+        priority={false}
       />
     </section>
   );

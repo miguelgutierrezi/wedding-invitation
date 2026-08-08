@@ -10,10 +10,10 @@ type MediaFrameProps = {
   children?: ReactNode;
   label?: string;
   /**
-   * CSS background-position. Use "center top" when faces/heads sit near the top
-   * of the photo and must stay visible under object-fit: cover.
+   * CSS background-position, or `false` to let a class control it responsively
+   * (inline styles would override media-query utilities).
    */
-  backgroundPosition?: string;
+  backgroundPosition?: string | false;
 };
 
 /** Encode each path segment so spaces and & work in CSS url("..."). */
@@ -54,7 +54,9 @@ export function MediaFrame({
           ? {
               backgroundImage: toCssBackgroundUrl(src),
               backgroundSize: "cover",
-              backgroundPosition,
+              ...(backgroundPosition === false
+                ? {}
+                : { backgroundPosition }),
             }
           : undefined
       }

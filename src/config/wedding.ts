@@ -20,9 +20,9 @@ export const weddingConfig = {
     rsvpDeadlineLabel: "4 de septiembre de 2026",
   },
   ceremony: {
-    name: "Lugar de la ceremonia",
-    address: "Lugar por definir",
-    timeLabel: "Hora por definir",
+    name: "Hacienda Montecano",
+    address: "km 2.5 a 3 de la vía Subachoque - El Rosal",
+    timeLabel: "3pm",
     mapsUrl: "",
     wazeUrl: "",
   },

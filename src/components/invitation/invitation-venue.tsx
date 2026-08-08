@@ -8,6 +8,10 @@ type InvitationVenueProps = {
   mapsUrl: string;
 };
 
+/**
+ * Venue band (Figma Desktop - 2): cream Times copy on photo + gray pill CTA.
+ * Background photo comes from config; styles only match Figma tokens.
+ */
 export function InvitationVenue({
   venueName,
   venueAddress,
@@ -16,42 +20,41 @@ export function InvitationVenue({
 }: InvitationVenueProps) {
   const { venue, assets } = weddingConfig;
 
+  const ctaClassName =
+    "inline-flex min-h-11 items-center justify-center rounded-full bg-cover-cta-bg px-8 py-4 font-[family-name:var(--font-timer)] text-[clamp(1.125rem,3.2vw,2.5rem)] leading-none text-cover-cta-fg transition-[transform,background-color] hover:bg-[#d8d8d8] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-transparent focus-visible:outline-none active:scale-[0.98] sm:min-h-14 sm:px-12 sm:py-8";
+
   return (
     <section aria-label={venue.title} className="relative">
       <MediaFrame
         src={assets.venueBackground || undefined}
         alt="Fondo del lugar del evento"
-        className="px-6 py-16 sm:px-10 sm:py-20"
+        className="flex min-h-[17.6875rem] items-center px-6 py-12 sm:px-10 sm:py-14 md:px-14"
         overlayClassName="forest-overlay"
         label="Fondo lugar"
       >
-        <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center gap-8 text-center text-on-dark md:flex-row md:items-center md:justify-between md:text-left">
-          <div className="max-w-md space-y-3">
-            <p className="text-xs font-medium tracking-[0.22em] text-gold-soft uppercase">
-              {venue.title}
-            </p>
-            <h2 className="font-[family-name:var(--font-display)] text-3xl font-medium text-on-dark sm:text-4xl">
-              {venueName}
-            </h2>
-            <p className="text-sm leading-relaxed text-on-dark/90 sm:text-base">
-              {venueAddress}
-            </p>
-            <p className="text-sm font-medium tracking-wide text-gold-soft uppercase">
-              {timeLabel}
-            </p>
-          </div>
+        <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-10 text-center md:flex-row md:gap-12">
+          <p className="max-w-xl font-[family-name:var(--font-timer)] text-[clamp(1.25rem,3.5vw,2.5rem)] leading-snug font-normal text-cream-figma text-center">
+            <span className="block">
+              Lugar: {venueName}
+              {venueAddress ? ` ${venueAddress}` : null}
+            </span>
+            <span className="mt-2 block sm:mt-3">Hora: {timeLabel}</span>
+          </p>
 
           {mapsUrl ? (
             <a
               href={mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-12 min-w-[11rem] items-center justify-center rounded-full border border-forest/30 bg-cream/95 px-7 text-sm font-medium text-accent-deep transition-colors hover:bg-cream focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none"
+              className={ctaClassName}
             >
               {venue.mapsCtaLabel}
             </a>
           ) : (
-            <span className="inline-flex min-h-12 min-w-[11rem] items-center justify-center rounded-full border border-on-dark/30 bg-on-dark/10 px-7 text-sm font-medium text-on-dark/80">
+            <span
+              className={`${ctaClassName} cursor-not-allowed opacity-80`}
+              aria-disabled="true"
+            >
               {venue.mapsCtaLabel}
             </span>
           )}

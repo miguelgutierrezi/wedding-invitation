@@ -27,9 +27,9 @@ export function InvitationHero({
       <MediaFrame
         src={assets.heroPhoto || undefined}
         alt={`${partnerOneName} y ${partnerTwoName}`}
-        className="flex min-h-[min(100dvh,56rem)] items-center justify-center px-6 py-20 sm:min-h-[56.25rem] sm:px-10 sm:py-24"
+        className="hero-photo flex min-h-[min(100dvh,56rem)] items-center justify-center px-6 py-20 sm:min-h-[56.25rem] sm:px-10 sm:py-24"
         overlayClassName="hero-overlay"
-        backgroundPosition="center top"
+        backgroundPosition={false}
         label="Foto hero"
       >
         <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center text-center">

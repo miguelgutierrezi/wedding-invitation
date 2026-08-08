@@ -136,6 +136,26 @@ body {
     linear-gradient(180deg, rgba(12, 18, 14, 0.15) 0%, rgba(12, 18, 14, 0.28) 55%, rgba(12, 18, 14, 0.42) 100%);
 }
 
+/*
+ * Hero crop: pin to top. Phone/portrait tablet: mild right focus so faces
+ * stay in frame (cover). Raise % → more right; lower % → more center/left.
+ */
+.hero-photo {
+  background-position: 53.5% top;
+}
+
+@media (min-width: 640px) and (orientation: portrait) {
+  .hero-photo {
+    background-position: 52.5% top;
+  }
+}
+
+@media (min-width: 1024px), (orientation: landscape) {
+  .hero-photo {
+    background-position: center top;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

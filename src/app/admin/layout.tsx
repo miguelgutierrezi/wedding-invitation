@@ -16,6 +16,8 @@ export default function AdminRootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex min-h-full flex-1 flex-col bg-cream-deep">{children}</div>
+    <div className="page-shell flex min-h-full flex-1 flex-col bg-cream-deep">
+      {children}
+    </div>
   );
 }

@@ -30,6 +30,8 @@
   --cover-cta-fg: #454411;
   /* Figma countdown numbers */
   --countdown-number: #111827;
+  /* Figma gallery carousel dots */
+  --gallery-dot: #4a5d2a;
   --photo-placeholder: #2a332c;
 }
 
@@ -52,6 +54,7 @@
   --color-cover-cta-bg: var(--cover-cta-bg);
   --color-cover-cta-fg: var(--cover-cta-fg);
   --color-countdown-number: var(--countdown-number);
+  --color-gallery-dot: var(--gallery-dot);
   --color-photo-placeholder: var(--photo-placeholder);
   --font-sans: var(--font-body);
   --font-display: var(--font-display);
@@ -60,10 +63,40 @@
   --font-timer: var(--font-timer-stack);
 }
 
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Prevent common media / flex / grid overflow on mobile */
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+/* next/image with fill must not inherit max-width:100% constraints wrongly */
+img[data-nimg="fill"] {
+  max-width: none;
+}
+
+.page-shell {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
 }
 
 /* Decorative torn-paper edge at section boundaries */
@@ -153,6 +186,96 @@ body {
 @media (min-width: 1024px), (orientation: landscape) {
   .hero-photo {
     background-position: center top;
+  }
+}
+
+/* Full-width swipe transition between gallery buffers. */
+@keyframes gallery-swipe-in-next {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes gallery-swipe-out-next {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes gallery-swipe-in-prev {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes gallery-swipe-out-prev {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.gallery-swipe-in-next {
+  animation: gallery-swipe-in-next 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.gallery-swipe-out-next {
+  animation: gallery-swipe-out-next 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.gallery-swipe-in-prev {
+  animation: gallery-swipe-in-prev 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.gallery-swipe-out-prev {
+  animation: gallery-swipe-out-prev 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/*
+ * Mobile: full device width, pinned to top (no green gap above).
+ * Cap height to viewport; do not stretch short images.
+ */
+.gallery-slide-photo {
+  display: block;
+  object-fit: contain;
+  object-position: top center;
+}
+
+.gallery-slide-photo--mobile {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  max-height: 100svh;
+  max-height: 100dvh;
+}
+
+.gallery-slide-photo--desktop {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  max-height: 100svh;
+  max-height: 100dvh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-swipe-in-next,
+  .gallery-swipe-out-next,
+  .gallery-swipe-in-prev,
+  .gallery-swipe-out-prev,
+  .gallery-slide-advance-next,
+  .gallery-slide-advance-prev {
+    animation: none;
   }
 }
 

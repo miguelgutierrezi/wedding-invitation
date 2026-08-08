@@ -15,7 +15,7 @@ export async function AdminShell({ children, title }: AdminShellProps) {
   return (
     <>
       <header className="border-b border-[color:var(--ring)] bg-cream/90 backdrop-blur-sm">
-        <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto flex w-full min-w-0 flex-col gap-4 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-medium tracking-[0.18em] text-muted uppercase">
               Administración
@@ -66,7 +66,7 @@ export async function AdminShell({ children, title }: AdminShellProps) {
           </nav>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">
+      <main className="mx-auto w-full min-w-0 flex-1 px-6 py-10">
         {children}
       </main>
     </>

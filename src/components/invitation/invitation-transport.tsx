@@ -33,9 +33,9 @@ export function InvitationTransport() {
   return (
     <section
       aria-label={transport.title}
-      className="bg-accent px-6 py-16 text-white sm:px-10 sm:py-20"
+      className="bg-accent px-6 py-16 text-white sm:px-10 sm:py-20 overflow-x-hidden"
     >
-      <div className="mx-auto grid w-full max-w-6xl gap-12 lg:grid-cols-2 lg:items-start lg:gap-16">
+      <div className="mx-auto grid w-full min-w-0 max-w-full gap-12 lg:grid-cols-2 lg:items-start lg:gap-16 [&>*]:min-w-0">
         <div className="flex flex-col items-center text-center">
           <h2 className="font-[family-name:var(--font-timer)] text-[clamp(2.5rem,6vw,4rem)] leading-none font-bold">
             {transport.title}
@@ -49,7 +49,7 @@ export function InvitationTransport() {
           <TransportBusPhoto className="mt-10 hidden lg:block" />
         </div>
 
-        <div className="font-[family-name:var(--font-timer)] text-[clamp(1.0625rem,2.2vw,1.75rem)] leading-8 text-white">
+        <div className="min-w-0 font-[family-name:var(--font-timer)] text-[clamp(1.0625rem,2.2vw,1.75rem)] leading-8 break-words text-white">
           <div className="space-y-6">
             {transport.meetingPoints.map((point) => (
               <div key={point.title}>

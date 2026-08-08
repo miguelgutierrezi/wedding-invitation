@@ -90,7 +90,7 @@ export function InvitationCountdown({ targetDate }: InvitationCountdownProps) {
       </p>
 
       <div
-        className="mt-6 flex w-full max-w-5xl flex-wrap items-center justify-center gap-x-4 gap-y-6 sm:mt-8 sm:gap-x-12"
+        className="mt-6 flex w-full min-w-0 max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-6 px-1 sm:mt-8 sm:gap-x-12"
         role="timer"
         aria-live="polite"
         aria-atomic="true"
@@ -106,8 +106,8 @@ export function InvitationCountdown({ targetDate }: InvitationCountdownProps) {
               </span>
             ) : null}
 
-            <div className="flex min-w-[4.5rem] flex-col items-center gap-2 sm:min-w-[5.5rem]">
-              <p className="font-[family-name:var(--font-timer)] text-[clamp(2.5rem,8vw,5rem)] leading-none font-normal tabular-nums text-countdown-number">
+            <div className="flex min-w-0 basis-[4.5rem] flex-col items-center gap-2 sm:basis-[5.5rem]">
+              <p className="font-[family-name:var(--font-timer)] text-[clamp(2rem,7vw,5rem)] leading-none font-normal tabular-nums text-countdown-number">
                 {unit.value}
               </p>
               <p className="font-[family-name:var(--font-timer)] text-[clamp(0.75rem,2vw,1.25rem)] leading-none font-normal tracking-[0.02em] text-countdown-number">

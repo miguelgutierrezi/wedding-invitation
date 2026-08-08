@@ -14,13 +14,13 @@ export function InvitationCouplePhoto() {
   }
 
   return (
-    <section aria-label="Foto de la pareja" className="w-full">
+    <section aria-label="Foto de la pareja" className="w-full max-w-full overflow-x-hidden">
       <Image
         src={assets.couplePhoto}
         alt={`${couple.partnerOne} y ${couple.partnerTwo}`}
         width={1954}
         height={1208}
-        className="block h-auto w-full"
+        className="block h-auto w-full max-w-full"
         sizes="100vw"
         priority={false}
       />

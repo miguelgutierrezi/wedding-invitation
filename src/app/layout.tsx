@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Allura, Cormorant_Garamond, Source_Sans_3, Vollkorn } from "next/font/google";
 
 import { weddingConfig } from "@/config/wedding";
@@ -42,6 +42,12 @@ export const metadata: Metadata = {
     "Invitación digital. Consulta los detalles del matrimonio y confirma tu asistencia.",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -50,9 +56,9 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${displayFont.variable} ${scriptFont.variable} ${coverSerifFont.variable} ${bodyFont.variable} h-full antialiased`}
+      className={`${displayFont.variable} ${scriptFont.variable} ${coverSerifFont.variable} ${bodyFont.variable} h-full w-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-background text-foreground">
+      <body className="page-shell flex min-h-full flex-col bg-background text-foreground">
         {children}
       </body>
     </html>

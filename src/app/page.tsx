@@ -6,13 +6,13 @@ export default function HomePage() {
   const { couple, event, copy } = weddingConfig;
 
   return (
-    <div className="relative flex flex-1 flex-col overflow-hidden">
+    <div className="page-shell relative flex flex-1 flex-col">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(61,90,76,0.14),_transparent_55%),radial-gradient(ellipse_at_bottom_right,_rgba(31,42,36,0.08),_transparent_50%)]"
       />
 
-      <main className="relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center px-6 py-16 sm:px-10 sm:py-24">
+      <main className="relative z-10 mx-auto flex w-full min-w-0 flex-1 flex-col justify-center px-6 py-16 sm:px-10 sm:py-24">
         <p className="text-sm font-medium tracking-[0.22em] text-accent uppercase">
           {copy.tagline}
         </p>

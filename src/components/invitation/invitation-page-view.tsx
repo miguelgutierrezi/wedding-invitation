@@ -57,7 +57,7 @@ export function InvitationPageView({
     formatShortDeadline(event.rsvpDeadline, event.timezone);
 
   return (
-    <div className="flex min-h-full flex-1 flex-col bg-background">
+    <div className="page-shell flex min-h-full flex-1 flex-col bg-background">
       <InvitationHero
         partnerOneName={event.partnerOneName}
         partnerTwoName={event.partnerTwoName}

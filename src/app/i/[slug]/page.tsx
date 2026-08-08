@@ -31,7 +31,7 @@ export default async function InvitationCoverPage({ params }: CoverPageProps) {
   }
 
   return (
-    <div className="flex min-h-full flex-1 flex-col">
+    <div className="page-shell flex min-h-full flex-1 flex-col">
       <InvitationCover
         displayName={invitation.displayName}
         slug={invitation.invitationSlug}

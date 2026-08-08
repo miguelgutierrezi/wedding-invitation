@@ -28,12 +28,12 @@ export function InvitationVenue({
       <MediaFrame
         src={assets.venueBackground || undefined}
         alt="Fondo del lugar del evento"
-        className="flex min-h-[17.6875rem] items-center px-6 py-12 sm:px-10 sm:py-14 md:px-14"
+        className="flex min-h-[17.6875rem] w-full max-w-full items-center overflow-x-hidden px-6 py-12 sm:px-10 sm:py-14 md:px-14"
         overlayClassName="forest-overlay"
         label="Fondo lugar"
       >
-        <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-10 text-center md:flex-row md:gap-12">
-          <p className="max-w-xl font-[family-name:var(--font-timer)] text-[clamp(1.25rem,3.5vw,2.5rem)] leading-snug font-normal text-cream-figma text-center">
+        <div className="relative z-10 mx-auto flex w-full min-w-0 flex-col items-center justify-between gap-10 text-center md:flex-row md:gap-12">
+          <p className="max-w-full min-w-0 break-words font-[family-name:var(--font-timer)] text-[clamp(1.25rem,3.5vw,2.5rem)] leading-snug font-normal text-cream-figma text-center md:max-w-xl">
             <span className="block">
               Lugar: {venueName}
               {venueAddress ? ` ${venueAddress}` : null}

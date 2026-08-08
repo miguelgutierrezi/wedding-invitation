@@ -17,7 +17,7 @@ export default async function AdminLoginPage({
       : "/admin";
 
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-6 py-16">
+    <main className="mx-auto flex w-full min-w-0 flex-1 flex-col justify-center px-6 py-16 sm:max-w-md">
       <p className="text-xs font-medium tracking-[0.18em] text-muted uppercase">
         Panel privado
       </p>

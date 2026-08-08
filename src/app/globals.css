@@ -9,6 +9,8 @@
   --accent: #beb950;
   --accent-deep: #9a9638;
   --cream: #f5f0e6;
+  /* Figma section / date chip cream */
+  --cream-figma: #f5f5dc;
   --cream-deep: #ebe4d6;
   --gold: #beb950;
   --gold-soft: #d4ce70;
@@ -26,6 +28,8 @@
   /* Figma cover CTA */
   --cover-cta-bg: #cfcfcf;
   --cover-cta-fg: #454411;
+  /* Figma countdown numbers */
+  --countdown-number: #111827;
   --photo-placeholder: #2a332c;
 }
 
@@ -36,6 +40,7 @@
   --color-accent: var(--accent);
   --color-accent-deep: var(--accent-deep);
   --color-cream: var(--cream);
+  --color-cream-figma: var(--cream-figma);
   --color-cream-deep: var(--cream-deep);
   --color-gold: var(--gold);
   --color-gold-soft: var(--gold-soft);
@@ -46,6 +51,7 @@
   --color-on-dark-label: var(--on-dark-label);
   --color-cover-cta-bg: var(--cover-cta-bg);
   --color-cover-cta-fg: var(--cover-cta-fg);
+  --color-countdown-number: var(--countdown-number);
   --color-photo-placeholder: var(--photo-placeholder);
   --font-sans: var(--font-body);
   --font-display: var(--font-display);
@@ -122,6 +128,12 @@ body {
   background:
     linear-gradient(180deg, rgba(8, 12, 10, 0.22) 0%, rgba(8, 12, 10, 0.32) 50%, rgba(8, 12, 10, 0.48) 100%),
     radial-gradient(ellipse at 50% 40%, transparent 0%, rgba(8, 12, 10, 0.28) 100%);
+}
+
+/* Hero: light vignette so brand yellow type stays readable on photo. */
+.hero-overlay {
+  background:
+    linear-gradient(180deg, rgba(12, 18, 14, 0.15) 0%, rgba(12, 18, 14, 0.28) 55%, rgba(12, 18, 14, 0.42) 100%);
 }
 
 @media (prefers-reduced-motion: reduce) {

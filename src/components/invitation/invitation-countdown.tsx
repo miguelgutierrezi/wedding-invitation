@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { Fragment, useSyncExternalStore } from "react";
 
 type InvitationCountdownProps = {
   targetDate: string;
@@ -50,8 +50,7 @@ function getServerNow(): number {
 }
 
 /**
- * Full-bleed Canva-style timer: numbers fill nearly the width; title uses
- * Canva olive-gold (#beb950) and Times New Roman.
+ * Countdown band (Figma Desktop - 1): cream #F5F5DC, Times, “Faltan” in brand yellow.
  */
 export function InvitationCountdown({ targetDate }: InvitationCountdownProps) {
   const nowMs = useSyncExternalStore(
@@ -65,9 +64,9 @@ export function InvitationCountdown({ targetDate }: InvitationCountdownProps) {
     return (
       <section
         aria-label="Cuenta regresiva"
-        className="bg-cream px-4 py-20 text-center sm:px-6 sm:py-28"
+        className="bg-cream-figma px-6 py-16 text-center sm:py-20"
       >
-        <p className="font-[family-name:var(--font-timer)] text-[clamp(2rem,7vw,3rem)] leading-tight text-timer-title">
+        <p className="font-[family-name:var(--font-timer)] text-[clamp(2rem,6vw,3.5rem)] leading-tight font-bold text-accent">
           ¡Llegó el gran día!
         </p>
       </section>
@@ -75,43 +74,48 @@ export function InvitationCountdown({ targetDate }: InvitationCountdownProps) {
   }
 
   const units = [
-    { label: "Días", value: remaining.days },
-    { label: "Horas", value: remaining.hours },
-    { label: "Minutos", value: remaining.minutes },
-    { label: "Segundos", value: remaining.seconds },
+    { label: "DÍAS", value: String(remaining.days) },
+    { label: "HORAS", value: pad(remaining.hours) },
+    { label: "MINUTOS", value: pad(remaining.minutes) },
+    { label: "SEGUNDOS", value: pad(remaining.seconds) },
   ] as const;
 
   return (
     <section
       aria-label="Cuenta regresiva"
-      className="bg-cream px-2 py-20 sm:px-4 sm:py-28 md:px-6 md:py-32"
+      className="flex min-h-[17.6875rem] flex-col items-center justify-center bg-cream-figma px-4 py-6 sm:px-6"
     >
-      {/* Near full width — only light side padding; mirrors Canva full-row timer */}
-      <div className="mx-auto w-full max-w-[min(100%,48rem)] text-center sm:max-w-[min(100%,56rem)]">
-        <p className="font-[family-name:var(--font-timer)] text-[clamp(1.75rem,6.5vw,2.75rem)] leading-none tracking-[0.08em] text-timer-title">
-          Faltan
-        </p>
+      <p className="font-[family-name:var(--font-timer)] text-[clamp(2rem,5vw,3.5rem)] leading-none font-bold text-accent">
+        Faltan
+      </p>
 
-        <div className="mt-10 grid w-full grid-cols-4 items-start gap-0 sm:mt-14">
-          {units.map((unit, index) => (
-            <div key={unit.label} className="relative min-w-0 w-full px-[1%] text-center">
-              {index > 0 ? (
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute top-[0.08em] left-0 -translate-x-1/2 font-[family-name:var(--font-timer)] text-[clamp(3.25rem,15vw,7rem)] leading-none text-timer-title/70"
-                >
-                  :
-                </span>
-              ) : null}
-              <p className="font-[family-name:var(--font-timer)] text-[clamp(3.25rem,16vw,7rem)] leading-none font-normal tabular-nums tracking-tight text-foreground">
-                {unit.label === "Días" ? unit.value : pad(unit.value)}
+      <div
+        className="mt-6 flex w-full max-w-5xl flex-wrap items-center justify-center gap-x-4 gap-y-6 sm:mt-8 sm:gap-x-12"
+        role="timer"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {units.map((unit, index) => (
+          <Fragment key={unit.label}>
+            {index > 0 ? (
+              <span
+                aria-hidden
+                className="hidden self-start font-[family-name:var(--font-timer)] text-[clamp(2.5rem,7vw,5rem)] leading-none text-countdown-number sm:inline"
+              >
+                :
+              </span>
+            ) : null}
+
+            <div className="flex min-w-[4.5rem] flex-col items-center gap-2 sm:min-w-[5.5rem]">
+              <p className="font-[family-name:var(--font-timer)] text-[clamp(2.5rem,8vw,5rem)] leading-none font-normal tabular-nums text-countdown-number">
+                {unit.value}
               </p>
-              <p className="mt-4 font-[family-name:var(--font-timer)] text-[clamp(0.75rem,3vw,1.125rem)] leading-none font-normal tracking-[0.16em] text-muted uppercase sm:mt-5">
+              <p className="font-[family-name:var(--font-timer)] text-[clamp(0.75rem,2vw,1.25rem)] leading-none font-normal tracking-[0.02em] text-countdown-number">
                 {unit.label}
               </p>
             </div>
-          ))}
-        </div>
+          </Fragment>
+        ))}
       </div>
     </section>
   );

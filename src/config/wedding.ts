@@ -13,7 +13,8 @@ export const weddingConfig = {
     /** Colombia (America/Bogota). Hora provisional 16:00 hasta definir ceremonia. */
     date: "2026-10-24T16:00:00-05:00",
     dateLabel: "24 de octubre de 2026",
-    dateChipLabel: "24 de octubre de 2026",
+    /** Figma hero chip capitalization. */
+    dateChipLabel: "24 de Octubre de 2026",
     timezone: "America/Bogota",
     rsvpDeadline: "2026-09-04T23:59:59-05:00",
     rsvpDeadlineLabel: "4 de septiembre de 2026",
@@ -37,7 +38,7 @@ export const weddingConfig = {
     ctaLabel: "Ver Invitación",
   },
   hero: {
-    tagline: "Que el tiempo pase viéndonos ser.",
+    tagline: "Que el tiempo pase viéndonos reír",
   },
   venue: {
     title: "Lugar",
@@ -106,7 +107,7 @@ export const weddingConfig = {
    */
   assets: {
     coverBackground: "/invitation/Nychol & Migue.png",
-    heroPhoto: "/invitation/Boda 2.jpg",
+    heroPhoto: "/invitation/Boda 3.jpg",
     venueBackground: "/invitation/Boda 19.jpg",
     couplePhoto: "/invitation/Boda 3.jpg",
     gallery: [

@@ -9,6 +9,11 @@ type MediaFrameProps = {
   overlayClassName?: string;
   children?: ReactNode;
   label?: string;
+  /**
+   * CSS background-position. Use "center top" when faces/heads sit near the top
+   * of the photo and must stay visible under object-fit: cover.
+   */
+  backgroundPosition?: string;
 };
 
 /** Encode each path segment so spaces and & work in CSS url("..."). */
@@ -31,6 +36,7 @@ export function MediaFrame({
   overlayClassName,
   children,
   label = "Imagen pendiente",
+  backgroundPosition = "center",
 }: MediaFrameProps) {
   const hasSrc = Boolean(src);
 
@@ -48,7 +54,7 @@ export function MediaFrame({
           ? {
               backgroundImage: toCssBackgroundUrl(src),
               backgroundSize: "cover",
-              backgroundPosition: "center",
+              backgroundPosition,
             }
           : undefined
       }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Great_Vibes, Source_Sans_3 } from "next/font/google";
+import { Allura, Cormorant_Garamond, Source_Sans_3, Vollkorn } from "next/font/google";
 
 import { weddingConfig } from "@/config/wedding";
 
@@ -11,10 +11,18 @@ const displayFont = Cormorant_Garamond({
   weight: ["400", "500", "600", "700"],
 });
 
-const scriptFont = Great_Vibes({
+/** Figma cover greeting (Allura). Also used in other script accents. */
+const scriptFont = Allura({
   variable: "--font-script",
   subsets: ["latin"],
   weight: ["400"],
+});
+
+/** Figma cover subtitle (Vollkorn Bold). */
+const coverSerifFont = Vollkorn({
+  variable: "--font-cover-serif",
+  subsets: ["latin"],
+  weight: ["400", "700"],
 });
 
 const bodyFont = Source_Sans_3({
@@ -42,7 +50,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${displayFont.variable} ${scriptFont.variable} ${bodyFont.variable} h-full antialiased`}
+      className={`${displayFont.variable} ${scriptFont.variable} ${coverSerifFont.variable} ${bodyFont.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
         {children}

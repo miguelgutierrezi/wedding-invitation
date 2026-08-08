@@ -38,7 +38,7 @@ export default function HomePage() {
         <div className="mt-10">
           <Link
             href="/i/familia-ejemplo"
-            className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium tracking-wide text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:outline-none"
+            className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium tracking-wide text-foreground transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:outline-none"
           >
             Ver ejemplo de invitación
           </Link>

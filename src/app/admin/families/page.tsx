@@ -26,7 +26,7 @@ export default async function AdminFamiliesPage() {
       <div className="mb-6 flex justify-end">
         <Link
           href="/admin/families/new"
-          className="inline-flex min-h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-on-dark"
+          className="inline-flex min-h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-foreground"
         >
           Nueva familia
         </Link>

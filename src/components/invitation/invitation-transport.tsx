@@ -5,7 +5,7 @@ function BusIcon() {
     <svg
       aria-hidden
       viewBox="0 0 64 40"
-      className="mx-auto h-10 w-16 text-on-dark"
+      className="mx-auto h-10 w-16 text-foreground"
       fill="none"
       stroke="currentColor"
       strokeWidth="1.5"
@@ -26,7 +26,7 @@ export function InvitationTransport() {
   return (
     <section
       aria-label={transport.title}
-      className="torn-edge torn-edge-top-cream torn-edge-bottom-cream bg-accent px-6 py-16 text-on-dark sm:px-10 sm:py-20"
+      className="torn-edge torn-edge-top-cream torn-edge-bottom-cream bg-accent px-6 py-16 text-foreground sm:px-10 sm:py-20"
     >
       <div className="mx-auto max-w-xl text-center">
         <h2 className="font-[family-name:var(--font-display)] text-3xl font-medium tracking-wide sm:text-4xl">
@@ -35,21 +35,21 @@ export function InvitationTransport() {
         <div className="mt-8">
           <BusIcon />
         </div>
-        <p className="mt-6 text-sm leading-relaxed text-on-dark/90 sm:text-base">
+        <p className="mt-6 text-sm leading-relaxed text-foreground/90 sm:text-base">
           {transport.body}
         </p>
         <ul className="mt-8 space-y-4 text-left text-sm sm:text-base">
           {transport.meetingPoints.map((point) => (
             <li
               key={point.label}
-              className="rounded-2xl border border-on-dark/15 bg-forest/15 px-4 py-3"
+              className="rounded-2xl border border-foreground/15 bg-foreground/5 px-4 py-3"
             >
               <p className="font-medium">{point.label}</p>
-              <p className="mt-1 text-on-dark/80">{point.detail}</p>
+              <p className="mt-1 text-foreground/80">{point.detail}</p>
             </li>
           ))}
         </ul>
-        <p className="mt-6 text-sm font-medium tracking-wide text-gold-soft uppercase">
+        <p className="mt-6 text-sm font-medium tracking-wide text-foreground/80 uppercase">
           {transport.returnNote}
         </p>
       </div>

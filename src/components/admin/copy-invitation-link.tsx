@@ -33,7 +33,7 @@ export function CopyInvitationLink({
       <button
         type="button"
         onClick={handleCopy}
-        className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full bg-accent px-5 text-sm font-medium text-on-dark transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none"
+        className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full bg-accent px-5 text-sm font-medium text-foreground transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none"
       >
         {copied ? "Copiado" : "Copiar enlace"}
       </button>

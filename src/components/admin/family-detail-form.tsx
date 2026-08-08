@@ -153,7 +153,7 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
         <button
           type="submit"
           disabled={isPending}
-          className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-on-dark disabled:opacity-60"
+          className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-foreground disabled:opacity-60"
         >
           {isPending ? "Guardando…" : "Guardar cambios"}
         </button>

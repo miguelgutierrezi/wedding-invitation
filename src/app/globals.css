@@ -1,20 +1,31 @@
 @import "tailwindcss";
 
 :root {
-  /* Invitation palette (Canva-inspired) */
+  /* Invitation palette — Canva primary brand */
   --background: #f3efe6;
   --foreground: #1f2a24;
   --muted: #5c6b63;
-  --accent: #4a5d3f;
-  --accent-deep: #3a4a32;
+  /* Principal app / Canva brand */
+  --accent: #beb950;
+  --accent-deep: #9a9638;
   --cream: #f5f0e6;
   --cream-deep: #ebe4d6;
-  --gold: #b8965a;
-  --gold-soft: #c9ad78;
+  --gold: #beb950;
+  --gold-soft: #d4ce70;
+  --timer-title: #beb950;
+  /* System Times for Canva “Times New Roman” (countdown and matching slots). */
+  --font-timer-stack: "Times New Roman", Times, "Liberation Serif", Georgia,
+    serif;
   --forest: #1a241c;
   --surface: rgba(255, 255, 255, 0.78);
-  --ring: rgba(74, 93, 63, 0.28);
+  --ring: rgba(190, 185, 80, 0.4);
+  /* Text on photos / forest only; on brand yellow use --foreground */
   --on-dark: #f7f3eb;
+  /* Figma cover labels */
+  --on-dark-label: rgba(255, 255, 255, 0.96);
+  /* Figma cover CTA */
+  --cover-cta-bg: #cfcfcf;
+  --cover-cta-fg: #454411;
   --photo-placeholder: #2a332c;
 }
 
@@ -28,13 +39,19 @@
   --color-cream-deep: var(--cream-deep);
   --color-gold: var(--gold);
   --color-gold-soft: var(--gold-soft);
+  --color-timer-title: var(--timer-title);
   --color-forest: var(--forest);
   --color-surface: var(--surface);
   --color-on-dark: var(--on-dark);
+  --color-on-dark-label: var(--on-dark-label);
+  --color-cover-cta-bg: var(--cover-cta-bg);
+  --color-cover-cta-fg: var(--cover-cta-fg);
   --color-photo-placeholder: var(--photo-placeholder);
   --font-sans: var(--font-body);
   --font-display: var(--font-display);
   --font-script: var(--font-script);
+  --font-cover-serif: var(--font-cover-serif);
+  --font-timer: var(--font-timer-stack);
 }
 
 body {
@@ -84,13 +101,13 @@ body {
 }
 
 .torn-edge-top-accent::before {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 18' preserveAspectRatio='none'%3E%3Cpath fill='%234a5d3f' d='M0 0v8c3 6 6-2 9 4s6-4 9 2 6-6 9 2 6-2 9 4 6-6 12 0V0H0z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 18' preserveAspectRatio='none'%3E%3Cpath fill='%23beb950' d='M0 0v8c3 6 6-2 9 4s6-4 9 2 6-6 9 2 6-2 9 4 6-6 12 0V0H0z'/%3E%3C/svg%3E");
 }
 
 .media-placeholder {
   background:
     linear-gradient(160deg, rgba(26, 36, 28, 0.55), rgba(26, 36, 28, 0.2)),
-    radial-gradient(ellipse at 30% 20%, rgba(74, 93, 63, 0.55), transparent 55%),
+    radial-gradient(ellipse at 30% 20%, rgba(190, 185, 80, 0.45), transparent 55%),
     radial-gradient(ellipse at 80% 80%, rgba(31, 42, 36, 0.75), #1a241c);
 }
 
@@ -98,6 +115,13 @@ body {
   background:
     linear-gradient(180deg, rgba(12, 18, 14, 0.45) 0%, rgba(12, 18, 14, 0.55) 45%, rgba(12, 18, 14, 0.7) 100%),
     radial-gradient(ellipse at center, transparent 0%, rgba(8, 12, 10, 0.35) 100%);
+}
+
+/* Cover (Figma): light scrim so photo stays dominant and white type stays legible. */
+.cover-overlay {
+  background:
+    linear-gradient(180deg, rgba(8, 12, 10, 0.22) 0%, rgba(8, 12, 10, 0.32) 50%, rgba(8, 12, 10, 0.48) 100%),
+    radial-gradient(ellipse at 50% 40%, transparent 0%, rgba(8, 12, 10, 0.28) 100%);
 }
 
 @media (prefers-reduced-motion: reduce) {

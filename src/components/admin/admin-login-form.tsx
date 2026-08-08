@@ -66,7 +66,7 @@ export function AdminLoginForm({
       <button
         type="submit"
         disabled={isPending}
-        className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-on-dark transition-opacity disabled:opacity-60"
+        className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-foreground transition-opacity disabled:opacity-60"
       >
         {isPending ? "Entrando…" : "Iniciar sesión"}
       </button>

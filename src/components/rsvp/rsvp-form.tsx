@@ -348,7 +348,7 @@ export function RsvpForm({
         type="submit"
         disabled={!canSubmitRsvp || isPending}
         className={cn(
-          "inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium tracking-wide text-white transition-opacity",
+          "inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium tracking-wide text-foreground transition-opacity",
           (!canSubmitRsvp || isPending) && "cursor-not-allowed opacity-60",
         )}
       >

@@ -51,7 +51,7 @@ export async function AdminShell({ children, title }: AdminShellProps) {
             </Link>
             <Link
               href="/admin/families/new"
-              className="inline-flex min-h-11 items-center rounded-full bg-accent px-4 text-sm font-medium text-on-dark"
+              className="inline-flex min-h-11 items-center rounded-full bg-accent px-4 text-sm font-medium text-foreground"
             >
               Nueva familia
             </Link>

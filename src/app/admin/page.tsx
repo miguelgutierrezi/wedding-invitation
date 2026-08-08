@@ -57,7 +57,7 @@ export default async function AdminDashboardPage() {
       <div className="mt-10 flex flex-wrap gap-3">
         <Link
           href="/admin/analytics"
-          className="inline-flex min-h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-on-dark"
+          className="inline-flex min-h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-foreground"
         >
           Ver analytics
         </Link>

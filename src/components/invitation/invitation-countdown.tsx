@@ -49,6 +49,10 @@ function getServerNow(): number {
   return new Date("2026-08-06T00:00:00.000Z").getTime();
 }
 
+/**
+ * Full-bleed Canva-style timer: numbers fill nearly the width; title uses
+ * Canva olive-gold (#beb950) and Times New Roman.
+ */
 export function InvitationCountdown({ targetDate }: InvitationCountdownProps) {
   const nowMs = useSyncExternalStore(
     subscribeToSecondTicks,
@@ -61,9 +65,9 @@ export function InvitationCountdown({ targetDate }: InvitationCountdownProps) {
     return (
       <section
         aria-label="Cuenta regresiva"
-        className="bg-cream px-6 py-14 text-center sm:px-10 sm:py-16"
+        className="bg-cream px-4 py-20 text-center sm:px-6 sm:py-28"
       >
-        <p className="font-[family-name:var(--font-display)] text-2xl text-accent sm:text-3xl">
+        <p className="font-[family-name:var(--font-timer)] text-[clamp(2rem,7vw,3rem)] leading-tight text-timer-title">
           ¡Llegó el gran día!
         </p>
       </section>
@@ -80,28 +84,29 @@ export function InvitationCountdown({ targetDate }: InvitationCountdownProps) {
   return (
     <section
       aria-label="Cuenta regresiva"
-      className="bg-cream px-6 py-14 sm:px-10 sm:py-16"
+      className="bg-cream px-2 py-20 sm:px-4 sm:py-28 md:px-6 md:py-32"
     >
-      <div className="mx-auto max-w-xl text-center">
-        <p className="font-[family-name:var(--font-display)] text-xl tracking-wide text-accent sm:text-2xl">
+      {/* Near full width — only light side padding; mirrors Canva full-row timer */}
+      <div className="mx-auto w-full max-w-[min(100%,48rem)] text-center sm:max-w-[min(100%,56rem)]">
+        <p className="font-[family-name:var(--font-timer)] text-[clamp(1.75rem,6.5vw,2.75rem)] leading-none tracking-[0.08em] text-timer-title">
           Faltan
         </p>
 
-        <div className="mt-6 grid grid-cols-4 gap-2 sm:gap-4">
+        <div className="mt-10 grid w-full grid-cols-4 items-start gap-0 sm:mt-14">
           {units.map((unit, index) => (
-            <div key={unit.label} className="relative">
+            <div key={unit.label} className="relative min-w-0 w-full px-[1%] text-center">
               {index > 0 ? (
                 <span
                   aria-hidden
-                  className="absolute top-1/3 -left-1.5 hidden text-2xl text-gold sm:block"
+                  className="pointer-events-none absolute top-[0.08em] left-0 -translate-x-1/2 font-[family-name:var(--font-timer)] text-[clamp(3.25rem,15vw,7rem)] leading-none text-timer-title/70"
                 >
                   :
                 </span>
               ) : null}
-              <p className="font-[family-name:var(--font-display)] text-3xl font-medium tabular-nums text-foreground sm:text-4xl md:text-5xl">
+              <p className="font-[family-name:var(--font-timer)] text-[clamp(3.25rem,16vw,7rem)] leading-none font-normal tabular-nums tracking-tight text-foreground">
                 {unit.label === "Días" ? unit.value : pad(unit.value)}
               </p>
-              <p className="mt-2 text-[0.65rem] font-medium tracking-[0.18em] text-muted uppercase sm:text-xs">
+              <p className="mt-4 font-[family-name:var(--font-timer)] text-[clamp(0.75rem,3vw,1.125rem)] leading-none font-normal tracking-[0.16em] text-muted uppercase sm:mt-5">
                 {unit.label}
               </p>
             </div>

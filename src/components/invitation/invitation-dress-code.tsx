@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { weddingConfig } from "@/config/wedding";
 
 function DressIcon() {
@@ -35,7 +37,9 @@ function SuitIcon() {
 }
 
 export function InvitationDressCode() {
-  const { dressCode } = weddingConfig;
+  const { dressCode, assets } = weddingConfig;
+  const allowedImage = assets.allowedPaletteImage;
+  const forbiddenImage = assets.forbiddenPaletteImage;
 
   return (
     <section
@@ -67,12 +71,12 @@ export function InvitationDressCode() {
                 href={dressCode.inspirationUrls.women}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-on-dark transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none"
+                className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-foreground transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none"
               >
                 {dressCode.inspirationLabel}
               </a>
             ) : (
-              <span className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent/80 px-6 text-sm font-medium text-on-dark">
+              <span className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent/80 px-6 text-sm font-medium text-foreground">
                 {dressCode.inspirationLabel}
               </span>
             )}
@@ -89,57 +93,87 @@ export function InvitationDressCode() {
                 href={dressCode.inspirationUrls.men}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-on-dark transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none"
+                className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-foreground transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none"
               >
                 {dressCode.inspirationLabel}
               </a>
             ) : (
-              <span className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent/80 px-6 text-sm font-medium text-on-dark">
+              <span className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent/80 px-6 text-sm font-medium text-foreground">
                 {dressCode.inspirationLabel}
               </span>
             )}
           </div>
         </div>
 
-        <div className="mt-12 space-y-6">
-          <div>
-            <p className="text-xs font-semibold tracking-[0.18em] text-muted uppercase">
-              Paleta sugerida
-            </p>
-            <div className="mt-3 flex flex-wrap justify-center gap-2">
-              {dressCode.allowedPalette.map((color) => (
-                <span
-                  key={color}
-                  className="size-8 rounded-full border border-foreground/10 shadow-sm sm:size-9"
-                  style={{ backgroundColor: color }}
-                  title={color}
-                />
-              ))}
+        <div className="mt-12 space-y-8">
+          {allowedImage || dressCode.allowedPalette.length > 0 ? (
+            <div>
+              <p className="text-xs font-semibold tracking-[0.18em] text-muted uppercase">
+                Paleta sugerida
+              </p>
+              {allowedImage ? (
+                <div className="mx-auto mt-4 w-full max-w-lg">
+                  <Image
+                    src={allowedImage}
+                    alt="Paleta de colores sugeridos para el código de vestimenta"
+                    width={1228}
+                    height={118}
+                    className="h-auto w-full object-contain"
+                    sizes="(max-width: 640px) 100vw, 32rem"
+                  />
+                </div>
+              ) : (
+                <div className="mt-3 flex flex-wrap justify-center gap-2">
+                  {dressCode.allowedPalette.map((color) => (
+                    <span
+                      key={color}
+                      className="size-8 rounded-full border border-foreground/10 shadow-sm sm:size-9"
+                      style={{ backgroundColor: color }}
+                      title={color}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
+          ) : null}
 
-          <div>
-            <p className="text-xs font-semibold tracking-[0.18em] text-muted uppercase">
-              No permitido
-            </p>
-            <div className="mt-3 flex flex-wrap justify-center gap-2">
-              {dressCode.forbiddenPalette.map((color) => (
-                <span
-                  key={color}
-                  className="relative size-8 overflow-hidden rounded-full border border-foreground/15 sm:size-9"
-                  style={{ backgroundColor: color }}
-                  title={color}
-                >
-                  <span
-                    aria-hidden
-                    className="absolute inset-0 flex items-center justify-center text-sm font-bold text-red-700/90"
-                  >
-                    ×
-                  </span>
-                </span>
-              ))}
+          {forbiddenImage || dressCode.forbiddenPalette.length > 0 ? (
+            <div>
+              <p className="text-xs font-semibold tracking-[0.18em] text-muted uppercase">
+                No permitido
+              </p>
+              {forbiddenImage ? (
+                <div className="mx-auto mt-4 w-full max-w-lg">
+                  <Image
+                    src={forbiddenImage}
+                    alt="Paleta de colores no permitidos en el código de vestimenta"
+                    width={1167}
+                    height={81}
+                    className="h-auto w-full object-contain"
+                    sizes="(max-width: 640px) 100vw, 32rem"
+                  />
+                </div>
+              ) : (
+                <div className="mt-3 flex flex-wrap justify-center gap-2">
+                  {dressCode.forbiddenPalette.map((color) => (
+                    <span
+                      key={color}
+                      className="relative size-8 overflow-hidden rounded-full border border-foreground/15 sm:size-9"
+                      style={{ backgroundColor: color }}
+                      title={color}
+                    >
+                      <span
+                        aria-hidden
+                        className="absolute inset-0 flex items-center justify-center text-sm font-bold text-red-700/90"
+                      >
+                        ×
+                      </span>
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
+          ) : null}
         </div>
       </div>
     </section>

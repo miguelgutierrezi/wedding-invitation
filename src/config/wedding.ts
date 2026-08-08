@@ -75,27 +75,9 @@ export const weddingConfig = {
       women: "",
       men: "",
     },
-    allowedPalette: [
-      "#8B4A5A",
-      "#C4786A",
-      "#B8965A",
-      "#4A6B5C",
-      "#3D5A7A",
-      "#2C3E50",
-      "#5C4A6B",
-      "#1F2A24",
-      "#6B3A3A",
-    ],
-    forbiddenPalette: [
-      "#FFFFFF",
-      "#F5F0E6",
-      "#E8DCC8",
-      "#D4C4A8",
-      "#C5D4C0",
-      "#8FA88A",
-      "#5C6B4A",
-      "#3D5A4C",
-    ],
+    allowedPalette: [] as string[],
+    /** Empty when using assets.forbiddenPaletteImage from Canva export. */
+    forbiddenPalette: [] as string[],
   },
   gifts: {
     title: "Mesa de regalos",
@@ -123,7 +105,7 @@ export const weddingConfig = {
    * Filenames with spaces or & are fine; MediaFrame URL-encodes them for CSS.
    */
   assets: {
-    coverBackground: "/invitation/Boda 1.jpg",
+    coverBackground: "/invitation/Nychol & Migue.png",
     heroPhoto: "/invitation/Boda 2.jpg",
     venueBackground: "/invitation/Boda 19.jpg",
     couplePhoto: "/invitation/Boda 3.jpg",
@@ -136,6 +118,8 @@ export const weddingConfig = {
       "/invitation/Boda 9.jpg",
     ] as const,
     footerBackground: "/invitation/Nychol & Migue.png",
+    allowedPaletteImage: "/invitation/paleta sugerida.png",
+    forbiddenPaletteImage: "/invitation/paleta colores.png",
   },
   features: {
     countdown: true,

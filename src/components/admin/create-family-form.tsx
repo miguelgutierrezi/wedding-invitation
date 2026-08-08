@@ -32,7 +32,7 @@ export function CreateFamilyForm() {
             <button
               type="button"
               onClick={() => router.push(`/admin/families/${familyId}`)}
-              className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-5 text-sm font-medium text-on-dark"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-5 text-sm font-medium text-foreground"
             >
               Ver familia
             </button>
@@ -132,7 +132,7 @@ export function CreateFamilyForm() {
       <button
         type="submit"
         disabled={isPending}
-        className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-on-dark disabled:opacity-60"
+        className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-foreground disabled:opacity-60"
       >
         {isPending ? "Creando…" : "Crear familia y generar enlace"}
       </button>

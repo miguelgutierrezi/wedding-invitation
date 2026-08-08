@@ -34,6 +34,9 @@ yarn-error.log*
 .env.local
 .env
 
+# MCP secrets / local agent config
+.ai/mcp/mcp.json
+
 # vercel
 .vercel
 
@@ -44,3 +47,5 @@ next-env.d.ts
 # env (keep .env.example tracked)
 .env.*.local
 !.env.example
+
+.ai/**

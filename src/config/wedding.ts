@@ -46,18 +46,30 @@ export const weddingConfig = {
   },
   transport: {
     title: "Transporte",
-    body: "Habrá transporte de ida y regreso con dos puntos de encuentro en Bogotá. Cupos limitados: confirma tu lugar al RSVP.",
+    body: "Queremos que disfruten la fiesta sin preocupaciones. Contaremos con servicio de transporte de ida y regreso desde Bogotá hacia la hacienda en Subachoque.",
     meetingPoints: [
       {
-        label: "Punto 1 — Por definir",
-        detail: "Salida por definir",
+        title: "Punto de Encuentro #1 y Salida",
+        place: "Calle 23B bis #75-48 Modelia",
+        departureLabel: "Hora de salida hacia Subachoque",
+        departureTime: "por confirmar",
       },
       {
-        label: "Punto 2 — Por definir",
-        detail: "Salida por definir",
+        title: "Punto de Encuentro #2 y Salida",
+        place: "Calle 38B sur #50A-53 Villa Sonia",
+        departureLabel: "Hora de salida hacia Subachoque",
+        departureTime: "por confirmar",
       },
     ],
-    returnNote: "Regreso estimado por definir",
+    returnTrip: {
+      label: "Regreso a Bogotá",
+      detail:
+        "Llegada a los mismos puntos de encuentro indicados anteriormente",
+      departureLabel: "Hora de salida hacia Bogotá",
+      departureTime: "2:00 AM",
+    },
+    confirmNote:
+      "Por favor confirma si harás uso del transporte para reservar tu cupo.",
   },
   dressCode: {
     title: "Código de vestimenta",
@@ -110,6 +122,7 @@ export const weddingConfig = {
     heroPhoto: "/invitation/Boda 3.jpg",
     venueBackground: "/invitation/Boda 19.jpg",
     couplePhoto: "/invitation/Boda 3.jpg",
+    busPhoto: "/invitation/bus.png",
     gallery: [
       "/invitation/Boda 4.jpg",
       "/invitation/Boda 5.jpg",

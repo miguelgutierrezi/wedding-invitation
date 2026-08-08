@@ -1,57 +1,90 @@
+import Image from "next/image";
+
 import { weddingConfig } from "@/config/wedding";
 
-function BusIcon() {
+function TransportBusPhoto({ className }: { className?: string }) {
+  const { assets } = weddingConfig;
+  if (!assets.busPhoto) return null;
+
   return (
-    <svg
-      aria-hidden
-      viewBox="0 0 64 40"
-      className="mx-auto h-10 w-16 text-foreground"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
+    <div
+      className={`relative aspect-[509/286] w-full max-w-lg overflow-hidden ${className ?? ""}`}
     >
-      <rect x="4" y="8" width="56" height="22" rx="4" />
-      <path d="M12 8V6a2 2 0 0 1 2-2h36a2 2 0 0 1 2 2v2" />
-      <path d="M4 22h56" />
-      <circle cx="16" cy="32" r="3" />
-      <circle cx="48" cy="32" r="3" />
-      <path d="M18 14h10M36 14h10" />
-    </svg>
+      <Image
+        src={assets.busPhoto}
+        alt="Autobús del transporte para invitados"
+        fill
+        className="object-cover"
+        sizes="(max-width: 1024px) 100vw, 509px"
+        priority={false}
+      />
+    </div>
   );
 }
 
+/**
+ * Transport section (Figma Wireframe - 1): brand yellow, Times white type.
+ * Desktop: intro + bus left, details right.
+ * Mobile / tablet portrait: intro → details → bus last.
+ */
 export function InvitationTransport() {
   const { transport } = weddingConfig;
 
   return (
     <section
       aria-label={transport.title}
-      className="torn-edge torn-edge-top-cream torn-edge-bottom-cream bg-accent px-6 py-16 text-foreground sm:px-10 sm:py-20"
+      className="bg-accent px-6 py-16 text-white sm:px-10 sm:py-20"
     >
-      <div className="mx-auto max-w-xl text-center">
-        <h2 className="font-[family-name:var(--font-display)] text-3xl font-medium tracking-wide sm:text-4xl">
-          {transport.title}
-        </h2>
-        <div className="mt-8">
-          <BusIcon />
+      <div className="mx-auto grid w-full max-w-6xl gap-12 lg:grid-cols-2 lg:items-start lg:gap-16">
+        <div className="flex flex-col items-center text-center">
+          <h2 className="font-[family-name:var(--font-timer)] text-[clamp(2.5rem,6vw,4rem)] leading-none font-bold">
+            {transport.title}
+          </h2>
+
+          <p className="mt-8 max-w-lg font-[family-name:var(--font-timer)] text-[clamp(1.125rem,2.4vw,1.75rem)] leading-8">
+            {transport.body}
+          </p>
+
+          {/* Desktop / landscape: bus under the intro (left column). */}
+          <TransportBusPhoto className="mt-10 hidden lg:block" />
         </div>
-        <p className="mt-6 text-sm leading-relaxed text-foreground/90 sm:text-base">
-          {transport.body}
-        </p>
-        <ul className="mt-8 space-y-4 text-left text-sm sm:text-base">
-          {transport.meetingPoints.map((point) => (
-            <li
-              key={point.label}
-              className="rounded-2xl border border-foreground/15 bg-foreground/5 px-4 py-3"
-            >
-              <p className="font-medium">{point.label}</p>
-              <p className="mt-1 text-foreground/80">{point.detail}</p>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-6 text-sm font-medium tracking-wide text-foreground/80 uppercase">
-          {transport.returnNote}
-        </p>
+
+        <div className="font-[family-name:var(--font-timer)] text-[clamp(1.0625rem,2.2vw,1.75rem)] leading-8 text-white">
+          <div className="space-y-6">
+            {transport.meetingPoints.map((point) => (
+              <div key={point.title}>
+                <p className="font-bold">{point.title}</p>
+                <p>
+                  <span className="font-bold">Lugar:</span> {point.place}
+                </p>
+                <p>
+                  <span className="font-bold">{point.departureLabel}:</span>{" "}
+                  {point.departureTime}
+                </p>
+              </div>
+            ))}
+
+            <div>
+              <p>
+                <span className="font-bold">
+                  {transport.returnTrip.label}:
+                </span>{" "}
+                {transport.returnTrip.detail}
+              </p>
+              <p>
+                <span className="font-bold">
+                  {transport.returnTrip.departureLabel}:
+                </span>{" "}
+                {transport.returnTrip.departureTime}
+              </p>
+            </div>
+
+            <p>{transport.confirmNote}</p>
+          </div>
+        </div>
+
+        {/* Mobile + tablet portrait: bus at the end of the section. */}
+        <TransportBusPhoto className="mx-auto lg:hidden" />
       </div>
     </section>
   );

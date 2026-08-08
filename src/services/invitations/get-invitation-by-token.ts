@@ -11,12 +11,14 @@ export type InvitationGuest = {
   dietaryRestrictions: string | null;
   menuOption: string | null;
   needsTransport: boolean;
+  transportBoardingPoint: string | null;
 };
 
 export type InvitationRsvpGuest = {
   guestId: string;
   willAttend: boolean;
   needsTransport: boolean;
+  transportBoardingPoint: string | null;
   dietaryRestrictions: string | null;
   menuOption: string | null;
 };
@@ -86,6 +88,7 @@ type GuestRow = {
   dietary_restrictions: string | null;
   menu_option: string | null;
   needs_transport: boolean;
+  transport_boarding_point: string | null;
 };
 
 type RsvpRow = {
@@ -103,6 +106,7 @@ type RsvpGuestRow = {
   guest_id: string;
   will_attend: boolean;
   needs_transport: boolean;
+  transport_boarding_point: string | null;
   dietary_restrictions: string | null;
   menu_option: string | null;
 };
@@ -169,7 +173,7 @@ export async function getInvitationBySlug(
   const { data: guests, error: guestsError } = await supabase
     .from("guests")
     .select(
-      "id, full_name, is_primary_contact, attendance_status, dietary_restrictions, menu_option, needs_transport",
+      "id, full_name, is_primary_contact, attendance_status, dietary_restrictions, menu_option, needs_transport, transport_boarding_point",
     )
     .eq("family_id", family.id)
     .order("is_primary_contact", { ascending: false })
@@ -198,7 +202,7 @@ export async function getInvitationBySlug(
     const { data: rsvpGuests, error: rsvpGuestsError } = await supabase
       .from("rsvp_response_guests")
       .select(
-        "guest_id, will_attend, needs_transport, dietary_restrictions, menu_option",
+        "guest_id, will_attend, needs_transport, transport_boarding_point, dietary_restrictions, menu_option",
       )
       .eq("rsvp_response_id", rsvp.id)
       .returns<RsvpGuestRow[]>();
@@ -219,6 +223,7 @@ export async function getInvitationBySlug(
         guestId: guest.guest_id,
         willAttend: guest.will_attend,
         needsTransport: guest.needs_transport,
+        transportBoardingPoint: guest.transport_boarding_point,
         dietaryRestrictions: guest.dietary_restrictions,
         menuOption: guest.menu_option,
       })),
@@ -254,6 +259,7 @@ export async function getInvitationBySlug(
       dietaryRestrictions: guest.dietary_restrictions,
       menuOption: guest.menu_option,
       needsTransport: guest.needs_transport,
+      transportBoardingPoint: guest.transport_boarding_point,
     })),
     existingRsvp,
     canSubmitRsvp: closedReason === null,

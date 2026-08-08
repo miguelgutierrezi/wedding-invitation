@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 
 import { signInAdminAction } from "@/actions/admin/auth";
+import { admin } from "@/components/admin/admin-ui";
 
 type AdminLoginFormProps = {
   nextPath: string;
@@ -35,30 +36,30 @@ export function AdminLoginForm({
     >
       <input type="hidden" name="next" value={nextPath} />
 
-      <label className="grid gap-1.5 text-sm">
-        <span className="text-muted">Correo</span>
+      <label className="grid gap-2">
+        <span className={admin.label}>Correo</span>
         <input
           type="email"
           name="email"
           autoComplete="username"
           required
-          className="min-h-11 rounded-xl border border-[color:var(--ring)] bg-white/80 px-3 outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className={admin.input}
         />
       </label>
 
-      <label className="grid gap-1.5 text-sm">
-        <span className="text-muted">Contraseña</span>
+      <label className="grid gap-2">
+        <span className={admin.label}>Contraseña</span>
         <input
           type="password"
           name="password"
           autoComplete="current-password"
           required
-          className="min-h-11 rounded-xl border border-[color:var(--ring)] bg-white/80 px-3 outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className={admin.input}
         />
       </label>
 
       {error ? (
-        <p className="text-sm text-red-700" role="alert">
+        <p className={admin.error} role="alert">
           {error}
         </p>
       ) : null}
@@ -66,7 +67,7 @@ export function AdminLoginForm({
       <button
         type="submit"
         disabled={isPending}
-        className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-foreground transition-opacity disabled:opacity-60"
+        className={`${admin.btnPrimary} w-full`}
       >
         {isPending ? "Entrando…" : "Iniciar sesión"}
       </button>

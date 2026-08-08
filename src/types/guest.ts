@@ -12,6 +12,7 @@ export type Guest = {
   dietaryRestrictions: string | null;
   menuOption: string | null;
   needsTransport: boolean;
+  transportBoardingPoint: string | null;
   createdAt: string;
   updatedAt: string;
 };

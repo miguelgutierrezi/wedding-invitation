@@ -2,17 +2,16 @@
 
 ## Project overview
 
-This repository contains a full-stack wedding invitation web application for approximately 90 guests.
+This repository contains a full-stack wedding invitation web application for approximately 90 guests (couple: **Nychol** and **Miguel**).
 
 The application provides:
 
 - A public wedding invitation.
-- Personalized invitation links per family.
-- RSVP management.
+- Personalized invitation links per family (`/i/[slug]`).
+- RSVP management (attendance, dietary restrictions, bus transport + boarding point).
 - Guest-level attendance confirmation.
-- Dietary restriction collection.
-- A private administration panel.
-- CSV export for attendance data.
+- A private administration panel (dashboard, analytics, families, guests).
+- CSV export for attendance data (roadmap; not yet implemented).
 
 The application must be elegant, mobile-first, secure, inexpensive to operate, reusable, and easy to deploy.
 
@@ -71,7 +70,7 @@ src/
 ├── app/
 │   ├── (public)/
 │   ├── i/
-│   │   └── [token]/
+│   │   └── [slug]/
 │   ├── admin/
 │   └── api/
 ├── components/
@@ -80,6 +79,8 @@ src/
 │   ├── rsvp/
 │   └── ui/
 ├── config/
+│   ├── wedding.ts
+│   └── admin.ts
 ├── hooks/
 ├── lib/
 │   ├── auth/
@@ -92,6 +93,7 @@ src/
 └── utils/
 
 public/
+│   └── invitation/    # invitation media (see docs/invitation-ui.md)
 supabase/
 docs/
 ```
@@ -186,6 +188,7 @@ Rules:
 - Validate that each guest belongs to the family being updated.
 - Enforce guest limits on the server.
 - Enforce RSVP deadlines on the server.
+- When transport is requested, require a valid boarding point id on the server (`modelia` | `villa_sonia`; keep config, Zod, and SQL in sync).
 - Prevent accidental duplicate submissions.
 - Avoid leaking whether arbitrary tokens exist.
 
@@ -221,6 +224,14 @@ The visual style should be:
 - Timeless.
 - Subtle rather than overly decorative.
 
+Invitation presentation conventions (tokens, sections, assets) live in:
+
+```text
+docs/invitation-ui.md
+```
+
+Copy and media paths belong in `src/config/wedding.ts`. Do not scatter Figma hex values or asset paths across many components.
+
 Avoid:
 
 - Heavy animations.
@@ -230,6 +241,7 @@ Avoid:
 - Excessive gradients.
 - Excessive shadows.
 - Excessive client-side JavaScript.
+- Cropping dress-code or transport illustrations with aggressive `object-cover` when the subject must remain fully visible.
 
 ## Data model direction
 
@@ -237,9 +249,9 @@ The expected primary entities are:
 
 - `events`
 - `families`
-- `guests`
+- `guests` (includes `needs_transport`, `transport_boarding_point`)
 - `rsvp_responses`
-- `rsvp_response_guests`
+- `rsvp_response_guests` (includes the same transport fields as the denormalized guest mirror)
 - `audit_events`
 
 Do not finalize or heavily expand the data model without checking the current project phase and product specification.
@@ -325,16 +337,23 @@ When requirements are incomplete:
 - Choose the simplest reasonable option.
 - Make the decision easy to change.
 - Document the assumption.
-- Do not invent real wedding data.
+- Do not invent real wedding data beyond what is already confirmed in the repository.
 
-Use placeholders such as:
+Confirmed couple display names:
 
 ```text
-Nombre 1
-Nombre 2
-Fecha por definir
+Nychol
+Miguel
+```
+
+For unset logistics (maps URLs, bus departure times, etc.), use safe placeholders such as:
+
+```text
+por confirmar
 Lugar por definir
 ```
+
+Empty CTA URLs are preferred over invented links.
 
 ## Current source of truth
 
@@ -343,8 +362,9 @@ Instruction precedence, from highest to lowest:
 1. The user's explicit request for the current task.
 2. `docs/current-phase.md` for the currently authorized implementation scope.
 3. `docs/architecture.md` for approved technical boundaries.
-4. `docs/product-spec.md` for product behavior and long-term requirements.
-5. This file for permanent repository workflow and engineering defaults.
+4. `docs/invitation-ui.md` for public invitation presentation conventions (when relevant).
+5. `docs/product-spec.md` for product behavior and long-term requirements.
+6. This file for permanent repository workflow and engineering defaults.
 
 If two documents conflict, follow the higher-precedence source and report the conflict. Do not interpret the product roadmap as authorization to implement future work.
 
@@ -360,6 +380,12 @@ Architecture details live in:
 
 ```text
 docs/architecture.md
+```
+
+Invitation UI (Figma alignment, tokens, assets) lives in:
+
+```text
+docs/invitation-ui.md
 ```
 
 The currently authorized implementation scope lives in:

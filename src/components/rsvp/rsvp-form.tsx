@@ -6,6 +6,10 @@ import { useMemo, useState, useTransition } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 
 import { submitRsvpAction } from "@/actions/rsvp/submit-rsvp";
+import {
+  isTransportBoardingPointId,
+  type TransportBoardingPointId,
+} from "@/config/transport";
 import { weddingConfig } from "@/config/wedding";
 import { cn } from "@/lib/utils";
 import {
@@ -16,6 +20,15 @@ import type {
   InvitationGuest,
   InvitationRsvp,
 } from "@/services/invitations/get-invitation-by-token";
+
+function toBoardingDefault(
+  value: string | null | undefined,
+): "" | TransportBoardingPointId {
+  if (value && isTransportBoardingPointId(value)) {
+    return value;
+  }
+  return "";
+}
 
 type RsvpFormProps = {
   slug: string;
@@ -71,6 +84,9 @@ function buildDefaultValues(
           existing?.willAttend ?? guest.attendanceStatus === "attending",
         needsTransport:
           existing?.needsTransport ?? guest.needsTransport ?? false,
+        transportBoardingPoint: toBoardingDefault(
+          existing?.transportBoardingPoint ?? guest.transportBoardingPoint,
+        ),
         dietaryRestrictions:
           existing?.dietaryRestrictions ?? guest.dietaryRestrictions ?? "",
         menuOption: existing?.menuOption ?? guest.menuOption ?? "",
@@ -154,7 +170,7 @@ export function RsvpForm({
     >
       <p className={`${labelClass} text-center text-cover-cta-fg/85`}>
         Cupos de esta invitación: {maximumGuests}. Puedes actualizar tu
-        respuesta mientras el RSVP esté abierto.
+        respuesta mientras el formulario esté abierto.
       </p>
 
       {closedMessage ? (
@@ -245,6 +261,11 @@ export function RsvpForm({
                               shouldDirty: true,
                               shouldValidate: true,
                             });
+                            setValue(
+                              `guests.${index}.transportBoardingPoint`,
+                              "",
+                              { shouldDirty: true, shouldValidate: true },
+                            );
                           }
                         }}
                       />
@@ -265,13 +286,21 @@ export function RsvpForm({
                         type="checkbox"
                         className="size-4 accent-[color:var(--accent-deep)]"
                         checked={Boolean(guestValues[index]?.needsTransport)}
-                        onChange={(event) =>
+                        onChange={(event) => {
+                          const checked = event.target.checked;
                           setValue(
                             `guests.${index}.needsTransport`,
-                            event.target.checked,
+                            checked,
                             { shouldDirty: true, shouldValidate: true },
-                          )
-                        }
+                          );
+                          if (!checked) {
+                            setValue(
+                              `guests.${index}.transportBoardingPoint`,
+                              "",
+                              { shouldDirty: true, shouldValidate: true },
+                            );
+                          }
+                        }}
                       />
                       <span>Usará el transporte (bus)</span>
                     </label>
@@ -279,6 +308,56 @@ export function RsvpForm({
                       <p className="text-sm text-red-800" role="alert">
                         {errors.guests[index].needsTransport.message}
                       </p>
+                    ) : null}
+                    {guestValues[index]?.needsTransport ? (
+                      <fieldset className="space-y-3">
+                        <legend className={fieldLabelClass}>
+                          Punto de encuentro del bus
+                        </legend>
+                        <div className="grid gap-2">
+                          {weddingConfig.transport.meetingPoints.map(
+                            (point) => (
+                              <label key={point.id} className={choiceClass}>
+                                <input
+                                  type="radio"
+                                  className="size-4 accent-[color:var(--accent-deep)]"
+                                  value={point.id}
+                                  checked={
+                                    guestValues[index]
+                                      ?.transportBoardingPoint === point.id
+                                  }
+                                  onChange={() =>
+                                    setValue(
+                                      `guests.${index}.transportBoardingPoint`,
+                                      point.id,
+                                      {
+                                        shouldDirty: true,
+                                        shouldValidate: true,
+                                      },
+                                    )
+                                  }
+                                />
+                                <span className="text-left">
+                                  <span className="block font-bold">
+                                    {point.title}
+                                  </span>
+                                  <span className="block text-[0.95em] text-cover-cta-fg/80">
+                                    {point.place}
+                                  </span>
+                                </span>
+                              </label>
+                            ),
+                          )}
+                        </div>
+                        {errors.guests?.[index]?.transportBoardingPoint ? (
+                          <p className="text-sm text-red-800" role="alert">
+                            {
+                              errors.guests[index].transportBoardingPoint
+                                .message
+                            }
+                          </p>
+                        ) : null}
+                      </fieldset>
                     ) : null}
                     <label className="grid gap-2">
                       <span className={fieldLabelClass}>

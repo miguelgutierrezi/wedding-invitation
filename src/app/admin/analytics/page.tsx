@@ -1,6 +1,9 @@
 import Link from "next/link";
 
 import { AdminShell } from "@/components/admin/admin-shell";
+import { admin } from "@/components/admin/admin-ui";
+import { getTransportBoardingPoint } from "@/config/transport";
+import { weddingConfig } from "@/config/wedding";
 import { getAnalyticsSnapshot } from "@/services/admin/analytics";
 
 function formatDate(iso: string | null): string {
@@ -24,10 +27,12 @@ function RateBar({ label, percent }: { label: string; percent: number }) {
   return (
     <div>
       <div className="flex items-center justify-between gap-3 text-sm">
-        <span className="text-muted">{label}</span>
-        <span className="font-medium tabular-nums text-foreground">{safe}%</span>
+        <span className="text-cover-cta-fg/70">{label}</span>
+        <span className="font-medium tabular-nums text-cover-cta-fg">
+          {safe}%
+        </span>
       </div>
-      <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-cream-deep">
+      <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-cover-cta-fg/10">
         <div
           className="h-full rounded-full bg-accent transition-[width]"
           style={{ width: `${safe}%` }}
@@ -57,13 +62,13 @@ export default async function AdminAnalyticsPage() {
 
   return (
     <AdminShell title="Analytics">
-      <p className="text-sm text-muted">
+      <p className={admin.muted}>
         {analytics.eventName ?? "Evento"} · Límite RSVP:{" "}
         {formatDate(analytics.rsvpDeadline)}
       </p>
 
-      <section className="mt-8 space-y-5 rounded-2xl border border-[color:var(--ring)] bg-surface p-6">
-        <h2 className="font-[family-name:var(--font-display)] text-xl text-accent">
+      <section className={`mt-8 space-y-5 ${admin.card} p-6`}>
+        <h2 className="font-[family-name:var(--font-timer)] text-xl font-bold text-cover-cta-fg">
           Tasas
         </h2>
         <RateBar
@@ -80,33 +85,47 @@ export default async function AdminAnalyticsPage() {
         />
       </section>
 
+      <section className={`mt-8 space-y-4 ${admin.card} p-6`}>
+        <h2 className="font-[family-name:var(--font-timer)] text-xl font-bold text-cover-cta-fg">
+          Cupos de bus por punto de encuentro
+        </h2>
+        <p className={admin.muted}>
+          Solo asistentes que confirmaron transporte. Total con bus:{" "}
+          {analytics.guestsNeedingTransport}.
+        </p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {weddingConfig.transport.meetingPoints.map((point) => {
+            const count =
+              analytics.transportByBoardingPoint[point.id] ?? 0;
+            const detail = getTransportBoardingPoint(point.id);
+
+            return (
+              <div key={point.id} className={`${admin.panel} px-5 py-4`}>
+                <p className={admin.eyebrow}>{point.title}</p>
+                <p className={`mt-1 ${admin.muted}`}>
+                  {detail?.place ?? point.place}
+                </p>
+                <p className={`mt-2 ${admin.metricValue}`}>{count}</p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((card) => (
-          <div
-            key={card.label}
-            className="rounded-2xl border border-[color:var(--ring)] bg-surface px-5 py-4"
-          >
-            <p className="text-xs font-medium tracking-[0.16em] text-muted uppercase">
-              {card.label}
-            </p>
-            <p className="mt-2 font-[family-name:var(--font-display)] text-3xl text-foreground">
-              {card.value}
-            </p>
+          <div key={card.label} className={`${admin.card} px-5 py-4`}>
+            <p className={admin.eyebrow}>{card.label}</p>
+            <p className={`mt-2 ${admin.metricValue}`}>{card.value}</p>
           </div>
         ))}
       </div>
 
       <div className="mt-10 flex flex-wrap gap-3">
-        <Link
-          href="/admin/guests"
-          className="inline-flex min-h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-foreground"
-        >
+        <Link href="/admin/guests" className={admin.btnPrimary}>
           Ver invitados uno a uno
         </Link>
-        <Link
-          href="/admin/families"
-          className="inline-flex min-h-11 items-center rounded-full border border-[color:var(--ring)] px-5 text-sm font-medium"
-        >
+        <Link href="/admin/families" className={admin.btnSecondary}>
           Ver familias
         </Link>
       </div>

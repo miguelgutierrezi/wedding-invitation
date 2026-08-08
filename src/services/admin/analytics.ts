@@ -2,6 +2,10 @@ import "server-only";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
+  TRANSPORT_BOARDING_POINT_IDS,
+  type TransportBoardingPointId,
+} from "@/config/transport";
+import {
   getDashboardMetrics,
   type DashboardMetrics,
 } from "@/services/admin/families";
@@ -14,6 +18,7 @@ export type GuestListItem = {
   isPrimaryContact: boolean;
   attendanceStatus: "pending" | "attending" | "not_attending";
   needsTransport: boolean;
+  transportBoardingPoint: string | null;
   dietaryRestrictions: string | null;
   email: string | null;
   phone: string | null;
@@ -27,6 +32,8 @@ export type AnalyticsSnapshot = DashboardMetrics & {
   familyResponseRate: number;
   guestConfirmRate: number;
   transportAmongAttendingRate: number;
+  /** Guests using bus, split by boarding point id. */
+  transportByBoardingPoint: Record<TransportBoardingPointId, number>;
 };
 
 type FamilyLite = {
@@ -44,10 +51,18 @@ type GuestRow = {
   is_primary_contact: boolean;
   attendance_status: "pending" | "attending" | "not_attending";
   needs_transport: boolean;
+  transport_boarding_point: string | null;
   dietary_restrictions: string | null;
   email: string | null;
   phone: string | null;
 };
+
+function emptyBoardingCounts(): Record<TransportBoardingPointId, number> {
+  return {
+    modelia: 0,
+    villa_sonia: 0,
+  };
+}
 
 export async function getAnalyticsSnapshot(): Promise<AnalyticsSnapshot> {
   const supabase = createAdminClient();
@@ -71,13 +86,14 @@ export async function getAnalyticsSnapshot(): Promise<AnalyticsSnapshot> {
     supabase
       .from("guests")
       .select(
-        "id, attendance_status, needs_transport, dietary_restrictions",
+        "id, attendance_status, needs_transport, transport_boarding_point, dietary_restrictions",
       )
       .returns<
         {
           id: string;
           attendance_status: string;
           needs_transport: boolean;
+          transport_boarding_point: string | null;
           dietary_restrictions: string | null;
         }[]
       >(),
@@ -120,6 +136,20 @@ export async function getAnalyticsSnapshot(): Promise<AnalyticsSnapshot> {
         )
       : 0;
 
+  const transportByBoardingPoint = emptyBoardingCounts();
+  for (const guest of guestRows) {
+    if (!guest.needs_transport || guest.attendance_status !== "attending") {
+      continue;
+    }
+    const point = guest.transport_boarding_point;
+    if (
+      point &&
+      (TRANSPORT_BOARDING_POINT_IDS as readonly string[]).includes(point)
+    ) {
+      transportByBoardingPoint[point as TransportBoardingPointId] += 1;
+    }
+  }
+
   return {
     ...base,
     totalGuests,
@@ -133,6 +163,7 @@ export async function getAnalyticsSnapshot(): Promise<AnalyticsSnapshot> {
     familyResponseRate,
     guestConfirmRate,
     transportAmongAttendingRate,
+    transportByBoardingPoint,
   };
 }
 
@@ -151,7 +182,7 @@ export async function listAllGuests(): Promise<GuestListItem[]> {
     supabase
       .from("guests")
       .select(
-        "id, family_id, full_name, is_primary_contact, attendance_status, needs_transport, dietary_restrictions, email, phone",
+        "id, family_id, full_name, is_primary_contact, attendance_status, needs_transport, transport_boarding_point, dietary_restrictions, email, phone",
       )
       .order("full_name", { ascending: true })
       .returns<GuestRow[]>(),
@@ -176,6 +207,7 @@ export async function listAllGuests(): Promise<GuestListItem[]> {
       isPrimaryContact: guest.is_primary_contact,
       attendanceStatus: guest.attendance_status,
       needsTransport: guest.needs_transport,
+      transportBoardingPoint: guest.transport_boarding_point,
       dietaryRestrictions: guest.dietary_restrictions,
       email: guest.email,
       phone: guest.phone,

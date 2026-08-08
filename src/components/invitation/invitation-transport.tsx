@@ -12,8 +12,8 @@ function TransportBusPhoto({ className }: { className?: string }) {
   return (
     <div
       className={[
-        // Mobile: modest width. Desktop: fixed 20rem box (chiva is square).
-        "mx-auto w-full max-w-[16rem] shrink-0 lg:max-w-[20rem] lg:w-[20rem]",
+        // Square art: natural height, wider on phones/tablets; compact on lg column.
+        "mx-auto w-full max-w-sm shrink-0 sm:max-w-md md:max-w-lg lg:max-w-[20rem]",
         className ?? "",
       ]
         .filter(Boolean)
@@ -25,7 +25,7 @@ function TransportBusPhoto({ className }: { className?: string }) {
         width={CHIVA_WIDTH}
         height={CHIVA_HEIGHT}
         className="mx-auto h-auto w-full object-contain"
-        sizes="(max-width: 1023px) 16rem, 20rem"
+        sizes="(max-width: 639px) 24rem, (max-width: 767px) 28rem, (max-width: 1023px) 32rem, 20rem"
         unoptimized
         priority={false}
       />

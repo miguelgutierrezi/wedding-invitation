@@ -43,6 +43,7 @@ export type AdminGuestDetail = {
   attendanceStatus: "pending" | "attending" | "not_attending";
   dietaryRestrictions: string | null;
   needsTransport: boolean;
+  transportBoardingPoint: string | null;
 };
 
 export type AdminFamilyDetail = AdminFamilyListItem & {
@@ -83,6 +84,7 @@ type GuestRow = {
   attendance_status: "pending" | "attending" | "not_attending";
   dietary_restrictions: string | null;
   needs_transport: boolean;
+  transport_boarding_point: string | null;
 };
 
 type EventRow = {
@@ -198,7 +200,7 @@ export async function listFamilies(): Promise<AdminFamilyListItem[]> {
       ? supabase
           .from("guests")
           .select(
-            "id, family_id, full_name, is_primary_contact, attendance_status, dietary_restrictions, needs_transport",
+            "id, family_id, full_name, is_primary_contact, attendance_status, dietary_restrictions, needs_transport, transport_boarding_point",
           )
           .in("family_id", familyIds)
           .returns<GuestRow[]>()
@@ -261,7 +263,7 @@ export async function getFamilyById(
       supabase
         .from("guests")
         .select(
-          "id, family_id, full_name, is_primary_contact, attendance_status, dietary_restrictions, needs_transport",
+          "id, family_id, full_name, is_primary_contact, attendance_status, dietary_restrictions, needs_transport, transport_boarding_point",
         )
         .eq("family_id", familyId)
         .order("is_primary_contact", { ascending: false })
@@ -301,6 +303,7 @@ export async function getFamilyById(
       attendanceStatus: guest.attendance_status,
       dietaryRestrictions: guest.dietary_restrictions,
       needsTransport: guest.needs_transport,
+      transportBoardingPoint: guest.transport_boarding_point,
     })),
     guestsTransportCount: (guests ?? []).filter((guest) => guest.needs_transport)
       .length,

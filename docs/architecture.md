@@ -1,8 +1,8 @@
 # Architecture
 
-**Status:** schema baseline
+**Status:** application baseline (auth, RSVP with transport boarding, invitation UI, brand-aligned admin)
 
-**Last reviewed:** 2026-07-18
+**Last reviewed:** 2026-08-08
 
 This document describes the intended technical architecture and its boundaries. It does not authorize implementation beyond `current-phase.md`.
 
@@ -40,7 +40,7 @@ Use one Next.js repository and deployment. Do not introduce a separate backend, 
 Use:
 
 - Server Components for rendering and server-side reads by default.
-- Small Client Components only for forms, countdowns, and browser interaction.
+- Small Client Components only for forms, countdown, gallery carousel, and browser interaction.
 - Server Actions for application-owned mutations when they provide a clear typed workflow.
 - Route Handlers for HTTP endpoints such as exports or integrations.
 - Plain TypeScript services for business rules that should not live in presentation components.
@@ -49,20 +49,41 @@ Use:
 ## Route direction
 
 ```text
-/                  public invitation or landing page
-/i/[token]         personalized invitation and RSVP
-/admin/login       administrator sign-in
-/admin             protected administration area
-/api/...           HTTP endpoints only when appropriate
+/                      public landing (as implemented)
+/i/[slug]              personalized invitation cover
+/i/[slug]/invitacion   full invitation + embedded RSVP
+/admin/login           administrator sign-in
+/admin                 dashboard (summary metrics)
+/admin/analytics       rates + transport boarding breakdown
+/admin/guests          per-guest listing
+/admin/families        family list
+/admin/families/new    create family + invitation link
+/admin/families/[id]   family detail / edit
+/api/...               HTTP endpoints only when appropriate
 ```
 
-Only the mock `/i/[token]` route is authorized during Project Foundation. Future routes describe product direction, not current implementation scope.
+Public invitation presentation details live in `docs/invitation-ui.md`. Admin presentation tokens live in `src/components/admin/admin-ui.ts` (same brand palette/fonts as the invitation). Do not treat product roadmap sections as authorization to implement unfinished work.
 
 ## Configuration
 
-Stable event presentation data belongs in `src/config/wedding.ts` until a future phase explicitly moves editable settings into the database. Components should receive data via props or import the centralized configuration; they should not scatter event copy or dates across the UI.
+Stable event presentation data belongs in `src/config/wedding.ts` until a future phase explicitly moves editable settings into the database. Components should receive data via props or import the centralized configuration; they should not scatter event copy, asset paths, or brand colors across the UI.
 
-Real wedding data must not be invented. Configuration should remain easy to replace with confirmed data later.
+- **Couple display names** (presentation): `weddingConfig.couple.partnerOne` / `partnerTwo` → **Nychol** & **Miguel**.
+- **Event partner names** (DB): updated via migration so invitation load from `events` matches; keep config and DB aligned when changing names.
+- **Transport boarding point ids**: `weddingConfig.transport.meetingPoints[].id` must match `src/config/transport.ts` (`TRANSPORT_BOARDING_POINT_IDS`) and the SQL check constraint / RPC (`modelia`, `villa_sonia`).
+
+Asset paths under `public/invitation/` are listed in `weddingConfig.assets` and documented in `docs/invitation-ui.md`.
+
+Do not invent private logistics (maps, times, legal docs). Empty strings for CTAs are acceptable until product provides real URLs.
+
+## Presentation layer
+
+- Invitation sections are independent components under `src/components/invitation/`.
+- Page composition: `invitation-page-view.tsx`.
+- Gallery uses a dual-buffer strategy (preload next slide, then swipe) to avoid flash between photos.
+- RSVP form is embedded in the invitation (cream band); it is not a separate navigation-only CTA page.
+- Cap multi-column invitation layouts on ultra-wide viewports so copy and CTAs stay visually grouped.
+- Admin chrome reuses invitation brand (accent header, cream page, Times/olive type).
 
 ## Supabase access
 
@@ -87,47 +108,64 @@ The expected domain entities are:
 - `rsvp_response_guests`
 - `audit_events`
 
-The field lists in `product-spec.md` are exploratory. Approved decisions for the initial schema:
+Approved decisions:
 
 - **Events:** multiple events are allowed via `event_id` foreign keys for reuse. Product v1 typically uses one event row; the database does not enforce a singleton.
-- **Attendance source of truth:** the latest `rsvp_responses` / `rsvp_response_guests` rows are authoritative after submission. `guests.attendance_status` is a denormalized mirror for admin listing.
+- **Attendance source of truth:** the latest `rsvp_responses` / `rsvp_response_guests` rows are authoritative after submission. `guests.attendance_status` (and denormalized transport fields) is a mirror for admin listing.
 - **RSVP persistence:** one `rsvp_responses` row per family (`unique(family_id)`), updated in place. Guest answers live in `rsvp_response_guests`.
-- **Idempotency / concurrency:** application mutations must upsert the single family response inside one transaction; deeper locking strategy belongs to the RSVP phase.
+- **Transport:**
+  - `needs_transport` (boolean) on guest / rsvp_response_guest.
+  - `transport_boarding_point` text nullable; allowed values `modelia` \| `villa_sonia`; **required server-side when** the guest is attending and needs transport.
+- **Idempotency / concurrency:** application mutations upsert the single family response inside one transaction via RPC `submit_family_rsvp`.
+- **Public family key:** `invitation_slug` on `families` for `/i/[slug]` URLs. Token hash/preview remain for security design; do not put sequential DB ids in public routes.
 - **Tokens:** store SHA-256 `invitation_token_hash` plus a short `invitation_token_preview`. Never store the raw token. Revoke with `is_enabled` / `status`. No token expiry column in v1.
-- **RLS:** enabled on all domain tables with deny-by-default for `anon` and `authenticated`. Early privileged access uses the service-role server client. Token-scoped RPCs or narrow policies belong to the RSVP phase.
+- **RLS:** enabled on all domain tables with deny-by-default for `anon` and `authenticated`. Privileged domain CRUD after admin auth uses the service-role server client.
 
-Every schema change must be a SQL migration. Seed data must use fictional placeholders.
+Every schema change must be a SQL migration. Seed data uses fictional **families/guests**; couple names in the seed event row are the real product names (Nychol & Miguel).
 
-## Invitation token boundary
+Relevant migrations include:
 
-Public URLs use cryptographically random, non-sequential tokens. Production behavior should:
+```text
+…_initial_domain_schema.sql
+…_submit_family_rsvp.sql
+…_rsvp_needs_transport.sql
+…_invitation_slug.sql
+…_couple_names_and_transport_boarding.sql
+```
 
-1. Generate sufficient random entropy on the server.
-2. Share the raw token with the invited family.
-3. Store a one-way hash and a short non-sensitive preview.
-4. Hash the presented token before lookup.
-5. Return indistinguishable not-found behavior for invalid, disabled, and unknown invitations where appropriate.
+## Invitation token / slug boundary
 
-Do not place internal family or guest IDs in public URLs or client-visible mutation payloads when an opaque identifier can be used.
+Public invitation routes key off the **slug**. Production security expectations still include opaque non-guessable identifiers and hashed secrets where tokens are used. Behavior should:
+
+1. Generate sufficient random entropy on the server when regenerating tokens if the product still mints them.
+2. Prefer slug URLs for sharing (`/i/familia-ejemplo`).
+3. Store a one-way hash and a short non-sensitive preview when tokens are generated.
+4. Return indistinguishable not-found behavior for invalid, disabled, and unknown invitations where appropriate.
+
+Do not place internal family or guest IDs in public URLs. Guest UUIDs may appear only in authenticated/mutation payloads already tied to a validated invitation server-side.
 
 ## RSVP consistency and security
 
-The eventual server mutation must validate, within one consistent operation:
+The server mutation (`submit_family_rsvp`) must validate, within one consistent operation:
 
-- Token validity and family status.
-- RSVP open state and deadline using the configured event timezone.
-- Guest membership in the family.
+- Invitation slug validity and family status.
+- RSVP open state and deadline using the event timezone.
+- Guest membership in the family (exact set of guests).
 - Maximum guest capacity.
 - Allowed attendance states and input lengths.
-- Duplicate or concurrent submission behavior.
+- `needs_transport` only when the guest (and family) will attend.
+- **Valid `transport_boarding_point` when transport is requested**; clear boarding point when transport is not requested.
+- Duplicate or concurrent submission behavior (upsert family response).
 
-Client validation improves usability but is never an authorization boundary. Rate limiting and a honeypot should be added before public production use. CAPTCHA is deferred unless abuse justifies it.
+Client validation (Zod + RHF) improves usability but is never an authorization boundary. Rate limiting and a honeypot should remain enabled where implemented before public production use. CAPTCHA is deferred unless abuse justifies it.
 
 ## Authentication and authorization
 
-Guests do not create accounts; their invitation token grants narrowly scoped access to their family invitation workflow. Administrators authenticate through Supabase Auth.
+Guests do not create accounts; their invitation link grants narrowly scoped access to their family invitation workflow. Administrators authenticate through Supabase Auth.
 
-RLS must be enabled and reviewed before production. Admin pages require server-side authorization; hiding navigation in the client is not access control. Detailed policies belong to the future database/authentication phase.
+RLS remains deny-by-default for anon/authenticated on domain tables. Admin pages require server-side authorization after a signed-in allowlisted user; hiding navigation in the client is not access control.
+
+Fixed allowlist: `src/config/admin.ts`. Optional extras: `ADMIN_EMAIL` / `ADMIN_EMAILS`.
 
 ## UI and delivery constraints
 
@@ -137,8 +175,10 @@ The UI is mobile-first and must work in current Safari, Chrome, Edge, and WhatsA
 - Keyboard access, visible focus, semantic markup, and adequate contrast.
 - iPhone safe areas and mobile viewport behavior.
 - `prefers-reduced-motion`.
-- Optimized images through `next/image`.
+- Static invitation images under `/public/invitation/` (often `unoptimized` when paths are fixed brand assets).
 - No autoplay audio, heavy background video, or essential interaction dependent on animation.
+
+Invitation brand tokens and section behavior: `docs/invitation-ui.md`.
 
 ## Observability and privacy
 
@@ -148,8 +188,10 @@ Store only information required to manage the invitation. Do not collect identit
 
 ## Deployment direction
 
-The intended production path is GitHub private repository to Vercel, backed by a remote Supabase project and a domain managed through Cloudflare. Production deployment, remote project creation, DNS, email, and secret provisioning require their own authorized phase.
+The intended production path is GitHub private repository to Vercel, backed by a remote Supabase project and a domain managed through Cloudflare. CI runs lint/typecheck/build on every PR/push to main; Supabase migrations run only when migration files change (or manually).
+
+Production go-live checklists require their own authorized phase when not already done.
 
 ## Architectural decision policy
 
-Prefer the simplest reversible design that meets the current phase. Document meaningful deviations here or in a dedicated ADR if the decision has long-term consequences. A future possibility is not sufficient reason to add an abstraction now.
+Prefer the simplest reversible design that meets the current phase. Document meaningful deviations here or in `docs/invitation-ui.md` when the decision is presentation-specific. A future possibility is not sufficient reason to add an abstraction now.

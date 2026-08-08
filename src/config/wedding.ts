@@ -6,8 +6,8 @@
  */
 export const weddingConfig = {
   couple: {
-    partnerOne: "Nombre 1",
-    partnerTwo: "Nombre 2",
+    partnerOne: "Nychol",
+    partnerTwo: "Miguel",
   },
   event: {
     /** Colombia (America/Bogota). Hora provisional 16:00 hasta definir ceremonia. */
@@ -34,7 +34,8 @@ export const weddingConfig = {
   },
   cover: {
     greetingPrefix: "Querida",
-    subtitle: "¡Queremos celebrar contigo nuestro matrimonio!",
+    subtitle:
+      "Acompáñanos a celebrar nuestro matrimonio.\nPrometemos buena música, copas llenas y recuerdos inolvidables.\n¿Aceptas el reto de darlo todo en la pista?",
     ctaLabel: "Ver Invitación",
   },
   hero: {
@@ -49,12 +50,15 @@ export const weddingConfig = {
     body: "Queremos que disfruten la fiesta sin preocupaciones. Contaremos con servicio de transporte de ida y regreso desde Bogotá hacia la hacienda en Subachoque.",
     meetingPoints: [
       {
+        /** Stored on RSVP when guest needs bus transport. */
+        id: "modelia",
         title: "Punto de Encuentro #1 y Salida",
         place: "Calle 23B bis #75-48 Modelia",
         departureLabel: "Hora de salida hacia Subachoque",
         departureTime: "por confirmar",
       },
       {
+        id: "villa_sonia",
         title: "Punto de Encuentro #2 y Salida",
         place: "Calle 38B sur #50A-53 Villa Sonia",
         departureLabel: "Hora de salida hacia Subachoque",
@@ -69,7 +73,7 @@ export const weddingConfig = {
       departureTime: "2:00 AM",
     },
     confirmNote:
-      "Por favor confirma si harás uso del transporte para reservar tu cupo.",
+      "Por favor confirma si harás uso del transporte y desde qué punto de encuentro saldrás para reservar tu cupo.",
   },
   dressCode: {
     title: "Código de vestimenta",
@@ -136,7 +140,7 @@ export const weddingConfig = {
    * Filenames with spaces or & are fine; MediaFrame URL-encodes them for CSS.
    */
   assets: {
-    coverBackground: "/invitation/Nychol & Migue.png",
+    coverBackground: "/invitation/Boda 21.jpg",
     heroPhoto: "/invitation/Boda 3.jpg",
     venueBackground: "/invitation/Boda 19.jpg",
     couplePhoto: "/invitation/Imagen recortada.png",

@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 
 import { AdminShell } from "@/components/admin/admin-shell";
+import { admin } from "@/components/admin/admin-ui";
 import { FamilyDetailForm } from "@/components/admin/family-detail-form";
+import { formatTransportBoardingPoint } from "@/config/transport";
 import { getFamilyById } from "@/services/admin/families";
 
 type FamilyDetailPageProps = {
@@ -20,14 +22,16 @@ export default async function AdminFamilyDetailPage({
 
   return (
     <AdminShell title={family.displayName}>
-      <div className="mb-8 grid gap-4 rounded-2xl border border-[color:var(--ring)] bg-surface p-5 sm:grid-cols-3">
+      <div
+        className={`mb-8 grid gap-4 ${admin.card} p-5 sm:grid-cols-3`}
+      >
         <div>
-          <p className="text-xs tracking-wide text-muted uppercase">Estado</p>
-          <p className="mt-1 capitalize">{family.status}</p>
+          <p className={admin.eyebrow}>Estado</p>
+          <p className={`mt-1 capitalize ${admin.body}`}>{family.status}</p>
         </div>
         <div>
-          <p className="text-xs tracking-wide text-muted uppercase">RSVP</p>
-          <p className="mt-1">
+          <p className={admin.eyebrow}>RSVP</p>
+          <p className={`mt-1 ${admin.body}`}>
             {family.willAttend === null
               ? "Sin respuesta"
               : family.willAttend
@@ -36,45 +40,51 @@ export default async function AdminFamilyDetailPage({
           </p>
         </div>
         <div>
-          <p className="text-xs tracking-wide text-muted uppercase">Contacto RSVP</p>
-          <p className="mt-1 text-sm">
+          <p className={admin.eyebrow}>Contacto RSVP</p>
+          <p className={`mt-1 ${admin.body}`}>
             {family.contactEmail ?? family.contactPhone ?? "—"}
           </p>
         </div>
         <div>
-          <p className="text-xs tracking-wide text-muted uppercase">Transporte</p>
-          <p className="mt-1 text-sm">
+          <p className={admin.eyebrow}>Transporte</p>
+          <p className={`mt-1 ${admin.body}`}>
             {family.guestsTransportCount} invitado
             {family.guestsTransportCount === 1 ? "" : "s"} en bus
           </p>
         </div>
         {family.rsvpMessage ? (
           <div className="sm:col-span-3">
-            <p className="text-xs tracking-wide text-muted uppercase">Mensaje</p>
-            <p className="mt-1 text-sm">{family.rsvpMessage}</p>
+            <p className={admin.eyebrow}>Mensaje</p>
+            <p className={`mt-1 ${admin.body}`}>{family.rsvpMessage}</p>
           </div>
         ) : null}
       </div>
 
-      <div className="mb-8 rounded-2xl border border-[color:var(--ring)] bg-surface p-5">
-        <p className="text-xs tracking-wide text-muted uppercase">Invitados</p>
-        <ul className="mt-3 space-y-2 text-sm">
+      <div className={`mb-8 ${admin.card} p-5`}>
+        <p className={admin.eyebrow}>Invitados</p>
+        <ul className={`mt-3 space-y-2 ${admin.body}`}>
           {family.guests.map((guest) => (
             <li key={guest.id} className="flex flex-wrap gap-x-3 gap-y-1">
-              <span className="font-medium">{guest.fullName}</span>
-              <span className="text-muted capitalize">{guest.attendanceStatus}</span>
+              <span className="font-bold">{guest.fullName}</span>
+              <span className="capitalize text-cover-cta-fg/70">
+                {guest.attendanceStatus}
+              </span>
               {guest.needsTransport ? (
-                <span className="text-accent">Bus</span>
+                <span className="font-bold text-accent-deep">
+                  Bus · {formatTransportBoardingPoint(guest.transportBoardingPoint)}
+                </span>
               ) : null}
               {guest.dietaryRestrictions ? (
-                <span className="text-muted">{guest.dietaryRestrictions}</span>
+                <span className="text-cover-cta-fg/70">
+                  {guest.dietaryRestrictions}
+                </span>
               ) : null}
             </li>
           ))}
         </ul>
       </div>
 
-      <div className="max-w-xl rounded-2xl border border-[color:var(--ring)] bg-surface p-6 sm:p-8">
+      <div className={`max-w-xl ${admin.card} p-6 sm:p-8`}>
         <FamilyDetailForm family={family} />
       </div>
     </AdminShell>

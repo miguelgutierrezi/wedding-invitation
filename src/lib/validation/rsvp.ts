@@ -1,9 +1,21 @@
 import { z } from "zod";
 
+import {
+  isTransportBoardingPointId,
+  TRANSPORT_BOARDING_POINT_IDS,
+} from "@/config/transport";
+
+export const transportBoardingPointSchema = z.enum(TRANSPORT_BOARDING_POINT_IDS);
+
 export const rsvpGuestInputSchema = z.object({
   guestId: z.string().uuid(),
   willAttend: z.boolean(),
   needsTransport: z.boolean(),
+  /** Empty string in the form maps to null when not using the bus. */
+  transportBoardingPoint: z.union([
+    transportBoardingPointSchema,
+    z.literal(""),
+  ]),
   dietaryRestrictions: z.string().trim().max(500),
   menuOption: z.string().trim().max(120),
 });
@@ -61,6 +73,22 @@ export const submitRsvpSchema = z
           message: "El transporte solo aplica si el invitado asiste.",
           path: ["guests", index, "needsTransport"],
         });
+      }
+
+      const usesBus =
+        value.willAttend && guest.willAttend && guest.needsTransport;
+
+      if (usesBus) {
+        if (
+          !guest.transportBoardingPoint ||
+          !isTransportBoardingPointId(guest.transportBoardingPoint)
+        ) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Indica desde qué punto de encuentro saldrá.",
+            path: ["guests", index, "transportBoardingPoint"],
+          });
+        }
       }
     });
   });

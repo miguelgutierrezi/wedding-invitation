@@ -163,6 +163,26 @@ img[data-nimg="fill"] {
     radial-gradient(ellipse at 50% 40%, transparent 0%, rgba(8, 12, 10, 0.28) 100%);
 }
 
+/*
+ * Cover crop (Boda 21): on narrow screens mild left framing so the couple
+ * stays in frame; desktop stays centered.
+ */
+.cover-photo {
+  background-position: 37% center;
+}
+
+@media (min-width: 640px) {
+  .cover-photo {
+    background-position: 42% center;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cover-photo {
+    background-position: center;
+  }
+}
+
 /* Hero: light vignette so brand yellow type stays readable on photo. */
 .hero-overlay {
   background:

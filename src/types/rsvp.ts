@@ -19,6 +19,7 @@ export type RsvpResponseGuest = {
   guestId: string;
   willAttend: boolean;
   needsTransport: boolean;
+  transportBoardingPoint: string | null;
   dietaryRestrictions: string | null;
   menuOption: string | null;
   createdAt: string;

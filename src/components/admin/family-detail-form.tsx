@@ -7,6 +7,7 @@ import {
   regenerateInvitationAction,
   updateFamilyAction,
 } from "@/actions/admin/auth";
+import { admin } from "@/components/admin/admin-ui";
 import { CopyInvitationLink } from "@/components/admin/copy-invitation-link";
 import type { AdminFamilyDetail } from "@/services/admin/families";
 
@@ -25,11 +26,11 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
 
   return (
     <div className="space-y-10">
-      <div className="space-y-3 rounded-2xl border border-accent/25 bg-cream p-5">
-        <p className="text-sm font-medium text-accent">Enlace de invitación</p>
-        <p className="text-sm text-muted">
+      <div className={`${admin.panel} space-y-3 p-5`}>
+        <p className={admin.label}>Enlace de invitación</p>
+        <p className={admin.muted}>
           Slug:{" "}
-          <code className="rounded bg-white/70 px-1.5 py-0.5">
+          <code className="rounded bg-white/70 px-1.5 py-0.5 font-mono text-cover-cta-fg">
             {family.invitationSlug}
           </code>
         </p>
@@ -54,33 +55,33 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
       >
         <input type="hidden" name="familyId" value={family.id} />
 
-        <label className="grid gap-1.5 text-sm">
-          <span className="text-muted">Nombre de la familia</span>
+        <label className="grid gap-2">
+          <span className={admin.label}>Nombre de la familia</span>
           <input
             name="displayName"
             required
             defaultValue={family.displayName}
-            className="min-h-11 rounded-xl border border-[color:var(--ring)] bg-white/80 px-3 outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className={admin.input}
           />
         </label>
 
-        <label className="grid gap-1.5 text-sm">
-          <span className="text-muted">Slug de la URL (minúsculas)</span>
+        <label className="grid gap-2">
+          <span className={admin.label}>Slug de la URL (minúsculas)</span>
           <input
             name="invitationSlug"
             required
             defaultValue={family.invitationSlug}
             pattern="[a-z0-9]+(-[a-z0-9]+)*"
-            className="min-h-11 rounded-xl border border-[color:var(--ring)] bg-white/80 px-3 font-mono text-sm outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className={`${admin.input} font-mono text-sm`}
             placeholder="familia-gutierrez-panqueva"
           />
-          <span className="text-xs text-muted">
+          <span className={admin.muted}>
             La invitación queda en /i/{family.invitationSlug}
           </span>
         </label>
 
-        <label className="grid gap-1.5 text-sm">
-          <span className="text-muted">Cupos máximos</span>
+        <label className="grid gap-2">
+          <span className={admin.label}>Cupos máximos</span>
           <input
             type="number"
             name="maximumGuests"
@@ -92,38 +93,36 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
               const value = Number(event.target.value) || 1;
               setGuestCount(Math.min(30, Math.max(1, value)));
             }}
-            className="min-h-11 rounded-xl border border-[color:var(--ring)] bg-white/80 px-3 outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className={admin.input}
           />
         </label>
 
-        <label className="grid gap-1.5 text-sm">
-          <span className="text-muted">Mensaje personalizado</span>
+        <label className="grid gap-2">
+          <span className={admin.label}>Mensaje personalizado</span>
           <textarea
             name="customMessage"
             rows={3}
             defaultValue={family.customMessage ?? ""}
-            className="rounded-xl border border-[color:var(--ring)] bg-white/80 px-3 py-3 outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className={admin.textarea}
           />
         </label>
 
-        <label className="inline-flex min-h-11 cursor-pointer items-center gap-3 text-sm">
+        <label className="inline-flex min-h-11 cursor-pointer items-center gap-3">
           <input
             type="checkbox"
             name="isEnabled"
             value="true"
             defaultChecked={family.isEnabled}
-            className="size-4 accent-[color:var(--accent)]"
+            className="size-4 accent-[color:var(--accent-deep)]"
           />
-          <span>Invitación habilitada</span>
+          <span className={admin.body}>Invitación habilitada</span>
         </label>
 
         <fieldset className="space-y-3">
-          <legend className="text-sm font-semibold tracking-wide text-accent uppercase">
-            Invitados
-          </legend>
+          <legend className={admin.label}>Invitados</legend>
           {Array.from({ length: guestCount }, (_, index) => (
-            <label key={index} className="grid gap-1.5 text-sm">
-              <span className="text-muted">
+            <label key={index} className="grid gap-2">
+              <span className={admin.muted}>
                 Invitado {index + 1}
                 {family.guests[index]?.attendanceStatus
                   ? ` · ${family.guests[index].attendanceStatus}`
@@ -133,19 +132,19 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
                 name="guestNames"
                 required
                 defaultValue={family.guests[index]?.fullName ?? ""}
-                className="min-h-11 rounded-xl border border-[color:var(--ring)] bg-white/80 px-3 outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                className={admin.input}
               />
             </label>
           ))}
         </fieldset>
 
         {error ? (
-          <p className="text-sm text-red-700" role="alert">
+          <p className={admin.error} role="alert">
             {error}
           </p>
         ) : null}
         {message ? (
-          <p className="text-sm text-accent" role="status">
+          <p className={admin.alertSuccess} role="status">
             {message}
           </p>
         ) : null}
@@ -153,17 +152,17 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
         <button
           type="submit"
           disabled={isPending}
-          className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-foreground disabled:opacity-60"
+          className={admin.btnPrimary}
         >
           {isPending ? "Guardando…" : "Guardar cambios"}
         </button>
       </form>
 
-      <div className="border-t border-[color:var(--ring)] pt-8">
-        <h2 className="font-[family-name:var(--font-display)] text-xl text-accent">
+      <div className="border-t-2 border-cover-cta-fg/15 pt-8">
+        <h2 className="font-[family-name:var(--font-timer)] text-xl font-bold text-cover-cta-fg">
           Regenerar slug desde el nombre
         </h2>
-        <p className="mt-2 text-sm text-muted">
+        <p className={`mt-2 ${admin.muted}`}>
           Vuelve a generar el slug a partir del nombre de la familia (p. ej. Familia
           Gutiérrez Panqueva → familia-gutierrez-panqueva). El enlace anterior deja
           de funcionar.
@@ -184,7 +183,7 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
               router.refresh();
             });
           }}
-          className="mt-4 inline-flex min-h-11 items-center justify-center rounded-full border border-[color:var(--ring)] px-5 text-sm font-medium disabled:opacity-60"
+          className={`mt-4 ${admin.btnSecondary}`}
         >
           Regenerar slug
         </button>

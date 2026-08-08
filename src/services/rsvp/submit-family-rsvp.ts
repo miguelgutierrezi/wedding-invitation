@@ -41,6 +41,10 @@ function mapRpcError(message: string): string {
     return "Los invitados enviados no son válidos para esta familia.";
   }
 
+  if (message.includes("TRANSPORT_BOARDING_REQUIRED")) {
+    return "Indica el punto de encuentro del bus para cada invitado que lo use.";
+  }
+
   return "No se pudo guardar la confirmación. Inténtalo de nuevo.";
 }
 
@@ -51,6 +55,7 @@ export async function submitFamilyRsvp(input: {
     guestId: string;
     willAttend: boolean;
     needsTransport: boolean;
+    transportBoardingPoint: string;
     dietaryRestrictions: string;
     menuOption: string;
   }>;
@@ -61,14 +66,22 @@ export async function submitFamilyRsvp(input: {
   const supabase = createAdminClient();
   const invitationSlug = input.slug.trim().toLowerCase();
 
-  const guestResponses = input.guests.map((guest) => ({
-    guest_id: guest.guestId,
-    will_attend: input.willAttend ? guest.willAttend : false,
-    needs_transport:
-      input.willAttend && guest.willAttend ? guest.needsTransport : false,
-    dietary_restrictions: guest.dietaryRestrictions || null,
-    menu_option: guest.menuOption || null,
-  }));
+  const guestResponses = input.guests.map((guest) => {
+    const willAttend = input.willAttend ? guest.willAttend : false;
+    const needsTransport = willAttend ? guest.needsTransport : false;
+
+    return {
+      guest_id: guest.guestId,
+      will_attend: willAttend,
+      needs_transport: needsTransport,
+      transport_boarding_point:
+        needsTransport && guest.transportBoardingPoint
+          ? guest.transportBoardingPoint
+          : null,
+      dietary_restrictions: guest.dietaryRestrictions || null,
+      menu_option: guest.menuOption || null,
+    };
+  });
 
   const { data, error } = await supabase.rpc("submit_family_rsvp", {
     p_invitation_slug: invitationSlug,

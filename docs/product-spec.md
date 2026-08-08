@@ -1,10 +1,26 @@
 # Product specification: Wedding Invitation
 
-**Status:** product direction
+**Status:** product direction — invitation UI, admin, RSVP + transport boarding implemented; roadmap items still require `current-phase.md`
 
-**Last reviewed:** 2026-07-16
+**Last reviewed:** 2026-08-08
 
 Este documento define qué producto se quiere construir. No autoriza por sí mismo la implementación de todas sus secciones. El alcance actualmente permitido está únicamente en `docs/current-phase.md`, y las decisiones técnicas aprobadas están en `docs/architecture.md`.
+
+### Estado de implementación (2026-08)
+
+| Capacidad | Estado |
+|-----------|--------|
+| Invitación pública (Figma) | Implementada — ver **`docs/invitation-ui.md`** |
+| Nombres de pareja | **Nychol** & **Miguel** (`weddingConfig` + `events`) |
+| RSVP embebido | Asistencia por invitado, dietas, contacto |
+| Transporte (bus) | Opt-in + **punto de embarque obligatorio** (`modelia` / `villa_sonia`) |
+| Admin | Login, resumen, analytics, invitados, familias, enlaces |
+| Visual admin | Alineado con brand de invitación |
+| Export CSV / email / settings UI | No implementado |
+
+Config de copy y rutas de medios: **`src/config/wedding.ts`**. Ids de puntos de bus: **`src/config/transport.ts`**.
+
+Pendiente a nivel producto (salvo autorización en `current-phase.md`): export CSV, email, editor de settings en admin, CTAs externos (mapas, inspiración), horarios de salida del bus.
 
 ## 1. Propósito del proyecto
 
@@ -476,7 +492,13 @@ Preguntas sugeridas:
 
 ### RSVP
 
-Formulario de confirmación.
+Formulario de confirmación embebido en la invitación (no solo un botón aislado). Incluye:
+
+- Asistencia a nivel familia e invitado.
+- Opt-in de transporte (bus) por invitado que asiste.
+- **Punto de encuentro del bus** (obligatorio si usa transporte).
+- Restricciones alimentarias.
+- Contacto y mensaje opcional.
 
 ### Cierre
 
@@ -499,6 +521,8 @@ Debe permitir:
 - Seleccionar invitados individualmente.
 - Respetar el límite de cupos.
 - Registrar restricciones alimentarias por persona.
+- Registrar si cada asistente usará el bus de la invitación.
+- Si usará el bus, registrar **desde qué punto de encuentro** arranca (solo puntos definidos en config/producto).
 - Registrar teléfono opcional.
 - Registrar correo opcional.
 - Dejar un mensaje.
@@ -513,7 +537,7 @@ Nunca confiar solo en el navegador.
 
 Validaciones necesarias:
 
-- El token debe existir.
+- El token/slug debe existir.
 - La familia debe estar habilitada.
 - El RSVP debe estar abierto.
 - La fecha límite no debe haber vencido.
@@ -521,6 +545,8 @@ Validaciones necesarias:
 - Los invitados deben pertenecer a la familia.
 - Los datos deben validarse con Zod.
 - No se deben aceptar estados inválidos.
+- El transporte solo aplica a invitados que asisten.
+- Si un invitado usa transporte, el punto de embarque debe ser uno de los ids permitidos.
 - Se deben evitar envíos duplicados accidentales.
 
 ## Resultado esperado
@@ -576,6 +602,7 @@ event_id
 display_name
 invitation_token_hash
 invitation_token_preview
+invitation_slug
 maximum_guests
 custom_message
 status
@@ -597,9 +624,13 @@ phone
 attendance_status
 dietary_restrictions
 menu_option
+needs_transport
+transport_boarding_point
 created_at
 updated_at
 ```
+
+`transport_boarding_point`: nullable; values in use: `modelia`, `villa_sonia`. Required when `needs_transport` is true for an attending guest (enforced in RPC + Zod).
 
 Estados:
 
@@ -632,6 +663,8 @@ guest_id
 will_attend
 dietary_restrictions
 menu_option
+needs_transport
+transport_boarding_point
 created_at
 updated_at
 ```
@@ -842,50 +875,64 @@ src/config/wedding.ts
 
 Debe contener datos de ejemplo tipados.
 
-Ejemplo de estructura:
+Ejemplo de estructura (ilustrativo; la fuente real del repo es el archivo):
 
 ```ts
 export const weddingConfig = {
   couple: {
-    partnerOne: "Nombre 1",
-    partnerTwo: "Nombre 2",
+    partnerOne: "Nychol",
+    partnerTwo: "Miguel",
   },
   event: {
-    date: "2027-01-01T16:00:00-05:00",
+    date: "2026-10-24T16:00:00-05:00",
     timezone: "America/Bogota",
-    rsvpDeadline: "2026-12-01T23:59:59-05:00",
+    rsvpDeadline: "2026-09-04T23:59:59-05:00",
   },
   ceremony: {
-    name: "Lugar de la ceremonia",
-    address: "Dirección",
+    name: "Hacienda Montecano",
+    address: "km 2.5 a 3 de la vía Subachoque - El Rosal",
     mapsUrl: "",
     wazeUrl: "",
   },
   reception: {
     name: "Lugar de la recepción",
-    address: "Dirección",
+    address: "Lugar por definir",
     mapsUrl: "",
     wazeUrl: "",
   },
+  transport: {
+    meetingPoints: [
+      {
+        id: "modelia",
+        title: "Punto de Encuentro #1 y Salida",
+        place: "Calle 23B bis #75-48 Modelia",
+      },
+      {
+        id: "villa_sonia",
+        title: "Punto de Encuentro #2 y Salida",
+        place: "Calle 38B sur #50A-53 Villa Sonia",
+      },
+    ],
+  },
   dressCode: {
-    title: "Formal",
+    title: "FORMAL ELEGANTE",
     description: "",
   },
   gifts: {
-    title: "Regalos",
+    title: "Mesa de regalos",
     description: "",
   },
   features: {
     countdown: true,
-    timeline: true,
+    timeline: false,
     gifts: true,
-    faq: true,
+    faq: false,
     music: false,
   },
 } as const;
 ```
 
-No dispersar textos del evento en múltiples componentes.
+Los **ids** de `meetingPoints` son contrato con Zod, RPC y constraints SQL. No dispersar textos del evento en múltiples componentes.
 
 ---
 
@@ -1103,15 +1150,16 @@ Rutas esperadas:
 ```text
 /admin/login
 /admin
+/admin/analytics
+/admin/guests
 /admin/families
 /admin/families/new
 /admin/families/[id]
-/admin/guests
-/admin/responses
-/admin/settings
+/admin/responses   (roadmap; guests + analytics cover much of this today)
+/admin/settings    (roadmap; not implemented)
 ```
 
-Dashboard:
+Dashboard / analytics:
 
 - Total de invitados.
 - Cupos asignados.
@@ -1121,6 +1169,9 @@ Dashboard:
 - Familias respondidas.
 - Familias pendientes.
 - Restricciones alimentarias.
+- Cupos de bus.
+- **Desglose de cupos de bus por punto de encuentro.**
+- Tasa de respuesta de familias e invitados.
 - Fecha límite.
 
 Tabla de familias:
@@ -1324,7 +1375,7 @@ No debe incluir inicialmente:
 
 # 29. Handoff histórico: Project Foundation
 
-> Esta sección y las secciones 30–31 se conservan como contexto histórico del handoff inicial. Pueden estar desactualizadas y no deben usarse como checklist operativo. La fuente vigente y verificable es `docs/current-phase.md`; las reglas permanentes están en `AGENTS.md`.
+> Esta sección y las secciones 30–31 se conservan como contexto histórico del handoff inicial. Pueden estar desactualizadas y no deben usarse como checklist operativo. La fuente vigente y verificable es `docs/current-phase.md`; las reglas permanentes están en `AGENTS.md`. El UI de la invitación se documenta en `docs/invitation-ui.md`.
 
 El entorno ya está listo.
 
@@ -1558,16 +1609,23 @@ Durante el trabajo:
 9. Mantén el proyecto ejecutable.
 10. Ejecuta validaciones al final.
 
-No inventes datos reales del matrimonio.
+No inventes datos reales del matrimonio más allá de lo ya confirmado en el repositorio.
 
-Utiliza placeholders como:
+Confirmado en producto:
 
 ```text
-Nombre 1
-Nombre 2
-Fecha por definir
+Nychol
+Miguel
+```
+
+Para datos aún no definidos (horarios de bus, URLs de mapas, etc.), usa placeholders como:
+
+```text
+por confirmar
 Lugar por definir
 ```
+
+(URL vacía deshabilita el CTA; no inventar links.)
 
 Cuando encuentres una decisión no definida:
 

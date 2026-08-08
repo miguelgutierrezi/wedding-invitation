@@ -1,14 +1,26 @@
 # Wedding Invitation
 
-Aplicación web full stack para una invitación de matrimonio personalizada y la gestión de confirmaciones de aproximadamente 90 invitados.
+Aplicación web full stack para la invitación de matrimonio de **Nychol y Miguel** y la gestión de confirmaciones de aproximadamente 90 invitados.
 
-Cada familia recibirá un enlace privado para consultar la información del evento y confirmar la asistencia de sus integrantes. La aplicación incluirá posteriormente un panel administrativo privado, restricciones alimentarias y exportación CSV.
+Cada familia recibe un enlace privado (`/i/[slug]`) para ver la invitación y confirmar la asistencia de sus integrantes (incluyendo cupos de bus y punto de embarque). Incluye un panel administrativo privado con la misma identidad visual de la invitación.
 
 ## Estado actual
 
-El proyecto está en la fase **Admin panel**. Hay invitación pública en `/i/[token]`, RSVP, schema Supabase y despliegue cloud. El panel `/admin` gestiona familias e invitaciones (login Supabase Auth).
+| Área | Estado |
+|------|--------|
+| Invitación pública | Implementada y alineada con Figma ([`docs/invitation-ui.md`](docs/invitation-ui.md)) |
+| Nombres | Nychol & Miguel (`weddingConfig` + `events` vía migración) |
+| RSVP | Formulario embebido: asistencia, bus, **punto de encuentro**, dietas, contacto |
+| Admin `/admin` | Login, resumen, analytics (incluido bus por punto), invitados, familias |
+| Visual admin | Misma paleta/tipografía que la invitación (`admin-ui.ts`) |
+| Export CSV / email | Pendientes de fase futura |
 
-El alcance autorizado y su checklist se encuentran en [`docs/current-phase.md`](docs/current-phase.md).
+El alcance autorizado se define solo en [`docs/current-phase.md`](docs/current-phase.md).
+
+### Enlaces locales útiles
+
+- Invitación (slugs de seed): ver abajo
+- Admin: [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
 
 ### Usuario administrador (local o cloud)
 
@@ -16,15 +28,46 @@ El alcance autorizado y su checklist se encuentran en [`docs/current-phase.md`](
    - `migueangel97@hotmail.com`
    - `nycholpg@gmail.com`
    (ambos están siempre en la allowlist de `src/config/admin.ts`).
-2. Abre [http://localhost:3000/admin/login](http://localhost:3000/admin/login) (o tu dominio + `/admin/login`).
+2. Abre `/admin/login` en local o en tu dominio.
 
-Assets de invitación (cuando los exportes):
+Opcional: emails adicionales con `ADMIN_EMAIL` / `ADMIN_EMAILS` en el entorno.
+
+### Assets de invitación
+
+Medios en:
 
 ```text
 public/invitation/
 ```
 
-Rutas esperadas documentadas en `public/invitation/` y enlazadas desde `src/config/wedding.ts` (`assets`).
+Rutas enlazadas desde `src/config/wedding.ts` (`assets`). Inventario y reglas de diseño: [`docs/invitation-ui.md`](docs/invitation-ui.md).
+
+Principales archivos:
+
+```text
+Boda 21.jpg          # portada
+Nychol & Migue.png   # cierre
+Boda 3.jpg           # hero
+Boda 19.jpg          # banda de lugar
+Imagen recortada.png # foto pareja
+chiva.png            # transporte
+cabezas.png          # código de vestimenta
+paleta sugerida.png / paleta colores.png
+Boda 1–23.jpg        # galería (orden y exclusiones en wedding.ts)
+```
+
+### Transporte y RSVP
+
+Puntos de encuentro (ids estables en config y DB):
+
+| Id | Dirección (copy actual) |
+|----|-------------------------|
+| `modelia` | Calle 23B bis #75-48 Modelia |
+| `villa_sonia` | Calle 38B sur #50A-53 Villa Sonia |
+
+Si un invitado confirma bus, el formulario **exige** elegir un punto. Admin/analytics agrupan cupos por punto.
+
+Helpers: `src/config/transport.ts`. Migración: `supabase/migrations/20260808120000_couple_names_and_transport_boarding.sql`.
 
 ## Stack
 
@@ -57,6 +100,12 @@ La aplicación estará disponible en [http://localhost:3000](http://localhost:30
 supabase status
 ```
 
+Tras clonar o cambiar migraciones:
+
+```bash
+supabase db reset   # aplica migraciones + seed (local)
+```
+
 No se deben compartir ni subir a Git los valores reales de `.env.local`.
 
 ## Variables de entorno
@@ -68,9 +117,11 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 RESEND_API_KEY=
 ADMIN_NOTIFICATION_EMAIL=
+ADMIN_EMAIL=
+ADMIN_EMAILS=
 ```
 
-`SUPABASE_SERVICE_ROLE_KEY` es exclusivamente para código de servidor. Resend está previsto para una fase futura y la aplicación debe funcionar sin correo durante el desarrollo inicial.
+`SUPABASE_SERVICE_ROLE_KEY` es exclusivamente para código de servidor. Resend está previsto para una fase futura; la aplicación debe funcionar sin correo en desarrollo.
 
 ## Comandos
 
@@ -97,50 +148,60 @@ supabase db reset   # aplica migraciones + seed.sql
 | [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | Todo push y PR a `main` | `pnpm lint`, `pnpm typecheck`, `pnpm build` |
 | [`.github/workflows/supabase-migrate.yml`](.github/workflows/supabase-migrate.yml) | Push a `main` si cambian migraciones, o manual | `supabase db push --db-url …` al proyecto cloud |
 
-Migraciones **no** corren en cada push de UI: solo cuando tocas `supabase/migrations/**` (o *Run workflow*). Así no intentas `db push` en cada cambio de componente.
+Migraciones **no** corren en cada push de UI: solo cuando tocas `supabase/migrations/**` (o *Run workflow*).
 
-El workflow **no usa** `supabase link` (la CLI en CI a veces falla parseando la API de keys). Construye la URL de Postgres con:
+El workflow de migraciones **no usa** `supabase link`. Secrets típicos: `SUPABASE_PROJECT_REF` + `SUPABASE_DB_PASSWORD`, o `SUPABASE_DB_URL`.
 
-- Secrets: `SUPABASE_PROJECT_REF` + `SUPABASE_DB_PASSWORD`
-- Opcional: `SUPABASE_DB_URL` (URI completa del dashboard; tiene prioridad)
-
-`SUPABASE_ACCESS_TOKEN` ya no es necesario para migrar.
-
-Tokens de desarrollo del seed (solo local):
+### Enlaces de desarrollo (seed local)
 
 ```text
 familia-ejemplo  →  http://localhost:3000/i/familia-ejemplo
 familia-demo     →  http://localhost:3000/i/familia-demo
 ```
 
-El hash SHA-256 de esos tokens es lo que queda guardado en `families.invitation_token_hash`. Recuerda copiar las claves de `supabase status` a `.env.local` antes de probar el RSVP.
+Cuerpo completo de la invitación:
+
+```text
+http://localhost:3000/i/familia-ejemplo/invitacion
+```
+
+Copia las claves de `supabase status` a `.env.local` antes de probar el RSVP. Con `db reset`, también se aplican los nombres del evento y la columna de punto de embarque.
 
 ## Arquitectura y documentación
 
 - [`AGENTS.md`](AGENTS.md): reglas permanentes para agentes de código.
-- [`docs/current-phase.md`](docs/current-phase.md): único alcance autorizado en este momento.
+- [`docs/current-phase.md`](docs/current-phase.md): alcance autorizado actual y estado del repo.
+- [`docs/invitation-ui.md`](docs/invitation-ui.md): diseño Figma, tokens, assets, RSVP boarding, admin brand.
 - [`docs/product-spec.md`](docs/product-spec.md): requisitos y visión del producto.
 - [`docs/architecture.md`](docs/architecture.md): arquitectura y límites técnicos.
 
-La aplicación es un único proyecto Next.js full stack. Next.js corre directamente mediante pnpm y Supabase corre localmente en Docker a través de Supabase CLI. Los Server Components son la opción predeterminada; los Client Components se reservan para interacción en el navegador.
+La aplicación es un único proyecto Next.js full stack. Server Components por defecto; Client Components solo para interacción en el navegador (countdown, galería, formulario RSVP).
 
 ## Flujo de trabajo
 
-Antes de implementar, leer `AGENTS.md` y `docs/current-phase.md`. No se deben implementar fases futuras sin autorización explícita.
+Antes de implementar, leer `AGENTS.md` y `docs/current-phase.md`. No implementar fases futuras sin autorización en `current-phase.md` o petición explícita del usuario.
 
-Antes de declarar una tarea terminada, ejecutar los checks relevantes y reportar cuáles se ejecutaron. Nunca afirmar que un check pasó si no fue ejecutado.
+Para cambios de copy, media o layout de invitación, preferir `wedding.ts` + `docs/invitation-ui.md`. Nuevos puntos de bus requieren migración SQL + `transport.ts`.
+
+Antes de declarar una tarea terminada, ejecutar los checks relevantes y reportar cuáles se ejecutaron.
 
 ## Datos del matrimonio
 
-Los datos reales aún no están definidos ni deben inventarse. Durante la fase actual se utilizan placeholders claramente identificados, por ejemplo:
+Ya confirmados o configurados en producto / seed:
 
-```text
-Nombre 1
-Nombre 2
-Fecha por definir
-Lugar por definir
-```
+- Novios: **Nychol** y **Miguel**
+- Fecha: 24 de octubre de 2026
+- Lugar (copy actual): Hacienda Montecano, vía Subachoque–El Rosal
+- RSVP deadline (config/DB): 4 de septiembre de 2026
+- Dos puntos de bus en Bogotá (Modelia y Villa Sonia)
+
+Pendientes o vacíos hasta que se indiquen (no inventar):
+
+- URLs de mapas / Waze / inspiración de vestimenta
+- Horas de salida del bus hacia Subachoque (“por confirmar”)
+
+No inventar datos sensibles ni secretos.
 
 ## Despliegue
 
-El destino previsto es Vercel con Supabase remoto y Cloudflare DNS. El despliegue a producción no forma parte de la fase actual.
+Destino: Vercel + Supabase remoto + Cloudflare DNS. El checklist de go-live de producción se autoriza por fase en `docs/current-phase.md`. Asegura que la migración de boarding point y nombres esté aplicada en el Supabase de producción antes de confiar en RSVPs con bus.

@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { AdminShell } from "@/components/admin/admin-shell";
+import { admin } from "@/components/admin/admin-ui";
 import { listFamilies } from "@/services/admin/families";
 
 function formatDate(iso: string | null): string {
@@ -24,22 +25,19 @@ export default async function AdminFamiliesPage() {
   return (
     <AdminShell title="Familias">
       <div className="mb-6 flex justify-end">
-        <Link
-          href="/admin/families/new"
-          className="inline-flex min-h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-foreground"
-        >
+        <Link href="/admin/families/new" className={admin.btnPrimary}>
           Nueva familia
         </Link>
       </div>
 
       {families.length === 0 ? (
-        <p className="text-sm text-muted">
+        <p className={admin.muted}>
           Aún no hay familias. Crea la primera para generar un enlace.
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-[color:var(--ring)] bg-surface">
-          <table className="min-w-full text-left text-sm">
-            <thead className="border-b border-[color:var(--ring)] bg-cream/80 text-xs tracking-wide text-muted uppercase">
+        <div className={admin.tableShell}>
+          <table className="min-w-full text-left text-sm font-[family-name:var(--font-timer)]">
+            <thead className={admin.tableHead}>
               <tr>
                 <th className="px-4 py-3 font-medium">Familia</th>
                 <th className="px-4 py-3 font-medium">Cupos</th>
@@ -52,38 +50,35 @@ export default async function AdminFamiliesPage() {
             </thead>
             <tbody>
               {families.map((family) => (
-                <tr
-                  key={family.id}
-                  className="border-b border-[color:var(--ring)] last:border-0"
-                >
-                  <td className="px-4 py-3 font-medium text-foreground">
+                <tr key={family.id} className={admin.tableRow}>
+                  <td className="px-4 py-3 font-medium text-cover-cta-fg">
                     <div>{family.displayName}</div>
-                    <div className="mt-0.5 font-mono text-xs font-normal text-muted">
+                    <div className="mt-0.5 font-mono text-xs font-normal text-cover-cta-fg/65">
                       /i/{family.invitationSlug}
                     </div>
                     {!family.isEnabled ? (
-                      <span className="ml-0 text-xs text-red-700">off</span>
+                      <span className="ml-0 text-xs text-red-800">off</span>
                     ) : null}
                   </td>
-                  <td className="px-4 py-3 text-muted">
+                  <td className="px-4 py-3 text-cover-cta-fg/75">
                     {family.guestCount}/{family.maximumGuests}
                   </td>
-                  <td className="px-4 py-3 text-muted">
+                  <td className="px-4 py-3 text-cover-cta-fg/75">
                     {family.confirmedGuestCount ?? "—"}
                   </td>
-                  <td className="px-4 py-3 capitalize text-muted">
+                  <td className="px-4 py-3 capitalize text-cover-cta-fg/75">
                     {family.status}
                   </td>
-                  <td className="px-4 py-3 text-muted">
+                  <td className="px-4 py-3 text-cover-cta-fg/75">
                     {formatDate(family.lastOpenedAt)}
                   </td>
-                  <td className="px-4 py-3 text-muted">
+                  <td className="px-4 py-3 text-cover-cta-fg/75">
                     {formatDate(family.submittedAt)}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <Link
                       href={`/admin/families/${family.id}`}
-                      className="inline-flex min-h-11 items-center text-sm font-medium text-accent underline-offset-4 hover:underline"
+                      className={admin.link}
                     >
                       Ver
                     </Link>

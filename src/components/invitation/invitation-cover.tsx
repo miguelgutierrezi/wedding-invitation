@@ -24,9 +24,10 @@ export function InvitationCover({ displayName, slug }: InvitationCoverProps) {
       <MediaFrame
         src={assets.coverBackground || undefined}
         alt="Fondo de bosque para la portada"
-        className="absolute inset-0"
+        className="cover-photo absolute inset-0"
         overlayClassName="cover-overlay"
         label="Fondo portada"
+        backgroundPosition={false}
       />
 
       <div className="relative z-10 mx-auto flex w-full min-w-0 max-w-full flex-col items-center gap-10 px-0 text-center sm:gap-14">
@@ -34,7 +35,7 @@ export function InvitationCover({ displayName, slug }: InvitationCoverProps) {
           {cover.greetingPrefix} {displayName}
         </p>
 
-        <p className="max-w-[min(22rem,100%)] font-[family-name:var(--font-cover-serif)] text-[clamp(0.8125rem,2.4vw,1.125rem)] leading-[1.4] font-bold text-on-dark-label uppercase sm:max-w-md">
+        <p className="max-w-[min(28rem,100%)] whitespace-pre-line font-[family-name:var(--font-cover-serif)] text-[clamp(0.875rem,2.6vw,1.2rem)] leading-[1.55] font-bold text-on-dark-label uppercase sm:max-w-lg">
           {cover.subtitle}
         </p>
 

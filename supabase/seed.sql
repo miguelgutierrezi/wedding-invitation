@@ -25,10 +25,10 @@ insert into public.events (
 )
 values (
   '11111111-1111-4111-8111-111111111111',
-  'nombre-1-nombre-2',
-  'Matrimonio Nombre 1 & Nombre 2',
-  'Nombre 1',
-  'Nombre 2',
+  'nychol-miguel',
+  'Matrimonio Nychol & Miguel',
+  'Nychol',
+  'Miguel',
   '2026-10-24T16:00:00-05:00',
   'America/Bogota',
   '2026-09-04T23:59:59-05:00',

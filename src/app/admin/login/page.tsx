@@ -1,4 +1,5 @@
 import { AdminLoginForm } from "@/components/admin/admin-login-form";
+import { admin } from "@/components/admin/admin-ui";
 
 type AdminLoginPageProps = {
   searchParams: Promise<{
@@ -18,16 +19,12 @@ export default async function AdminLoginPage({
 
   return (
     <main className="mx-auto flex w-full min-w-0 flex-1 flex-col justify-center px-6 py-16 sm:max-w-md">
-      <p className="text-xs font-medium tracking-[0.18em] text-muted uppercase">
-        Panel privado
-      </p>
-      <h1 className="mt-3 font-[family-name:var(--font-display)] text-3xl text-foreground">
-        Iniciar sesión
-      </h1>
-      <p className="mt-2 text-sm text-muted">
+      <p className={admin.eyebrow}>Panel privado</p>
+      <h1 className={`mt-3 ${admin.title}`}>Iniciar sesión</h1>
+      <p className={`mt-2 ${admin.muted}`}>
         Solo cuentas de administración pueden acceder.
       </p>
-      <div className="mt-8 rounded-2xl border border-[color:var(--ring)] bg-surface p-6 shadow-[0_20px_50px_-36px_rgba(31,42,36,0.5)]">
+      <div className={`mt-8 ${admin.card} p-6 sm:p-8`}>
         <AdminLoginForm
           nextPath={nextPath}
           errorFromQuery={params.error ?? null}

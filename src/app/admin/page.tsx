@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { AdminShell } from "@/components/admin/admin-shell";
+import { admin } from "@/components/admin/admin-ui";
 import { getDashboardMetrics } from "@/services/admin/families";
 
 function formatDate(iso: string | null): string {
@@ -34,43 +35,27 @@ export default async function AdminDashboardPage() {
 
   return (
     <AdminShell title="Resumen">
-      <p className="text-sm text-muted">
+      <p className={admin.muted}>
         {metrics.eventName ?? "Evento"} · Límite RSVP:{" "}
         {formatDate(metrics.rsvpDeadline)}
       </p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((card) => (
-          <div
-            key={card.label}
-            className="rounded-2xl border border-[color:var(--ring)] bg-surface px-5 py-4"
-          >
-            <p className="text-xs font-medium tracking-[0.16em] text-muted uppercase">
-              {card.label}
-            </p>
-            <p className="mt-2 font-[family-name:var(--font-display)] text-3xl text-foreground">
-              {card.value}
-            </p>
+          <div key={card.label} className={`${admin.card} px-5 py-4`}>
+            <p className={admin.eyebrow}>{card.label}</p>
+            <p className={`mt-2 ${admin.metricValue}`}>{card.value}</p>
           </div>
         ))}
       </div>
       <div className="mt-10 flex flex-wrap gap-3">
-        <Link
-          href="/admin/analytics"
-          className="inline-flex min-h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-foreground"
-        >
+        <Link href="/admin/analytics" className={admin.btnPrimary}>
           Ver analytics
         </Link>
-        <Link
-          href="/admin/guests"
-          className="inline-flex min-h-11 items-center rounded-full border border-[color:var(--ring)] px-5 text-sm font-medium"
-        >
+        <Link href="/admin/guests" className={admin.btnSecondary}>
           Ver invitados
         </Link>
-        <Link
-          href="/admin/families"
-          className="inline-flex min-h-11 items-center rounded-full border border-[color:var(--ring)] px-5 text-sm font-medium"
-        >
+        <Link href="/admin/families" className={admin.btnSecondary}>
           Ver familias
         </Link>
       </div>

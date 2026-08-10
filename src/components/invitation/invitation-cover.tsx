@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+import { InvitationOpenButton } from "@/components/invitation/invitation-open-button";
 import { MediaFrame } from "@/components/invitation/media-frame";
 import { weddingConfig } from "@/config/wedding";
 
@@ -39,12 +38,11 @@ export function InvitationCover({ displayName, slug }: InvitationCoverProps) {
           {cover.subtitle}
         </p>
 
-        <Link
-          href={`/i/${encodeURIComponent(slug)}/invitacion`}
+        <InvitationOpenButton
+          slug={slug}
+          label={cover.ctaLabel}
           className="inline-flex max-w-full min-h-11 items-center justify-center rounded-full bg-cover-cta-bg px-8 py-4 font-[family-name:var(--font-timer)] text-[clamp(1.125rem,3.5vw,2.5rem)] leading-none text-cover-cta-fg transition-[transform,background-color,opacity] hover:bg-[#d8d8d8] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-transparent focus-visible:outline-none active:scale-[0.98] sm:min-h-14 sm:px-12 sm:py-8"
-        >
-          {cover.ctaLabel}
-        </Link>
+        />
       </div>
     </section>
   );

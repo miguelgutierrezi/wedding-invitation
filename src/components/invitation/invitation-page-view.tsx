@@ -5,6 +5,7 @@ import { InvitationFooter } from "@/components/invitation/invitation-footer";
 import { InvitationGallery } from "@/components/invitation/invitation-gallery";
 import { InvitationGifts } from "@/components/invitation/invitation-gifts";
 import { InvitationHero } from "@/components/invitation/invitation-hero";
+import { InvitationMusicControl } from "@/components/invitation/invitation-music-control";
 import { InvitationRsvpSection } from "@/components/invitation/invitation-rsvp-section";
 import { InvitationTransport } from "@/components/invitation/invitation-transport";
 import { InvitationVenue } from "@/components/invitation/invitation-venue";
@@ -58,6 +59,8 @@ export function InvitationPageView({
 
   return (
     <div className="page-shell flex min-h-full flex-1 flex-col bg-background">
+      <InvitationMusicControl />
+
       <InvitationHero
         partnerOneName={event.partnerOneName}
         partnerTwoName={event.partnerTwoName}
@@ -73,6 +76,9 @@ export function InvitationPageView({
         venueAddress={weddingConfig.ceremony.address}
         timeLabel={weddingConfig.ceremony.timeLabel}
         mapsUrl={weddingConfig.ceremony.mapsUrl}
+        wazeUrl={weddingConfig.ceremony.wazeUrl}
+        appleMapsUrl={weddingConfig.ceremony.appleMapsUrl}
+        mapsEmbedUrl={weddingConfig.ceremony.mapsEmbedUrl}
       />
 
       <InvitationTransport />

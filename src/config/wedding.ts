@@ -23,14 +23,20 @@ export const weddingConfig = {
     name: "Hacienda Montecano",
     address: "km 2.5 a 3 de la vía Subachoque - El Rosal",
     timeLabel: "3pm",
-    mapsUrl: "",
-    wazeUrl: "",
+    mapsUrl: "https://maps.app.goo.gl/aXAA6dkvQoxEQraq7",
+    wazeUrl:
+      "https://ul.waze.com/ul?venue_id=187301937.1873084906.12205366&overview=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location",
+    appleMapsUrl: "https://maps.apple/p/5JD0xP-DeUvk8Z",
+    mapsEmbedUrl:
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3975.220452381668!2d-74.19447552485079!3d4.902733539872669!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e407fb6f825f57b%3A0xe74f3b433c5c1328!2sHacienda%20Montecano%20%7C%20Esencia%20de%20Bodas!5e0!3m2!1ses!2sco!4v1786329962346!5m2!1ses!2sco",
   },
   reception: {
     name: "Lugar de la recepción",
     address: "Lugar por definir",
     mapsUrl: "",
     wazeUrl: "",
+    appleMapsUrl: "",
+    mapsEmbedUrl: "",
   },
   cover: {
     greetingPrefix: "Querida",
@@ -43,7 +49,10 @@ export const weddingConfig = {
   },
   venue: {
     title: "Lugar",
-    mapsCtaLabel: "Ver Ubicación",
+    mapsCtaLabel: "Google Maps",
+    wazeCtaLabel: "Waze",
+    appleMapsCtaLabel: "Apple Maps",
+    directionsLabel: "Cómo llegar",
   },
   transport: {
     title: "Transporte",
@@ -174,13 +183,19 @@ export const weddingConfig = {
     dressCodePhoto: "/invitation/cabezas.png",
     allowedPaletteImage: "/invitation/paleta sugerida.png",
     forbiddenPaletteImage: "/invitation/paleta colores.png",
+    /**
+     * Background track for the invitation body.
+     * Place the file under public/invitation/ (mp3 recommended).
+     * Plays after the guest taps “Ver Invitación” (browser autoplay rules).
+     */
+    music: "/invitation/soundtrack.mp3",
   },
   features: {
     countdown: true,
     timeline: false,
     gifts: true,
     faq: false,
-    music: false,
+    music: true,
   },
 } as const;
 

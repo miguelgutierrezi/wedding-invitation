@@ -1,7 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
+/**
+ * Edge proxy for admin auth gate + Supabase session cookie refresh.
+ * (Next.js 16+: former `middleware` convention.)
+ */
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   });

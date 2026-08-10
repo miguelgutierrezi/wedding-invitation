@@ -35,13 +35,33 @@ function pad(value: number): string {
   return value.toString().padStart(2, "0");
 }
 
+/** Floored to the current second so snapshot stays stable within a tick. */
+function nowSecondMs(): number {
+  return Math.floor(Date.now() / 1000) * 1000;
+}
+
+/**
+ * Cached client clock. React requires getSnapshot to return the same value
+ * until the store notifies a change (Date.now() each call causes an infinite loop).
+ */
+let clientNowSnapshot = nowSecondMs();
+
 function subscribeToSecondTicks(onStoreChange: () => void): () => void {
-  const id = window.setInterval(onStoreChange, 1000);
+  clientNowSnapshot = nowSecondMs();
+
+  const id = window.setInterval(() => {
+    const next = nowSecondMs();
+    if (next !== clientNowSnapshot) {
+      clientNowSnapshot = next;
+      onStoreChange();
+    }
+  }, 250);
+
   return () => window.clearInterval(id);
 }
 
 function getClientNow(): number {
-  return Date.now();
+  return clientNowSnapshot;
 }
 
 /** Stable server snapshot; client hydrates with live clock via store. */

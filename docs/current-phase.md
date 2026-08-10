@@ -120,6 +120,5 @@ Residual optional: smoke test in production with allowlisted admin + first real 
 
 - Guest delete may fail if RSVP response rows still reference the guest.
 - Event metadata is not editable in admin UI (row comes from seed/migrations).
-- Middleware deprecation warning in Next.js 16 (`middleware` → future `proxy`); still functional.
 - Inspiration URLs and maps may still be empty strings until provided.
 - Environments without the latest migration cannot save RSVPs that request bus transport correctly.

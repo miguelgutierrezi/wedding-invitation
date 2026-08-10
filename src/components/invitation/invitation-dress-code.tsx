@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 
 import { weddingConfig } from "@/config/wedding";
+import { cn } from "@/lib/utils";
 
 function InspirationCta({ href, children }: { href: string; children: ReactNode }) {
   const className =
@@ -47,20 +48,30 @@ type GenderBlockProps = {
   items: readonly string[];
   inspirationHref: string;
   inspirationLabel: string;
+  /** Desktop: pin to outer column edge (start = ELLOS left, end = ELLAS right). */
+  align?: "center" | "start" | "end";
 };
 
 /**
- * Centered content column: keeps title/list/CTA as one block so ultra-wide
- * side columns do not pin the copy to the outer edges.
+ * Content column for men/women guidance.
+ * On desktop, outer columns hug the edges so palette copy can match that span.
  */
 function GenderBlock({
   title,
   items,
   inspirationHref,
   inspirationLabel,
+  align = "center",
 }: GenderBlockProps) {
+  const justifyClass =
+    align === "start"
+      ? "justify-center lg:justify-start"
+      : align === "end"
+        ? "justify-center lg:justify-end"
+        : "justify-center";
+
   return (
-    <div className="flex h-full w-full justify-center">
+    <div className={cn("flex h-full w-full", justifyClass)}>
       <div className="flex h-full w-full max-w-[18rem] flex-col items-center gap-6 sm:max-w-xs xl:max-w-sm">
         <h3 className="w-full text-center font-[family-name:var(--font-timer)] text-[clamp(1.125rem,2.4vw,1.75rem)] leading-8 font-bold">
           {title}
@@ -81,16 +92,16 @@ function DressCodePhoto({ className }: { className?: string }) {
   const src = weddingConfig.assets.dressCodePhoto;
   if (!src) return null;
 
-  // Natural art is ~745×1033; object-cover was cropping feet.
+  // Natural art is ~745×1033; object-contain so feet stay visible.
   return (
-    <div className={`mx-auto w-full max-w-xs ${className ?? ""}`}>
+    <div className={cn("mx-auto w-full", className ?? "max-w-xs")}>
       <Image
         src={src}
         alt="Referencia de vestimenta formal elegante"
         width={745}
         height={1033}
         className="h-auto w-full object-contain object-top"
-        sizes="(max-width: 1024px) 80vw, 320px"
+        sizes="(max-width: 1024px) 80vw, (max-width: 1280px) 28rem, 32rem"
         unoptimized
       />
     </div>
@@ -104,12 +115,16 @@ function DressCodePhoto({ className }: { className?: string }) {
 export function InvitationDressCode() {
   const { dressCode, assets } = weddingConfig;
 
+  /** Shared width for the men/photo/women row and the palette copy below. */
+  const contentWidthClass =
+    "w-full min-w-0 max-w-5xl lg:max-w-6xl xl:max-w-7xl";
+
   return (
     <section
       aria-label={dressCode.title}
       className="overflow-x-hidden bg-cream-figma px-6 py-14 text-cover-cta-fg sm:px-10 sm:py-16"
     >
-      <div className="mx-auto flex w-full min-w-0 max-w-6xl flex-col items-center">
+      <div className="mx-auto flex w-full min-w-0 max-w-7xl flex-col items-center">
         <h2 className="text-center font-[family-name:var(--font-timer)] text-[clamp(2.5rem,6vw,4rem)] leading-none font-bold">
           {dressCode.title}
         </h2>
@@ -118,83 +133,87 @@ export function InvitationDressCode() {
         </p>
 
         {/* Mobile + tablet portrait: dress right under the subtitle. */}
-        <DressCodePhoto className="mt-8 lg:hidden" />
+        <DressCodePhoto className="mt-8 max-w-xs lg:hidden" />
 
         <p className="mt-5 max-w-3xl text-center font-[family-name:var(--font-timer)] text-[clamp(1.125rem,2.4vw,1.75rem)] leading-8">
           {dressCode.description}
         </p>
 
-        {/* Desktop: 3 columns (ELLOS | foto | ELLAS). Mobile: men then women.
-            Capped width + centered blocks keep side copy near the photo. */}
-        <div className="mt-12 grid w-full min-w-0 max-w-5xl gap-10 lg:grid-cols-[1fr_minmax(0,16rem)_1fr] lg:items-stretch lg:gap-6 xl:max-w-6xl xl:gap-10 [&>*]:min-w-0">
-          <GenderBlock
-            title={dressCode.men.title}
-            items={dressCode.men.items}
-            inspirationHref={dressCode.inspirationUrls.men}
-            inspirationLabel={dressCode.inspirationLabel}
-          />
+        <div className={`mt-12 ${contentWidthClass}`}>
+          {/* Desktop: 3 columns (ELLOS | foto | ELLAS). Mobile: men then women. */}
+          <div className="grid w-full min-w-0 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,26rem)_minmax(0,1fr)] lg:items-stretch lg:gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(20rem,30rem)_minmax(0,1fr)] xl:gap-10 [&>*]:min-w-0">
+            <GenderBlock
+              title={dressCode.men.title}
+              items={dressCode.men.items}
+              inspirationHref={dressCode.inspirationUrls.men}
+              inspirationLabel={dressCode.inspirationLabel}
+              align="start"
+            />
 
-          <div className="hidden w-full self-start lg:block">
-            <DressCodePhoto className="max-w-none" />
+            <div className="hidden w-full self-center lg:block">
+              <DressCodePhoto className="max-w-none" />
+            </div>
+
+            <GenderBlock
+              title={dressCode.women.title}
+              items={dressCode.women.items}
+              inspirationHref={dressCode.inspirationUrls.women}
+              inspirationLabel={dressCode.inspirationLabel}
+              align="end"
+            />
           </div>
 
-          <GenderBlock
-            title={dressCode.women.title}
-            items={dressCode.women.items}
-            inspirationHref={dressCode.inspirationUrls.women}
-            inspirationLabel={dressCode.inspirationLabel}
-          />
-        </div>
-
-        <div className="mt-14 w-full space-y-10 text-center">
-          {assets.allowedPaletteImage ? (
-            <div>
-              <p className="font-[family-name:var(--font-timer)] text-[clamp(1.125rem,2.4vw,1.75rem)] leading-8 font-bold">
-                {dressCode.allowedPaletteTitle}
-              </p>
-              <div className="mx-auto mt-5 w-full max-w-md sm:max-w-lg md:max-w-xl">
-                <Image
-                  src={assets.allowedPaletteImage}
-                  alt="Paleta de colores sugeridos para el código de vestimenta"
-                  width={1228}
-                  height={118}
-                  className="mx-auto h-auto w-full object-contain"
-                  sizes="(max-width: 640px) 90vw, (max-width: 768px) 32rem, 36rem"
-                />
-              </div>
-            </div>
-          ) : null}
-
-          {assets.forbiddenPaletteImage || dressCode.forbiddenDescription ? (
-            <div className="space-y-5">
-              <p className="font-[family-name:var(--font-timer)] text-[clamp(1.125rem,2.4vw,1.75rem)] leading-8 font-bold">
-                {dressCode.forbiddenTitle}
-              </p>
-              {dressCode.forbiddenDescription ? (
-                <p className="mx-auto max-w-3xl whitespace-pre-line font-[family-name:var(--font-timer)] text-[clamp(1.125rem,2.4vw,1.75rem)] leading-8">
-                  {dressCode.forbiddenDescription}
+          {/* Same horizontal bounds as ELLOS ↔ ELLAS. */}
+          <div className="mt-14 w-full space-y-10 text-center">
+            {assets.allowedPaletteImage ? (
+              <div>
+                <p className="font-[family-name:var(--font-timer)] text-[clamp(1.125rem,2.4vw,1.75rem)] leading-8 font-bold">
+                  {dressCode.allowedPaletteTitle}
                 </p>
-              ) : null}
-              {assets.forbiddenPaletteImage ? (
-                <div className="mx-auto w-full max-w-md sm:max-w-lg md:max-w-xl">
+                <div className="mx-auto mt-5 w-full">
                   <Image
-                    src={assets.forbiddenPaletteImage}
-                    alt="Paleta de colores no permitidos en el código de vestimenta"
-                    width={1167}
-                    height={81}
+                    src={assets.allowedPaletteImage}
+                    alt="Paleta de colores sugeridos para el código de vestimenta"
+                    width={1228}
+                    height={118}
                     className="mx-auto h-auto w-full object-contain"
-                    sizes="(max-width: 640px) 90vw, (max-width: 768px) 32rem, 36rem"
+                    sizes="(max-width: 1024px) 90vw, (max-width: 1280px) 72rem, 80rem"
                   />
                 </div>
-              ) : null}
-            </div>
-          ) : null}
+              </div>
+            ) : null}
 
-          {dressCode.closingNote ? (
-            <p className="mx-auto max-w-3xl font-[family-name:var(--font-timer)] text-[clamp(1.125rem,2.4vw,1.75rem)] leading-8">
-              {dressCode.closingNote}
-            </p>
-          ) : null}
+            {assets.forbiddenPaletteImage || dressCode.forbiddenDescription ? (
+              <div className="space-y-5">
+                <p className="font-[family-name:var(--font-timer)] text-[clamp(1.125rem,2.4vw,1.75rem)] leading-8 font-bold">
+                  {dressCode.forbiddenTitle}
+                </p>
+                {dressCode.forbiddenDescription ? (
+                  <p className="w-full whitespace-pre-line font-[family-name:var(--font-timer)] text-[clamp(1.125rem,2.4vw,1.75rem)] leading-8">
+                    {dressCode.forbiddenDescription}
+                  </p>
+                ) : null}
+                {assets.forbiddenPaletteImage ? (
+                  <div className="mx-auto w-full">
+                    <Image
+                      src={assets.forbiddenPaletteImage}
+                      alt="Paleta de colores no permitidos en el código de vestimenta"
+                      width={1167}
+                      height={81}
+                      className="mx-auto h-auto w-full object-contain"
+                      sizes="(max-width: 1024px) 90vw, (max-width: 1280px) 72rem, 80rem"
+                    />
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+
+            {dressCode.closingNote ? (
+              <p className="w-full font-[family-name:var(--font-timer)] text-[clamp(1.125rem,2.4vw,1.75rem)] leading-8">
+                {dressCode.closingNote}
+              </p>
+            ) : null}
+          </div>
         </div>
       </div>
     </section>

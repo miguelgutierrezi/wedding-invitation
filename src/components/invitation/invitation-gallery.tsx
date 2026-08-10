@@ -188,7 +188,7 @@ function SlidePanel({
                 }
                 unoptimized
                 priority={absoluteIndex < 4 || isLoadingTarget}
-                onLoadingComplete={handleLoad}
+                onLoad={handleLoad}
               />
             </div>
           );

@@ -149,7 +149,7 @@ export const weddingConfig = {
    * Filenames with spaces or & are fine; MediaFrame URL-encodes them for CSS.
    */
   assets: {
-    coverBackground: "/invitation/Boda 21.jpg",
+    coverBackground: "/invitation/Portada.jpg",
     heroPhoto: "/invitation/Boda 3.jpg",
     venueBackground: "/invitation/Boda 19.jpg",
     couplePhoto: "/invitation/Imagen recortada.png",
@@ -158,7 +158,8 @@ export const weddingConfig = {
       // First pair always (Figma / product request).
       "/invitation/Boda 10.jpg",
       "/invitation/Boda 15.jpg",
-      // Remaining Boda photos (excludes 3, 8, 10, 15, 22).
+      // Remaining Boda photos (excludes 3 hero, 8, 10+15 after open, 19 venue,
+      // 21 different aspect, and 22). Cover uses Portada.jpg.
       "/invitation/Boda 1.jpg",
       "/invitation/Boda 2.jpg",
       "/invitation/Boda 4.jpg",
@@ -176,8 +177,6 @@ export const weddingConfig = {
       "/invitation/Boda 17.jpg",
       "/invitation/Boda 18.jpg",
       "/invitation/Boda 20.jpg",
-      "/invitation/Boda 21.jpg",
-      "/invitation/Boda 19.jpg",
     ] as const,
     footerBackground: "/invitation/Nychol & Migue.png",
     dressCodePhoto: "/invitation/cabezas.png",

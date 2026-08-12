@@ -80,6 +80,7 @@ src/
 │   └── ui/
 ├── config/
 │   ├── wedding.ts
+│   ├── transport.ts
 │   └── admin.ts
 ├── hooks/
 ├── lib/
@@ -90,7 +91,8 @@ src/
 │   └── validation/
 ├── services/
 ├── types/
-└── utils/
+├── utils/
+└── proxy.ts            # Next.js 16 edge gate for /admin (not middleware.ts)
 
 public/
 │   └── invitation/    # invitation media (see docs/invitation-ui.md)
@@ -235,13 +237,14 @@ Copy and media paths belong in `src/config/wedding.ts`. Do not scatter Figma hex
 Avoid:
 
 - Heavy animations.
-- Autoplay audio.
+- Autoplay audio without an explicit user gesture (invitation music after “Ver Invitación” is allowed when `features.music` is on).
 - Large background videos.
 - Generic template appearance.
 - Excessive gradients.
 - Excessive shadows.
 - Excessive client-side JavaScript.
 - Cropping dress-code or transport illustrations with aggressive `object-cover` when the subject must remain fully visible.
+- The deprecated `middleware` file convention; use `src/proxy.ts` for the admin edge gate.
 
 ## Data model direction
 

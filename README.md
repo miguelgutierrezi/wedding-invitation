@@ -8,11 +8,14 @@ Cada familia recibe un enlace privado (`/i/[slug]`) para ver la invitación y co
 
 | Área | Estado |
 |------|--------|
-| Invitación pública | Implementada y alineada con Figma ([`docs/invitation-ui.md`](docs/invitation-ui.md)) |
+| Invitación pública | Implementada y alineada con Figma + polish ([`docs/invitation-ui.md`](docs/invitation-ui.md)) |
 | Nombres | Nychol & Miguel (`weddingConfig` + `events` vía migración) |
+| Cómo llegar | Embed Google Maps + enlaces Google / Waze / Apple Maps (Apple) |
+| Música | Tras “Ver Invitación”; mute flotante; archivo en `public/invitation/soundtrack.mp3` |
 | RSVP | Formulario embebido: asistencia, bus, **punto de encuentro**, dietas, contacto |
 | Admin `/admin` | Login, resumen, analytics (incluido bus por punto), invitados, familias |
 | Visual admin | Misma paleta/tipografía que la invitación (`admin-ui.ts`) |
+| Auth edge | Next.js 16 `src/proxy.ts` (gate `/admin`) |
 | Export CSV / email | Pendientes de fase futura |
 
 El alcance autorizado se define solo en [`docs/current-phase.md`](docs/current-phase.md).
@@ -45,16 +48,31 @@ Rutas enlazadas desde `src/config/wedding.ts` (`assets`). Inventario y reglas de
 Principales archivos:
 
 ```text
-Boda 21.jpg          # portada
+Portada.jpg          # portada
 Nychol & Migue.png   # cierre
 Boda 3.jpg           # hero
 Boda 19.jpg          # banda de lugar
+Boda 21.jpg          # (no carrusel; dimensiones distintas)
 Imagen recortada.png # foto pareja
 chiva.png            # transporte
 cabezas.png          # código de vestimenta
 paleta sugerida.png / paleta colores.png
-Boda 1–23.jpg        # galería (orden y exclusiones en wedding.ts)
+Boda 1–23.jpg        # galería (excluye 3, 8, 10, 15, 19, 21, 22; ver wedding.ts)
+soundtrack.mp3       # música (opcional; path en assets.music)
 ```
+
+### Cómo llegar
+
+Configurado en `weddingConfig.ceremony` (valores reales en el repo para Hacienda Montecano):
+
+- `mapsEmbedUrl` — iframe en la sección Lugar
+- `mapsUrl` / `wazeUrl` / `appleMapsUrl` — enlaces externos (Apple Maps solo se muestra en iOS/macOS Safari-like UA)
+
+### Música
+
+- Flag: `features.music`
+- Archivo: `assets.music` → `/invitation/soundtrack.mp3`
+- Arranca al tocar **Ver Invitación** (gesto de usuario); control mute en `/invitacion`
 
 ### Transporte y RSVP
 
@@ -171,11 +189,11 @@ Copia las claves de `supabase status` a `.env.local` antes de probar el RSVP. Co
 
 - [`AGENTS.md`](AGENTS.md): reglas permanentes para agentes de código.
 - [`docs/current-phase.md`](docs/current-phase.md): alcance autorizado actual y estado del repo.
-- [`docs/invitation-ui.md`](docs/invitation-ui.md): diseño Figma, tokens, assets, RSVP boarding, admin brand.
+- [`docs/invitation-ui.md`](docs/invitation-ui.md): diseño Figma, tokens, assets, mapas, música, RSVP boarding, admin brand.
 - [`docs/product-spec.md`](docs/product-spec.md): requisitos y visión del producto.
-- [`docs/architecture.md`](docs/architecture.md): arquitectura y límites técnicos.
+- [`docs/architecture.md`](docs/architecture.md): arquitectura y límites técnicos (incluye `src/proxy.ts`).
 
-La aplicación es un único proyecto Next.js full stack. Server Components por defecto; Client Components solo para interacción en el navegador (countdown, galería, formulario RSVP).
+La aplicación es un único proyecto Next.js full stack. Server Components por defecto; Client Components solo para interacción en el navegador (countdown, galería, formulario RSVP, música, enlaces de mapa por plataforma).
 
 ## Flujo de trabajo
 
@@ -192,13 +210,15 @@ Ya confirmados o configurados en producto / seed:
 - Novios: **Nychol** y **Miguel**
 - Fecha: 24 de octubre de 2026
 - Lugar (copy actual): Hacienda Montecano, vía Subachoque–El Rosal
+- Mapas de ceremonia: Google Maps, Waze, Apple Maps + embed
 - RSVP deadline (config/DB): 4 de septiembre de 2026
 - Dos puntos de bus en Bogotá (Modelia y Villa Sonia)
 
 Pendientes o vacíos hasta que se indiquen (no inventar):
 
-- URLs de mapas / Waze / inspiración de vestimenta
+- Enlaces de inspiración de vestimenta
 - Horas de salida del bus hacia Subachoque (“por confirmar”)
+- Archivo `soundtrack.mp3` si no está en el deploy
 
 No inventar datos sensibles ni secretos.
 

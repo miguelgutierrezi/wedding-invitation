@@ -1,8 +1,8 @@
 # Invitation UI (design & presentation)
 
-**Status:** implemented against Figma “Invitación boda”
+**Status:** implemented against Figma “Invitación boda” + post-Figma polish (maps, music, cover crop)
 
-**Last reviewed:** 2026-08-08
+**Last reviewed:** 2026-08-09
 
 This document describes the **public invitation presentation layer** and shared brand rules used by the admin UI. It does not authorize product features outside `docs/current-phase.md`.
 
@@ -10,7 +10,7 @@ This document describes the **public invitation presentation layer** and shared 
 
 1. User/product request for a given task.
 2. Figma file **Invitación boda** (desktop + mobile wireframes).
-3. `src/config/wedding.ts` for copy, dates, couple names, feature flags, and asset paths.
+3. `src/config/wedding.ts` for copy, dates, couple names, feature flags, maps, and asset paths.
 4. `src/config/transport.ts` for boarding point id helpers (keep in sync with meeting point ids).
 5. CSS variables and utilities in `src/app/globals.css`.
 6. Admin shared classes: `src/components/admin/admin-ui.ts`.
@@ -36,6 +36,8 @@ Do not reintroduce “Nombre 1 / Nombre 2” placeholders for this couple.
 
 Slug lookup goes through invitation services; presentation must never surface internal DB ids.
 
+Cover CTA “Ver Invitación” navigates to `/invitacion` and, when music is enabled, starts the soundtrack on that user gesture.
+
 ## Design language
 
 ### Palette (CSS)
@@ -45,7 +47,7 @@ Slug lookup goes through invitation services; presentation must never surface in
 | `--accent` / `bg-accent` | `#BEB950` | Brand yellow bands (transport, gallery, gifts); admin header |
 | `--cream-figma` | `#F5F5DC` | Cream sections (countdown, dress code, RSVP); admin page bg |
 | `--cover-cta-fg` | `#454411` | Olive body/title text on cream |
-| `--cover-cta-bg` | `#CFCFCF` | Gray pill buttons (e.g. venue) |
+| `--cover-cta-bg` | `#CFCFCF` | Gray pill buttons (e.g. venue secondary pills) |
 | `--gallery-dot` | `#4A5D2A` | Carousel dots |
 | `--countdown-number` | `#111827` | Countdown figures |
 | Cream text on photos | `text-cream-figma` | Venue / footer type |
@@ -55,6 +57,7 @@ Slug lookup goes through invitation services; presentation must never surface in
 | Role | Family / variable | Use |
 |------|-------------------|-----|
 | Invitation section titles & body (Figma Times) | `--font-timer` (`Times New Roman` stack) | Venue, transport, dress, gifts, RSVP, footer, countdown |
+| Cover subtitle | Vollkorn (`--font-cover-serif`) | Multi-line cover invitation copy, **uppercase** |
 | Cover / script accents | `--font-script` / cover fonts as loaded in layout | Cover and specialized display |
 | Admin UI | same `--font-timer` + olive / cream tokens | Entire `/admin` shell and forms via `admin-ui.ts` |
 
@@ -68,24 +71,68 @@ Do not reintroduce generic marketing fonts (e.g. Inter-like default stacks) on i
 - **Accent continuous runs** are intentional (e.g. gallery → gifts stay yellow).
 - Prefer **one job per section** (title + short support + media or form).
 
+### Cover crop
+
+Cover photo uses class `.cover-photo` (`globals.css`):
+
+| Breakpoint | `background-position` |
+|------------|------------------------|
+| default (mobile) | `47% top` |
+| ≥640px (tablet) | `48.5% top` |
+| ≥1024px | `center top` |
+
+Asset: `weddingConfig.assets.coverBackground` → `Portada.jpg`.
+
 ## Section components
 
 | Section | Component | Notes |
 |---------|-----------|--------|
-| Cover | `invitation-cover.tsx` | Full-bleed cover photo |
+| Cover | `invitation-cover.tsx` | Full-bleed cover; Vollkorn subtitle; open CTA |
+| Open CTA | `invitation-open-button.tsx` | Starts music (if enabled) then navigates |
+| Music | `invitation-music-control.tsx` | Floating mute on body page |
 | Hero | `invitation-hero.tsx` | Photo crop via `.hero-photo` |
-| Countdown | `invitation-countdown.tsx` | Client (interval) |
-| Venue | `invitation-venue.tsx` | MediaFrame + maps CTA |
+| Countdown | `invitation-countdown.tsx` | Client; cached second snapshot via `useSyncExternalStore` |
+| Venue | `invitation-venue.tsx` | MediaFrame + optional embed + map links |
+| Map links | `venue-map-links.tsx` | Google / Waze / Apple (Apple OS only) |
 | Transport | `invitation-transport.tsx` | Chiva art; meeting points; landscape frame ~509/286 |
 | Couple photo | `invitation-couple-photo.tsx` | Full-width |
-| Dress code | `invitation-dress-code.tsx` | ELLOS \| photo \| ELLAS; palettes; CTAs baseline-aligned |
-| Gallery | `invitation-gallery.tsx` | Dual-buffer + swipe; autoplay; desktop arrows |
+| Dress code | `invitation-dress-code.tsx` | ELLOS \| photo \| ELLAS; palettes share row width |
+| Gallery | `invitation-gallery.tsx` | Dual-buffer + swipe; `onLoad`; desktop arrows |
 | Gifts | `invitation-gifts.tsx` | Lluvia de sobres |
 | RSVP shell | `invitation-rsvp-section.tsx` | Intro from Figma + children form |
 | RSVP form | `rsvp-form.tsx` | Attendance, bus, **boarding point**, diet, contact |
 | Footer | `invitation-footer.tsx` | Closing message + date on photo |
 
 Orchestration: `invitation-page-view.tsx`.
+
+### Venue directions
+
+Config on `weddingConfig.ceremony`:
+
+| Field | Role |
+|-------|------|
+| `mapsEmbedUrl` | Google Maps iframe `src` (hidden if empty) |
+| `mapsUrl` | External Google Maps link |
+| `wazeUrl` | External Waze link |
+| `appleMapsUrl` | Apple Maps; UI shows only on Apple platforms (`src/lib/platform.ts`) |
+
+Labels: `weddingConfig.venue` (`mapsCtaLabel`, `wazeCtaLabel`, `appleMapsCtaLabel`, `directionsLabel`).
+
+### Music
+
+| Config | Role |
+|--------|------|
+| `features.music` | Master toggle |
+| `assets.music` | Path under `/public` (e.g. `/invitation/soundtrack.mp3`) |
+
+Behavior:
+
+1. Guest taps “Ver Invitación” → `startInvitationMusic` (user gesture unlocks playback).
+2. Invitation body shows floating mute when feature + path enabled.
+3. Module singleton `src/lib/invitation-audio.ts` (loop, moderate volume).
+4. Missing file or flag off → no audio / no control; cover navigation still works.
+
+Do not autoplay on first paint without a gesture.
 
 ### RSVP form UX (boarding)
 
@@ -98,13 +145,20 @@ When an attending guest checks “Usará el transporte (bus)”:
 
 Admin analytics and guest tables surface the same points for planning bus capacity.
 
+### Dress code layout
+
+- Center illustration larger on desktop (column ~26–30rem).
+- Allowed / forbidden palette blocks share the same content width rhythm as the ELLOS \| photo \| ELLAS row.
+- Desktop outer alignment: ELLOS start / ELLAS end relative to the shared grid.
+- Prefer `object-contain` so figures (heads/feet) are not cropped.
+
 ## Assets (`public/invitation/`)
 
 Paths are always configured in `weddingConfig.assets` (do not hardcode new paths inside many components).
 
 | Asset key | Expected file | Used by |
 |-----------|---------------|---------|
-| `coverBackground` | `Boda 21.jpg` | Cover |
+| `coverBackground` | `Portada.jpg` | Cover |
 | `heroPhoto` | `Boda 3.jpg` | Hero |
 | `venueBackground` | `Boda 19.jpg` | Venue |
 | `couplePhoto` | `Imagen recortada.png` | Couple band |
@@ -114,14 +168,16 @@ Paths are always configured in `weddingConfig.assets` (do not hardcode new paths
 | `dressCodePhoto` | `cabezas.png` | Dress code |
 | `allowedPaletteImage` | `paleta sugerida.png` | Dress code |
 | `forbiddenPaletteImage` | `paleta colores.png` | Dress code |
+| `music` | `soundtrack.mp3` | Background track (optional file) |
 
 ### Gallery rules
 
 - Opening pair: **Boda 10**, **Boda 15**.
-- Exclude from carousel: **3** (hero), **8**, **10**, **15** (not repeated after open), **22**.
+- Exclude from carousel: **3** (hero), **8**, **10**/**15** (not repeated after open), **19** (venue; different aspect), **21** (different aspect), **22**. Cover asset is `Portada.jpg` (not in the carousel).
 - **23** occupies the former slot of **8**.
 - Mobile: 1 per page. Desktop (≥1024px): 2 per page.
 - Transition: dual buffer (preload next) then horizontal swipe; respect reduced motion.
+- Image ready handler: `onLoad` (not deprecated `onLoadingComplete`).
 
 ### Image display tips
 
@@ -134,8 +190,9 @@ Paths are always configured in `weddingConfig.assets` (do not hardcode new paths
 
 Edit **only** `src/config/wedding.ts` for:
 
-- Couple names, venue, transport meeting points (including **stable `id`s**), dress rules, gifts, RSVP intro strings, footer template (`closingTemplate` with `{date}`).
-- Feature flags (`features.countdown`, `features.gifts`, …).
+- Couple names, ceremony maps URLs, venue labels, transport meeting points (including **stable `id`s**), dress rules, gifts, RSVP intro strings, footer template (`closingTemplate` with `{date}`).
+- Feature flags (`features.countdown`, `features.gifts`, `features.music`, …).
+- Asset paths including `assets.music`.
 
 When adding or renaming a boarding point:
 
@@ -154,6 +211,7 @@ Admin must not drift into a separate purple/gray SaaS look. Use `admin` tokens f
 - Gallery: keyboard arrows on desktop when section is focused or in view; pause on hover/focus.
 - Submit and choice controls: min height 44px where interactive.
 - `prefers-reduced-motion: reduce` disables gallery swipe/autoplay animations.
+- Music mute control must remain keyboard and screen-reader usable when shown.
 
 ## Do not
 
@@ -162,3 +220,5 @@ Admin must not drift into a separate purple/gray SaaS look. Use `admin` tokens f
 - Scatter brand hex values across components; use tokens.
 - Invent missing wedding logistics data; leave empty CTA URLs disabled.
 - Change boarding point **ids** without a matching DB migration.
+- Autoplay invitation audio on page load without a user gesture.
+- Reintroduce `src/middleware.ts`; use `src/proxy.ts` for the admin edge gate.

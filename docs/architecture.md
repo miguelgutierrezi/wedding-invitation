@@ -1,8 +1,8 @@
 # Architecture
 
-**Status:** application baseline (auth, RSVP with transport boarding, invitation UI, brand-aligned admin)
+**Status:** application baseline (auth, RSVP with transport boarding, invitation UI polish, brand-aligned admin)
 
-**Last reviewed:** 2026-08-08
+**Last reviewed:** 2026-08-09
 
 This document describes the intended technical architecture and its boundaries. It does not authorize implementation beyond `current-phase.md`.
 
@@ -40,7 +40,7 @@ Use one Next.js repository and deployment. Do not introduce a separate backend, 
 Use:
 
 - Server Components for rendering and server-side reads by default.
-- Small Client Components only for forms, countdown, gallery carousel, and browser interaction.
+- Small Client Components only for forms, countdown, gallery carousel, music control / open CTA, venue platform links, and other browser interaction.
 - Server Actions for application-owned mutations when they provide a clear typed workflow.
 - Route Handlers for HTTP endpoints such as exports or integrations.
 - Plain TypeScript services for business rules that should not live in presentation components.
@@ -74,16 +74,34 @@ Stable event presentation data belongs in `src/config/wedding.ts` until a future
 
 Asset paths under `public/invitation/` are listed in `weddingConfig.assets` and documented in `docs/invitation-ui.md`.
 
-Do not invent private logistics (maps, times, legal docs). Empty strings for CTAs are acceptable until product provides real URLs.
+Ceremony maps URLs live on `weddingConfig.ceremony` (`mapsUrl`, `wazeUrl`, `appleMapsUrl`, `mapsEmbedUrl`). Empty strings disable the corresponding CTA or embed. Do not invent private logistics (times, legal docs, dress inspiration links). Empty strings for those CTAs remain acceptable until product provides real values.
 
 ## Presentation layer
 
 - Invitation sections are independent components under `src/components/invitation/`.
 - Page composition: `invitation-page-view.tsx`.
 - Gallery uses a dual-buffer strategy (preload next slide, then swipe) to avoid flash between photos.
+- Venue directions: optional map iframe + external navigation links (`venue-map-links.tsx`); Apple Maps only when `isApplePlatform()` is true.
+- Music: module singleton `src/lib/invitation-audio.ts`; start after cover “Ver Invitación” gesture; floating mute on the invitation body. Controlled by `features.music` + `assets.music`.
 - RSVP form is embedded in the invitation (cream band); it is not a separate navigation-only CTA page.
 - Cap multi-column invitation layouts on ultra-wide viewports so copy and CTAs stay visually grouped.
 - Admin chrome reuses invitation brand (accent header, cream page, Times/olive type).
+
+## Edge proxy (admin auth)
+
+Next.js 16 uses the **proxy** file convention (replaces deprecated `middleware`).
+
+```text
+src/proxy.ts
+```
+
+Responsibilities:
+
+- Refresh Supabase auth cookies on matched requests via `@supabase/ssr` `createServerClient`.
+- Redirect unauthenticated users away from `/admin/*` (except `/admin/login`) to login with a `next` return path.
+- Redirect already-authenticated users away from `/admin/login` to `/admin`.
+
+Matcher: `/admin/:path*` only. Do not put invitation public routes through this gate.
 
 ## Supabase access
 
@@ -176,7 +194,7 @@ The UI is mobile-first and must work in current Safari, Chrome, Edge, and WhatsA
 - iPhone safe areas and mobile viewport behavior.
 - `prefers-reduced-motion`.
 - Static invitation images under `/public/invitation/` (often `unoptimized` when paths are fixed brand assets).
-- No autoplay audio, heavy background video, or essential interaction dependent on animation.
+- No **autoplay-without-gesture** audio, heavy background video, or essential interaction dependent on animation. Invitation music may start only after an explicit tap (cover CTA) when `features.music` is enabled.
 
 Invitation brand tokens and section behavior: `docs/invitation-ui.md`.
 

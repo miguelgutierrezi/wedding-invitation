@@ -164,22 +164,22 @@ img[data-nimg="fill"] {
 }
 
 /*
- * Cover crop (Boda 21): on narrow screens mild left framing so the couple
- * stays in frame; desktop stays centered.
+ * Cover crop (Portada.jpg): horizontal bias on phone/tablet; always pin to
+ * top so heads/sky are not cropped by vertical centering. Raise X % → more right.
  */
 .cover-photo {
-  background-position: 37% center;
+  background-position: 47% top;
 }
 
 @media (min-width: 640px) {
   .cover-photo {
-    background-position: 42% center;
+    background-position: 48.5% top;
   }
 }
 
 @media (min-width: 1024px) {
   .cover-photo {
-    background-position: center;
+    background-position: center top;
   }
 }
 

@@ -1,8 +1,8 @@
 # Product specification: Wedding Invitation
 
-**Status:** product direction — invitation UI, admin, RSVP + transport boarding implemented; roadmap items still require `current-phase.md`
+**Status:** product direction — invitation UI polish, admin, RSVP + transport boarding implemented; roadmap items still require `current-phase.md`
 
-**Last reviewed:** 2026-08-08
+**Last reviewed:** 2026-08-09
 
 Este documento define qué producto se quiere construir. No autoriza por sí mismo la implementación de todas sus secciones. El alcance actualmente permitido está únicamente en `docs/current-phase.md`, y las decisiones técnicas aprobadas están en `docs/architecture.md`.
 
@@ -10,17 +10,20 @@ Este documento define qué producto se quiere construir. No autoriza por sí mis
 
 | Capacidad | Estado |
 |-----------|--------|
-| Invitación pública (Figma) | Implementada — ver **`docs/invitation-ui.md`** |
+| Invitación pública (Figma + polish) | Implementada — ver **`docs/invitation-ui.md`** |
 | Nombres de pareja | **Nychol** & **Miguel** (`weddingConfig` + `events`) |
+| Lugar / cómo llegar | Embed de mapa + Google Maps / Waze / Apple Maps (solo Apple) |
+| Música de fondo | Tras gesto “Ver Invitación”; mute flotante; requiere asset |
 | RSVP embebido | Asistencia por invitado, dietas, contacto |
 | Transporte (bus) | Opt-in + **punto de embarque obligatorio** (`modelia` / `villa_sonia`) |
 | Admin | Login, resumen, analytics, invitados, familias, enlaces |
 | Visual admin | Alineado con brand de invitación |
+| Edge auth (Next.js 16) | `src/proxy.ts` (antes middleware) |
 | Export CSV / email / settings UI | No implementado |
 
 Config de copy y rutas de medios: **`src/config/wedding.ts`**. Ids de puntos de bus: **`src/config/transport.ts`**.
 
-Pendiente a nivel producto (salvo autorización en `current-phase.md`): export CSV, email, editor de settings en admin, CTAs externos (mapas, inspiración), horarios de salida del bus.
+Pendiente a nivel producto (salvo autorización en `current-phase.md`): export CSV, email, editor de settings en admin, enlaces de inspiración de vestimenta, horarios de salida del bus hacia Subachoque, y archivo de soundtrack si aún no se ha subido.
 
 ## 1. Propósito del proyecto
 
@@ -891,14 +894,18 @@ export const weddingConfig = {
   ceremony: {
     name: "Hacienda Montecano",
     address: "km 2.5 a 3 de la vía Subachoque - El Rosal",
-    mapsUrl: "",
-    wazeUrl: "",
+    mapsUrl: "https://maps.app.goo.gl/…",
+    wazeUrl: "https://ul.waze.com/ul?…",
+    appleMapsUrl: "https://maps.apple/p/…",
+    mapsEmbedUrl: "https://www.google.com/maps/embed?…",
   },
   reception: {
     name: "Lugar de la recepción",
     address: "Lugar por definir",
     mapsUrl: "",
     wazeUrl: "",
+    appleMapsUrl: "",
+    mapsEmbedUrl: "",
   },
   transport: {
     meetingPoints: [
@@ -927,7 +934,10 @@ export const weddingConfig = {
     timeline: false,
     gifts: true,
     faq: false,
-    music: false,
+    music: true,
+  },
+  assets: {
+    music: "/invitation/soundtrack.mp3",
   },
 } as const;
 ```

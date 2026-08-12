@@ -1,8 +1,8 @@
 # Architecture
 
-**Status:** application baseline (auth, RSVP with transport boarding, invitation UI polish, brand-aligned admin)
+**Status:** application baseline + hardening (tests, transactional admin update, rate limit, structured logs)
 
-**Last reviewed:** 2026-08-09
+**Last reviewed:** 2026-08-11
 
 This document describes the intended technical architecture and its boundaries. It does not authorize implementation beyond `current-phase.md`.
 
@@ -103,6 +103,27 @@ Responsibilities:
 
 Matcher: `/admin/:path*` only. Do not put invitation public routes through this gate.
 
+## Testing
+
+Unit tests use **Vitest** (`pnpm test`). Prefer fast tests of Zod schemas and pure helpers over UI or full Next.js bootstrapping.
+
+Current coverage targets:
+
+- `submitRsvpSchema` (boarding, honeypot, attendance rules, slug/email).
+- Transport boarding id sync with `weddingConfig`.
+- Invitation slug helpers.
+- In-memory rate limiter + `serverLog` PII stripping.
+- Admin `updateFamily` RPC error mapping.
+
+Integration tests against live Supabase / RPC are optional and must not require secrets in CI. Operational confidence also comes from `docs/go-live-checklist.md`.
+
+## Observability and abuse controls
+
+- **Structured logs:** `src/lib/logging/server-log.ts` emits one JSON object per line. Do not log emails, phones, dietary text, messages, or raw invitation tokens/slugs (use `fingerprintPublicId` when correlation is needed).
+- **RSVP action:** logs validation failures, honeypot hits, rate limits, success, and sanitized failure codes.
+- **Invitation lookup:** rate-limited per IP; misses log `invitation_lookup_miss` with slug fingerprint only.
+- **Rate limit:** `src/lib/security/rate-limit.ts` + `src/config/rate-limit.ts`. In-memory / per-isolate — complement with Cloudflare WAF for global protection. Budgets are intentionally generous for WhatsApp retries.
+
 ## Supabase access
 
 Maintain three explicit client entry points:
@@ -131,6 +152,7 @@ Approved decisions:
 - **Events:** multiple events are allowed via `event_id` foreign keys for reuse. Product v1 typically uses one event row; the database does not enforce a singleton.
 - **Attendance source of truth:** the latest `rsvp_responses` / `rsvp_response_guests` rows are authoritative after submission. `guests.attendance_status` (and denormalized transport fields) is a mirror for admin listing.
 - **RSVP persistence:** one `rsvp_responses` row per family (`unique(family_id)`), updated in place. Guest answers live in `rsvp_response_guests`.
+- **Admin family update:** `update_family_with_guests` RPC updates the family row, syncs guests, and writes an audit event in one transaction (service-role only).
 - **Transport:**
   - `needs_transport` (boolean) on guest / rsvp_response_guest.
   - `transport_boarding_point` text nullable; allowed values `modelia` \| `villa_sonia`; **required server-side when** the guest is attending and needs transport.
@@ -149,6 +171,7 @@ Relevant migrations include:
 …_rsvp_needs_transport.sql
 …_invitation_slug.sql
 …_couple_names_and_transport_boarding.sql
+…_update_family_with_guests.sql
 ```
 
 ## Invitation token / slug boundary
@@ -202,11 +225,13 @@ Invitation brand tokens and section behavior: `docs/invitation-ui.md`.
 
 Do not log invitation tokens, environment secrets, dietary details, contact details, or full mutation payloads. Audit events should record useful actions without copying unnecessary personal data into metadata.
 
+Application logs use `serverLog` (JSON). Correlate public requests with `slugFp` from `fingerprintPublicId`, never the raw slug in warn/error paths when avoidable. Prefer Cloudflare WAF alongside the in-app rate limiter for production edge abuse.
+
 Store only information required to manage the invitation. Do not collect identity documents or unrelated sensitive data.
 
 ## Deployment direction
 
-The intended production path is GitHub private repository to Vercel, backed by a remote Supabase project and a domain managed through Cloudflare. CI runs lint/typecheck/build on every PR/push to main; Supabase migrations run only when migration files change (or manually).
+The intended production path is GitHub private repository to Vercel, backed by a remote Supabase project and a domain managed through Cloudflare. CI runs lint/typecheck/test/build on every PR/push to main; Supabase migrations run only when migration files change (or manually).
 
 Production go-live checklists require their own authorized phase when not already done.
 

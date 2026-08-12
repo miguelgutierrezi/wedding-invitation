@@ -7,6 +7,7 @@ import {
   slugFromDisplayName,
 } from "@/lib/security/generate-invitation-slug";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { mapUpdateFamilyRpcError } from "@/services/admin/update-family-rpc-errors";
 
 export type DashboardMetrics = {
   familyCount: number;
@@ -519,29 +520,15 @@ export async function updateFamily(input: {
 
   const { data: family, error: loadError } = await supabase
     .from("families")
-    .select("id, event_id, status, invitation_slug")
+    .select("id")
     .eq("id", input.familyId)
-    .maybeSingle<{
-      id: string;
-      event_id: string;
-      status: string;
-      invitation_slug: string;
-    }>();
+    .maybeSingle<{ id: string }>();
 
   if (loadError || !family) {
     throw new Error("No se encontró la familia.");
   }
 
-  const status =
-    input.isEnabled === false
-      ? "disabled"
-      : family.status === "disabled"
-        ? "pending"
-        : family.status;
-
-  let invitationSlug = family.invitation_slug;
-  let tokenHash: string | undefined;
-  let tokenPreview: string | undefined;
+  let invitationSlug: string | null = null;
 
   if (input.invitationSlug?.trim()) {
     invitationSlug = await allocateUniqueInvitationSlug(
@@ -549,113 +536,19 @@ export async function updateFamily(input: {
       input.invitationSlug,
       input.familyId,
     );
-    tokenHash = hashInvitationSlug(invitationSlug);
-    tokenPreview = invitationSlug.slice(0, 24);
   }
 
-  const { error: updateError } = await supabase
-    .from("families")
-    .update({
-      display_name: input.displayName,
-      maximum_guests: input.maximumGuests,
-      custom_message: input.customMessage,
-      is_enabled: input.isEnabled,
-      status,
-      invitation_slug: invitationSlug,
-      ...(tokenHash
-        ? {
-            invitation_token_hash: tokenHash,
-            invitation_token_preview: tokenPreview,
-          }
-        : {}),
-    })
-    .eq("id", input.familyId);
-
-  if (updateError) {
-    if (updateError.message.includes("invitation_slug")) {
-      throw new Error("Ese slug de invitación ya está en uso.");
-    }
-    throw new Error("No se pudo actualizar la familia.");
-  }
-
-  const { data: existingGuests, error: guestsLoadError } = await supabase
-    .from("guests")
-    .select("id, is_primary_contact, attendance_status")
-    .eq("family_id", input.familyId)
-    .order("is_primary_contact", { ascending: false })
-    .order("created_at", { ascending: true })
-    .returns<
-      {
-        id: string;
-        is_primary_contact: boolean;
-        attendance_status: string;
-      }[]
-    >();
-
-  if (guestsLoadError) {
-    throw new Error("No se pudieron cargar los invitados actuales.");
-  }
-
-  const existing = existingGuests ?? [];
-  const keep = existing.slice(0, input.guestNames.length);
-  const remove = existing.slice(input.guestNames.length);
-
-  for (let index = 0; index < input.guestNames.length; index += 1) {
-    const name = input.guestNames[index];
-    const current = keep[index];
-
-    if (current) {
-      const { error } = await supabase
-        .from("guests")
-        .update({
-          full_name: name,
-          is_primary_contact: index === 0,
-        })
-        .eq("id", current.id);
-
-      if (error) {
-        throw new Error("No se pudo actualizar un invitado.");
-      }
-    } else {
-      const { error } = await supabase.from("guests").insert({
-        family_id: input.familyId,
-        full_name: name,
-        is_primary_contact: index === 0,
-        attendance_status: "pending",
-      });
-
-      if (error) {
-        throw new Error("No se pudo crear un invitado.");
-      }
-    }
-  }
-
-  if (remove.length > 0) {
-    const { error } = await supabase
-      .from("guests")
-      .delete()
-      .in(
-        "id",
-        remove.map((guest) => guest.id),
-      );
-
-    if (error) {
-      throw new Error(
-        "No se pudieron eliminar invitados sobrantes. Puede haber respuestas RSVP vinculadas.",
-      );
-    }
-  }
-
-  await supabase.from("audit_events").insert({
-    event_id: family.event_id,
-    family_id: input.familyId,
-    action: "family_updated",
-    metadata: {
-      maximum_guests: input.maximumGuests,
-      guest_count: input.guestNames.length,
-      is_enabled: input.isEnabled,
-      invitation_slug: invitationSlug,
-      source: "admin",
-    },
+  const { error } = await supabase.rpc("update_family_with_guests", {
+    p_family_id: input.familyId,
+    p_display_name: input.displayName,
+    p_maximum_guests: input.maximumGuests,
+    p_custom_message: input.customMessage,
+    p_is_enabled: input.isEnabled,
+    p_guest_names: input.guestNames,
+    p_invitation_slug: invitationSlug,
   });
+
+  if (error) {
+    throw new Error(mapUpdateFamilyRpcError(error.message));
+  }
 }

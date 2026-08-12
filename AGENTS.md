@@ -68,11 +68,10 @@ src/
 │   ├── admin/
 │   └── rsvp/
 ├── app/
-│   ├── (public)/
 │   ├── i/
 │   │   └── [slug]/
 │   ├── admin/
-│   └── api/
+│   └── page.tsx
 ├── components/
 │   ├── admin/
 │   ├── invitation/
@@ -85,11 +84,11 @@ src/
 ├── hooks/
 ├── lib/
 │   ├── auth/
-│   ├── email/
 │   ├── security/
 │   ├── supabase/
 │   └── validation/
 ├── services/
+├── styles/
 ├── types/
 ├── utils/
 └── proxy.ts            # Next.js 16 edge gate for /admin (not middleware.ts)
@@ -298,10 +297,11 @@ Before declaring a task complete, run the relevant checks:
 ```bash
 pnpm lint
 pnpm typecheck
+pnpm test
 pnpm build
 ```
 
-Run tests when test coverage exists.
+Run tests when test coverage exists (`pnpm test`).
 
 Do not claim success if a check was not executed.
 

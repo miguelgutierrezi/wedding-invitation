@@ -7,8 +7,9 @@ Before changing code, read:
 1. `/docs/current-phase.md` for the only currently authorized implementation scope and live snapshot.
 2. `/docs/architecture.md` for technical boundaries (including RSVP transport boarding and `src/proxy.ts` admin gate).
 3. `/docs/invitation-ui.md` when the task touches public invitation layout, tokens, assets, maps, music, or admin brand.
-4. `/docs/product-spec.md` for product requirements relevant to the task.
-5. `/README.md` for the verified local workflow.
+4. `/docs/go-live-checklist.md` for production smoke expectations (hardening).
+5. `/docs/product-spec.md` for product requirements relevant to the task.
+6. `/README.md` for the verified local workflow.
 
 Inspect the current implementation before creating or replacing files. Do not treat roadmap items or historical handoff sections as authorization to implement future phases.
 

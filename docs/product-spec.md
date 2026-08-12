@@ -1,8 +1,8 @@
 # Product specification: Wedding Invitation
 
-**Status:** product direction — invitation UI polish, admin, RSVP + transport boarding implemented; roadmap items still require `current-phase.md`
+**Status:** product direction — invitation UI, admin, RSVP + boarding, hardening (tests, transactional admin update, rate limit, logs) — see `current-phase.md`
 
-**Last reviewed:** 2026-08-09
+**Last reviewed:** 2026-08-11
 
 Este documento define qué producto se quiere construir. No autoriza por sí mismo la implementación de todas sus secciones. El alcance actualmente permitido está únicamente en `docs/current-phase.md`, y las decisiones técnicas aprobadas están en `docs/architecture.md`.
 
@@ -19,11 +19,14 @@ Este documento define qué producto se quiere construir. No autoriza por sí mis
 | Admin | Login, resumen, analytics, invitados, familias, enlaces |
 | Visual admin | Alineado con brand de invitación |
 | Edge auth (Next.js 16) | `src/proxy.ts` (antes middleware) |
+| Tests unitarios (Vitest) | RSVP Zod, transport, slugs, rate limit, logs — `pnpm test` |
+| Rate limit + logging | In-memory RSVP/lookup gates + JSON logs sin PII |
+| Checklist go-live | `docs/go-live-checklist.md` |
 | Export CSV / email / settings UI | No implementado |
 
 Config de copy y rutas de medios: **`src/config/wedding.ts`**. Ids de puntos de bus: **`src/config/transport.ts`**.
 
-Pendiente a nivel producto (salvo autorización en `current-phase.md`): export CSV, email, editor de settings en admin, enlaces de inspiración de vestimenta, horarios de salida del bus hacia Subachoque, y archivo de soundtrack si aún no se ha subido.
+Pendiente a nivel producto (salvo autorización en `current-phase.md`): export CSV, email, editor de settings en admin, enlaces de inspiración de vestimenta, horarios de salida del bus hacia Subachoque, archivo de soundtrack si aún no se ha subido.
 
 ## 1. Propósito del proyecto
 

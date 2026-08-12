@@ -16,9 +16,11 @@ Cada familia recibe un enlace privado (`/i/[slug]`) para ver la invitación y co
 | Admin `/admin` | Login, resumen, analytics (incluido bus por punto), invitados, familias |
 | Visual admin | Misma paleta/tipografía que la invitación (`admin-ui.ts`) |
 | Auth edge | Next.js 16 `src/proxy.ts` (gate `/admin`) |
+| Automated tests | Vitest (`pnpm test`): RSVP, transport, slugs, rate limit, logs |
+| Rate limit / logs | RSVP + invitation lookup; JSON logs without PII |
 | Export CSV / email | Pendientes de fase futura |
 
-El alcance autorizado se define solo en [`docs/current-phase.md`](docs/current-phase.md).
+El alcance autorizado se define solo en [`docs/current-phase.md`](docs/current-phase.md). Checklist operativo: [`docs/go-live-checklist.md`](docs/go-live-checklist.md).
 
 ### Enlaces locales útiles
 
@@ -147,6 +149,7 @@ ADMIN_EMAILS=
 pnpm dev       # servidor de desarrollo
 pnpm lint      # ESLint
 pnpm typecheck # TypeScript sin emitir archivos
+pnpm test      # Vitest (unitarios)
 pnpm build     # build de producción
 ```
 
@@ -163,7 +166,7 @@ supabase db reset   # aplica migraciones + seed.sql
 
 | Workflow | Cuándo | Qué hace |
 |----------|--------|----------|
-| [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | Todo push y PR a `main` | `pnpm lint`, `pnpm typecheck`, `pnpm build` |
+| [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | Todo push y PR a `main` | `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build` |
 | [`.github/workflows/supabase-migrate.yml`](.github/workflows/supabase-migrate.yml) | Push a `main` si cambian migraciones, o manual | `supabase db push --db-url …` al proyecto cloud |
 
 Migraciones **no** corren en cada push de UI: solo cuando tocas `supabase/migrations/**` (o *Run workflow*).
@@ -189,6 +192,7 @@ Copia las claves de `supabase status` a `.env.local` antes de probar el RSVP. Co
 
 - [`AGENTS.md`](AGENTS.md): reglas permanentes para agentes de código.
 - [`docs/current-phase.md`](docs/current-phase.md): alcance autorizado actual y estado del repo.
+- [`docs/go-live-checklist.md`](docs/go-live-checklist.md): checklist operativo antes de compartir enlaces.
 - [`docs/invitation-ui.md`](docs/invitation-ui.md): diseño Figma, tokens, assets, mapas, música, RSVP boarding, admin brand.
 - [`docs/product-spec.md`](docs/product-spec.md): requisitos y visión del producto.
 - [`docs/architecture.md`](docs/architecture.md): arquitectura y límites técnicos (incluye `src/proxy.ts`).

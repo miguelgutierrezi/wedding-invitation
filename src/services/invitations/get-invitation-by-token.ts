@@ -1,5 +1,8 @@
 import "server-only";
 
+import { fingerprintPublicId } from "@/lib/logging/fingerprint";
+import { serverLog } from "@/lib/logging/server-log";
+import { allowInvitationLookup } from "@/lib/security/public-rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { AttendanceStatus } from "@/types/guest";
 
@@ -136,6 +139,11 @@ export async function getInvitationBySlug(
     return null;
   }
 
+  const allowed = await allowInvitationLookup();
+  if (!allowed) {
+    return null;
+  }
+
   const supabase = createAdminClient();
 
   const { data: family, error: familyError } = await supabase
@@ -147,10 +155,21 @@ export async function getInvitationBySlug(
     .maybeSingle<FamilyRow>();
 
   if (familyError) {
+    serverLog({
+      level: "error",
+      event: "invitation_lookup_failed",
+      slugFp: fingerprintPublicId(normalizedSlug),
+      errorName: "FamilyQueryError",
+    });
     throw new Error("No se pudo cargar la invitación.");
   }
 
   if (!family || !family.is_enabled || family.status === "disabled") {
+    serverLog({
+      level: "info",
+      event: "invitation_lookup_miss",
+      slugFp: fingerprintPublicId(normalizedSlug),
+    });
     return null;
   }
 

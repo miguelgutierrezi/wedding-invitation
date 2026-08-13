@@ -4,22 +4,8 @@ import { AdminShell } from "@/components/admin/admin-shell";
 import { admin } from "@/components/admin/admin-ui";
 import { getTransportBoardingPoint } from "@/config/transport";
 import { weddingConfig } from "@/config/wedding";
+import { formatEventDateTime } from "@/lib/datetime/event-timezone";
 import { getAnalyticsSnapshot } from "@/services/admin/analytics";
-
-function formatDate(iso: string | null): string {
-  if (!iso) {
-    return "Por definir";
-  }
-
-  try {
-    return new Intl.DateTimeFormat("es-CO", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    }).format(new Date(iso));
-  } catch {
-    return iso;
-  }
-}
 
 function RateBar({ label, percent }: { label: string; percent: number }) {
   const safe = Math.min(100, Math.max(0, percent));
@@ -64,7 +50,7 @@ export default async function AdminAnalyticsPage() {
     <AdminShell title="Analytics">
       <p className={admin.muted}>
         {analytics.eventName ?? "Evento"} · Límite RSVP:{" "}
-        {formatDate(analytics.rsvpDeadline)}
+        {formatEventDateTime(analytics.rsvpDeadline)}
       </p>
 
       <section className={`mt-8 space-y-5 ${admin.card} p-6`}>

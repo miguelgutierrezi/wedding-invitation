@@ -2,22 +2,8 @@ import Link from "next/link";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import { admin } from "@/components/admin/admin-ui";
+import { formatEventDateTime } from "@/lib/datetime/event-timezone";
 import { getDashboardMetrics } from "@/services/admin/families";
-
-function formatDate(iso: string | null): string {
-  if (!iso) {
-    return "Por definir";
-  }
-
-  try {
-    return new Intl.DateTimeFormat("es-CO", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    }).format(new Date(iso));
-  } catch {
-    return iso;
-  }
-}
 
 export default async function AdminDashboardPage() {
   const metrics = await getDashboardMetrics();
@@ -37,7 +23,7 @@ export default async function AdminDashboardPage() {
     <AdminShell title="Resumen">
       <p className={admin.muted}>
         {metrics.eventName ?? "Evento"} · Límite RSVP:{" "}
-        {formatDate(metrics.rsvpDeadline)}
+        {formatEventDateTime(metrics.rsvpDeadline)}
       </p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

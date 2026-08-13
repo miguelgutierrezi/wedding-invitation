@@ -1,4 +1,5 @@
 import { formatTransportBoardingPoint } from "@/config/transport";
+import { formatEventDateTime } from "@/lib/datetime/event-timezone";
 import type { GuestListItem, AnalyticsSnapshot } from "@/services/admin/analytics";
 import type { AdminFamilyListItem } from "@/services/admin/families";
 
@@ -37,20 +38,6 @@ function yesNo(value: boolean): string {
 function textOrDash(value: string | null | undefined): string {
   const trimmed = value?.trim();
   return trimmed ? trimmed : "—";
-}
-
-function formatDateTime(iso: string | null): string {
-  if (!iso) {
-    return "—";
-  }
-  try {
-    return new Intl.DateTimeFormat("es-CO", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    }).format(new Date(iso));
-  } catch {
-    return iso;
-  }
 }
 
 /** Guest-level sheet for seating / contact lists. */
@@ -109,8 +96,8 @@ export function buildFamiliesSheet(families: AdminFamilyListItem[]): ExportSheet
         : String(family.confirmedGuestCount),
       family.willAttend === null ? "—" : yesNo(family.willAttend),
       family.invitationUrl,
-      formatDateTime(family.lastOpenedAt),
-      formatDateTime(family.submittedAt),
+      formatEventDateTime(family.lastOpenedAt, "—"),
+      formatEventDateTime(family.submittedAt, "—"),
     ]),
   };
 }
@@ -167,7 +154,7 @@ export function buildSummarySheet(snapshot: AnalyticsSnapshot): ExportSheet {
     headers: ["Métrica", "Valor"],
     rows: [
       ["Evento", textOrDash(snapshot.eventName)],
-      ["Límite RSVP", formatDateTime(snapshot.rsvpDeadline)],
+      ["Límite RSVP", formatEventDateTime(snapshot.rsvpDeadline, "—")],
       ["Familias", String(snapshot.familyCount)],
       ["Familias respondidas", String(snapshot.familiesResponded)],
       ["Familias pendientes", String(snapshot.familiesPending)],

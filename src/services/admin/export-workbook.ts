@@ -11,6 +11,7 @@ import {
   buildAllExportSheets,
   type ExportSheet,
 } from "@/services/admin/export-workbook-rows";
+import { EVENT_TIMEZONE } from "@/lib/datetime/event-timezone";
 
 const HEADER_FILL: ExcelJS.Fill = {
   type: "pattern",
@@ -75,7 +76,7 @@ export async function buildAdminExportWorkbook(): Promise<{
   const buffer = Buffer.from(raw);
 
   const dateStamp = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Bogota",
+    timeZone: EVENT_TIMEZONE,
   }).format(new Date());
 
   return {

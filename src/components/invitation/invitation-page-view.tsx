@@ -12,6 +12,11 @@ import { InvitationTransport } from "@/components/invitation/invitation-transpor
 import { InvitationVenue } from "@/components/invitation/invitation-venue";
 import { RsvpForm } from "@/components/rsvp/rsvp-form";
 import { weddingConfig } from "@/config/wedding";
+import {
+  formatEventDayMonth,
+  formatEventLongDate,
+  resolveEventTimezone,
+} from "@/lib/datetime/event-timezone";
 import type { FamilyInvitationView } from "@/services/invitations/get-invitation-by-token";
 
 type InvitationPageViewProps = {
@@ -19,44 +24,21 @@ type InvitationPageViewProps = {
   invitation: FamilyInvitationView;
 };
 
-function formatSpanishDate(isoDate: string, timezone: string): string {
-  try {
-    return new Intl.DateTimeFormat("es-CO", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-      timeZone: timezone,
-    }).format(new Date(isoDate));
-  } catch {
-    return weddingConfig.event.dateLabel;
-  }
-}
-
-function formatShortDeadline(isoDate: string, timezone: string): string {
-  try {
-    return new Intl.DateTimeFormat("es-CO", {
-      day: "numeric",
-      month: "long",
-      timeZone: timezone,
-    }).format(new Date(isoDate));
-  } catch {
-    return weddingConfig.event.rsvpDeadlineLabel;
-  }
-}
-
 /** Body of the invitation (hero → RSVP). Shown on `/i/[slug]/invitacion`. */
 export function InvitationPageView({
   slug,
   invitation,
 }: InvitationPageViewProps) {
   const { event } = invitation;
+  const timezone = resolveEventTimezone(event.timezone);
+
   const dateChipLabel =
     weddingConfig.event.dateChipLabel ||
-    formatSpanishDate(event.eventDate, event.timezone);
+    formatEventLongDate(event.eventDate, timezone);
 
   const rsvpDeadlineLabel =
     weddingConfig.event.rsvpDeadlineLabel ||
-    formatShortDeadline(event.rsvpDeadline, event.timezone);
+    formatEventDayMonth(event.rsvpDeadline, timezone);
 
   return (
     <div className="page-shell flex min-h-full flex-1 flex-col bg-background">

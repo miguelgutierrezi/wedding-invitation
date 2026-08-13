@@ -2,22 +2,8 @@ import Link from "next/link";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import { admin } from "@/components/admin/admin-ui";
+import { formatEventDateTimeShort } from "@/lib/datetime/event-timezone";
 import { listFamilies } from "@/services/admin/families";
-
-function formatDate(iso: string | null): string {
-  if (!iso) {
-    return "—";
-  }
-
-  try {
-    return new Intl.DateTimeFormat("es-CO", {
-      dateStyle: "short",
-      timeStyle: "short",
-    }).format(new Date(iso));
-  } catch {
-    return "—";
-  }
-}
 
 export default async function AdminFamiliesPage() {
   const families = await listFamilies();
@@ -70,10 +56,10 @@ export default async function AdminFamiliesPage() {
                     {family.status}
                   </td>
                   <td className="px-4 py-3 text-cover-cta-fg/75">
-                    {formatDate(family.lastOpenedAt)}
+                    {formatEventDateTimeShort(family.lastOpenedAt)}
                   </td>
                   <td className="px-4 py-3 text-cover-cta-fg/75">
-                    {formatDate(family.submittedAt)}
+                    {formatEventDateTimeShort(family.submittedAt)}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <Link

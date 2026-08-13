@@ -10,7 +10,12 @@ export const weddingConfig = {
     partnerTwo: "Miguel",
   },
   event: {
-    /** Colombia (America/Bogota). Hora provisional 16:00 hasta definir ceremonia. */
+    /**
+     * Colombia — America/Bogota is UTC−5 year-round (no DST).
+     * All invitation/admin date labels must format with this IANA zone
+     * (`src/lib/datetime/event-timezone.ts`), not the Vercel host TZ.
+     * Hora provisional 16:00 hasta definir ceremonia.
+     */
     date: "2026-10-24T16:00:00-05:00",
     dateLabel: "24 de octubre de 2026",
     /** Figma hero chip capitalization. */

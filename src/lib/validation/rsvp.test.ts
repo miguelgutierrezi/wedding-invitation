@@ -12,7 +12,7 @@ function basePayload(
     slug: "familia-ejemplo",
     willAttend: true,
     contactEmail: "",
-    contactPhone: "",
+    contactPhone: "3001112233",
     message: "",
     website: "",
     guests: [
@@ -202,6 +202,17 @@ describe("submitRsvpSchema", () => {
       basePayload({ contactEmail: "no-es-correo" }),
     );
     expect(result.success).toBe(false);
+  });
+
+  it("rejects empty contact phone", () => {
+    const result = submitRsvpSchema.safeParse(
+      basePayload({ contactPhone: "   " }),
+    );
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const paths = result.error.issues.map((issue) => issue.path.join("."));
+      expect(paths).toContain("contactPhone");
+    }
   });
 
   it("normalizes slug to lowercase", () => {

@@ -100,7 +100,7 @@ Asset: `weddingConfig.assets.coverBackground` → `Portada.jpg`.
 | Couple photo | `invitation-couple-photo.tsx` | Full-width |
 | Dress code | `invitation-dress-code.tsx` | ELLOS \| photo \| ELLAS; palettes share row width |
 | Gallery | `invitation-gallery.tsx` | Dual-buffer + swipe; `onLoad`; desktop arrows |
-| Gifts | `invitation-gifts.tsx` | Lluvia de sobres |
+| Gifts | `invitation-gifts.tsx` | Two columns: `Lluvia de sobres.png` + copy |
 | RSVP shell | `invitation-rsvp-section.tsx` | Intro from Figma + children form |
 | RSVP form | `rsvp-form.tsx` | Attendance, bus, **boarding point**, diet, contact |
 | Share memories CTA | `invitation-share-memories.tsx` | Links to `/i/[slug]/fotos` |
@@ -169,6 +169,7 @@ Paths are always configured in `weddingConfig.assets` (do not hardcode new paths
 | `gallery` | ordered `Boda N.jpg` list | Gallery carousel |
 | `footerBackground` | `Boda 19.jpg` | Closing |
 | `dressCodePhoto` | `cabezas.png` | Dress code |
+| `giftsIllustration` | `Lluvia de sobres.png` | Gifts |
 | `allowedPaletteImage` | `paleta sugerida.png` | Dress code |
 | `forbiddenPaletteImage` | `paleta colores.png` | Dress code |
 | `menOutfitInspiration` | `Ideas outfit hombre.png` | `/inspiracion/ellos` |

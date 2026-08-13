@@ -40,7 +40,11 @@ export const submitRsvpSchema = z
         (value) => value.length === 0 || z.email().safeParse(value).success,
         "Correo inválido",
       ),
-    contactPhone: z.string().trim().max(200),
+    contactPhone: z
+      .string()
+      .trim()
+      .min(1, "Indica un teléfono de contacto.")
+      .max(200),
     message: z.string().trim().max(1000),
     website: z.string().max(0),
   })

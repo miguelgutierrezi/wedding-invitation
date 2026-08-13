@@ -400,13 +400,20 @@ export function RsvpForm({
           ) : null}
         </label>
         <label className="grid gap-2">
-          <span className={fieldLabelClass}>Teléfono (opcional)</span>
+          <span className={fieldLabelClass}>Teléfono</span>
           <input
             type="tel"
             autoComplete="tel"
+            required
+            aria-required="true"
             className={inputClass}
             {...register("contactPhone")}
           />
+          {errors.contactPhone ? (
+            <span className="text-sm text-red-800">
+              {errors.contactPhone.message}
+            </span>
+          ) : null}
         </label>
         <label className="grid gap-2">
           <span className={fieldLabelClass}>Mensaje (opcional)</span>

@@ -132,7 +132,9 @@ export const weddingConfig = {
     title: "Mesa de regalos",
     subtitle: "Lluvia de sobres",
     description:
-      "Su presencia es nuestro mejor regalo. Si desean hacernos un presente adicional para comenzar este nuevo capítulo, contaremos con lluvia de sobres el día del evento",
+      "Su presencia es, sin duda, nuestro mejor regalo. Sin embargo, si desean hacernos un presente adicional para ayudarnos a comenzar este nuevo capítulo... les confesamos que nuestro amado Max decidió 'bendecir' la sala de una manera muy... permanente. Contaremos con lluvia de sobres el día del evento, y cada aporte irá destinado a un fondo de emergencia para muebles nuevos o para nuestra luna de miel (lo que sea más urgente en el momento). ¡Agradecemos enormemente su cariño!",
+    imageAlt:
+      "Ilustración de Nychol y Miguel con impermeables amarillos bajo una lluvia de sobres, acompañados de sus perros",
   },
   rsvp: {
     title: "Confirmación de asistencia y pases asignados",
@@ -190,6 +192,7 @@ export const weddingConfig = {
     ] as const,
     footerBackground: "/invitation/Boda 19.jpg",
     dressCodePhoto: "/invitation/cabezas.png",
+    giftsIllustration: "/invitation/Lluvia de sobres.png",
     allowedPaletteImage: "/invitation/paleta sugerida.png",
     forbiddenPaletteImage: "/invitation/paleta colores.png",
     menOutfitInspiration: "/invitation/Ideas outfit hombre.png",

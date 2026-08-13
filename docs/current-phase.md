@@ -1,16 +1,19 @@
 # Current phase
 
-**Status:** Guest Media Uploads **complete**
+**Status:** Guest Media Uploads **complete**; invitation polish (greeting + gender) in repo
 
 **Last reviewed:** 2026-08-12
 
-**Authorized scope:** Guest media QR PNG download authorized by explicit request. Do not implement Resend/email, public gallery, ZIP-on-Vercel, or AWS/GCP/R2 unless newly authorized.
+**Authorized scope:** Guest media QR PNG download authorized by explicit request. Do not implement Resend/email, public gallery, ZIP-on-Vercel, or AWS/GCP/R2 unless newly authorized. Invitation copy/layout polish may proceed when the user requests it explicitly.
 
 ## Snapshot of the repository
 
 | Area | State |
 |------|--------|
 | Invitation + RSVP + boarding | Implemented |
+| Cover greeting (1 / 2 / 3+ guests + gender) | Implemented (`cover-greeting.ts` + `guests.gender`) |
+| Outfit inspiration pages | Implemented (`/inspiracion/ellos\|ellas`) |
+| Event TZ display (`America/Bogota`) | Implemented (`event-timezone.ts`) |
 | Admin Excel export | Implemented |
 | Guest media uploads | **Implemented** |
 | Resend / settings UI | Not implemented |
@@ -41,8 +44,18 @@ Raise Storage global file size to ≥3 GiB (often Supabase Pro). See `docs/guest
 - Durable Redis rate limit
 - HEIC
 
+## Invitation polish (user-requested, post media)
+
+Documented in `docs/invitation-ui.md` / `docs/architecture.md`:
+
+- Personalized cover line by guest count and gender
+- Admin gender field on guests (`…_guest_gender.sql` migration + RPC args)
+- Gifts illustration sizing; dress “Ver Inspiración” centered text
+- Outfit boards phone vs desktop; share-memories accent CTA
+
 ## Recommended next steps
 
-1. On hosted Supabase: apply migration + raise Storage limits; rotate QR in `/admin/photos`.
-2. Manual E2E: invitation fotos + QR fotos + admin approve/reject.
-3. Go-live checklist / Resend when needed.
+1. On hosted Supabase: apply **all** pending migrations (guest media + **`guest_gender`**); raise Storage limits; rotate QR in `/admin/photos`.
+2. For existing single-guest families: set **género** in admin so the cover says Querido/Querida correctly.
+3. Manual E2E: invitation fotos + QR fotos + admin approve/reject; cover greetings for 1 / 2 / 3+ guests.
+4. Go-live checklist / Resend when needed.

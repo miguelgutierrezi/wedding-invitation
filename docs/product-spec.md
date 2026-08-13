@@ -11,16 +11,19 @@ Este documento define qué producto se quiere construir. No autoriza por sí mis
 | Capacidad | Estado |
 |-----------|--------|
 | Invitación pública (Figma + polish) | Implementada — ver **`docs/invitation-ui.md`** |
+| Saludo de portada | 1 / 2 / 3+ invitados; Querido/Querida según género |
+| Inspiración de vestimenta | `/inspiracion/ellos` · `/inspiracion/ellas` |
+| Zona horaria de etiquetas | `America/Bogota` (`event-timezone.ts`) |
 | Nombres de pareja | **Nychol** & **Miguel** (`weddingConfig` + `events`) |
 | Lugar / cómo llegar | Embed de mapa + Google Maps / Waze / Apple Maps (solo Apple) |
 | Música de fondo | Tras gesto “Ver Invitación”; mute flotante; requiere asset |
-| RSVP embebido | Asistencia por invitado, dietas, contacto |
-| Transporte (bus) | Opt-in + **punto de embarque obligatorio** (`modelia` / `villa_sonia`) |
-| Admin | Login, resumen, analytics, invitados, familias, enlaces |
+| RSVP embebido | Asistencia por invitado, dietas, contacto (teléfono obligatorio) |
+| Transporte (bus) | Opt-in + **punto de embarque obligatorio** (`modelia` / `villa_sonia`); copy: gratuito |
+| Admin | Login, resumen, analytics, invitados, familias (nombre + **género**), enlaces |
 | Visual admin | Alineado con brand de invitación |
 | Edge auth (Next.js 16) | `src/proxy.ts` (antes middleware) |
-| Tests unitarios (Vitest) | RSVP Zod, transport, slugs, rate limit, logs — `pnpm test` |
-| Admin family create/update | RPC transaccionales + `serverLog` |
+| Tests unitarios (Vitest) | RSVP Zod, transport, slugs, cover greeting, TZ, guest media — `pnpm test` |
+| Admin family create/update | RPC transaccionales (+ géneros) + `serverLog` |
 | Rate limit + logging | In-memory RSVP/lookup gates + JSON logs sin PII |
 | Checklist go-live | `docs/go-live-checklist.md` |
 | Export Excel (admin) | Implementado (`/api/admin/export`) |
@@ -377,7 +380,7 @@ Inicialmente habrá un solo administrador.
 El administrador podrá:
 
 - Crear familias.
-- Crear invitados.
+- Crear invitados (nombre + género).
 - Definir cupos.
 - Generar enlaces.
 - Copiar enlaces.
@@ -386,7 +389,7 @@ El administrador podrá:
 - Ver no asistentes.
 - Consultar restricciones alimentarias.
 - Editar familias.
-- Editar invitados.
+- Editar invitados (incluido género).
 - Cerrar RSVP.
 - Exportar CSV.
 - Ver métricas básicas.
@@ -412,15 +415,15 @@ Debe incluir:
 
 ### Bienvenida personalizada
 
-Ejemplo:
+La portada (`/i/[slug]`) muestra un saludo según la cantidad de invitados de la familia:
 
-```text
-Familia Gutiérrez:
+| Invitados | Ejemplo |
+|-----------|---------|
+| 1 | `Querido Luis` / `Querida Ana` (según `guests.gender`) |
+| 2 | `Queridos Ana y Luis` |
+| 3+ | `Querida Familia Gutiérrez` (`families.display_name`) |
 
-Nos emociona mucho compartir este día con ustedes.
-
-Hemos reservado 3 lugares para su familia.
-```
+El subtítulo de portada y el resto del cuerpo de la invitación viven en `weddingConfig`.
 
 ### Cuenta regresiva
 
@@ -475,7 +478,7 @@ Mostrar:
 - Tipo de vestimenta.
 - Recomendaciones.
 - Colores reservados.
-- Referencias opcionales.
+- Referencias: páginas `/inspiracion/ellos` y `/inspiracion/ellas` (boards teléfono + desktop).
 
 ### Regalos
 
@@ -483,7 +486,7 @@ Debe ser configurable.
 
 Posibles opciones:
 
-- Lluvia de sobres.
+- Lluvia de sobres (implementado: ilustración + copy en sección Mesa de regalos).
 - Lista de regalos.
 - Transferencia.
 - Mensaje personalizado.
@@ -627,6 +630,7 @@ updated_at
 id
 family_id
 full_name
+gender
 is_primary_contact
 email
 phone
@@ -638,6 +642,8 @@ transport_boarding_point
 created_at
 updated_at
 ```
+
+`gender`: `male` \| `female` (nullable for legacy rows). Required when creating/updating families in admin. Used for the singular cover greeting (`Querido` / `Querida`).
 
 `transport_boarding_point`: nullable; values in use: `modelia`, `villa_sonia`. Required when `needs_transport` is true for an attending guest (enforced in RPC + Zod).
 

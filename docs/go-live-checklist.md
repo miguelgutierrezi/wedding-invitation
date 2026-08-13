@@ -4,25 +4,29 @@ Operational checklist before sharing invitation links widely. Does not authorize
 
 ## Environments
 
-- [ ] Latest SQL migrations applied on remote Supabase (including boarding, `update_family_with_guests`, and `create_family_with_guests`).
+- [ ] Latest SQL migrations applied on remote Supabase (including boarding, family RPCs, guest media, and **`guest_gender`** / `p_guest_genders`).
 - [ ] Vercel env vars set: `NEXT_PUBLIC_*`, `SUPABASE_SERVICE_ROLE_KEY`, admin emails.
+- [ ] Optional: `TZ=America/Bogota` on Vercel (display helpers already pin Colombia TZ).
 - [ ] `NEXT_PUBLIC_APP_URL` matches the public domain.
 - [ ] Admin allowlist emails exist as Supabase Auth users.
 
 ## Smoke — admin
 
 - [ ] `/admin/login` with allowlisted account.
-- [ ] Create a test family with 2 guests and copy `/i/[slug]` (atomic create — no orphan family without guests).
-- [ ] Edit an existing family (rename guest, change seats, toggle enabled) and confirm no partial state.
+- [ ] Create a test family with 2 guests (**nombre + género** each) and copy `/i/[slug]` (atomic create — no orphan family without guests).
+- [ ] Create or edit a **single-guest** family and confirm cover shows Querido/Querida correctly.
+- [ ] Edit an existing family (rename guest, change gender/seats, toggle enabled) and confirm no partial state.
 - [ ] Regenerate slug if needed; old slug should stop resolving.
-- [ ] Dashboard / analytics / guests pages load without errors.
+- [ ] Dashboard / analytics / guests / photos pages load without errors.
 
 ## Smoke — public invitation
 
+- [ ] Cover greeting matches guest count (1 / 2 / 3+).
 - [ ] Cover shows `Portada.jpg`; CTA opens `/invitacion`.
 - [ ] Music starts only after CTA (if `soundtrack.mp3` present and `features.music`).
 - [ ] Venue map embed + Google / Waze links work; Apple Maps only on Apple devices.
-- [ ] Gallery, dress code, transport copy look correct on a real phone (WhatsApp in-app browser).
+- [ ] Dress “Ver Inspiración” opens `/inspiracion/ellos` or `/inspiracion/ellas`.
+- [ ] Gallery, dress code, transport, gifts look correct on a real phone (WhatsApp in-app browser).
 
 ## Smoke — RSVP
 
@@ -46,5 +50,6 @@ pnpm build
 
 - Resend email (tracked as future work). Excel export and guest media uploads are available in admin.
 - Distributed (Redis) rate limiting — in-app limiter is best-effort per isolate; prefer Cloudflare for global edge.
-- Dress inspiration URLs and bus departure times still “por confirmar” until product provides them.
+- Bus departure times toward Subachoque still “por confirmar” until product provides them.
 - Hosted Supabase Storage global limit ≥3 GiB for guest videos (see `docs/guest-media-storage.md`).
+- Backfill `guests.gender` for families created before the gender migration.

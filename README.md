@@ -9,15 +9,18 @@ Cada familia recibe un enlace privado (`/i/[slug]`) para ver la invitación y co
 | Área | Estado |
 |------|--------|
 | Invitación pública | Implementada y alineada con Figma + polish ([`docs/invitation-ui.md`](docs/invitation-ui.md)) |
+| Portada personalizada | 1 → Querido/Querida; 2 → Queridos A y B; 3+ → Querida Familia… |
 | Nombres | Nychol & Miguel (`weddingConfig` + `events` vía migración) |
+| Zona horaria | Etiquetas en `America/Bogota` (`event-timezone.ts`) |
 | Cómo llegar | Embed Google Maps + enlaces Google / Waze / Apple Maps (Apple) |
 | Música | Tras “Ver Invitación”; mute flotante; archivo en `public/invitation/soundtrack.mp3` |
+| Inspiración outfit | `/inspiracion/ellos` · `/inspiracion/ellas` (boards móvil + desktop) |
 | RSVP | Formulario embebido: asistencia, bus, **punto de encuentro**, dietas, contacto |
-| Admin `/admin` | Login, resumen, analytics, invitados, familias, **fotos**, export Excel |
+| Admin `/admin` | Login, resumen, analytics, invitados, familias (**género** por invitado), **fotos**, export Excel |
 | Visual admin | Misma paleta/tipografía que la invitación (`admin-ui.ts`) |
 | Auth edge | Next.js 16 `src/proxy.ts` (gate `/admin` + `/api/admin`) |
-| Automated tests | Vitest (`pnpm test`): RSVP, transport, slugs, rate limit, logs, guest media |
-| Admin family create/update | Transactional RPCs + structured admin logs |
+| Automated tests | Vitest (`pnpm test`): RSVP, transport, slugs, cover greeting, TZ, guest media |
+| Admin family create/update | Transactional RPCs (+ géneros) + structured admin logs |
 | Rate limit / logs | RSVP + invitation lookup + media authorize; JSON logs without PII |
 | Guest media uploads | `/i/[slug]/fotos`, `/fotos?code=`, Storage privado, `/admin/photos` |
 | Email (Resend) | Pendiente de fase futura |
@@ -59,9 +62,11 @@ Boda 21.jpg          # (no carrusel; dimensiones distintas)
 Imagen recortada.png # foto pareja
 chiva.png            # transporte
 cabezas.png          # código de vestimenta
+Lluvia de sobres.png # mesa de regalos
 paleta sugerida.png / paleta colores.png
 Boda 1–23.jpg        # galería (excluye 3, 8, 10, 15, 19, 21, 22; ver wedding.ts)
-Ideas outfit hombre.png / Ideas outfit mujer.png  # /inspiracion/ellos|ellas
+Ideas outfit hombre.png / Ideas outfit hombre desktop.png
+Ideas outfit mujer.png / Ideas outfit mujer desktop.png
 soundtrack.mp3       # música (opcional; path en assets.music)
 ```
 
@@ -87,9 +92,21 @@ Puntos de encuentro (ids estables en config y DB):
 | `modelia` | Calle 23B bis #75-48 Modelia |
 | `villa_sonia` | Calle 38B sur #50A-53 Villa Sonia |
 
-Si un invitado confirma bus, el formulario **exige** elegir un punto. Admin/analytics agrupan cupos por punto.
+Si un invitado confirma bus, el formulario **exige** elegir un punto. Admin/analytics agrupan cupos por punto. El copy actual indica transporte **gratuito**.
 
 Helpers: `src/config/transport.ts`. Migración: `supabase/migrations/20260808120000_couple_names_and_transport_boarding.sql`.
+
+### Portada y género de invitados
+
+Al crear/editar una familia en admin, cada invitado lleva **nombre + género**. Eso alimenta el saludo de `/i/[slug]`:
+
+| Invitados | Saludo |
+|-----------|--------|
+| 1 | Querido / Querida + nombre |
+| 2 | Queridos Nombre1 y Nombre2 |
+| 3+ | Querida + nombre de familia |
+
+Migración: `supabase/migrations/20260815100000_guest_gender.sql` (columna + RPCs `p_guest_genders`).
 
 ## Stack
 
@@ -196,7 +213,7 @@ Copia las claves de `supabase status` a `.env.local` antes de probar el RSVP. Co
 - [`AGENTS.md`](AGENTS.md): reglas permanentes para agentes de código.
 - [`docs/current-phase.md`](docs/current-phase.md): alcance autorizado actual y estado del repo.
 - [`docs/go-live-checklist.md`](docs/go-live-checklist.md): checklist operativo antes de compartir enlaces.
-- [`docs/invitation-ui.md`](docs/invitation-ui.md): diseño Figma, tokens, assets, mapas, música, RSVP boarding, admin brand.
+- [`docs/invitation-ui.md`](docs/invitation-ui.md): diseño Figma, tokens, assets, mapas, música, saludo de portada, RSVP boarding, admin brand.
 - [`docs/product-spec.md`](docs/product-spec.md): requisitos y visión del producto.
 - [`docs/architecture.md`](docs/architecture.md): arquitectura y límites técnicos (incluye `src/proxy.ts`).
 
@@ -215,20 +232,21 @@ Antes de declarar una tarea terminada, ejecutar los checks relevantes y reportar
 Ya confirmados o configurados en producto / seed:
 
 - Novios: **Nychol** y **Miguel**
-- Fecha: 24 de octubre de 2026
+- Fecha: 24 de octubre de 2026 (zona `America/Bogota`)
 - Lugar (copy actual): Hacienda Montecano, vía Subachoque–El Rosal
 - Mapas de ceremonia: Google Maps, Waze, Apple Maps + embed
 - RSVP deadline (config/DB): 15 de septiembre de 2026
-- Dos puntos de bus en Bogotá (Modelia y Villa Sonia)
+- Dos puntos de bus en Bogotá (Modelia y Villa Sonia); transporte gratuito en copy
+- Inspiración de vestimenta: rutas `/inspiracion/ellos` y `/inspiracion/ellas`
 
 Pendientes o vacíos hasta que se indiquen (no inventar):
 
-- Enlaces de inspiración de vestimenta
 - Horas de salida del bus hacia Subachoque (“por confirmar”)
 - Archivo `soundtrack.mp3` si no está en el deploy
+- Género en familias creadas antes de la migración `guest_gender` (rellenar en admin)
 
 No inventar datos sensibles ni secretos.
 
 ## Despliegue
 
-Destino: Vercel + Supabase remoto + Cloudflare DNS. El checklist de go-live de producción se autoriza por fase en `docs/current-phase.md`. Asegura que la migración de boarding point y nombres esté aplicada en el Supabase de producción antes de confiar en RSVPs con bus.
+Destino: Vercel + Supabase remoto + Cloudflare DNS. El checklist de go-live de producción se autoriza por fase en `docs/current-phase.md`. Asegura que las migraciones de boarding, nombres, guest media y **género de invitados** estén aplicadas en el Supabase de producción antes de compartir enlaces ampliamente.

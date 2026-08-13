@@ -1,8 +1,8 @@
 # Invitation UI (design & presentation)
 
-**Status:** implemented against Figma “Invitación boda” + post-Figma polish (maps, music, cover crop)
+**Status:** implemented against Figma “Invitación boda” + post-Figma polish (maps, music, cover crop, gifts, outfit inspiration, personalized cover greeting)
 
-**Last reviewed:** 2026-08-09
+**Last reviewed:** 2026-08-12
 
 This document describes the **public invitation presentation layer** and shared brand rules used by the admin UI. It does not authorize product features outside `docs/current-phase.md`.
 
@@ -14,7 +14,8 @@ This document describes the **public invitation presentation layer** and shared 
 4. `src/config/transport.ts` for boarding point id helpers (keep in sync with meeting point ids).
 5. CSS variables and utilities in `src/app/globals.css`.
 6. Admin shared classes: `src/components/admin/admin-ui.ts`.
-7. This file for layout/component conventions.
+7. Event display timezone: `src/lib/datetime/event-timezone.ts` (`America/Bogota`).
+8. This file for layout/component conventions.
 
 ## Couple names
 
@@ -30,15 +31,29 @@ Do not reintroduce “Nombre 1 / Nombre 2” placeholders for this couple.
 ## Routes
 
 ```text
-/i/[slug]              invitation cover (personalized by family slug)
+/i/[slug]              invitation cover (personalized greeting by guest count / gender)
 /i/[slug]/invitacion   full invitation page (hero → footer + RSVP + share memories CTA)
 /i/[slug]/fotos        guest photo/video uploader (family-bound)
 /fotos?code=…          same uploader via event QR (no family list)
+/inspiracion/ellos     outfit inspiration board (men)
+/inspiracion/ellas     outfit inspiration board (women)
 ```
 
 Slug lookup goes through invitation services; presentation must never surface internal DB ids.
 
 Cover CTA “Ver Invitación” navigates to `/invitacion` and, when music is enabled, starts the soundtrack on that user gesture.
+
+### Cover greeting
+
+Logic: `formatCoverGreeting` in `src/lib/invitation/cover-greeting.ts` (prefixes in `weddingConfig.cover`).
+
+| Guest count | Greeting |
+|-------------|----------|
+| 1 | `Querido` / `Querida` + guest full name (from `guests.gender`: `male` \| `female`) |
+| 2 | `Queridos` + `Nombre1 y Nombre2` |
+| 3+ (or no names) | `Querida` + family `display_name` (e.g. Familia Pérez) |
+
+Admin create/edit family forms require a gender per guest so singular invitations stay correct. Existing rows may have `gender` null until edited; singular fallback uses the female prefix until set.
 
 ## Design language
 
@@ -46,7 +61,7 @@ Cover CTA “Ver Invitación” navigates to `/invitacion` and, when music is en
 
 | Token | Value | Role |
 |-------|--------|------|
-| `--accent` / `bg-accent` | `#BEB950` | Brand yellow bands (transport, gallery, gifts); admin header |
+| `--accent` / `bg-accent` | `#BEB950` | Brand yellow bands (transport, gallery, gifts); admin header; share-memories + inspiration pages |
 | `--cream-figma` | `#F5F5DC` | Cream sections (countdown, dress code, RSVP); admin page bg |
 | `--cover-cta-fg` | `#454411` | Olive body/title text on cream |
 | `--cover-cta-bg` | `#CFCFCF` | Gray pill buttons (e.g. venue secondary pills) |
@@ -60,7 +75,7 @@ Cover CTA “Ver Invitación” navigates to `/invitacion` and, when music is en
 |------|-------------------|-----|
 | Invitation section titles & body (Figma Times) | `--font-timer` (`Times New Roman` stack) | Venue, transport, dress, gifts, RSVP, footer, countdown |
 | Cover subtitle | Vollkorn (`--font-cover-serif`) | Multi-line cover invitation copy, **uppercase** |
-| Cover / script accents | `--font-script` / cover fonts as loaded in layout | Cover and specialized display |
+| Cover / script accents | `--font-script` / cover fonts as loaded in layout | Cover greeting script line and specialized display |
 | Admin UI | same `--font-timer` + olive / cream tokens | Entire `/admin` shell and forms via `admin-ui.ts` |
 
 Do not reintroduce generic marketing fonts (e.g. Inter-like default stacks) on invitation sections that already use Times.
@@ -69,7 +84,7 @@ Do not reintroduce generic marketing fonts (e.g. Inter-like default stacks) on i
 
 - **Mobile-first**, safe areas, 44px targets, `prefers-reduced-motion`.
 - **Full-bleed** photo sections (cover, hero, venue, couple, closing) edge-to-edge.
-- **Cap content width** on large screens for multi-column blocks (venue row, dress grid, transport, RSVP) so copy/CTAs do not pin to opposite edges (`max-w-5xl` / `max-w-6xl` patterns).
+- **Cap content width** on large screens for multi-column blocks (venue row, dress grid, transport, RSVP, gifts) so copy/CTAs do not pin to opposite edges (`max-w-5xl` / `max-w-6xl` patterns).
 - **Accent continuous runs** are intentional (e.g. gallery → gifts stay yellow).
 - Prefer **one job per section** (title + short support + media or form).
 
@@ -89,21 +104,21 @@ Asset: `weddingConfig.assets.coverBackground` → `Portada.jpg`.
 
 | Section | Component | Notes |
 |---------|-----------|--------|
-| Cover | `invitation-cover.tsx` | Full-bleed cover; Vollkorn subtitle; open CTA |
+| Cover | `invitation-cover.tsx` | Full-bleed; script greeting line; Vollkorn subtitle; open CTA |
 | Open CTA | `invitation-open-button.tsx` | Starts music (if enabled) then navigates |
 | Music | `invitation-music-control.tsx` | Floating mute on body page |
 | Hero | `invitation-hero.tsx` | Photo crop via `.hero-photo` |
-| Countdown | `invitation-countdown.tsx` | Client; cached second snapshot via `useSyncExternalStore` |
+| Countdown | `invitation-countdown.tsx` | Client; absolute event timestamps; labels via event TZ helper when needed |
 | Venue | `invitation-venue.tsx` | MediaFrame + optional embed + map links |
 | Map links | `venue-map-links.tsx` | Google / Waze / Apple (Apple OS only) |
-| Transport | `invitation-transport.tsx` | Chiva art; meeting points; landscape frame ~509/286 |
+| Transport | `invitation-transport.tsx` | Chiva art; meeting points; landscape frame ~509/286; gratuito in copy |
 | Couple photo | `invitation-couple-photo.tsx` | Full-width |
-| Dress code | `invitation-dress-code.tsx` | ELLOS \| photo \| ELLAS; palettes share row width |
+| Dress code | `invitation-dress-code.tsx` | ELLOS \| photo \| ELLAS; palettes share row width; inspiration CTAs `text-center` |
 | Gallery | `invitation-gallery.tsx` | Dual-buffer + swipe; `onLoad`; desktop arrows |
-| Gifts | `invitation-gifts.tsx` | Two columns: `Lluvia de sobres.png` + copy |
+| Gifts | `invitation-gifts.tsx` | Two equal columns on `lg+`; illustration capped (`max-w-sm` → `lg`); `Lluvia de sobres.png` |
 | RSVP shell | `invitation-rsvp-section.tsx` | Intro from Figma + children form |
-| RSVP form | `rsvp-form.tsx` | Attendance, bus, **boarding point**, diet, contact |
-| Share memories CTA | `invitation-share-memories.tsx` | Links to `/i/[slug]/fotos` |
+| RSVP form | `rsvp-form.tsx` | Attendance, bus, **boarding point**, diet, contact (phone required) |
+| Share memories CTA | `invitation-share-memories.tsx` | Accent band + cream CTA → `/i/[slug]/fotos` |
 | Footer | `invitation-footer.tsx` | Closing message + date on photo |
 
 Orchestration: `invitation-page-view.tsx`.
@@ -154,6 +169,7 @@ Admin analytics and guest tables surface the same points for planning bus capaci
 - Allowed / forbidden palette blocks share the same content width rhythm as the ELLOS \| photo \| ELLAS row.
 - Desktop outer alignment: ELLOS start / ELLAS end relative to the shared grid.
 - Prefer `object-contain` so figures (heads/feet) are not cropped.
+- “Ver Inspiración” pills: centered label text (`text-center` + flex center).
 
 ## Assets (`public/invitation/`)
 
@@ -185,6 +201,7 @@ Paths are always configured in `weddingConfig.assets` (do not hardcode new paths
 - CTAs “Ver Inspiración” in dress code link via `dressCode.inspirationUrls`.
 - Assets and copy live in `weddingConfig` (`assets.*OutfitInspiration*`, `dressCode.inspirationPages`).
 - Art direction via CSS (`md:`): desktop asset from 768px up (tablet portrait/landscape + desktop); phone uses the standard board. (Do not wrap `next/image` in `<picture>` — the `<source>` is ignored.)
+- Full-viewport composition so “Volver” stays reachable without scrolling when possible.
 
 ### Gallery rules
 
@@ -200,6 +217,7 @@ Paths are always configured in `weddingConfig.assets` (do not hardcode new paths
 - Portrait photos in gallery: height-capped (`max-height: 100svh/dvh`), `object-contain` / top.
 - Dress code illustration: **natural aspect**, `object-contain` so feet are not cropped.
 - Transport chiva: square art inside **landscape Figma frame** (`aspect-ratio: 509 / 286`), `object-contain`.
+- Gifts illustration: keep moderately sized (not full column bleed); `object-contain`.
 - Prefer `unoptimized` for static `/invitation/*` brand PNGs when the optimizer adds no value.
 
 ## Config copy that must stay centralized
@@ -207,8 +225,9 @@ Paths are always configured in `weddingConfig.assets` (do not hardcode new paths
 Edit **only** `src/config/wedding.ts` for:
 
 - Couple names, ceremony maps URLs, venue labels, transport meeting points (including **stable `id`s**), dress rules, gifts, RSVP intro strings, footer template (`closingTemplate` with `{date}`).
+- Cover greeting prefixes (`cover.greetingPrefix*`).
 - Feature flags (`features.countdown`, `features.gifts`, `features.music`, …).
-- Asset paths including `assets.music`.
+- Asset paths including `assets.music` and outfit boards.
 
 When adding or renaming a boarding point:
 
@@ -216,11 +235,13 @@ When adding or renaming a boarding point:
 2. Update `TRANSPORT_BOARDING_POINT_IDS` in `transport.ts`.
 3. Update Zod + SQL check constraint + RPC allow-list (new migration).
 
-RSVP deadlines and event dates may also exist in Supabase `events`; the page prefers DB when available, with config as presentation fallback labels.
+RSVP deadlines and event dates may also exist in Supabase `events`; the page prefers DB when available, with config as presentation fallback labels. Format invitation/admin date labels with `America/Bogota` (`event-timezone.ts`), not the host TZ.
 
 ## Admin brand (same system)
 
 Admin must not drift into a separate purple/gray SaaS look. Use `admin` tokens from `admin-ui.ts` for forms, tables, nav, and metrics. Header uses `bg-accent` with cream type/pills; page shell uses `bg-cream-figma`.
+
+Family create/edit: each guest row includes **nombre + género** (required). Gender powers the singular cover greeting only; it is not shown on the public invitation body.
 
 ## Accessibility & motion
 
@@ -238,3 +259,4 @@ Admin must not drift into a separate purple/gray SaaS look. Use `admin` tokens f
 - Change boarding point **ids** without a matching DB migration.
 - Autoplay invitation audio on page load without a user gesture.
 - Reintroduce `src/middleware.ts`; use `src/proxy.ts` for the admin edge gate.
+- Guess guest gender from the name; always persist `guests.gender` from admin.

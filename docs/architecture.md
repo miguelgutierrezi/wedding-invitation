@@ -1,6 +1,6 @@
 # Architecture
 
-**Status:** Guest Media Uploads phase (Supabase Storage + shared uploader + admin moderation)
+**Status:** Guest Media Uploads complete; invitation polish (cover greeting + guest gender) documented
 
 **Last reviewed:** 2026-08-12
 
@@ -50,10 +50,12 @@ Use:
 
 ```text
 /                      public landing (as implemented)
-/i/[slug]              personalized invitation cover
+/i/[slug]              personalized invitation cover (greeting by guest count / gender)
 /i/[slug]/invitacion   full invitation + embedded RSVP
 /i/[slug]/fotos        guest media upload (family-bound)
 /fotos?code=…          guest media upload (event QR)
+/inspiracion/ellos     outfit inspiration (men)
+/inspiracion/ellas     outfit inspiration (women)
 /admin/login           administrator sign-in
 /admin                 dashboard (summary metrics)
 /admin/analytics       rates + transport boarding breakdown
@@ -74,16 +76,19 @@ Stable event presentation data belongs in `src/config/wedding.ts` until a future
 
 - **Couple display names** (presentation): `weddingConfig.couple.partnerOne` / `partnerTwo` → **Nychol** & **Miguel**.
 - **Event partner names** (DB): updated via migration so invitation load from `events` matches; keep config and DB aligned when changing names.
+- **Event timezone:** Colombia `America/Bogota` (UTC−5, no DST). Format invitation/admin/export labels with `src/lib/datetime/event-timezone.ts`, not the Vercel host TZ. Optional process pin: `TZ=America/Bogota` (see `.env.example`).
 - **Transport boarding point ids**: `weddingConfig.transport.meetingPoints[].id` must match `src/config/transport.ts` (`TRANSPORT_BOARDING_POINT_IDS`) and the SQL check constraint / RPC (`modelia`, `villa_sonia`).
+- **Guest gender:** `guests.gender` (`male` \| `female`, nullable for legacy rows). Required on admin create/update; used only for singular cover greeting.
 
 Asset paths under `public/invitation/` are listed in `weddingConfig.assets` and documented in `docs/invitation-ui.md`.
 
-Ceremony maps URLs live on `weddingConfig.ceremony` (`mapsUrl`, `wazeUrl`, `appleMapsUrl`, `mapsEmbedUrl`). Empty strings disable the corresponding CTA or embed. Do not invent private logistics (times, legal docs, dress inspiration links). Empty strings for those CTAs remain acceptable until product provides real values.
+Ceremony maps URLs live on `weddingConfig.ceremony` (`mapsUrl`, `wazeUrl`, `appleMapsUrl`, `mapsEmbedUrl`). Empty strings disable the corresponding CTA or embed. Do not invent private logistics (e.g. bus departure times still “por confirmar”). Outfit inspiration routes are implemented under `/inspiracion/*`.
 
 ## Presentation layer
 
 - Invitation sections are independent components under `src/components/invitation/`.
 - Page composition: `invitation-page-view.tsx`.
+- Cover greeting: `formatCoverGreeting` (`src/lib/invitation/cover-greeting.ts`) — 1 guest Querido/Querida by gender, 2 guests Queridos A y B, 3+ Querida + family display name.
 - Gallery uses a dual-buffer strategy (preload next slide, then swipe) to avoid flash between photos.
 - Venue directions: optional map iframe + external navigation links (`venue-map-links.tsx`); Apple Maps only when `isApplePlatform()` is true.
 - Music: module singleton `src/lib/invitation-audio.ts`; start after cover “Ver Invitación” gesture; floating mute on the invitation body. Controlled by `features.music` + `assets.music`.
@@ -117,7 +122,10 @@ Current coverage targets:
 - Transport boarding id sync with `weddingConfig`.
 - Invitation slug helpers.
 - In-memory rate limiter + `serverLog` PII stripping.
-- Admin `updateFamily` RPC error mapping.
+- Admin `updateFamily` / `createFamily` RPC error mapping.
+- Cover greeting helper (`formatCoverGreeting`).
+- Event timezone helpers.
+- Outfit inspiration route helpers.
 - Guest media MIME/size policy, object keys, status transitions, queue retry helpers.
 
 ## Guest media uploads
@@ -168,8 +176,9 @@ Approved decisions:
 - **Events:** multiple events are allowed via `event_id` foreign keys for reuse. Product v1 typically uses one event row; the database does not enforce a singleton.
 - **Attendance source of truth:** the latest `rsvp_responses` / `rsvp_response_guests` rows are authoritative after submission. `guests.attendance_status` (and denormalized transport fields) is a mirror for admin listing.
 - **RSVP persistence:** one `rsvp_responses` row per family (`unique(family_id)`), updated in place. Guest answers live in `rsvp_response_guests`.
-- **Admin family create:** `create_family_with_guests` RPC inserts the family row, guests, and audit event in one transaction (service-role only).
-- **Admin family update:** `update_family_with_guests` RPC updates the family row, syncs guests, and writes an audit event in one transaction (service-role only).
+- **Admin family create:** `create_family_with_guests` RPC inserts the family row, guests (names + genders), and audit event in one transaction (service-role only).
+- **Admin family update:** `update_family_with_guests` RPC updates the family row, syncs guests (names + genders), and writes an audit event in one transaction (service-role only).
+- **Guest gender:** `guests.gender` text nullable with check `male` \| `female`. Admin Zod + RPC require a gender array aligned with guest names (`p_guest_genders`).
 - **Transport:**
   - `needs_transport` (boolean) on guest / rsvp_response_guest.
   - `transport_boarding_point` text nullable; allowed values `modelia` \| `villa_sonia`; **required server-side when** the guest is attending and needs transport.
@@ -191,6 +200,7 @@ Relevant migrations include:
 …_update_family_with_guests.sql
 …_create_family_with_guests.sql
 …_guest_media_uploads.sql
+…_guest_gender.sql          # guests.gender + RPC p_guest_genders
 ```
 
 ## Invitation token / slug boundary

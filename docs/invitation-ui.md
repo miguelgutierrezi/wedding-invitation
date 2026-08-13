@@ -189,10 +189,10 @@ Paths are always configured in `weddingConfig.assets` (do not hardcode new paths
 | `giftsIllustration` | `Lluvia de sobres.png` | Gifts |
 | `allowedPaletteImage` | `paleta sugerida.png` | Dress code |
 | `forbiddenPaletteImage` | `paleta colores.png` | Dress code |
-| `menOutfitInspiration` | `Ideas outfit hombre.png` | `/inspiracion/ellos` (teléfono &lt;768px) |
-| `menOutfitInspirationDesktop` | `Ideas outfit hombre desktop.png` | `/inspiracion/ellos` (tablet + desktop ≥768px) |
-| `womenOutfitInspiration` | `Ideas outfit mujer.png` | `/inspiracion/ellas` (teléfono &lt;768px) |
-| `womenOutfitInspirationDesktop` | `Ideas outfit mujer desktop.png` | `/inspiracion/ellas` (tablet + desktop ≥768px) |
+| `menOutfitInspiration` | `Ideas outfit hombre.png` | `/inspiracion/ellos` (teléfono + tablet vertical) |
+| `menOutfitInspirationDesktop` | `Ideas outfit hombre desktop.png` | `/inspiracion/ellos` (`md` + landscape) |
+| `womenOutfitInspiration` | `Ideas outfit mujer.png` | `/inspiracion/ellas` (teléfono + tablet vertical) |
+| `womenOutfitInspirationDesktop` | `Ideas outfit mujer desktop.png` | `/inspiracion/ellas` (`md` + landscape) |
 | `music` | `soundtrack.mp3` | Background track (optional file) |
 
 ### Outfit inspiration pages
@@ -201,8 +201,8 @@ Paths are always configured in `weddingConfig.assets` (do not hardcode new paths
 - Background: brand `bg-accent` (`#BEB950`).
 - CTAs “Ver Inspiración” in dress code link via `dressCode.inspirationUrls`.
 - Assets and copy live in `weddingConfig` (`assets.*OutfitInspiration*`, `dressCode.inspirationPages`).
-- Art direction via CSS (`md:`): desktop asset from 768px up (tablet portrait/landscape + desktop); phone uses the standard board. (Do not wrap `next/image` in `<picture>` — the `<source>` is ignored.)
-- Full-viewport composition so “Volver” stays reachable without scrolling when possible.
+- Art direction via CSS: **phone + tablet portrait** use the standard boards; **`md` + landscape** (tablet horizontal / desktop) use `* desktop.png`. (Do not wrap `next/image` in `<picture>` — the `<source>` is ignored.)
+- Layout: **full width** + scrollable image area on portrait. Height-capped / centered on landscape from `md` up so “Volver” stays visible without scroll when possible.
 
 ### Gallery rules
 

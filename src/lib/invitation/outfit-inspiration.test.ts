@@ -42,7 +42,13 @@ describe("outfit inspiration helpers", () => {
     const women = getOutfitInspirationPage("ellas");
 
     expect(men?.imageSrc).toBe(weddingConfig.assets.menOutfitInspiration);
+    expect(men?.desktopImageSrc).toBe(
+      weddingConfig.assets.menOutfitInspirationDesktop,
+    );
     expect(women?.imageSrc).toBe(weddingConfig.assets.womenOutfitInspiration);
+    expect(women?.desktopImageSrc).toBe(
+      weddingConfig.assets.womenOutfitInspirationDesktop,
+    );
     expect(men?.imageSrc).toContain("hombre");
     expect(women?.imageSrc).toContain("mujer");
   });

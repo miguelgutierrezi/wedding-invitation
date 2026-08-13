@@ -172,8 +172,10 @@ Paths are always configured in `weddingConfig.assets` (do not hardcode new paths
 | `giftsIllustration` | `Lluvia de sobres.png` | Gifts |
 | `allowedPaletteImage` | `paleta sugerida.png` | Dress code |
 | `forbiddenPaletteImage` | `paleta colores.png` | Dress code |
-| `menOutfitInspiration` | `Ideas outfit hombre.png` | `/inspiracion/ellos` |
-| `womenOutfitInspiration` | `Ideas outfit mujer.png` | `/inspiracion/ellas` |
+| `menOutfitInspiration` | `Ideas outfit hombre.png` | `/inspiracion/ellos` (móvil / tablet vertical) |
+| `menOutfitInspirationDesktop` | `Ideas outfit hombre desktop.png` | `/inspiracion/ellos` (desktop landscape ≥1024px) |
+| `womenOutfitInspiration` | `Ideas outfit mujer.png` | `/inspiracion/ellas` (móvil / tablet vertical) |
+| `womenOutfitInspirationDesktop` | `Ideas outfit mujer desktop.png` | `/inspiracion/ellas` (desktop landscape ≥1024px) |
 | `music` | `soundtrack.mp3` | Background track (optional file) |
 
 ### Outfit inspiration pages
@@ -181,7 +183,8 @@ Paths are always configured in `weddingConfig.assets` (do not hardcode new paths
 - Routes: `/inspiracion/ellos`, `/inspiracion/ellas`.
 - Background: brand `bg-accent` (`#BEB950`).
 - CTAs “Ver Inspiración” in dress code link via `dressCode.inspirationUrls`.
-- Assets and copy live in `weddingConfig` (`assets.*OutfitInspiration`, `dressCode.inspirationPages`).
+- Assets and copy live in `weddingConfig` (`assets.*OutfitInspiration*`, `dressCode.inspirationPages`).
+- Art direction via `<picture>`: desktop asset when `(min-width: 1024px) and (orientation: landscape)`; otherwise the mobile/tablet-portrait asset.
 
 ### Gallery rules
 

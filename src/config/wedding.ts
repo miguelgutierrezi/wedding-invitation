@@ -201,7 +201,11 @@ export const weddingConfig = {
     allowedPaletteImage: "/invitation/paleta sugerida.png",
     forbiddenPaletteImage: "/invitation/paleta colores.png",
     menOutfitInspiration: "/invitation/Ideas outfit hombre.png",
+    menOutfitInspirationDesktop:
+      "/invitation/Ideas outfit hombre desktop.png",
     womenOutfitInspiration: "/invitation/Ideas outfit mujer.png",
+    womenOutfitInspirationDesktop:
+      "/invitation/Ideas outfit mujer desktop.png",
     /**
      * Background track for the invitation body.
      * Place the file under public/invitation/ (mp3 recommended).

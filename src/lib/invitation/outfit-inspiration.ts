@@ -15,6 +15,7 @@ export type OutfitInspirationPageData = {
   title: string;
   imageAlt: string;
   imageSrc: string;
+  desktopImageSrc: string;
 };
 
 /**
@@ -34,8 +35,12 @@ export function getOutfitInspirationPage(
     audience === "ellos"
       ? assets.menOutfitInspiration
       : assets.womenOutfitInspiration;
+  const desktopImageSrc =
+    audience === "ellos"
+      ? assets.menOutfitInspirationDesktop
+      : assets.womenOutfitInspirationDesktop;
 
-  if (!imageSrc) {
+  if (!imageSrc || !desktopImageSrc) {
     return null;
   }
 
@@ -44,5 +49,6 @@ export function getOutfitInspirationPage(
     title: page.title,
     imageAlt: page.imageAlt,
     imageSrc,
+    desktopImageSrc,
   };
 }

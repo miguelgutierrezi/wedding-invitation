@@ -13,15 +13,16 @@ Cada familia recibe un enlace privado (`/i/[slug]`) para ver la invitación y co
 | Cómo llegar | Embed Google Maps + enlaces Google / Waze / Apple Maps (Apple) |
 | Música | Tras “Ver Invitación”; mute flotante; archivo en `public/invitation/soundtrack.mp3` |
 | RSVP | Formulario embebido: asistencia, bus, **punto de encuentro**, dietas, contacto |
-| Admin `/admin` | Login, resumen, analytics (incluido bus por punto), invitados, familias |
+| Admin `/admin` | Login, resumen, analytics, invitados, familias, **fotos**, export Excel |
 | Visual admin | Misma paleta/tipografía que la invitación (`admin-ui.ts`) |
-| Auth edge | Next.js 16 `src/proxy.ts` (gate `/admin`) |
-| Automated tests | Vitest (`pnpm test`): RSVP, transport, slugs, rate limit, logs |
+| Auth edge | Next.js 16 `src/proxy.ts` (gate `/admin` + `/api/admin`) |
+| Automated tests | Vitest (`pnpm test`): RSVP, transport, slugs, rate limit, logs, guest media |
 | Admin family create/update | Transactional RPCs + structured admin logs |
-| Rate limit / logs | RSVP + invitation lookup; JSON logs without PII |
-| Export CSV / email | Pendientes de fase futura |
+| Rate limit / logs | RSVP + invitation lookup + media authorize; JSON logs without PII |
+| Guest media uploads | `/i/[slug]/fotos`, `/fotos?code=`, Storage privado, `/admin/photos` |
+| Email (Resend) | Pendiente de fase futura |
 
-El alcance autorizado se define solo en [`docs/current-phase.md`](docs/current-phase.md). Checklist operativo: [`docs/go-live-checklist.md`](docs/go-live-checklist.md).
+El alcance autorizado se define solo en [`docs/current-phase.md`](docs/current-phase.md). Checklist operativo: [`docs/go-live-checklist.md`](docs/go-live-checklist.md). Storage de invitados: [`docs/guest-media-storage.md`](docs/guest-media-storage.md).
 
 ### Enlaces locales útiles
 
@@ -52,9 +53,8 @@ Principales archivos:
 
 ```text
 Portada.jpg          # portada
-Nychol & Migue.png   # cierre
 Boda 3.jpg           # hero
-Boda 19.jpg          # banda de lugar
+Boda 19.jpg          # cierre (footer); también usada en banda de lugar
 Boda 21.jpg          # (no carrusel; dimensiones distintas)
 Imagen recortada.png # foto pareja
 chiva.png            # transporte
@@ -137,13 +137,14 @@ NEXT_PUBLIC_APP_URL=
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
+GUEST_MEDIA_STORAGE_QUOTA_BYTES=
 RESEND_API_KEY=
 ADMIN_NOTIFICATION_EMAIL=
 ADMIN_EMAIL=
 ADMIN_EMAILS=
 ```
 
-`SUPABASE_SERVICE_ROLE_KEY` es exclusivamente para código de servidor. Resend está previsto para una fase futura; la aplicación debe funcionar sin correo en desarrollo.
+`SUPABASE_SERVICE_ROLE_KEY` es exclusivamente para código de servidor. `GUEST_MEDIA_STORAGE_QUOTA_BYTES` es el presupuesto blando para alertas del panel de fotos (no el límite duro de Supabase). Resend está previsto para una fase futura; la aplicación debe funcionar sin correo en desarrollo.
 
 ## Comandos
 

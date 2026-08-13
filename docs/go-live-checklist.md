@@ -44,6 +44,7 @@ pnpm build
 
 ## Out of scope for this checklist
 
-- Resend email (tracked as future work). Excel export is available in admin.
+- Resend email (tracked as future work). Excel export and guest media uploads are available in admin.
 - Distributed (Redis) rate limiting — in-app limiter is best-effort per isolate; prefer Cloudflare for global edge.
 - Dress inspiration URLs and bus departure times still “por confirmar” until product provides them.
+- Hosted Supabase Storage global limit ≥3 GiB for guest videos (see `docs/guest-media-storage.md`).

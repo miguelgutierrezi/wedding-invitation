@@ -31,7 +31,9 @@ Do not reintroduce “Nombre 1 / Nombre 2” placeholders for this couple.
 
 ```text
 /i/[slug]              invitation cover (personalized by family slug)
-/i/[slug]/invitacion   full invitation page (hero → footer + RSVP)
+/i/[slug]/invitacion   full invitation page (hero → footer + RSVP + share memories CTA)
+/i/[slug]/fotos        guest photo/video uploader (family-bound)
+/fotos?code=…          same uploader via event QR (no family list)
 ```
 
 Slug lookup goes through invitation services; presentation must never surface internal DB ids.
@@ -101,6 +103,7 @@ Asset: `weddingConfig.assets.coverBackground` → `Portada.jpg`.
 | Gifts | `invitation-gifts.tsx` | Lluvia de sobres |
 | RSVP shell | `invitation-rsvp-section.tsx` | Intro from Figma + children form |
 | RSVP form | `rsvp-form.tsx` | Attendance, bus, **boarding point**, diet, contact |
+| Share memories CTA | `invitation-share-memories.tsx` | Links to `/i/[slug]/fotos` |
 | Footer | `invitation-footer.tsx` | Closing message + date on photo |
 
 Orchestration: `invitation-page-view.tsx`.
@@ -164,7 +167,7 @@ Paths are always configured in `weddingConfig.assets` (do not hardcode new paths
 | `couplePhoto` | `Imagen recortada.png` | Couple band |
 | `busPhoto` | `chiva.png` | Transport (file key remains `busPhoto` for less churn) |
 | `gallery` | ordered `Boda N.jpg` list | Gallery carousel |
-| `footerBackground` | `Nychol & Migue.png` | Closing |
+| `footerBackground` | `Boda 19.jpg` | Closing |
 | `dressCodePhoto` | `cabezas.png` | Dress code |
 | `allowedPaletteImage` | `paleta sugerida.png` | Dress code |
 | `forbiddenPaletteImage` | `paleta colores.png` | Dress code |

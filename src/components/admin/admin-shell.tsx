@@ -15,6 +15,7 @@ const navItems = [
   { href: "/admin/analytics", label: "Analytics" },
   { href: "/admin/guests", label: "Invitados" },
   { href: "/admin/families", label: "Familias" },
+  { href: "/admin/photos", label: "Fotos" },
 ] as const;
 
 /**
@@ -44,12 +45,18 @@ export async function AdminShell({ children, title }: AdminShellProps) {
             aria-label="Menú de administración"
           >
             {navItems.map((item) => (
-              <Link key={item.href} href={item.href} className={admin.navLink}>
+              <Link
+                key={item.href}
+                href={item.href}
+                prefetch={false}
+                className={admin.navLink}
+              >
                 {item.label}
               </Link>
             ))}
             <Link
               href="/admin/families/new"
+              prefetch={false}
               className="inline-flex min-h-11 items-center rounded-full border-2 border-cover-cta-fg bg-cream-figma px-4 font-[family-name:var(--font-timer)] text-sm font-medium text-cover-cta-fg transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-cream-figma focus-visible:outline-none"
             >
               Nueva familia

@@ -7,6 +7,7 @@ import { InvitationGifts } from "@/components/invitation/invitation-gifts";
 import { InvitationHero } from "@/components/invitation/invitation-hero";
 import { InvitationMusicControl } from "@/components/invitation/invitation-music-control";
 import { InvitationRsvpSection } from "@/components/invitation/invitation-rsvp-section";
+import { InvitationShareMemories } from "@/components/invitation/invitation-share-memories";
 import { InvitationTransport } from "@/components/invitation/invitation-transport";
 import { InvitationVenue } from "@/components/invitation/invitation-venue";
 import { RsvpForm } from "@/components/rsvp/rsvp-form";
@@ -98,6 +99,8 @@ export function InvitationPageView({
           closedReason={invitation.closedReason}
         />
       </InvitationRsvpSection>
+
+      <InvitationShareMemories slug={slug} />
 
       <InvitationFooter dateLabel={dateChipLabel} />
     </div>

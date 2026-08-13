@@ -23,12 +23,13 @@ Este documento define qué producto se quiere construir. No autoriza por sí mis
 | Admin family create/update | RPC transaccionales + `serverLog` |
 | Rate limit + logging | In-memory RSVP/lookup gates + JSON logs sin PII |
 | Checklist go-live | `docs/go-live-checklist.md` |
-| Export Excel (admin) | Implementado (`/api/admin/export`, hojas Resumen / Invitados / Familias / Buses / Dietas) |
+| Export Excel (admin) | Implementado (`/api/admin/export`) |
+| Guest media uploads | Implementado (`/i/[slug]/fotos`, `/fotos?code=`, `/admin/photos`, Storage privado) |
 | Email / settings UI | No implementado |
 
-Config de copy y rutas de medios: **`src/config/wedding.ts`**. Ids de puntos de bus: **`src/config/transport.ts`**.
+Config de copy y rutas de medios: **`src/config/wedding.ts`**. Ids de puntos de bus: **`src/config/transport.ts`**. Storage invitados: **`docs/guest-media-storage.md`**.
 
-Pendiente a nivel producto (salvo autorización en `current-phase.md`): email (Resend), editor de settings en admin, horarios de salida del bus hacia Subachoque si aún “por confirmar”.
+Pendiente a nivel producto (salvo autorización en `current-phase.md`): email (Resend), editor de settings en admin, galería pública colaborativa, horarios de salida del bus hacia Subachoque si aún “por confirmar”.
 
 ## 1. Propósito del proyecto
 

@@ -188,7 +188,7 @@ export const weddingConfig = {
       "/invitation/Boda 18.jpg",
       "/invitation/Boda 20.jpg",
     ] as const,
-    footerBackground: "/invitation/Nychol & Migue.png",
+    footerBackground: "/invitation/Boda 19.jpg",
     dressCodePhoto: "/invitation/cabezas.png",
     allowedPaletteImage: "/invitation/paleta sugerida.png",
     forbiddenPaletteImage: "/invitation/paleta colores.png",

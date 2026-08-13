@@ -1,6 +1,6 @@
 # Architecture
 
-**Status:** application baseline + hardening (tests, transactional admin create/update, rate limit, structured logs)
+**Status:** Guest Media Uploads phase (Supabase Storage + shared uploader + admin moderation)
 
 **Last reviewed:** 2026-08-12
 
@@ -52,6 +52,8 @@ Use:
 /                      public landing (as implemented)
 /i/[slug]              personalized invitation cover
 /i/[slug]/invitacion   full invitation + embedded RSVP
+/i/[slug]/fotos        guest media upload (family-bound)
+/fotos?code=…          guest media upload (event QR)
 /admin/login           administrator sign-in
 /admin                 dashboard (summary metrics)
 /admin/analytics       rates + transport boarding breakdown
@@ -59,6 +61,8 @@ Use:
 /admin/families        family list
 /admin/families/new    create family + invitation link
 /admin/families/[id]   family detail / edit
+/admin/photos          guest media moderation + QR URL
+/api/admin/export      Excel export
 /api/...               HTTP endpoints only when appropriate
 ```
 
@@ -101,7 +105,7 @@ Responsibilities:
 - Redirect unauthenticated users away from `/admin/*` (except `/admin/login`) to login with a `next` return path.
 - Redirect already-authenticated users away from `/admin/login` to `/admin`.
 
-Matcher: `/admin/:path*` only. Do not put invitation public routes through this gate.
+Matcher: `/admin/:path*` and `/api/admin/:path*`. Do not put invitation public routes through this gate.
 
 ## Testing
 
@@ -114,6 +118,15 @@ Current coverage targets:
 - Invitation slug helpers.
 - In-memory rate limiter + `serverLog` PII stripping.
 - Admin `updateFamily` RPC error mapping.
+- Guest media MIME/size policy, object keys, status transitions, queue retry helpers.
+
+## Guest media uploads
+
+- Private Storage bucket `guest-media` (see `docs/guest-media-storage.md`).
+- Metadata table `guest_media_uploads` + QR access `event_guest_media_access`.
+- Browser uploads directly via signed URL / TUS (`tus-js-client`); Vercel never receives media bytes.
+- Provider port `MediaStorageProvider` isolates Supabase so objects can later move to R2/S3.
+- Soft quotas (session / IP) and authorize rate limits; durable global rate limiting remains a future enhancement.
 
 Integration tests against live Supabase / RPC are optional and must not require secrets in CI. Operational confidence also comes from `docs/go-live-checklist.md`.
 
@@ -147,6 +160,8 @@ The expected domain entities are:
 - `rsvp_responses`
 - `rsvp_response_guests`
 - `audit_events`
+- `guest_media_uploads`
+- `event_guest_media_access`
 
 Approved decisions:
 
@@ -175,6 +190,7 @@ Relevant migrations include:
 …_couple_names_and_transport_boarding.sql
 …_update_family_with_guests.sql
 …_create_family_with_guests.sql
+…_guest_media_uploads.sql
 ```
 
 ## Invitation token / slug boundary

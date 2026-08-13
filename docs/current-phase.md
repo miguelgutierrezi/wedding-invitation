@@ -1,51 +1,48 @@
 # Current phase
 
-**Status:** admin Excel export **complete**; ready for go-live follow-ups
+**Status:** Guest Media Uploads **complete**
 
 **Last reviewed:** 2026-08-12
 
-**Authorized scope:** Closed for this slice (Excel export). Do not implement Resend/email or settings UI unless newly authorized.
+**Authorized scope:** Guest media QR PNG download authorized by explicit request. Do not implement Resend/email, public gallery, ZIP-on-Vercel, or AWS/GCP/R2 unless newly authorized.
 
 ## Snapshot of the repository
 
 | Area | State |
 |------|--------|
 | Invitation + RSVP + boarding | Implemented |
-| Hardening | Tests, transactional admin RPCs, rate limit, logs |
-| Outfit inspiration | `/inspiracion/ellos` · `/inspiracion/ellas` |
-| Admin Excel export | Implemented (`GET /api/admin/export`) |
+| Admin Excel export | Implemented |
+| Guest media uploads | **Implemented** |
 | Resend / settings UI | Not implemented |
 
-## Completed: admin Excel export (2026-08-12)
-
-### Objective
-
-One-click workbook for planners with useful sheets.
+## Completed: Guest Media Uploads
 
 ### Delivered
 
-- Multi-sheet `.xlsx` via `exceljs`: Resumen, Invitados, Familias, Buses, Dietas.
-- Route `GET /api/admin/export` behind admin session + email allowlist.
-- Edge gate extended to `/api/admin/*` in `src/proxy.ts`.
-- Buttons in admin shell (“Exportar Excel”) and dashboard.
-- Unit tests for sheet row builders.
+- Private bucket `guest-media` + tables `guest_media_uploads`, `event_guest_media_access`
+- Shared uploader + concurrency queue (3 images / 1 video)
+- `/i/[slug]/fotos`, `/fotos?code=`, CTA on invitation
+- Direct browser → Storage uploads (signed PUT + TUS)
+- Provider port for future R2/S3
+- `/admin/photos` moderation, QR URL rotate/enable, **PNG QR download**, reconcile
+- Soft quotas + authorize rate limits (in-memory caveat documented)
+- Vitest coverage for policy, keys, statuses, queue helpers, QR window, quotas, authorize/complete mocks, admin auth gate, QR PNG
+- Docs: `docs/guest-media-storage.md`, README, architecture, invitation-ui
 
-### Files
+### Manual hosted setup
 
-- `src/services/admin/export-workbook-rows.ts` (+ `.test.ts`)
-- `src/services/admin/export-workbook.ts`
-- `src/app/api/admin/export/route.ts`
-- `src/components/admin/admin-shell.tsx`, `src/app/admin/page.tsx`
-- `src/proxy.ts`
+Raise Storage global file size to ≥3 GiB (often Supabase Pro). See `docs/guest-media-storage.md`.
 
-## Out of scope
+### Out of scope (still)
 
-- Resend / email notifications
-- `/admin/settings` event editor
-- Distributed Redis rate limit
+- Public collaborative gallery
+- ZIP download via Vercel
+- Resend
+- Durable Redis rate limit
+- HEIC
 
 ## Recommended next steps
 
-1. Apply pending migrations on remote if any remain.
-2. Run go-live checklist.
-3. Resend / product content when needed.
+1. On hosted Supabase: apply migration + raise Storage limits; rotate QR in `/admin/photos`.
+2. Manual E2E: invitation fotos + QR fotos + admin approve/reject.
+3. Go-live checklist / Resend when needed.

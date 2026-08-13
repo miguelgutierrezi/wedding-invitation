@@ -61,7 +61,7 @@ src/actions/admin/auth.ts
 
 - CSV / Resend / settings UI
 - Distributed Redis rate limit
-- Dress inspiration URLs / bus departure times
+- Confirmed bus departure times toward Subachoque
 
 ## Recommended next steps
 

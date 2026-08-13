@@ -168,7 +168,16 @@ Paths are always configured in `weddingConfig.assets` (do not hardcode new paths
 | `dressCodePhoto` | `cabezas.png` | Dress code |
 | `allowedPaletteImage` | `paleta sugerida.png` | Dress code |
 | `forbiddenPaletteImage` | `paleta colores.png` | Dress code |
+| `menOutfitInspiration` | `Ideas outfit hombre.png` | `/inspiracion/ellos` |
+| `womenOutfitInspiration` | `Ideas outfit mujer.png` | `/inspiracion/ellas` |
 | `music` | `soundtrack.mp3` | Background track (optional file) |
+
+### Outfit inspiration pages
+
+- Routes: `/inspiracion/ellos`, `/inspiracion/ellas`.
+- Background: brand `bg-accent` (`#BEB950`).
+- CTAs “Ver Inspiración” in dress code link via `dressCode.inspirationUrls`.
+- Assets and copy live in `weddingConfig` (`assets.*OutfitInspiration`, `dressCode.inspirationPages`).
 
 ### Gallery rules
 

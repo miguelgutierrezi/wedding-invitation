@@ -108,8 +108,18 @@ export const weddingConfig = {
     },
     inspirationLabel: "Ver Inspiración",
     inspirationUrls: {
-      women: "",
-      men: "",
+      women: "/inspiracion/ellas",
+      men: "/inspiracion/ellos",
+    },
+    inspirationPages: {
+      ellos: {
+        title: "Ideas de outfit · ELLOS",
+        imageAlt: "Ideas de outfit formal elegante para ellos",
+      },
+      ellas: {
+        title: "Ideas de outfit · ELLAS",
+        imageAlt: "Ideas de outfit formal elegante para ellas",
+      },
     },
     allowedPaletteTitle: "PALETA DE COLORES SUGERIDOS",
     forbiddenTitle: "NO PERMITIDO:",
@@ -182,6 +192,8 @@ export const weddingConfig = {
     dressCodePhoto: "/invitation/cabezas.png",
     allowedPaletteImage: "/invitation/paleta sugerida.png",
     forbiddenPaletteImage: "/invitation/paleta colores.png",
+    menOutfitInspiration: "/invitation/Ideas outfit hombre.png",
+    womenOutfitInspiration: "/invitation/Ideas outfit mujer.png",
     /**
      * Background track for the invitation body.
      * Place the file under public/invitation/ (mp3 recommended).

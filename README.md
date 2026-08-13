@@ -61,6 +61,7 @@ chiva.png            # transporte
 cabezas.png          # código de vestimenta
 paleta sugerida.png / paleta colores.png
 Boda 1–23.jpg        # galería (excluye 3, 8, 10, 15, 19, 21, 22; ver wedding.ts)
+Ideas outfit hombre.png / Ideas outfit mujer.png  # /inspiracion/ellos|ellas
 soundtrack.mp3       # música (opcional; path en assets.music)
 ```
 

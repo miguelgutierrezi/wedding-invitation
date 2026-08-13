@@ -16,8 +16,8 @@ export const weddingConfig = {
     /** Figma hero chip capitalization. */
     dateChipLabel: "24 de Octubre de 2026",
     timezone: "America/Bogota",
-    rsvpDeadline: "2026-09-04T23:59:59-05:00",
-    rsvpDeadlineLabel: "4 de septiembre de 2026",
+    rsvpDeadline: "2026-09-15T23:59:59-05:00",
+    rsvpDeadlineLabel: "15 de septiembre de 2026",
   },
   ceremony: {
     name: "Hacienda Montecano",

@@ -17,6 +17,7 @@ Cada familia recibe un enlace privado (`/i/[slug]`) para ver la invitación y co
 | Visual admin | Misma paleta/tipografía que la invitación (`admin-ui.ts`) |
 | Auth edge | Next.js 16 `src/proxy.ts` (gate `/admin`) |
 | Automated tests | Vitest (`pnpm test`): RSVP, transport, slugs, rate limit, logs |
+| Admin family create/update | Transactional RPCs + structured admin logs |
 | Rate limit / logs | RSVP + invitation lookup; JSON logs without PII |
 | Export CSV / email | Pendientes de fase futura |
 
@@ -215,7 +216,7 @@ Ya confirmados o configurados en producto / seed:
 - Fecha: 24 de octubre de 2026
 - Lugar (copy actual): Hacienda Montecano, vía Subachoque–El Rosal
 - Mapas de ceremonia: Google Maps, Waze, Apple Maps + embed
-- RSVP deadline (config/DB): 4 de septiembre de 2026
+- RSVP deadline (config/DB): 15 de septiembre de 2026
 - Dos puntos de bus en Bogotá (Modelia y Villa Sonia)
 
 Pendientes o vacíos hasta que se indiquen (no inventar):

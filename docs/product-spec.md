@@ -1,8 +1,8 @@
 # Product specification: Wedding Invitation
 
-**Status:** product direction — invitation UI, admin, RSVP + boarding, hardening (tests, transactional admin update, rate limit, logs) — see `current-phase.md`
+**Status:** product direction — invitation UI, admin, RSVP + boarding, hardening complete for authorized slices — see `current-phase.md`
 
-**Last reviewed:** 2026-08-11
+**Last reviewed:** 2026-08-12
 
 Este documento define qué producto se quiere construir. No autoriza por sí mismo la implementación de todas sus secciones. El alcance actualmente permitido está únicamente en `docs/current-phase.md`, y las decisiones técnicas aprobadas están en `docs/architecture.md`.
 
@@ -20,6 +20,7 @@ Este documento define qué producto se quiere construir. No autoriza por sí mis
 | Visual admin | Alineado con brand de invitación |
 | Edge auth (Next.js 16) | `src/proxy.ts` (antes middleware) |
 | Tests unitarios (Vitest) | RSVP Zod, transport, slugs, rate limit, logs — `pnpm test` |
+| Admin family create/update | RPC transaccionales + `serverLog` |
 | Rate limit + logging | In-memory RSVP/lookup gates + JSON logs sin PII |
 | Checklist go-live | `docs/go-live-checklist.md` |
 | Export CSV / email / settings UI | No implementado |
@@ -892,7 +893,7 @@ export const weddingConfig = {
   event: {
     date: "2026-10-24T16:00:00-05:00",
     timezone: "America/Bogota",
-    rsvpDeadline: "2026-09-04T23:59:59-05:00",
+    rsvpDeadline: "2026-09-15T23:59:59-05:00",
   },
   ceremony: {
     name: "Hacienda Montecano",

@@ -1,8 +1,8 @@
 # Architecture
 
-**Status:** application baseline + hardening (tests, transactional admin update, rate limit, structured logs)
+**Status:** application baseline + hardening (tests, transactional admin create/update, rate limit, structured logs)
 
-**Last reviewed:** 2026-08-11
+**Last reviewed:** 2026-08-12
 
 This document describes the intended technical architecture and its boundaries. It does not authorize implementation beyond `current-phase.md`.
 
@@ -121,6 +121,7 @@ Integration tests against live Supabase / RPC are optional and must not require 
 
 - **Structured logs:** `src/lib/logging/server-log.ts` emits one JSON object per line. Do not log emails, phones, dietary text, messages, or raw invitation tokens/slugs (use `fingerprintPublicId` when correlation is needed).
 - **RSVP action:** logs validation failures, honeypot hits, rate limits, success, and sanitized failure codes.
+- **Admin mutations:** `createFamily` / `updateFamily` / slug regen and admin auth actions emit `serverLog` events (`admin_family_*`, `admin_sign_in_*`) without emails or guest names.
 - **Invitation lookup:** rate-limited per IP; misses log `invitation_lookup_miss` with slug fingerprint only.
 - **Rate limit:** `src/lib/security/rate-limit.ts` + `src/config/rate-limit.ts`. In-memory / per-isolate — complement with Cloudflare WAF for global protection. Budgets are intentionally generous for WhatsApp retries.
 
@@ -152,6 +153,7 @@ Approved decisions:
 - **Events:** multiple events are allowed via `event_id` foreign keys for reuse. Product v1 typically uses one event row; the database does not enforce a singleton.
 - **Attendance source of truth:** the latest `rsvp_responses` / `rsvp_response_guests` rows are authoritative after submission. `guests.attendance_status` (and denormalized transport fields) is a mirror for admin listing.
 - **RSVP persistence:** one `rsvp_responses` row per family (`unique(family_id)`), updated in place. Guest answers live in `rsvp_response_guests`.
+- **Admin family create:** `create_family_with_guests` RPC inserts the family row, guests, and audit event in one transaction (service-role only).
 - **Admin family update:** `update_family_with_guests` RPC updates the family row, syncs guests, and writes an audit event in one transaction (service-role only).
 - **Transport:**
   - `needs_transport` (boolean) on guest / rsvp_response_guest.
@@ -172,6 +174,7 @@ Relevant migrations include:
 …_invitation_slug.sql
 …_couple_names_and_transport_boarding.sql
 …_update_family_with_guests.sql
+…_create_family_with_guests.sql
 ```
 
 ## Invitation token / slug boundary

@@ -4,7 +4,7 @@ Operational checklist before sharing invitation links widely. Does not authorize
 
 ## Environments
 
-- [ ] Latest SQL migrations applied on remote Supabase (including `transport_boarding_point` / couple names and `update_family_with_guests`).
+- [ ] Latest SQL migrations applied on remote Supabase (including boarding, `update_family_with_guests`, and `create_family_with_guests`).
 - [ ] Vercel env vars set: `NEXT_PUBLIC_*`, `SUPABASE_SERVICE_ROLE_KEY`, admin emails.
 - [ ] `NEXT_PUBLIC_APP_URL` matches the public domain.
 - [ ] Admin allowlist emails exist as Supabase Auth users.
@@ -12,7 +12,7 @@ Operational checklist before sharing invitation links widely. Does not authorize
 ## Smoke — admin
 
 - [ ] `/admin/login` with allowlisted account.
-- [ ] Create a test family with 2 guests and copy `/i/[slug]`.
+- [ ] Create a test family with 2 guests and copy `/i/[slug]` (atomic create — no orphan family without guests).
 - [ ] Edit an existing family (rename guest, change seats, toggle enabled) and confirm no partial state.
 - [ ] Regenerate slug if needed; old slug should stop resolving.
 - [ ] Dashboard / analytics / guests pages load without errors.

@@ -31,7 +31,7 @@ values (
   'Miguel',
   '2026-10-24T16:00:00-05:00',
   'America/Bogota',
-  '2026-09-04T23:59:59-05:00',
+  '2026-09-15T23:59:59-05:00',
   'Lugar de la ceremonia',
   'Lugar por definir',
   '16:00',

@@ -6,8 +6,13 @@ import {
   normalizeInvitationSlug,
   slugFromDisplayName,
 } from "@/lib/security/generate-invitation-slug";
+import { fingerprintPublicId } from "@/lib/logging/fingerprint";
+import { serverLog } from "@/lib/logging/server-log";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { mapUpdateFamilyRpcError } from "@/services/admin/update-family-rpc-errors";
+import {
+  mapCreateFamilyRpcError,
+  mapUpdateFamilyRpcError,
+} from "@/services/admin/admin-family-rpc-errors";
 
 export type DashboardMetrics = {
   familyCount: number;
@@ -365,7 +370,6 @@ export async function createFamily(input: {
   invitationSlug?: string;
 }): Promise<CreateFamilyResult> {
   const supabase = createAdminClient();
-  const eventId = await getPrimaryEventId(supabase);
 
   if (input.guestNames.length > input.maximumGuests) {
     throw new Error(
@@ -379,61 +383,73 @@ export async function createFamily(input: {
     supabase,
     preferred,
   );
-  const tokenHash = hashInvitationSlug(invitationSlug);
+  const slugFp = fingerprintPublicId(invitationSlug);
 
-  const { data: family, error: familyError } = await supabase
-    .from("families")
-    .insert({
-      event_id: eventId,
-      display_name: input.displayName,
-      invitation_slug: invitationSlug,
-      invitation_token_hash: tokenHash,
-      invitation_token_preview: invitationSlug.slice(0, 24),
-      maximum_guests: input.maximumGuests,
-      custom_message: input.customMessage,
-      status: "pending",
-      is_enabled: true,
-    })
-    .select("id")
-    .single<{ id: string }>();
+  let eventId: string;
+  try {
+    eventId = await getPrimaryEventId(supabase);
+  } catch (error) {
+    serverLog({
+      level: "error",
+      event: "admin_family_create_failed",
+      slugFp,
+      errorCode: "event",
+      errorName: error instanceof Error ? error.name : "UnknownError",
+    });
+    throw error;
+  }
 
-  if (familyError || !family) {
-    if (familyError?.message?.includes("invitation_slug")) {
-      throw new Error("Ese slug de invitación ya está en uso.");
-    }
+  const { data, error } = await supabase.rpc("create_family_with_guests", {
+    p_event_id: eventId,
+    p_display_name: input.displayName,
+    p_maximum_guests: input.maximumGuests,
+    p_custom_message: input.customMessage,
+    p_guest_names: input.guestNames,
+    p_invitation_slug: invitationSlug,
+  });
+
+  if (error) {
+    serverLog({
+      level: "error",
+      event: "admin_family_create_failed",
+      slugFp,
+      errorCode: classifyAdminFamilyError(error.message),
+      errorName: "RpcError",
+    });
+    throw new Error(mapCreateFamilyRpcError(error.message));
+  }
+
+  const rpcResult = data as {
+    family_id?: string;
+    invitation_slug?: string;
+  } | null;
+
+  const familyId = rpcResult?.family_id;
+  const resultSlug = rpcResult?.invitation_slug ?? invitationSlug;
+
+  if (!familyId) {
+    serverLog({
+      level: "error",
+      event: "admin_family_create_failed",
+      slugFp,
+      errorCode: "empty_rpc",
+      errorName: "EmptyRpcResult",
+    });
     throw new Error("No se pudo crear la familia.");
   }
 
-  const guestRows = input.guestNames.map((fullName, index) => ({
-    family_id: family.id,
-    full_name: fullName,
-    is_primary_contact: index === 0,
-    attendance_status: "pending" as const,
-  }));
-
-  const { error: guestsError } = await supabase.from("guests").insert(guestRows);
-
-  if (guestsError) {
-    await supabase.from("families").delete().eq("id", family.id);
-    throw new Error("No se pudieron crear los invitados de la familia.");
-  }
-
-  await supabase.from("audit_events").insert({
-    event_id: eventId,
-    family_id: family.id,
-    action: "family_created",
-    metadata: {
-      maximum_guests: input.maximumGuests,
-      guest_count: input.guestNames.length,
-      invitation_slug: invitationSlug,
-      source: "admin",
-    },
+  serverLog({
+    level: "info",
+    event: "admin_family_create_ok",
+    slugFp: fingerprintPublicId(resultSlug),
+    guestCount: input.guestNames.length,
+    maximumGuests: input.maximumGuests,
   });
 
   return {
-    familyId: family.id,
-    invitationUrl: buildInvitationUrl(invitationSlug),
-    invitationSlug,
+    familyId,
+    invitationUrl: buildInvitationUrl(resultSlug),
+    invitationSlug: resultSlug,
   };
 }
 
@@ -448,6 +464,7 @@ export async function updateFamilyInvitationSlug(
     familyId,
   );
   const tokenHash = hashInvitationSlug(invitationSlug);
+  const slugFp = fingerprintPublicId(invitationSlug);
 
   const { data: family, error: loadError } = await supabase
     .from("families")
@@ -456,6 +473,13 @@ export async function updateFamilyInvitationSlug(
     .maybeSingle<{ id: string; event_id: string }>();
 
   if (loadError || !family) {
+    serverLog({
+      level: "error",
+      event: "admin_family_slug_regen_failed",
+      slugFp,
+      errorCode: "family_not_found",
+      errorName: "FamilyNotFound",
+    });
     throw new Error("No se encontró la familia.");
   }
 
@@ -469,6 +493,13 @@ export async function updateFamilyInvitationSlug(
     .eq("id", familyId);
 
   if (error) {
+    serverLog({
+      level: "error",
+      event: "admin_family_slug_regen_failed",
+      slugFp,
+      errorCode: "update",
+      errorName: "UpdateError",
+    });
     throw new Error("No se pudo actualizar el enlace de invitación.");
   }
 
@@ -477,6 +508,12 @@ export async function updateFamilyInvitationSlug(
     family_id: familyId,
     action: "invitation_token_regenerated",
     metadata: { source: "admin", invitation_slug: invitationSlug },
+  });
+
+  serverLog({
+    level: "info",
+    event: "admin_family_slug_regen_ok",
+    slugFp,
   });
 
   return invitationSlug;
@@ -525,6 +562,12 @@ export async function updateFamily(input: {
     .maybeSingle<{ id: string }>();
 
   if (loadError || !family) {
+    serverLog({
+      level: "error",
+      event: "admin_family_update_failed",
+      errorCode: "family_not_found",
+      errorName: "FamilyNotFound",
+    });
     throw new Error("No se encontró la familia.");
   }
 
@@ -538,6 +581,10 @@ export async function updateFamily(input: {
     );
   }
 
+  const slugFp = invitationSlug
+    ? fingerprintPublicId(invitationSlug)
+    : fingerprintPublicId(input.familyId);
+
   const { error } = await supabase.rpc("update_family_with_guests", {
     p_family_id: input.familyId,
     p_display_name: input.displayName,
@@ -549,6 +596,47 @@ export async function updateFamily(input: {
   });
 
   if (error) {
+    serverLog({
+      level: "error",
+      event: "admin_family_update_failed",
+      slugFp,
+      errorCode: classifyAdminFamilyError(error.message),
+      errorName: "RpcError",
+    });
     throw new Error(mapUpdateFamilyRpcError(error.message));
   }
+
+  serverLog({
+    level: "info",
+    event: "admin_family_update_ok",
+    slugFp,
+    guestCount: input.guestNames.length,
+    maximumGuests: input.maximumGuests,
+    isEnabled: input.isEnabled,
+  });
+}
+
+function classifyAdminFamilyError(message: string): string {
+  if (message.includes("EVENT_NOT_FOUND")) {
+    return "event";
+  }
+  if (message.includes("FAMILY_NOT_FOUND")) {
+    return "family_not_found";
+  }
+  if (message.includes("GUEST_LIMIT_EXCEEDED")) {
+    return "guest_limit";
+  }
+  if (message.includes("SLUG_IN_USE") || message.includes("INVALID_SLUG")) {
+    return "slug";
+  }
+  if (
+    message.includes("INVALID_GUEST_NAMES") ||
+    message.includes("INVALID_DISPLAY_NAME")
+  ) {
+    return "validation";
+  }
+  if (message.includes("GUEST_DELETE_BLOCKED")) {
+    return "guest_delete";
+  }
+  return "unknown";
 }

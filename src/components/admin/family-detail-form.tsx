@@ -120,21 +120,45 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
 
         <fieldset className="space-y-3">
           <legend className={admin.label}>Invitados</legend>
+          <p className={admin.muted}>
+            El género define Querido/Querida cuando la invitación es para una sola
+            persona.
+          </p>
           {Array.from({ length: guestCount }, (_, index) => (
-            <label key={index} className="grid gap-2">
-              <span className={admin.muted}>
-                Invitado {index + 1}
-                {family.guests[index]?.attendanceStatus
-                  ? ` · ${family.guests[index].attendanceStatus}`
-                  : ""}
-              </span>
-              <input
-                name="guestNames"
-                required
-                defaultValue={family.guests[index]?.fullName ?? ""}
-                className={admin.input}
-              />
-            </label>
+            <div
+              key={family.guests[index]?.id ?? `new-${index}`}
+              className="grid gap-2 sm:grid-cols-[1fr_9rem] sm:items-end"
+            >
+              <label className="grid gap-2">
+                <span className={admin.muted}>
+                  Invitado {index + 1}
+                  {family.guests[index]?.attendanceStatus
+                    ? ` · ${family.guests[index].attendanceStatus}`
+                    : ""}
+                </span>
+                <input
+                  name="guestNames"
+                  required
+                  defaultValue={family.guests[index]?.fullName ?? ""}
+                  className={admin.input}
+                />
+              </label>
+              <label className="grid gap-2">
+                <span className={admin.muted}>Género</span>
+                <select
+                  name="guestGenders"
+                  required
+                  defaultValue={family.guests[index]?.gender ?? ""}
+                  className={admin.select}
+                >
+                  <option value="" disabled>
+                    Elegir
+                  </option>
+                  <option value="female">Mujer</option>
+                  <option value="male">Hombre</option>
+                </select>
+              </label>
+            </div>
           ))}
         </fieldset>
 

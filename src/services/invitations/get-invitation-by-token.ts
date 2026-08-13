@@ -4,11 +4,12 @@ import { fingerprintPublicId } from "@/lib/logging/fingerprint";
 import { serverLog } from "@/lib/logging/server-log";
 import { allowInvitationLookup } from "@/lib/security/public-rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
-import type { AttendanceStatus } from "@/types/guest";
+import type { AttendanceStatus, GuestGender } from "@/types/guest";
 
 export type InvitationGuest = {
   id: string;
   fullName: string;
+  gender: GuestGender | null;
   isPrimaryContact: boolean;
   attendanceStatus: AttendanceStatus;
   dietaryRestrictions: string | null;
@@ -86,6 +87,7 @@ type EventRow = {
 type GuestRow = {
   id: string;
   full_name: string;
+  gender: GuestGender | null;
   is_primary_contact: boolean;
   attendance_status: AttendanceStatus;
   dietary_restrictions: string | null;
@@ -192,7 +194,7 @@ export async function getInvitationBySlug(
   const { data: guests, error: guestsError } = await supabase
     .from("guests")
     .select(
-      "id, full_name, is_primary_contact, attendance_status, dietary_restrictions, menu_option, needs_transport, transport_boarding_point",
+      "id, full_name, gender, is_primary_contact, attendance_status, dietary_restrictions, menu_option, needs_transport, transport_boarding_point",
     )
     .eq("family_id", family.id)
     .order("is_primary_contact", { ascending: false })
@@ -273,6 +275,10 @@ export async function getInvitationBySlug(
     guests: (guests ?? []).map((guest) => ({
       id: guest.id,
       fullName: guest.full_name,
+      gender:
+        guest.gender === "male" || guest.gender === "female"
+          ? guest.gender
+          : null,
       isPrimaryContact: guest.is_primary_contact,
       attendanceStatus: guest.attendance_status,
       dietaryRestrictions: guest.dietary_restrictions,

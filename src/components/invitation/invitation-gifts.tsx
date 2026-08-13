@@ -13,7 +13,7 @@ function GiftsIllustration({ className }: { className?: string }) {
   return (
     <div
       className={[
-        "mx-auto w-full max-w-xl shrink-0 sm:max-w-2xl lg:max-w-none lg:w-full",
+        "mx-auto w-full max-w-sm shrink-0 sm:max-w-md lg:max-w-lg",
         className ?? "",
       ]
         .filter(Boolean)
@@ -25,7 +25,7 @@ function GiftsIllustration({ className }: { className?: string }) {
         width={GIFTS_ILLUSTRATION_SIZE}
         height={GIFTS_ILLUSTRATION_SIZE}
         className="mx-auto h-auto w-full object-contain"
-        sizes="(max-width: 639px) 36rem, (max-width: 1023px) 42rem, 50vw"
+        sizes="(max-width: 639px) 24rem, (max-width: 1023px) 28rem, 32rem"
         unoptimized
         priority={false}
       />
@@ -46,7 +46,7 @@ export function InvitationGifts() {
       aria-label={gifts.title}
       className="overflow-x-hidden bg-accent px-6 py-14 text-white sm:px-10 sm:py-16"
     >
-      <div className="mx-auto grid w-full min-w-0 max-w-6xl gap-8 lg:max-w-7xl lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:gap-10 xl:gap-12 [&>*]:min-w-0">
+      <div className="mx-auto grid w-full min-w-0 max-w-5xl gap-8 lg:max-w-6xl lg:grid-cols-2 lg:items-center lg:gap-10 xl:gap-12 [&>*]:min-w-0">
         <GiftsIllustration className="order-2 lg:order-1" />
 
         <div className="order-1 flex flex-col items-center text-center lg:order-2 lg:items-center lg:justify-center">

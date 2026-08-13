@@ -98,16 +98,23 @@ export async function createFamilyAction(
 ): Promise<AdminActionResult> {
   await requireAdmin();
 
-  const guestNames = formData
+  const guestEntries = formData
     .getAll("guestNames")
-    .map((value) => String(value).trim())
-    .filter(Boolean);
+    .map((value, index) => ({
+      name: String(value).trim(),
+      gender: String(formData.getAll("guestGenders")[index] ?? "").trim(),
+    }))
+    .filter((guest) => guest.name.length > 0);
+
+  const guestNames = guestEntries.map((guest) => guest.name);
+  const guestGenders = guestEntries.map((guest) => guest.gender);
 
   const parsed = createFamilySchema.safeParse({
     displayName: formData.get("displayName"),
     maximumGuests: formData.get("maximumGuests"),
     customMessage: formData.get("customMessage") ?? "",
     guestNames,
+    guestGenders,
   });
 
   if (!parsed.success) {
@@ -128,6 +135,7 @@ export async function createFamilyAction(
       maximumGuests: parsed.data.maximumGuests,
       customMessage: parsed.data.customMessage || null,
       guestNames: parsed.data.guestNames,
+      guestGenders: parsed.data.guestGenders,
     });
 
     return {
@@ -158,10 +166,16 @@ export async function updateFamilyAction(
 ): Promise<AdminActionResult> {
   await requireAdmin();
 
-  const guestNames = formData
+  const guestEntries = formData
     .getAll("guestNames")
-    .map((value) => String(value).trim())
-    .filter(Boolean);
+    .map((value, index) => ({
+      name: String(value).trim(),
+      gender: String(formData.getAll("guestGenders")[index] ?? "").trim(),
+    }))
+    .filter((guest) => guest.name.length > 0);
+
+  const guestNames = guestEntries.map((guest) => guest.name);
+  const guestGenders = guestEntries.map((guest) => guest.gender);
 
   const parsed = updateFamilySchema.safeParse({
     familyId: formData.get("familyId"),
@@ -172,6 +186,7 @@ export async function updateFamilyAction(
       formData.get("isEnabled") === "on" ||
       formData.get("isEnabled") === "true",
     guestNames,
+    guestGenders,
     invitationSlug: formData.get("invitationSlug") ?? "",
   });
 
@@ -195,6 +210,7 @@ export async function updateFamilyAction(
       customMessage: parsed.data.customMessage || null,
       isEnabled: parsed.data.isEnabled,
       guestNames: parsed.data.guestNames,
+      guestGenders: parsed.data.guestGenders,
       invitationSlug: parsed.data.invitationSlug || undefined,
     });
 

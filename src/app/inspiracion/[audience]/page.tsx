@@ -28,12 +28,18 @@ export async function generateMetadata({
   };
 }
 
+/** Fill width; height capped so the back CTA stays in the first viewport. */
+const imageClassName =
+  "h-auto max-h-[calc(100svh-5.5rem)] w-full max-w-none object-contain";
+
 /**
  * Full-bleed outfit moodboard on brand accent (`bg-accent` / #BEB950).
  * Routes: `/inspiracion/ellos` · `/inspiracion/ellas`
  *
- * Art direction: desktop landscape (≥1024px) uses `* desktop.png`;
- * mobile and tablet portrait use the standard outfit boards.
+ * Art direction (CSS, not `<picture>` — next/image ignores sibling `<source>`):
+ * - Phone (<768px): standard outfit boards
+ * - Tablet + desktop (≥768px, any orientation): `* desktop.png`
+ * Image spans viewport width; height is capped so “Volver” is visible without scroll.
  */
 export default async function OutfitInspirationPage({
   params,
@@ -46,28 +52,34 @@ export default async function OutfitInspirationPage({
   }
 
   return (
-    <main className="flex min-h-full flex-1 flex-col bg-accent text-cover-cta-fg">
-      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-6 sm:px-8 sm:py-10">
-        <div className="flex flex-1 items-center justify-center">
-          <picture className="block w-full">
-            <source
-              media="(min-width: 1024px) and (orientation: landscape)"
-              srcSet={page.desktopImageSrc}
-            />
+    <main className="flex h-dvh max-h-dvh flex-col overflow-hidden bg-accent text-cover-cta-fg">
+      <div className="flex min-h-0 flex-1 flex-col">
+        <div className="flex min-h-0 w-full flex-1 items-center justify-center">
+          <div className="w-full min-w-0">
             <Image
               src={page.imageSrc}
               alt={page.imageAlt}
               width={1200}
               height={1600}
-              className="h-auto max-h-[min(85svh,1100px)] w-full object-contain"
-              sizes="(min-width: 1024px) and (orientation: landscape) 64rem, 94vw"
+              className={`${imageClassName} md:hidden`}
+              sizes="100vw"
               priority
               unoptimized
             />
-          </picture>
+            <Image
+              src={page.desktopImageSrc}
+              alt={page.imageAlt}
+              width={1920}
+              height={1080}
+              className={`${imageClassName} hidden md:block`}
+              sizes="100vw"
+              priority
+              unoptimized
+            />
+          </div>
         </div>
 
-        <div className="mt-6 flex justify-center pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+        <div className="flex shrink-0 justify-center px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-8">
           <InspirationBackButton />
         </div>
       </div>

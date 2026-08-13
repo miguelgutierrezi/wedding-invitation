@@ -17,9 +17,10 @@ function mapSharedAdminFamilyRpcError(message: string): string | null {
 
   if (
     message.includes("INVALID_GUEST_NAMES") ||
+    message.includes("INVALID_GUEST_GENDERS") ||
     message.includes("INVALID_DISPLAY_NAME")
   ) {
-    return "Revisa el nombre de la familia y de los invitados.";
+    return "Revisa el nombre de la familia, los invitados y su género.";
   }
 
   if (message.includes("SLUG_IN_USE")) {

@@ -99,16 +99,34 @@ export function CreateFamilyForm() {
       <fieldset className="space-y-3">
         <legend className={admin.label}>Invitados</legend>
         <p className={admin.muted}>
-          El primero se marca como contacto principal. No superes los cupos.
+          El primero se marca como contacto principal. Indica nombre y género
+          (para el saludo si es una sola persona). No superes los cupos.
         </p>
         {Array.from({ length: guestCount }, (_, index) => (
-          <label key={index} className="grid gap-2">
-            <span className={admin.muted}>
-              Invitado {index + 1}
-              {index === 0 ? " (contacto)" : ""}
-            </span>
-            <input name="guestNames" required className={admin.input} />
-          </label>
+          <div key={index} className="grid gap-2 sm:grid-cols-[1fr_9rem] sm:items-end">
+            <label className="grid gap-2">
+              <span className={admin.muted}>
+                Invitado {index + 1}
+                {index === 0 ? " (contacto)" : ""}
+              </span>
+              <input name="guestNames" required className={admin.input} />
+            </label>
+            <label className="grid gap-2">
+              <span className={admin.muted}>Género</span>
+              <select
+                name="guestGenders"
+                required
+                defaultValue=""
+                className={admin.select}
+              >
+                <option value="" disabled>
+                  Elegir
+                </option>
+                <option value="female">Mujer</option>
+                <option value="male">Hombre</option>
+              </select>
+            </label>
+          </div>
         ))}
       </fieldset>
 

@@ -3,7 +3,8 @@ import { MediaFrame } from "@/components/invitation/media-frame";
 import { weddingConfig } from "@/config/wedding";
 
 type InvitationCoverProps = {
-  displayName: string;
+  /** Full personalized line, e.g. “Queridos Ana y Luis”. */
+  greeting: string;
   /** Public invitation path segment (lowercase family slug). */
   slug: string;
 };
@@ -12,7 +13,7 @@ type InvitationCoverProps = {
  * Full-viewport greeting gate (Figma portada).
  * Lives on its own route; CTA navigates to the invitation body.
  */
-export function InvitationCover({ displayName, slug }: InvitationCoverProps) {
+export function InvitationCover({ greeting, slug }: InvitationCoverProps) {
   const { cover, assets } = weddingConfig;
 
   return (
@@ -31,7 +32,7 @@ export function InvitationCover({ displayName, slug }: InvitationCoverProps) {
 
       <div className="relative z-10 mx-auto flex w-full min-w-0 max-w-full flex-col items-center gap-10 px-0 text-center sm:gap-14">
         <p className="w-full max-w-full break-words font-[family-name:var(--font-script)] text-[clamp(2.5rem,10vw,6rem)] leading-[1.4] text-on-dark-label">
-          {cover.greetingPrefix} {displayName}
+          {greeting}
         </p>
 
         <p className="max-w-[min(28rem,100%)] whitespace-pre-line font-[family-name:var(--font-cover-serif)] text-[clamp(0.875rem,2.6vw,1.2rem)] leading-[1.55] font-bold text-on-dark-label uppercase sm:max-w-lg">

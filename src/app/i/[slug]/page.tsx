@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { InvitationCover } from "@/components/invitation/invitation-cover";
+import { formatCoverGreeting } from "@/lib/invitation/cover-greeting";
 import {
   getInvitationBySlug,
   markInvitationOpened,
@@ -30,12 +31,17 @@ export default async function InvitationCoverPage({ params }: CoverPageProps) {
     // Opening metrics should not block the invitation experience.
   }
 
+  const greeting = formatCoverGreeting({
+    displayName: invitation.displayName,
+    guests: invitation.guests.map((guest) => ({
+      fullName: guest.fullName,
+      gender: guest.gender,
+    })),
+  });
+
   return (
     <div className="page-shell flex min-h-full flex-1 flex-col">
-      <InvitationCover
-        displayName={invitation.displayName}
-        slug={invitation.invitationSlug}
-      />
+      <InvitationCover greeting={greeting} slug={invitation.invitationSlug} />
     </div>
   );
 }

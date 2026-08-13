@@ -44,7 +44,14 @@ export const weddingConfig = {
     mapsEmbedUrl: "",
   },
   cover: {
+    /** 3+ guests (or no names): “Querida Familia …”. */
     greetingPrefix: "Querida",
+    /** Single male guest. */
+    greetingPrefixSingularMale: "Querido",
+    /** Single female guest. */
+    greetingPrefixSingularFemale: "Querida",
+    /** Exactly two guests. */
+    greetingPrefixDual: "Queridos",
     subtitle:
       "Acompáñanos a celebrar nuestro matrimonio.\nPrometemos buena música, copas llenas y recuerdos inolvidables.\n¿Aceptas el reto de darlo todo en la pista?",
     ctaLabel: "Ver Invitación",
@@ -61,7 +68,7 @@ export const weddingConfig = {
   },
   transport: {
     title: "Transporte",
-    body: "Queremos que disfruten la fiesta sin preocupaciones. Contaremos con servicio de transporte de ida y regreso desde Bogotá hacia la hacienda en Subachoque.",
+    body: "Queremos que disfruten la fiesta sin preocupaciones. Contaremos con servicio de transporte gratuito de ida y regreso desde Bogotá hacia la hacienda en Subachoque.",
     meetingPoints: [
       {
         /** Stored on RSVP when guest needs bus transport. */

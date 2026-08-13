@@ -44,6 +44,6 @@ pnpm build
 
 ## Out of scope for this checklist
 
-- CSV export, Resend email (tracked as future work).
+- Resend email (tracked as future work). Excel export is available in admin.
 - Distributed (Redis) rate limiting — in-app limiter is best-effort per isolate; prefer Cloudflare for global edge.
 - Dress inspiration URLs and bus departure times still “por confirmar” until product provides them.

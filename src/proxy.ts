@@ -41,13 +41,15 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
-  const isAdminRoute = pathname.startsWith("/admin");
+  const isAdminPage = pathname.startsWith("/admin");
+  const isAdminApi = pathname.startsWith("/api/admin");
   const isLoginRoute = pathname === "/admin/login";
+  const needsAdminSession = (isAdminPage && !isLoginRoute) || isAdminApi;
 
-  if (isAdminRoute && !isLoginRoute && !user) {
+  if (needsAdminSession && !user) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = "/admin/login";
-    loginUrl.searchParams.set("next", pathname);
+    loginUrl.searchParams.set("next", isAdminApi ? "/admin" : pathname);
     return NextResponse.redirect(loginUrl);
   }
 
@@ -62,5 +64,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/api/admin/:path*"],
 };

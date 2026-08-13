@@ -54,6 +54,13 @@ export async function AdminShell({ children, title }: AdminShellProps) {
             >
               Nueva familia
             </Link>
+            <a
+              href="/api/admin/export"
+              className={admin.navLink}
+              download
+            >
+              Exportar Excel
+            </a>
             <form action={signOutAdminAction} className="ml-auto sm:ml-0">
               <button type="submit" className={admin.btnGhost}>
                 Salir

@@ -49,7 +49,10 @@ export default async function AdminDashboardPage() {
         ))}
       </div>
       <div className="mt-10 flex flex-wrap gap-3">
-        <Link href="/admin/analytics" className={admin.btnPrimary}>
+        <a href="/api/admin/export" className={admin.btnPrimary} download>
+          Exportar Excel
+        </a>
+        <Link href="/admin/analytics" className={admin.btnSecondary}>
           Ver analytics
         </Link>
         <Link href="/admin/guests" className={admin.btnSecondary}>

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
 import { InspirationBackButton } from "@/components/invitation/inspiration-back-button";
+import { InvitationMusicControl } from "@/components/invitation/invitation-music-control";
 import {
   getOutfitInspirationPage,
   isInspirationAudience,
@@ -53,6 +54,7 @@ export default async function OutfitInspirationPage({
 
   return (
     <main className="flex h-dvh max-h-dvh flex-col overflow-hidden bg-accent text-cover-cta-fg">
+      <InvitationMusicControl />
       <div className="flex min-h-0 flex-1 flex-col">
         <div className="flex min-h-0 w-full flex-1 items-center justify-center">
           <div className="w-full min-w-0">

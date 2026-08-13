@@ -147,8 +147,9 @@ Behavior:
 
 1. Guest taps “Ver Invitación” → `startInvitationMusic` (user gesture unlocks playback).
 2. Invitation body shows floating mute when feature + path enabled.
-3. Module singleton `src/lib/invitation-audio.ts` (loop, moderate volume).
-4. Missing file or flag off → no audio / no control; cover navigation still works.
+3. Module singleton `src/lib/invitation-audio.ts` (loop, moderate volume; stored on `globalThis` + attached to `document.body` so it survives soft navigations).
+4. Soft navigations to `/inspiracion/*` keep music playing: CTA / Volver call `continueInvitationMusicIfNeeded` on the same gesture; mute state is remembered in `sessionStorage`.
+5. Missing file or flag off → no audio / no control; cover navigation still works.
 
 Do not autoplay on first paint without a gesture.
 

@@ -6,6 +6,7 @@ import { weddingConfig } from "@/config/wedding";
 import {
   getInvitationAudio,
   hasInvitationMusicPlayIntent,
+  isInvitationMusicMutedByUser,
   isInvitationMusicPlaying,
   startInvitationMusic,
   toggleInvitationMusic,
@@ -36,9 +37,10 @@ export function InvitationMusicControl() {
     audio.addEventListener("pause", sync);
     sync();
 
-    // Resume if the cover set intent, or if audio was already unlocked.
+    // Resume if the cover set intent and the guest has not muted.
     const shouldPlay =
-      hasInvitationMusicPlayIntent() || isInvitationMusicPlaying();
+      (hasInvitationMusicPlayIntent() || isInvitationMusicPlaying()) &&
+      !isInvitationMusicMutedByUser();
     if (shouldPlay) {
       void startInvitationMusic(musicSrc).then((ok) => setPlaying(ok));
     }

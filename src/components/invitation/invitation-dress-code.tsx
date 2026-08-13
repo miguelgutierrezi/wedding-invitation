@@ -1,41 +1,11 @@
 import Image from "next/image";
-import Link from "next/link";
-import type { ReactNode } from "react";
 
+import { InspirationCta } from "@/components/invitation/inspiration-cta";
 import { weddingConfig } from "@/config/wedding";
 import { cn } from "@/lib/utils";
 
-function InspirationCta({ href, children }: { href: string; children: ReactNode }) {
-  const className =
-    "inline-flex min-h-11 items-center justify-center rounded-full border-2 border-cover-cta-fg bg-accent px-8 py-4 text-center font-[family-name:var(--font-timer)] text-[clamp(1.125rem,3vw,2.5rem)] leading-none text-cover-cta-fg transition-[transform,opacity] hover:opacity-90 focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none active:scale-[0.98] sm:min-h-14 sm:px-12 sm:py-6";
-
-  if (href.startsWith("/")) {
-    return (
-      <Link href={href} className={className}>
-        {children}
-      </Link>
-    );
-  }
-
-  if (href) {
-    return (
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={className}
-      >
-        {children}
-      </a>
-    );
-  }
-
-  return (
-    <span className={`${className} cursor-not-allowed opacity-80`} aria-disabled="true">
-      {children}
-    </span>
-  );
-}
+const inspirationCtaClassName =
+  "inline-flex min-h-11 items-center justify-center rounded-full border-2 border-cover-cta-fg bg-accent px-8 py-4 text-center font-[family-name:var(--font-timer)] text-[clamp(1.125rem,3vw,2.5rem)] leading-none text-cover-cta-fg transition-[transform,opacity] hover:opacity-90 focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none active:scale-[0.98] sm:min-h-14 sm:px-12 sm:py-6";
 
 function GuidanceList({ items }: { items: readonly string[] }) {
   return (
@@ -88,7 +58,7 @@ function GenderBlock({
         <GuidanceList items={items} />
         {/* Stretch + mt-auto keeps both CTAs on the same baseline at lg+. */}
         <div className="mt-auto flex w-full justify-center pt-2">
-          <InspirationCta href={inspirationHref}>
+          <InspirationCta href={inspirationHref} className={inspirationCtaClassName}>
             {inspirationLabel}
           </InspirationCta>
         </div>

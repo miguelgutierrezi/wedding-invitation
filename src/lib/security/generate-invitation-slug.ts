@@ -3,6 +3,7 @@ import "server-only";
 import { createHash } from "node:crypto";
 
 import {
+  displayNameForInvitationSlug,
   isValidInvitationSlug,
   slugifyInvitationLabel,
 } from "@/lib/security/invitation-slug";
@@ -21,7 +22,7 @@ export function buildInvitationUrl(slug: string): string {
 
 /** Derive and normalize a candidate slug from a display name. */
 export function slugFromDisplayName(displayName: string): string {
-  const base = slugifyInvitationLabel(displayName);
+  const base = slugifyInvitationLabel(displayNameForInvitationSlug(displayName));
   return base.length >= 2 ? base : "familia";
 }
 

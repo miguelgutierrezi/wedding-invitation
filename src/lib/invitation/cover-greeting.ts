@@ -34,7 +34,9 @@ export function formatCoverGreeting({
     const prefix =
       person.gender === "male"
         ? cover.greetingPrefixSingularMale
-        : cover.greetingPrefixSingularFemale;
+        : person.gender === "female"
+          ? cover.greetingPrefixSingularFemale
+          : cover.greetingPrefixSingularUnspecified;
     return `${prefix} ${person.fullName}`;
   }
 

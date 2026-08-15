@@ -419,7 +419,7 @@ La portada (`/i/[slug]`) muestra un saludo según la cantidad de invitados de la
 
 | Invitados | Ejemplo |
 |-----------|---------|
-| 1 | `Querido Luis` / `Querida Ana` (según `guests.gender`) |
+| 1 | `Querido Luis` / `Querida Ana` / `Hola Alex` (según `guests.gender`) |
 | 2 | `Queridos Ana y Luis` |
 | 3+ | `Querida Familia Gutiérrez` (`families.display_name`) |
 
@@ -631,6 +631,7 @@ id
 family_id
 full_name
 gender
+needs_name_confirmation
 is_primary_contact
 email
 phone
@@ -643,7 +644,9 @@ created_at
 updated_at
 ```
 
-`gender`: `male` \| `female` (nullable for legacy rows). Required when creating/updating families in admin. Used for the singular cover greeting (`Querido` / `Querida`).
+`gender`: `male` \| `female` \| `unspecified` (nullable for legacy rows). Required when creating/updating families in admin. Used for the singular cover greeting (`Querido` / `Querida` / `Hola`).
+
+`needs_name_confirmation`: true for plus-ones stored as “Acompañante” (or similar). The RSVP form requires a real name; they still count in analytics totals.
 
 `transport_boarding_point`: nullable; values in use: `modelia`, `villa_sonia`. Required when `needs_transport` is true for an attending guest (enforced in RPC + Zod).
 

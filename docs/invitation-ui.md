@@ -49,11 +49,11 @@ Logic: `formatCoverGreeting` in `src/lib/invitation/cover-greeting.ts` (prefixes
 
 | Guest count | Greeting |
 |-------------|----------|
-| 1 | `Querido` / `Querida` + guest full name (from `guests.gender`: `male` \| `female`) |
+| 1 | `Querido` / `Querida` / `Hola` + guest full name (`male` / `female` / `unspecified`) |
 | 2 | `Queridos` + `Nombre1 y Nombre2` |
 | 3+ (or no names) | `Querida` + family `display_name` (e.g. Familia Pérez) |
 
-Admin create/edit family forms require a gender per guest so singular invitations stay correct. Existing rows may have `gender` null until edited; singular fallback uses the female prefix until set.
+Admin create/edit family forms require a gender per guest (`male`, `female`, or `unspecified`) so singular invitations stay correct. Plus-ones named “Acompañante” are stored as `unspecified` with `needs_name_confirmation`; the RSVP form asks for the real name.
 
 ## Design language
 
@@ -164,6 +164,8 @@ When an attending guest checks “Usará el transporte (bus)”:
 
 Admin analytics and guest tables surface the same points for planning bus capacity.
 
+Guests with `needs_name_confirmation` (typically labeled “Acompañante”) show a required **nombre completo** field. Placeholder labels are rejected server-side. Those guests still count in analytics totals (`Nombres por confirmar` is an extra metric, not an exclusion).
+
 ### Dress code layout
 
 - Center illustration larger on desktop (column ~26–30rem).
@@ -260,4 +262,4 @@ Family create/edit: each guest row includes **nombre + género** (required). Gen
 - Change boarding point **ids** without a matching DB migration.
 - Autoplay invitation audio on page load without a user gesture.
 - Reintroduce `src/middleware.ts`; use `src/proxy.ts` for the admin edge gate.
-- Guess guest gender from the name; always persist `guests.gender` from admin.
+- Guess guest gender from a real name; persist `guests.gender` from admin (`unspecified` is valid for plus-ones).

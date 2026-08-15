@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { isPlaceholderGuestName } from "@/lib/invitation/placeholder-guest-name";
 import {
   isTransportBoardingPointId,
   TRANSPORT_BOARDING_POINT_IDS,
@@ -18,6 +19,8 @@ export const rsvpGuestInputSchema = z.object({
   ]),
   dietaryRestrictions: z.string().trim().max(500),
   menuOption: z.string().trim().max(120),
+  fullName: z.string().trim().max(120),
+  needsNameConfirmation: z.boolean(),
 });
 
 export const submitRsvpSchema = z
@@ -71,6 +74,22 @@ export const submitRsvpSchema = z
     }
 
     value.guests.forEach((guest, index) => {
+      if (guest.needsNameConfirmation) {
+        if (!guest.fullName) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Indica el nombre de esta persona.",
+            path: ["guests", index, "fullName"],
+          });
+        } else if (isPlaceholderGuestName(guest.fullName)) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Usa el nombre real, no “Acompañante”.",
+            path: ["guests", index, "fullName"],
+          });
+        }
+      }
+
       if (guest.needsTransport && (!value.willAttend || !guest.willAttend)) {
         ctx.addIssue({
           code: "custom",

@@ -14,6 +14,7 @@ import {
   mapUpdateFamilyRpcError,
 } from "@/services/admin/admin-family-rpc-errors";
 import type { GuestGender } from "@/types/guest";
+import { parseGuestGender } from "@/types/guest";
 
 export type DashboardMetrics = {
   familyCount: number;
@@ -47,6 +48,7 @@ export type AdminGuestDetail = {
   id: string;
   fullName: string;
   gender: GuestGender | null;
+  needsNameConfirmation: boolean;
   isPrimaryContact: boolean;
   attendanceStatus: "pending" | "attending" | "not_attending";
   dietaryRestrictions: string | null;
@@ -89,6 +91,7 @@ type GuestRow = {
   family_id: string;
   full_name: string;
   gender: GuestGender | null;
+  needs_name_confirmation: boolean;
   is_primary_contact: boolean;
   attendance_status: "pending" | "attending" | "not_attending";
   dietary_restrictions: string | null;
@@ -209,7 +212,7 @@ export async function listFamilies(): Promise<AdminFamilyListItem[]> {
       ? supabase
           .from("guests")
           .select(
-            "id, family_id, full_name, gender, is_primary_contact, attendance_status, dietary_restrictions, needs_transport, transport_boarding_point",
+            "id, family_id, full_name, gender, needs_name_confirmation, is_primary_contact, attendance_status, dietary_restrictions, needs_transport, transport_boarding_point",
           )
           .in("family_id", familyIds)
           .returns<GuestRow[]>()
@@ -272,7 +275,7 @@ export async function getFamilyById(
       supabase
         .from("guests")
         .select(
-          "id, family_id, full_name, gender, is_primary_contact, attendance_status, dietary_restrictions, needs_transport, transport_boarding_point",
+          "id, family_id, full_name, gender, needs_name_confirmation, is_primary_contact, attendance_status, dietary_restrictions, needs_transport, transport_boarding_point",
         )
         .eq("family_id", familyId)
         .order("is_primary_contact", { ascending: false })
@@ -308,10 +311,8 @@ export async function getFamilyById(
     guests: (guests ?? []).map((guest) => ({
       id: guest.id,
       fullName: guest.full_name,
-      gender:
-        guest.gender === "male" || guest.gender === "female"
-          ? guest.gender
-          : null,
+      gender: parseGuestGender(guest.gender),
+      needsNameConfirmation: Boolean(guest.needs_name_confirmation),
       isPrimaryContact: guest.is_primary_contact,
       attendanceStatus: guest.attendance_status,
       dietaryRestrictions: guest.dietary_restrictions,

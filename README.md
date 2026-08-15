@@ -98,15 +98,17 @@ Helpers: `src/config/transport.ts`. Migración: `supabase/migrations/20260808120
 
 ### Portada y género de invitados
 
-Al crear/editar una familia en admin, cada invitado lleva **nombre + género**. Eso alimenta el saludo de `/i/[slug]`:
+Al crear/editar una familia en admin, cada invitado lleva **nombre + género** (Hombre, Mujer o Sin género). Eso alimenta el saludo de `/i/[slug]`:
 
 | Invitados | Saludo |
 |-----------|--------|
-| 1 | Querido / Querida + nombre |
+| 1 | Querido / Querida / Hola + nombre |
 | 2 | Queridos Nombre1 y Nombre2 |
 | 3+ | Querida + nombre de familia |
 
-Migración: `supabase/migrations/20260815100000_guest_gender.sql` (columna + RPCs `p_guest_genders`).
+Si el segundo invitado se llama “Acompañante” (o similar), el RSVP pide el nombre real. Siguen contando en analytics.
+
+Migraciones: `20260815100000_guest_gender.sql`, `20260816100000_guest_gender_unspecified.sql`, `20260816110000_placeholder_companion_names.sql`.
 
 ## Stack
 

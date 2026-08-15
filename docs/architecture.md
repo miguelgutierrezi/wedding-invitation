@@ -78,7 +78,8 @@ Stable event presentation data belongs in `src/config/wedding.ts` until a future
 - **Event partner names** (DB): updated via migration so invitation load from `events` matches; keep config and DB aligned when changing names.
 - **Event timezone:** Colombia `America/Bogota` (UTC−5, no DST). Format invitation/admin/export labels with `src/lib/datetime/event-timezone.ts`, not the Vercel host TZ. Optional process pin: `TZ=America/Bogota` (see `.env.example`).
 - **Transport boarding point ids**: `weddingConfig.transport.meetingPoints[].id` must match `src/config/transport.ts` (`TRANSPORT_BOARDING_POINT_IDS`) and the SQL check constraint / RPC (`modelia`, `villa_sonia`).
-- **Guest gender:** `guests.gender` (`male` \| `female`, nullable for legacy rows). Required on admin create/update; used only for singular cover greeting.
+- **Guest gender:** `guests.gender` (`male` \| `female` \| `unspecified`, nullable for legacy rows). Required on admin create/update. Singular cover greeting uses Querido / Querida / Hola.
+- **Placeholder plus-ones:** `guests.needs_name_confirmation`. Names like “Acompañante” are backfilled as unspecified + flag; RSVP must send a real `full_name`.
 
 Asset paths under `public/invitation/` are listed in `weddingConfig.assets` and documented in `docs/invitation-ui.md`.
 
@@ -88,7 +89,7 @@ Ceremony maps URLs live on `weddingConfig.ceremony` (`mapsUrl`, `wazeUrl`, `appl
 
 - Invitation sections are independent components under `src/components/invitation/`.
 - Page composition: `invitation-page-view.tsx`.
-- Cover greeting: `formatCoverGreeting` (`src/lib/invitation/cover-greeting.ts`) — 1 guest Querido/Querida by gender, 2 guests Queridos A y B, 3+ Querida + family display name.
+- Cover greeting: `formatCoverGreeting` (`src/lib/invitation/cover-greeting.ts`) — 1 guest Querido/Querida/Hola by gender, 2 guests Queridos A y B, 3+ Querida + family display name.
 - Gallery uses a dual-buffer strategy (preload next slide, then swipe) to avoid flash between photos.
 - Venue directions: optional map iframe + external navigation links (`venue-map-links.tsx`); Apple Maps only when `isApplePlatform()` is true.
 - Music: module singleton `src/lib/invitation-audio.ts`; start after cover “Ver Invitación” gesture; floating mute on the invitation body. Controlled by `features.music` + `assets.music`.
@@ -124,6 +125,7 @@ Current coverage targets:
 - In-memory rate limiter + `serverLog` PII stripping.
 - Admin `updateFamily` / `createFamily` RPC error mapping.
 - Cover greeting helper (`formatCoverGreeting`).
+- Placeholder companion names (`isPlaceholderGuestName`).
 - Event timezone helpers.
 - Outfit inspiration route helpers.
 - Guest media MIME/size policy, object keys, status transitions, queue retry helpers.
@@ -178,7 +180,8 @@ Approved decisions:
 - **RSVP persistence:** one `rsvp_responses` row per family (`unique(family_id)`), updated in place. Guest answers live in `rsvp_response_guests`.
 - **Admin family create:** `create_family_with_guests` RPC inserts the family row, guests (names + genders), and audit event in one transaction (service-role only).
 - **Admin family update:** `update_family_with_guests` RPC updates the family row, syncs guests (names + genders), and writes an audit event in one transaction (service-role only).
-- **Guest gender:** `guests.gender` text nullable with check `male` \| `female`. Admin Zod + RPC require a gender array aligned with guest names (`p_guest_genders`).
+- **Guest gender:** `guests.gender` text nullable with check `male` \| `female` \| `unspecified`. Admin Zod + RPC require a gender array aligned with guest names (`p_guest_genders`).
+- **Companion names:** `needs_name_confirmation` plus `is_placeholder_guest_name()`; RSVP RPC `submit_family_rsvp` accepts `full_name` only when the flag is set.
 - **Transport:**
   - `needs_transport` (boolean) on guest / rsvp_response_guest.
   - `transport_boarding_point` text nullable; allowed values `modelia` \| `villa_sonia`; **required server-side when** the guest is attending and needs transport.
@@ -201,6 +204,8 @@ Relevant migrations include:
 …_create_family_with_guests.sql
 …_guest_media_uploads.sql
 …_guest_gender.sql          # guests.gender + RPC p_guest_genders
+…_guest_gender_unspecified.sql
+…_placeholder_companion_names.sql
 ```
 
 ## Invitation token / slug boundary

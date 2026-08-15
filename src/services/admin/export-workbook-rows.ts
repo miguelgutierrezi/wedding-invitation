@@ -168,6 +168,7 @@ export function buildSummarySheet(snapshot: AnalyticsSnapshot): ExportSheet {
       ["Pendientes (invitado)", String(snapshot.guestsPending)],
       ["Tasa confirmación invitados (%)", String(snapshot.guestConfirmRate)],
       ["Con dieta", String(snapshot.guestsWithDietary)],
+      ["Nombres por confirmar", String(snapshot.guestsPendingNameConfirmation)],
       ["Cupos de bus", String(snapshot.guestsNeedingTransport)],
       [
         "Bus entre asistentes (%)",

@@ -90,6 +90,8 @@ function buildDefaultValues(
         dietaryRestrictions:
           existing?.dietaryRestrictions ?? guest.dietaryRestrictions ?? "",
         menuOption: existing?.menuOption ?? guest.menuOption ?? "",
+        fullName: guest.needsNameConfirmation ? "" : guest.fullName,
+        needsNameConfirmation: guest.needsNameConfirmation,
       };
     }),
   };
@@ -145,8 +147,19 @@ export function RsvpForm({
     setFormError(null);
     setSuccessMessage(null);
 
+    const payload: SubmitRsvpInput = {
+      ...values,
+      guests: values.guests.map((guest, index) => ({
+        ...guest,
+        needsNameConfirmation: Boolean(guests[index]?.needsNameConfirmation),
+        fullName: guests[index]?.needsNameConfirmation
+          ? guest.fullName
+          : guests[index]?.fullName ?? guest.fullName,
+      })),
+    };
+
     startTransition(async () => {
-      const result = await submitRsvpAction(values);
+      const result = await submitRsvpAction(payload);
 
       if (!result.ok) {
         setFormError(result.error);
@@ -243,6 +256,11 @@ export function RsvpForm({
                         Contacto principal
                       </p>
                     ) : null}
+                    {guest?.needsNameConfirmation ? (
+                      <p className="mt-1 font-[family-name:var(--font-timer)] text-sm leading-6 text-cover-cta-fg/80">
+                        Por favor escribe el nombre de esta persona.
+                      </p>
+                    ) : null}
                   </div>
                   {willAttend ? (
                     <label className={choiceClass}>
@@ -278,6 +296,27 @@ export function RsvpForm({
                   type="hidden"
                   {...register(`guests.${index}.guestId`)}
                 />
+
+                {guest?.needsNameConfirmation ? (
+                  <label className="mt-4 grid gap-2">
+                    <span className={fieldLabelClass}>Nombre completo</span>
+                    <input
+                      type="text"
+                      required
+                      autoComplete="name"
+                      className={inputClass}
+                      placeholder="Nombre y apellido"
+                      {...register(`guests.${index}.fullName`)}
+                    />
+                    {errors.guests?.[index]?.fullName ? (
+                      <p className="text-sm text-red-800" role="alert">
+                        {errors.guests[index].fullName.message}
+                      </p>
+                    ) : null}
+                  </label>
+                ) : (
+                  <input type="hidden" {...register(`guests.${index}.fullName`)} />
+                )}
 
                 {willAttend && guestValues[index]?.willAttend ? (
                   <div className="mt-4 grid gap-3">

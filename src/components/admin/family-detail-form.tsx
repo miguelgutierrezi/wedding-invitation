@@ -142,6 +142,11 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
                   defaultValue={family.guests[index]?.fullName ?? ""}
                   className={admin.input}
                 />
+                {family.guests[index]?.needsNameConfirmation ? (
+                  <span className={admin.muted}>
+                    Pendiente de nombre real en el RSVP.
+                  </span>
+                ) : null}
               </label>
               <label className="grid gap-2">
                 <span className={admin.muted}>Género</span>
@@ -156,6 +161,7 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
                   </option>
                   <option value="female">Mujer</option>
                   <option value="male">Hombre</option>
+                  <option value="unspecified">Sin género</option>
                 </select>
               </label>
             </div>

@@ -23,6 +23,8 @@ function basePayload(
         transportBoardingPoint: "",
         dietaryRestrictions: "",
         menuOption: "",
+        fullName: "",
+        needsNameConfirmation: false,
       },
     ],
     ...overrides,
@@ -46,6 +48,8 @@ describe("submitRsvpSchema", () => {
             transportBoardingPoint: "modelia",
             dietaryRestrictions: "Sin nueces",
             menuOption: "",
+            fullName: "",
+            needsNameConfirmation: false,
           },
         ],
       }),
@@ -64,6 +68,8 @@ describe("submitRsvpSchema", () => {
             transportBoardingPoint: "villa_sonia",
             dietaryRestrictions: "",
             menuOption: "",
+            fullName: "",
+            needsNameConfirmation: false,
           },
         ],
       }),
@@ -82,6 +88,8 @@ describe("submitRsvpSchema", () => {
             transportBoardingPoint: "",
             dietaryRestrictions: "",
             menuOption: "",
+            fullName: "",
+            needsNameConfirmation: false,
           },
         ],
       }),
@@ -104,6 +112,8 @@ describe("submitRsvpSchema", () => {
             transportBoardingPoint: "otra_zona",
             dietaryRestrictions: "",
             menuOption: "",
+            fullName: "",
+            needsNameConfirmation: false,
           },
         ],
       }),
@@ -123,6 +133,8 @@ describe("submitRsvpSchema", () => {
             transportBoardingPoint: "modelia",
             dietaryRestrictions: "",
             menuOption: "",
+            fullName: "",
+            needsNameConfirmation: false,
           },
         ],
       }),
@@ -146,6 +158,8 @@ describe("submitRsvpSchema", () => {
             transportBoardingPoint: "",
             dietaryRestrictions: "",
             menuOption: "",
+            fullName: "",
+            needsNameConfirmation: false,
           },
           {
             guestId: GUEST_B,
@@ -154,6 +168,8 @@ describe("submitRsvpSchema", () => {
             transportBoardingPoint: "",
             dietaryRestrictions: "",
             menuOption: "",
+            fullName: "",
+            needsNameConfirmation: false,
           },
         ],
       }),
@@ -190,6 +206,8 @@ describe("submitRsvpSchema", () => {
             transportBoardingPoint: "",
             dietaryRestrictions: "",
             menuOption: "",
+            fullName: "",
+            needsNameConfirmation: false,
           },
         ],
       }),
@@ -237,10 +255,68 @@ describe("submitRsvpSchema", () => {
             transportBoardingPoint: "",
             dietaryRestrictions: "",
             menuOption: "",
+            fullName: "",
+            needsNameConfirmation: false,
           },
         ],
       }),
     );
     expect(result.success).toBe(true);
+  });
+
+  it("requires a real name when the guest is a placeholder companion", () => {
+    const missing = submitRsvpSchema.safeParse(
+      basePayload({
+        guests: [
+          {
+            guestId: GUEST_A,
+            willAttend: true,
+            needsTransport: false,
+            transportBoardingPoint: "",
+            dietaryRestrictions: "",
+            menuOption: "",
+            fullName: "",
+            needsNameConfirmation: true,
+          },
+        ],
+      }),
+    );
+    expect(missing.success).toBe(false);
+
+    const placeholder = submitRsvpSchema.safeParse(
+      basePayload({
+        guests: [
+          {
+            guestId: GUEST_A,
+            willAttend: true,
+            needsTransport: false,
+            transportBoardingPoint: "",
+            dietaryRestrictions: "",
+            menuOption: "",
+            fullName: "Acompañante",
+            needsNameConfirmation: true,
+          },
+        ],
+      }),
+    );
+    expect(placeholder.success).toBe(false);
+
+    const named = submitRsvpSchema.safeParse(
+      basePayload({
+        guests: [
+          {
+            guestId: GUEST_A,
+            willAttend: true,
+            needsTransport: false,
+            transportBoardingPoint: "",
+            dietaryRestrictions: "",
+            menuOption: "",
+            fullName: "Carlos Pérez",
+            needsNameConfirmation: true,
+          },
+        ],
+      }),
+    );
+    expect(named.success).toBe(true);
   });
 });

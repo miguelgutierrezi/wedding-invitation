@@ -54,6 +54,7 @@ const snapshotBase: AnalyticsSnapshot = {
   familiesOpened: 1,
   familiesDisabled: 0,
   guestsWithDietary: 1,
+  guestsPendingNameConfirmation: 0,
   familyResponseRate: 100,
   guestConfirmRate: 100,
   transportAmongAttendingRate: 100,

@@ -29,6 +29,7 @@ export type AnalyticsSnapshot = DashboardMetrics & {
   familiesOpened: number;
   familiesDisabled: number;
   guestsWithDietary: number;
+  guestsPendingNameConfirmation: number;
   familyResponseRate: number;
   guestConfirmRate: number;
   transportAmongAttendingRate: number;
@@ -86,7 +87,7 @@ export async function getAnalyticsSnapshot(): Promise<AnalyticsSnapshot> {
     supabase
       .from("guests")
       .select(
-        "id, attendance_status, needs_transport, transport_boarding_point, dietary_restrictions",
+        "id, attendance_status, needs_transport, transport_boarding_point, dietary_restrictions, needs_name_confirmation",
       )
       .returns<
         {
@@ -95,6 +96,7 @@ export async function getAnalyticsSnapshot(): Promise<AnalyticsSnapshot> {
           needs_transport: boolean;
           transport_boarding_point: string | null;
           dietary_restrictions: string | null;
+          needs_name_confirmation: boolean;
         }[]
       >(),
   ]);
@@ -159,6 +161,9 @@ export async function getAnalyticsSnapshot(): Promise<AnalyticsSnapshot> {
       (g) =>
         g.dietary_restrictions != null &&
         g.dietary_restrictions.trim().length > 0,
+    ).length,
+    guestsPendingNameConfirmation: guestRows.filter(
+      (g) => g.needs_name_confirmation,
     ).length,
     familyResponseRate,
     guestConfirmRate,

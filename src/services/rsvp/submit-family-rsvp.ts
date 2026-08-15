@@ -45,6 +45,10 @@ function mapRpcError(message: string): string {
     return "Indica el punto de encuentro del bus para cada invitado que lo use.";
   }
 
+  if (message.includes("GUEST_NAME_REQUIRED")) {
+    return "Indica el nombre real de cada acompañante.";
+  }
+
   return "No se pudo guardar la confirmación. Inténtalo de nuevo.";
 }
 
@@ -58,6 +62,8 @@ export async function submitFamilyRsvp(input: {
     transportBoardingPoint: string;
     dietaryRestrictions: string;
     menuOption: string;
+    fullName: string;
+    needsNameConfirmation: boolean;
   }>;
   contactEmail: string;
   contactPhone: string;
@@ -80,6 +86,7 @@ export async function submitFamilyRsvp(input: {
           : null,
       dietary_restrictions: guest.dietaryRestrictions || null,
       menu_option: guest.menuOption || null,
+      full_name: guest.needsNameConfirmation ? guest.fullName : null,
     };
   });
 

@@ -4,7 +4,7 @@ Operational checklist before sharing invitation links widely. Does not authorize
 
 ## Environments
 
-- [ ] Latest SQL migrations applied on remote Supabase (including boarding, family RPCs, guest media, and **`guest_gender`** / `p_guest_genders`).
+- [ ] Latest SQL migrations applied on remote Supabase (including boarding, family RPCs, guest media, **`guest_gender`**, **`guest_gender_unspecified`**, and **`placeholder_companion_names`**).
 - [ ] Vercel env vars set: `NEXT_PUBLIC_*`, `SUPABASE_SERVICE_ROLE_KEY`, admin emails.
 - [ ] Optional: `TZ=America/Bogota` on Vercel (display helpers already pin Colombia TZ).
 - [ ] `NEXT_PUBLIC_APP_URL` matches the public domain.
@@ -31,6 +31,7 @@ Operational checklist before sharing invitation links widely. Does not authorize
 ## Smoke — RSVP
 
 - [ ] Confirm attendance for one guest without bus.
+- [ ] Family with “Acompañante”: RSVP requires a real name; analytics still counts that guest.
 - [ ] Confirm with bus + boarding point (`modelia` or `villa_sonia`).
 - [ ] Attempt bus without boarding point → client/server rejection.
 - [ ] Update previous RSVP; counts refresh in admin.

@@ -43,7 +43,7 @@ export default async function AdminAnalyticsPage() {
     { label: "Sin responder", value: analytics.guestsPending },
     { label: "Cupos de bus", value: analytics.guestsNeedingTransport },
     { label: "Con dieta especial", value: analytics.guestsWithDietary },
-    { label: "Cupos asignados", value: analytics.assignedSeats },
+    { label: "Nombres por confirmar", value: analytics.guestsPendingNameConfirmation },
   ] as const;
 
   return (

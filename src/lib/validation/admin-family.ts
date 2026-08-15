@@ -6,7 +6,7 @@ const guestNameSchema = z
   .min(1, "El nombre del invitado es obligatorio.")
   .max(120);
 
-export const guestGenderSchema = z.enum(["male", "female"], {
+export const guestGenderSchema = z.enum(["male", "female", "unspecified"], {
   message: "Selecciona el género de cada invitado.",
 });
 

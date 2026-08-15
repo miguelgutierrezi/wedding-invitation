@@ -1,10 +1,10 @@
 # Current phase
 
-**Status:** Guest Media Uploads **complete**; invitation polish (greeting + gender) in repo
+**Status:** Guest Media Uploads **complete**; companion names + unspecified gender in repo
 
-**Last reviewed:** 2026-08-12
+**Last reviewed:** 2026-08-15
 
-**Authorized scope:** Guest media QR PNG download authorized by explicit request. Do not implement Resend/email, public gallery, ZIP-on-Vercel, or AWS/GCP/R2 unless newly authorized. Invitation copy/layout polish may proceed when the user requests it explicitly.
+**Authorized scope:** Guest media QR PNG download authorized by explicit request. Do not implement Resend/email, public gallery, ZIP-on-Vercel, AWS/GCP/R2, or WhatsApp Cloud API unless newly authorized. Invitation copy/layout polish may proceed when the user requests it explicitly.
 
 ## Snapshot of the repository
 
@@ -12,10 +12,13 @@
 |------|--------|
 | Invitation + RSVP + boarding | Implemented |
 | Cover greeting (1 / 2 / 3+ guests + gender) | Implemented (`cover-greeting.ts` + `guests.gender`) |
+| Plus-ones “Acompañante” | Implemented (`needs_name_confirmation` + RSVP name field) |
+| Gender `unspecified` | Implemented (admin + cover “Hola”) |
 | Outfit inspiration pages | Implemented (`/inspiracion/ellos\|ellas`) |
 | Event TZ display (`America/Bogota`) | Implemented (`event-timezone.ts`) |
 | Admin Excel export | Implemented |
 | Guest media uploads | **Implemented** |
+| WhatsApp scheduled send | Not implemented |
 | Resend / settings UI | Not implemented |
 
 ## Completed: Guest Media Uploads
@@ -55,7 +58,7 @@ Documented in `docs/invitation-ui.md` / `docs/architecture.md`:
 
 ## Recommended next steps
 
-1. On hosted Supabase: apply **all** pending migrations (guest media + **`guest_gender`**); raise Storage limits; rotate QR in `/admin/photos`.
-2. For existing single-guest families: set **género** in admin so the cover says Querido/Querida correctly.
+1. On hosted Supabase: apply **all** pending migrations (guest media, **`guest_gender`**, **`guest_gender_unspecified`**, **`placeholder_companion_names`**); raise Storage limits; rotate QR in `/admin/photos`.
+2. Confirm plus-ones named “Acompañante” show the RSVP name field and still count in analytics.
 3. Manual E2E: invitation fotos + QR fotos + admin approve/reject; cover greetings for 1 / 2 / 3+ guests.
-4. Go-live checklist / Resend when needed.
+4. WhatsApp optional send / Resend when needed.

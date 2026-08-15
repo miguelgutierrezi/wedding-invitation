@@ -116,6 +116,9 @@ function classifyRsvpError(message: string): string {
   if (message.includes("punto de encuentro") || message.includes("BOARDING")) {
     return "boarding";
   }
+  if (message.includes("nombre") || message.includes("GUEST_NAME")) {
+    return "guest_name";
+  }
   if (message.includes("invitación") || message.includes("INVITATION")) {
     return "invitation";
   }

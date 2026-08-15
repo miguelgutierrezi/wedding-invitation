@@ -50,6 +50,8 @@ export const weddingConfig = {
     greetingPrefixSingularMale: "Querido",
     /** Single female guest. */
     greetingPrefixSingularFemale: "Querida",
+    /** Single guest when gender is unknown / unspecified. */
+    greetingPrefixSingularUnspecified: "Hola",
     /** Exactly two guests. */
     greetingPrefixDual: "Queridos",
     subtitle:

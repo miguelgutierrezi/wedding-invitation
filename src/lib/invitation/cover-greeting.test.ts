@@ -21,6 +21,15 @@ describe("formatCoverGreeting", () => {
     ).toBe("Querida Ana Pérez");
   });
 
+  it("uses Hola for a single guest without known gender", () => {
+    expect(
+      formatCoverGreeting({
+        displayName: "Familia Pérez",
+        guests: [{ fullName: "Alex Pérez", gender: "unspecified" }],
+      }),
+    ).toBe("Hola Alex Pérez");
+  });
+
   it("joins two guest names with y", () => {
     expect(
       formatCoverGreeting({

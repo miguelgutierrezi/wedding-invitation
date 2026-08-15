@@ -124,6 +124,7 @@ export function CreateFamilyForm() {
                 </option>
                 <option value="female">Mujer</option>
                 <option value="male">Hombre</option>
+                <option value="unspecified">Sin género</option>
               </select>
             </label>
           </div>

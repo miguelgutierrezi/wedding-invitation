@@ -11,6 +11,16 @@ import { admin } from "@/components/admin/admin-ui";
 import { CopyInvitationLink } from "@/components/admin/copy-invitation-link";
 import type { AdminFamilyDetail } from "@/services/admin/families";
 
+function attendanceStatusLabel(status: string): string {
+  if (status === "attending") {
+    return "asiste";
+  }
+  if (status === "not_attending") {
+    return "no asiste";
+  }
+  return "pendiente";
+}
+
 type FamilyDetailFormProps = {
   family: AdminFamilyDetail;
 };
@@ -127,13 +137,13 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
           {Array.from({ length: guestCount }, (_, index) => (
             <div
               key={family.guests[index]?.id ?? `new-${index}`}
-              className="grid gap-2 sm:grid-cols-[1fr_9rem] sm:items-end"
+              className="grid gap-2 sm:grid-cols-[1fr_10rem] sm:items-end"
             >
               <label className="grid gap-2">
                 <span className={admin.muted}>
                   Invitado {index + 1}
                   {family.guests[index]?.attendanceStatus
-                    ? ` · ${family.guests[index].attendanceStatus}`
+                    ? ` · ${attendanceStatusLabel(family.guests[index].attendanceStatus)}`
                     : ""}
                 </span>
                 <input
@@ -142,11 +152,6 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
                   defaultValue={family.guests[index]?.fullName ?? ""}
                   className={admin.input}
                 />
-                {family.guests[index]?.needsNameConfirmation ? (
-                  <span className={admin.muted}>
-                    Pendiente de nombre real en el RSVP.
-                  </span>
-                ) : null}
               </label>
               <label className="grid gap-2">
                 <span className={admin.muted}>Género</span>
@@ -164,6 +169,11 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
                   <option value="unspecified">Sin género</option>
                 </select>
               </label>
+              {family.guests[index]?.needsNameConfirmation ? (
+                <p className={`sm:col-span-2 ${admin.muted}`}>
+                  En el RSVP le pediremos el nombre real de esta persona.
+                </p>
+              ) : null}
             </div>
           ))}
         </fieldset>

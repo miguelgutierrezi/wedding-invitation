@@ -15,6 +15,8 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import {
   createFamilySchema,
+  parseAdminGuestFormEntries,
+  parseIsEnabledFormValue,
   updateFamilySchema,
 } from "@/lib/validation/admin-family";
 import {
@@ -98,14 +100,7 @@ export async function createFamilyAction(
 ): Promise<AdminActionResult> {
   await requireAdmin();
 
-  const guestEntries = formData
-    .getAll("guestNames")
-    .map((value, index) => ({
-      name: String(value).trim(),
-      gender: String(formData.getAll("guestGenders")[index] ?? "").trim(),
-    }))
-    .filter((guest) => guest.name.length > 0);
-
+  const guestEntries = parseAdminGuestFormEntries(formData);
   const guestNames = guestEntries.map((guest) => guest.name);
   const guestGenders = guestEntries.map((guest) => guest.gender);
 
@@ -166,27 +161,20 @@ export async function updateFamilyAction(
 ): Promise<AdminActionResult> {
   await requireAdmin();
 
-  const guestEntries = formData
-    .getAll("guestNames")
-    .map((value, index) => ({
-      name: String(value).trim(),
-      gender: String(formData.getAll("guestGenders")[index] ?? "").trim(),
-    }))
-    .filter((guest) => guest.name.length > 0);
-
+  const guestEntries = parseAdminGuestFormEntries(formData);
   const guestNames = guestEntries.map((guest) => guest.name);
   const guestGenders = guestEntries.map((guest) => guest.gender);
+  const guestIds = guestEntries.map((guest) => guest.id);
 
   const parsed = updateFamilySchema.safeParse({
     familyId: formData.get("familyId"),
     displayName: formData.get("displayName"),
     maximumGuests: formData.get("maximumGuests"),
     customMessage: formData.get("customMessage") ?? "",
-    isEnabled:
-      formData.get("isEnabled") === "on" ||
-      formData.get("isEnabled") === "true",
+    isEnabled: parseIsEnabledFormValue(formData),
     guestNames,
     guestGenders,
+    guestIds,
     invitationSlug: formData.get("invitationSlug") ?? "",
   });
 
@@ -211,6 +199,7 @@ export async function updateFamilyAction(
       isEnabled: parsed.data.isEnabled,
       guestNames: parsed.data.guestNames,
       guestGenders: parsed.data.guestGenders,
+      guestIds: parsed.data.guestIds,
       invitationSlug: parsed.data.invitationSlug || undefined,
     });
 

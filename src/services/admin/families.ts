@@ -279,7 +279,7 @@ export async function getFamilyById(
         )
         .eq("family_id", familyId)
         .order("is_primary_contact", { ascending: false })
-        .order("full_name", { ascending: true })
+        .order("created_at", { ascending: true })
         .returns<GuestRow[]>(),
       supabase
         .from("rsvp_responses")
@@ -560,6 +560,7 @@ export async function updateFamily(input: {
   isEnabled: boolean;
   guestNames: string[];
   guestGenders: GuestGender[];
+  guestIds?: Array<string | null>;
   invitationSlug?: string;
 }): Promise<void> {
   const supabase = createAdminClient();
@@ -572,6 +573,13 @@ export async function updateFamily(input: {
 
   if (input.guestNames.length !== input.guestGenders.length) {
     throw new Error("Indica el género de cada invitado.");
+  }
+
+  if (
+    input.guestIds !== undefined &&
+    input.guestIds.length !== input.guestNames.length
+  ) {
+    throw new Error("No se pudieron asociar los invitados.");
   }
 
   const { data: family, error: loadError } = await supabase
@@ -613,6 +621,8 @@ export async function updateFamily(input: {
     p_guest_names: input.guestNames,
     p_guest_genders: input.guestGenders,
     p_invitation_slug: invitationSlug,
+    p_guest_ids:
+      input.guestIds?.map((guestId) => guestId || null) ?? null,
   });
 
   if (error) {
@@ -651,6 +661,8 @@ function classifyAdminFamilyError(message: string): string {
   }
   if (
     message.includes("INVALID_GUEST_NAMES") ||
+    message.includes("INVALID_GUEST_GENDERS") ||
+    message.includes("INVALID_GUEST_IDS") ||
     message.includes("INVALID_DISPLAY_NAME")
   ) {
     return "validation";

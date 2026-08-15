@@ -10,6 +10,7 @@ import {
 import { admin } from "@/components/admin/admin-ui";
 import { CopyInvitationLink } from "@/components/admin/copy-invitation-link";
 import type { AdminFamilyDetail } from "@/services/admin/families";
+import type { GuestGender } from "@/types/guest";
 
 function attendanceStatusLabel(status: string): string {
   if (status === "attending") {
@@ -21,14 +22,76 @@ function attendanceStatusLabel(status: string): string {
   return "pendiente";
 }
 
+type GuestFormRow = {
+  id: string;
+  name: string;
+  gender: "" | GuestGender;
+};
+
+function familyFormStamp(family: AdminFamilyDetail): string {
+  return [
+    family.id,
+    family.displayName,
+    family.invitationSlug,
+    String(family.maximumGuests),
+    family.customMessage ?? "",
+    family.isEnabled ? "1" : "0",
+    family.guests
+      .map((guest) => `${guest.id}:${guest.fullName}:${guest.gender ?? ""}`)
+      .join(","),
+  ].join("|");
+}
+
+function guestRowsFromFamily(
+  family: AdminFamilyDetail,
+  count: number,
+): GuestFormRow[] {
+  return Array.from({ length: count }, (_, index) => ({
+    id: family.guests[index]?.id ?? "",
+    name: family.guests[index]?.fullName ?? "",
+    gender: family.guests[index]?.gender ?? "",
+  }));
+}
+
+function resizeGuestRows(
+  current: GuestFormRow[],
+  nextCount: number,
+): GuestFormRow[] {
+  if (nextCount <= current.length) {
+    return current.slice(0, nextCount);
+  }
+
+  return [
+    ...current,
+    ...Array.from({ length: nextCount - current.length }, () => ({
+      id: "",
+      name: "",
+      gender: "" as const,
+    })),
+  ];
+}
+
 type FamilyDetailFormProps = {
   family: AdminFamilyDetail;
 };
 
 export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
+  return (
+    <FamilyDetailFormInner key={familyFormStamp(family)} family={family} />
+  );
+}
+
+function FamilyDetailFormInner({ family }: FamilyDetailFormProps) {
   const router = useRouter();
-  const [guestCount, setGuestCount] = useState(
-    Math.max(family.guests.length, 1),
+  const [displayName, setDisplayName] = useState(family.displayName);
+  const [invitationSlug, setInvitationSlug] = useState(family.invitationSlug);
+  const [maximumGuests, setMaximumGuests] = useState(family.maximumGuests);
+  const [customMessage, setCustomMessage] = useState(
+    family.customMessage ?? "",
+  );
+  const [isEnabled, setIsEnabled] = useState(family.isEnabled);
+  const [guestRows, setGuestRows] = useState(() =>
+    guestRowsFromFamily(family, Math.max(family.guests.length, 1)),
   );
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -64,13 +127,19 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
         }}
       >
         <input type="hidden" name="familyId" value={family.id} />
+        <input
+          type="hidden"
+          name="isEnabled"
+          value={isEnabled ? "true" : "false"}
+        />
 
         <label className="grid gap-2">
           <span className={admin.label}>Nombre de la familia</span>
           <input
             name="displayName"
             required
-            defaultValue={family.displayName}
+            value={displayName}
+            onChange={(event) => setDisplayName(event.target.value)}
             className={admin.input}
           />
         </label>
@@ -80,7 +149,8 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
           <input
             name="invitationSlug"
             required
-            defaultValue={family.invitationSlug}
+            value={invitationSlug}
+            onChange={(event) => setInvitationSlug(event.target.value)}
             pattern="[a-z0-9]+(-[a-z0-9]+)*"
             className={`${admin.input} font-mono text-sm`}
             placeholder="familia-gutierrez-panqueva"
@@ -98,10 +168,12 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
             min={1}
             max={30}
             required
-            defaultValue={family.maximumGuests}
+            value={maximumGuests}
             onChange={(event) => {
               const value = Number(event.target.value) || 1;
-              setGuestCount(Math.min(30, Math.max(1, value)));
+              const nextCount = Math.min(30, Math.max(1, value));
+              setMaximumGuests(value);
+              setGuestRows((current) => resizeGuestRows(current, nextCount));
             }}
             className={admin.input}
           />
@@ -112,7 +184,8 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
           <textarea
             name="customMessage"
             rows={3}
-            defaultValue={family.customMessage ?? ""}
+            value={customMessage}
+            onChange={(event) => setCustomMessage(event.target.value)}
             className={admin.textarea}
           />
         </label>
@@ -120,9 +193,8 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
         <label className="inline-flex min-h-11 cursor-pointer items-center gap-3">
           <input
             type="checkbox"
-            name="isEnabled"
-            value="true"
-            defaultChecked={family.isEnabled}
+            checked={isEnabled}
+            onChange={(event) => setIsEnabled(event.target.checked)}
             className="size-4 accent-[color:var(--accent-deep)]"
           />
           <span className={admin.body}>Invitación habilitada</span>
@@ -134,11 +206,12 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
             El género define Querido/Querida cuando la invitación es para una sola
             persona.
           </p>
-          {Array.from({ length: guestCount }, (_, index) => (
+          {guestRows.map((row, index) => (
             <div
-              key={family.guests[index]?.id ?? `new-${index}`}
+              key={row.id || `new-${index}`}
               className="grid gap-2 sm:grid-cols-[1fr_10rem] sm:items-end"
             >
+              <input type="hidden" name="guestIds" value={row.id} />
               <label className="grid gap-2">
                 <span className={admin.muted}>
                   Invitado {index + 1}
@@ -149,7 +222,15 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
                 <input
                   name="guestNames"
                   required
-                  defaultValue={family.guests[index]?.fullName ?? ""}
+                  value={row.name}
+                  onChange={(event) => {
+                    const name = event.target.value;
+                    setGuestRows((current) =>
+                      current.map((guest, guestIndex) =>
+                        guestIndex === index ? { ...guest, name } : guest,
+                      ),
+                    );
+                  }}
                   className={admin.input}
                 />
               </label>
@@ -158,7 +239,15 @@ export function FamilyDetailForm({ family }: FamilyDetailFormProps) {
                 <select
                   name="guestGenders"
                   required
-                  defaultValue={family.guests[index]?.gender ?? ""}
+                  value={row.gender}
+                  onChange={(event) => {
+                    const gender = event.target.value as GuestFormRow["gender"];
+                    setGuestRows((current) =>
+                      current.map((guest, guestIndex) =>
+                        guestIndex === index ? { ...guest, gender } : guest,
+                      ),
+                    );
+                  }}
                   className={admin.select}
                 >
                   <option value="" disabled>

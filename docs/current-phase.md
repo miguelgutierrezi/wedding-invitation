@@ -58,7 +58,7 @@ Documented in `docs/invitation-ui.md` / `docs/architecture.md`:
 
 ## Recommended next steps
 
-1. On hosted Supabase: apply **all** pending migrations (guest media, **`guest_gender`**, **`guest_gender_unspecified`**, **`placeholder_companion_names`**); raise Storage limits; rotate QR in `/admin/photos`.
+1. On hosted Supabase: apply **all** pending migrations (guest media, **`guest_gender`**, **`guest_gender_unspecified`**, **`placeholder_companion_names`**, **`update_family_guests_by_id`**); raise Storage limits; rotate QR in `/admin/photos`.
 2. Confirm plus-ones named “Acompañante” show the RSVP name field and still count in analytics.
 3. Manual E2E: invitation fotos + QR fotos + admin approve/reject; cover greetings for 1 / 2 / 3+ guests.
 4. WhatsApp optional send / Resend when needed.

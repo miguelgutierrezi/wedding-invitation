@@ -15,6 +15,10 @@ function mapSharedAdminFamilyRpcError(message: string): string | null {
     return "La cantidad de invitados no puede superar los cupos máximos.";
   }
 
+  if (message.includes("INVALID_GUEST_IDS")) {
+    return "No se pudieron asociar los invitados. Recarga la página e inténtalo de nuevo.";
+  }
+
   if (
     message.includes("INVALID_GUEST_NAMES") ||
     message.includes("INVALID_GUEST_GENDERS") ||

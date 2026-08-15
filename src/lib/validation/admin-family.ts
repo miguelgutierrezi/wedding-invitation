@@ -10,8 +10,39 @@ export const guestGenderSchema = z.enum(["male", "female", "unspecified"], {
   message: "Selecciona el género de cada invitado.",
 });
 
+export type AdminGuestFormEntry = {
+  id: string;
+  name: string;
+  gender: string;
+};
+
+export function parseAdminGuestFormEntries(
+  formData: FormData,
+): AdminGuestFormEntry[] {
+  const names = formData.getAll("guestNames");
+  const genders = formData.getAll("guestGenders");
+  const ids = formData.getAll("guestIds");
+
+  return names
+    .map((value, index) => ({
+      id: String(ids[index] ?? "").trim(),
+      name: String(value).trim(),
+      gender: String(genders[index] ?? "").trim(),
+    }))
+    .filter((guest) => guest.name.length > 0);
+}
+
+export function parseIsEnabledFormValue(formData: FormData): boolean {
+  const value = formData.get("isEnabled");
+  return value === "on" || value === "true";
+}
+
 const guestsWithGendersRefine = <
-  T extends { guestNames: string[]; guestGenders: string[] },
+  T extends {
+    guestNames: string[];
+    guestGenders: string[];
+    guestIds?: string[];
+  },
 >(
   schema: z.ZodType<T>,
 ) =>
@@ -21,6 +52,17 @@ const guestsWithGendersRefine = <
         code: z.ZodIssueCode.custom,
         message: "Indica el género de cada invitado.",
         path: ["guestGenders"],
+      });
+    }
+
+    if (
+      value.guestIds !== undefined &&
+      value.guestIds.length !== value.guestNames.length
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "No se pudieron asociar los invitados.",
+        path: ["guestIds"],
       });
     }
   });
@@ -61,6 +103,10 @@ export const updateFamilySchema = guestsWithGendersRefine(
     isEnabled: z.boolean(),
     guestNames: z.array(guestNameSchema).min(1).max(30),
     guestGenders: z.array(guestGenderSchema).min(1).max(30),
+    guestIds: z
+      .array(z.union([z.string().uuid(), z.literal("")]))
+      .max(30)
+      .optional(),
     invitationSlug: z
       .string()
       .trim()

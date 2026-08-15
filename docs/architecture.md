@@ -179,8 +179,8 @@ Approved decisions:
 - **Attendance source of truth:** the latest `rsvp_responses` / `rsvp_response_guests` rows are authoritative after submission. `guests.attendance_status` (and denormalized transport fields) is a mirror for admin listing.
 - **RSVP persistence:** one `rsvp_responses` row per family (`unique(family_id)`), updated in place. Guest answers live in `rsvp_response_guests`.
 - **Admin family create:** `create_family_with_guests` RPC inserts the family row, guests (names + genders), and audit event in one transaction (service-role only).
-- **Admin family update:** `update_family_with_guests` RPC updates the family row, syncs guests (names + genders), and writes an audit event in one transaction (service-role only).
-- **Guest gender:** `guests.gender` text nullable with check `male` \| `female` \| `unspecified`. Admin Zod + RPC require a gender array aligned with guest names (`p_guest_genders`).
+- **Admin family update:** `update_family_with_guests` RPC updates the family row, syncs guests (names + genders) **by guest id** when `p_guest_ids` is provided, and writes an audit event in one transaction (service-role only).
+- **Guest gender:** `guests.gender` text nullable with check `male` \| `female` \| `unspecified`. Admin Zod + RPC require a gender array aligned with guest names (`p_guest_genders`) and, on update, guest ids (`p_guest_ids`).
 - **Companion names:** `needs_name_confirmation` plus `is_placeholder_guest_name()`; RSVP RPC `submit_family_rsvp` accepts `full_name` only when the flag is set.
 - **Transport:**
   - `needs_transport` (boolean) on guest / rsvp_response_guest.
@@ -206,6 +206,7 @@ Relevant migrations include:
 …_guest_gender.sql          # guests.gender + RPC p_guest_genders
 …_guest_gender_unspecified.sql
 …_placeholder_companion_names.sql
+…_update_family_guests_by_id.sql
 ```
 
 ## Invitation token / slug boundary

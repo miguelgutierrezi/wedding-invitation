@@ -201,7 +201,7 @@ export async function listAllGuests(): Promise<GuestListItem[]> {
     (families ?? []).map((family) => [family.id, family]),
   );
 
-  return (guests ?? []).map((guest) => {
+  const items = (guests ?? []).map((guest) => {
     const family = familyById.get(guest.family_id);
 
     return {
@@ -218,4 +218,6 @@ export async function listAllGuests(): Promise<GuestListItem[]> {
       phone: guest.phone,
     };
   });
+
+  return items;
 }

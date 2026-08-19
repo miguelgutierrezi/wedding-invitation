@@ -96,6 +96,7 @@ Ceremony maps URLs live on `weddingConfig.ceremony` (`mapsUrl`, `wazeUrl`, `appl
 - RSVP form is embedded in the invitation (cream band); it is not a separate navigation-only CTA page.
 - Cap multi-column invitation layouts on ultra-wide viewports so copy and CTAs stay visually grouped.
 - Admin chrome reuses invitation brand (accent header, cream page, Times/olive type).
+- Admin family/guest lists filter in memory, show active-filter chips, sort by column, and paginate at 25 rows. Query string (`q`, filters, `sort`, `dir`, `page`) is updated with `history.replaceState`. SQL push-down can wait until a commercial install outgrows a few hundred guests.
 
 ## Edge proxy (admin auth)
 
@@ -177,6 +178,7 @@ Approved decisions:
 
 - **Events:** multiple events are allowed via `event_id` foreign keys for reuse. Product v1 typically uses one event row; the database does not enforce a singleton.
 - **Attendance source of truth:** the latest `rsvp_responses` / `rsvp_response_guests` rows are authoritative after submission. `guests.attendance_status` (and denormalized transport fields) is a mirror for admin listing.
+- **Guest contact:** the RSVP form still collects one family phone (required) and optional email. On submit, `submit_family_rsvp` copies that contact onto every `guests.email` / `guests.phone` in the family (optional per-guest JSON `email`/`phone` overrides). `rsvp_responses.contact_*` remains the family-level submission. Existing RSVPs are backfilled in `…_guest_contact_from_rsvp.sql`.
 - **RSVP persistence:** one `rsvp_responses` row per family (`unique(family_id)`), updated in place. Guest answers live in `rsvp_response_guests`.
 - **Admin family create:** `create_family_with_guests` RPC inserts the family row, guests (names + genders), and audit event in one transaction (service-role only).
 - **Admin family update:** `update_family_with_guests` RPC updates the family row, syncs guests (names + genders) **by guest id** when `p_guest_ids` is provided, and writes an audit event in one transaction (service-role only).
@@ -207,6 +209,7 @@ Relevant migrations include:
 …_guest_gender_unspecified.sql
 …_placeholder_companion_names.sql
 …_update_family_guests_by_id.sql
+…_guest_contact_from_rsvp.sql
 ```
 
 ## Invitation token / slug boundary

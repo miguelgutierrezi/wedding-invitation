@@ -54,6 +54,8 @@ export type AdminGuestDetail = {
   dietaryRestrictions: string | null;
   needsTransport: boolean;
   transportBoardingPoint: string | null;
+  email: string | null;
+  phone: string | null;
 };
 
 export type AdminFamilyDetail = AdminFamilyListItem & {
@@ -97,6 +99,8 @@ type GuestRow = {
   dietary_restrictions: string | null;
   needs_transport: boolean;
   transport_boarding_point: string | null;
+  email: string | null;
+  phone: string | null;
 };
 
 type EventRow = {
@@ -229,7 +233,7 @@ export async function listFamilies(): Promise<AdminFamilyListItem[]> {
     );
   }
 
-  return (families ?? []).map((family) => {
+  const items = (families ?? []).map((family) => {
     const rsvp = rsvpByFamily.get(family.id);
 
     return {
@@ -247,6 +251,8 @@ export async function listFamilies(): Promise<AdminFamilyListItem[]> {
       submittedAt: rsvp?.submitted_at ?? null,
     };
   });
+
+  return items;
 }
 
 export async function getFamilyById(
@@ -275,7 +281,7 @@ export async function getFamilyById(
       supabase
         .from("guests")
         .select(
-          "id, family_id, full_name, gender, needs_name_confirmation, is_primary_contact, attendance_status, dietary_restrictions, needs_transport, transport_boarding_point",
+          "id, family_id, full_name, gender, needs_name_confirmation, is_primary_contact, attendance_status, dietary_restrictions, needs_transport, transport_boarding_point, email, phone",
         )
         .eq("family_id", familyId)
         .order("is_primary_contact", { ascending: false })
@@ -318,6 +324,8 @@ export async function getFamilyById(
       dietaryRestrictions: guest.dietary_restrictions,
       needsTransport: guest.needs_transport,
       transportBoardingPoint: guest.transport_boarding_point,
+      email: guest.email,
+      phone: guest.phone,
     })),
     guestsTransportCount: (guests ?? []).filter((guest) => guest.needs_transport)
       .length,

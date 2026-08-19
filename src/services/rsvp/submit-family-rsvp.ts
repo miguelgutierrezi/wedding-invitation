@@ -87,6 +87,8 @@ export async function submitFamilyRsvp(input: {
       dietary_restrictions: guest.dietaryRestrictions || null,
       menu_option: guest.menuOption || null,
       full_name: guest.needsNameConfirmation ? guest.fullName : null,
+      email: input.contactEmail || null,
+      phone: input.contactPhone || null,
     };
   });
 

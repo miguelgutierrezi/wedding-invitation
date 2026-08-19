@@ -29,6 +29,8 @@ Este documento define qué producto se quiere construir. No autoriza por sí mis
 | Export Excel (admin) | Implementado (`/api/admin/export`) |
 | Guest media uploads | Implementado (`/i/[slug]/fotos`, `/fotos?code=`, `/admin/photos`, Storage privado) |
 | Email / settings UI | No implementado |
+| Admin listados reutilizables | Filtros + chips + orden por columna + paginación |
+| Contacto en `guests` | Teléfono/correo copiados desde el RSVP familiar |
 
 Config de copy y rutas de medios: **`src/config/wedding.ts`**. Ids de puntos de bus: **`src/config/transport.ts`**. Storage invitados: **`docs/guest-media-storage.md`**.
 
@@ -649,6 +651,8 @@ updated_at
 `needs_name_confirmation`: true for plus-ones stored as “Acompañante” (or similar). The RSVP form requires a real name; they still count in analytics totals.
 
 `transport_boarding_point`: nullable; values in use: `modelia`, `villa_sonia`. Required when `needs_transport` is true for an attending guest (enforced in RPC + Zod).
+
+`email` / `phone` on `guests`: mirrored from the family RSVP contact on submit (and backfilled for existing responses). The public form still has one family contact; per-guest JSON overrides are reserved for a later form.
 
 Estados:
 

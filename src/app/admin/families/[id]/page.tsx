@@ -40,9 +40,15 @@ export default async function AdminFamilyDetailPage({
           </p>
         </div>
         <div>
-          <p className={admin.eyebrow}>Contacto RSVP</p>
+          <p className={admin.eyebrow}>Teléfono RSVP</p>
           <p className={`mt-1 ${admin.body}`}>
-            {family.contactEmail ?? family.contactPhone ?? "—"}
+            {family.contactPhone ?? "—"}
+          </p>
+        </div>
+        <div>
+          <p className={admin.eyebrow}>Correo RSVP</p>
+          <p className={`mt-1 ${admin.body}`}>
+            {family.contactEmail ?? "—"}
           </p>
         </div>
         <div>
@@ -78,6 +84,12 @@ export default async function AdminFamilyDetailPage({
                 <span className="text-cover-cta-fg/70">
                   {guest.dietaryRestrictions}
                 </span>
+              ) : null}
+              {guest.phone ? (
+                <span className="text-cover-cta-fg/70">{guest.phone}</span>
+              ) : null}
+              {guest.email ? (
+                <span className="text-cover-cta-fg/70">{guest.email}</span>
               ) : null}
             </li>
           ))}

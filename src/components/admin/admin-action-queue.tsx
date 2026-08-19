@@ -9,6 +9,8 @@ export type AdminActionQueueCounts = {
     familiesOpenedPending: number;
     guestsNeedsName: number;
     guestsBusMissingPoint: number;
+    photosAwaitingReview: number;
+    familiesDisabledPending: number;
 };
 
 type QueueItem = {
@@ -44,6 +46,18 @@ export function AdminActionQueue({counts}: { counts: AdminActionQueueCounts }) {
             label: copy.busMissingLabel,
             count: counts.guestsBusMissingPoint,
             hint: copy.busMissingHint,
+        },
+        {
+            href: "/admin/photos",
+            label: copy.photosPendingLabel,
+            count: counts.photosAwaitingReview,
+            hint: copy.photosPendingHint,
+        },
+        {
+            href: adminFilterLinks.familiesDisabled,
+            label: copy.disabledPendingLabel,
+            count: counts.familiesDisabledPending,
+            hint: copy.disabledPendingHint,
         },
     ].filter((item) => item.count > 0);
 

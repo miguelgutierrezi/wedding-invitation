@@ -1,6 +1,7 @@
 "use client";
 
 import {admin} from "@/components/admin/admin-ui";
+import {adminCopy} from "@/lib/admin/admin-copy";
 import type {PaginatedList} from "@/lib/admin/list-view";
 
 type AdminPaginationProps = {
@@ -14,11 +15,11 @@ export function AdminPagination({list, onPageChange}: AdminPaginationProps) {
     }
 
     return (
-        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-4 flex flex-col gap-3 pr-16 lg:pr-0">
             <p className={`${admin.muted} text-center sm:text-left`}>
-                Mostrando {list.from}–{list.to} de {list.total}
+                {adminCopy.list.showing(list.from, list.to, list.total)}
             </p>
-            <div className="grid grid-cols-2 gap-3 sm:flex">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:flex">
                 <button
                     type="button"
                     className={admin.btnSecondary}

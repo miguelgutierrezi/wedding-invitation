@@ -3,6 +3,7 @@ import {
     approveMediaUploadAction,
     createAdminMediaPreviewUrlsAction,
     deleteMediaUploadAction,
+    reviewMediaUploadsBatchAction,
     rotateMediaQrAction,
     setMediaQrEnabledAction,
     updateMediaQrWindowAction,
@@ -11,6 +12,7 @@ import {
 const {
     requireAdmin,
     reviewMediaUpload,
+    reviewMediaUploads,
     deleteMediaUpload,
     rotateEventMediaQrToken,
     setEventMediaQrEnabled,
@@ -21,6 +23,7 @@ const {
 } = vi.hoisted(() => ({
     requireAdmin: vi.fn(),
     reviewMediaUpload: vi.fn(),
+    reviewMediaUploads: vi.fn(),
     deleteMediaUpload: vi.fn(),
     rotateEventMediaQrToken: vi.fn(),
     setEventMediaQrEnabled: vi.fn(),
@@ -33,6 +36,7 @@ const {
 vi.mock("@/lib/auth/require-admin", () => ({requireAdmin}));
 vi.mock("@/services/media/uploads", () => ({
     reviewMediaUpload,
+    reviewMediaUploads,
     deleteMediaUpload,
 }));
 vi.mock("@/services/media/qr-access", () => ({
@@ -157,5 +161,22 @@ describe("admin guest media actions", () => {
         expect(createAdminMediaPreviewUrls).toHaveBeenCalledWith([
             "11111111-1111-4111-8111-111111111111",
         ]);
+    });
+
+    it("reviews a validated batch of uploads", async () => {
+        reviewMediaUploads.mockResolvedValue({
+            ok: true,
+            data: {updated: 1, skipped: 0},
+        });
+        const result = await reviewMediaUploadsBatchAction(
+            ["11111111-1111-4111-8111-111111111111"],
+            "approved",
+        );
+        expect(result.ok).toBe(true);
+        expect(reviewMediaUploads).toHaveBeenCalledWith(
+            ["11111111-1111-4111-8111-111111111111"],
+            "approved",
+        );
+        expect(revalidatePath).toHaveBeenCalledWith("/admin/photos");
     });
 });

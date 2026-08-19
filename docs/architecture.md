@@ -129,11 +129,10 @@ confirmar”). Outfit inspiration routes are implemented under `/inspiracion/*`.
   `src/lib/admin/list-view.ts`.
 - **Admin family delete:** `delete_family` RPC (service-role) removes the family row; guests and RSVP rows cascade.
   Guest media `family_id` is set null. The UI requires typing the family display name.
-- **Admin operations:** dashboard action queue and RSVP close checklist (`src/lib/admin/rsvp-close-checklist.ts`, 95%
-  family/guest rates and zero pending companion names). WhatsApp reminders are clipboard-only
+- **Admin operations:** dashboard action queue (photos awaiting review, disabled-pending families) and RSVP close checklist (`src/lib/admin/rsvp-close-checklist.ts`, 95% family/guest rates and zero pending companion names) plus follow-ups for transport, boarding, catering, names, and photos. Resumen shows days until the RSVP deadline. Family list/detail chips: `family-ops.ts`. Family detail activity: `audit_events` + guest media (`family-activity.ts`). Compact chrome back chevron on create and family detail. WhatsApp reminders are clipboard-only
   (`src/lib/admin/whatsapp-reminder.ts` + `weddingConfig.admin.whatsappReminderTemplate`). Resumen offers a single Excel
   download; optional `?kind=` slices remain on `/api/admin/export`. Disable/regenerate invitation confirm in the family
-  form.
+  form. **Batch actions:** checkbox selection on families/guests/photos (`src/lib/admin/selection.ts`, cap `ADMIN_BATCH_MAX_IDS`); copy links/contacts; POST `/api/admin/export` with selected ids; enable/disable families; approve/reject media.
 - **Disabled invitations:** planning counts, guest listing, and Excel omit families with `is_enabled = false` or
   `status = disabled`. The analytics “Familias desactivadas” card is the dedicated count; the families list still shows
   them when filtered.
@@ -168,6 +167,9 @@ Current coverage targets:
 - In-memory rate limiter + `serverLog` PII stripping.
 - Admin `updateFamily` / `createFamily` / `deleteFamily` RPC error mapping and actions.
 - Admin list filter parse/match/chips/query + list-view sort/pagination.
+- Family activity labels + open-event collapsing; family operational chips.
+- Admin batch id validation, row selection helpers, export scope.
+- Admin compact chrome path helpers.
 - Cover greeting helper (`formatCoverGreeting`).
 - Placeholder companion names (`isPlaceholderGuestName`).
 - Event timezone helpers.

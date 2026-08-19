@@ -1,6 +1,7 @@
 import {describe, expect, it} from "vitest";
 
 import {
+    daysUntilDeadline,
     EVENT_TIMEZONE,
     formatEventDateTime,
     formatEventLongDate,
@@ -38,5 +39,12 @@ describe("event timezone", () => {
         );
         expect(label).toMatch(/^15\//);
         expect(label).not.toMatch(/^16\//);
+    });
+
+    it("counts remaining days until a deadline", () => {
+        const now = new Date("2026-09-01T12:00:00-05:00");
+        expect(daysUntilDeadline("2026-09-15T23:59:59-05:00", now)).toBe(15);
+        expect(daysUntilDeadline("2026-08-31T12:00:00-05:00", now)).toBeLessThan(0);
+        expect(daysUntilDeadline(null, now)).toBeNull();
     });
 });

@@ -14,6 +14,7 @@ import {
 } from "@/lib/media/upload-context";
 import {fingerprintPublicId} from "@/lib/logging/fingerprint";
 import {serverLog} from "@/lib/logging/server-log";
+import {uniqueIds} from "@/lib/admin/selection";
 import {getRequestClientIp} from "@/lib/security/client-ip";
 import {assertMediaAuthorizeRateLimit} from "@/lib/security/media-rate-limit";
 import {createAdminClient} from "@/lib/supabase/admin";
@@ -542,4 +543,29 @@ export async function reviewMediaUpload(
     });
 
     return {ok: true, data: {uploadId}};
+}
+
+export type MediaReviewBatchResult = {
+    updated: number;
+    skipped: number;
+};
+
+export async function reviewMediaUploads(
+    uploadIds: string[],
+    status: "approved" | "rejected",
+): Promise<MediaActionResult<MediaReviewBatchResult>> {
+    const uniqueUploadIds = uniqueIds(uploadIds);
+    let updated = 0;
+    let skipped = 0;
+
+    for (const id of uniqueUploadIds) {
+        const result = await reviewMediaUpload(id, status);
+        if (result.ok) {
+            updated += 1;
+        } else {
+            skipped += 1;
+        }
+    }
+
+    return {ok: true, data: {updated, skipped}};
 }

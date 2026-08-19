@@ -15,5 +15,13 @@ export function showAdminNewFamilyFab(pathname: string): boolean {
 }
 
 export function showAdminBackToFamilies(pathname: string): boolean {
-    return pathname === "/admin/families/new";
+    if (pathname === "/admin/families/new") {
+        return true;
+    }
+
+    if (pathname === "/admin/families") {
+        return false;
+    }
+
+    return pathname.startsWith("/admin/families/");
 }

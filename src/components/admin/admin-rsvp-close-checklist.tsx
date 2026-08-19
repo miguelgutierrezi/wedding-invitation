@@ -1,11 +1,28 @@
+import Link from "next/link";
+
 import {admin} from "@/components/admin/admin-ui";
 import {adminCopy} from "@/lib/admin/admin-copy";
-import type {RsvpCloseChecklist} from "@/lib/admin/rsvp-close-checklist";
+import type {
+    CloseFollowUpItem,
+    RsvpCloseChecklist,
+} from "@/lib/admin/rsvp-close-checklist";
+
+function followUpValue(item: CloseFollowUpItem, doneLabel: string): string {
+    if (item.key === "diet" || item.key === "transport") {
+        return String(item.count);
+    }
+    if (item.done) {
+        return doneLabel;
+    }
+    return String(item.count);
+}
 
 export function AdminRsvpCloseChecklist({
-                                            checklist,
-                                        }: {
+    checklist,
+    followUps,
+}: {
     checklist: RsvpCloseChecklist;
+    followUps: CloseFollowUpItem[];
 }) {
     const copy = adminCopy.operations;
 
@@ -48,6 +65,29 @@ export function AdminRsvpCloseChecklist({
                     </dd>
                 </div>
             </dl>
+            <p className={`mt-6 ${admin.eyebrow}`}>{copy.closeFollowUpsTitle}</p>
+            <p className={`mt-1 ${admin.muted}`}>{copy.closeFollowUpsIntro}</p>
+            <ul className="mt-3 grid gap-2">
+                {followUps.map((item) => (
+                    <li key={item.key}>
+                        <Link
+                            href={item.href}
+                            className={`${admin.panel} flex min-h-11 items-start justify-between gap-3 px-4 py-3 transition-opacity hover:opacity-90`}
+                        >
+                            <span>
+                                <span className="block font-medium text-cover-cta-fg">
+                                    {item.done ? "✓ " : ""}
+                                    {item.label}
+                                </span>
+                                <span className={`block ${admin.muted}`}>{item.hint}</span>
+                            </span>
+                            <span className="shrink-0 text-lg font-bold tabular-nums text-cover-cta-fg">
+                                {followUpValue(item, copy.closeItemDone)}
+                            </span>
+                        </Link>
+                    </li>
+                ))}
+            </ul>
         </section>
     );
 }

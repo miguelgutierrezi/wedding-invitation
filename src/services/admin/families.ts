@@ -17,6 +17,8 @@ import {
 import type {GuestGender} from "@/types/guest";
 import {parseGuestGender} from "@/types/guest";
 import {computeActivePlanningCounts} from "@/lib/admin/admin-counts";
+import {familyGuestSignals} from "@/lib/admin/family-ops";
+import {uniqueIds} from "@/lib/admin/selection";
 
 export type DashboardMetrics = {
     familyCount: number;
@@ -45,6 +47,9 @@ export type AdminFamilyListItem = {
     willAttend: boolean | null;
     submittedAt: string | null;
     updatedAt: string;
+    hasPendingName: boolean;
+    usesBus: boolean;
+    hasDietary: boolean;
 };
 
 export type AdminGuestDetail = {
@@ -243,17 +248,24 @@ export async function listFamilies(): Promise<AdminFamilyListItem[]> {
     ]);
 
     const rsvpByFamily = new Map((rsvps ?? []).map((r) => [r.family_id, r]));
-    const guestCountByFamily = new Map<string, number>();
+    const guestsByFamily = new Map<string, GuestRow[]>();
 
     for (const guest of guests ?? []) {
-        guestCountByFamily.set(
-            guest.family_id,
-            (guestCountByFamily.get(guest.family_id) ?? 0) + 1,
-        );
+        const current = guestsByFamily.get(guest.family_id) ?? [];
+        current.push(guest);
+        guestsByFamily.set(guest.family_id, current);
     }
 
     const items = (families ?? []).map((family) => {
         const rsvp = rsvpByFamily.get(family.id);
+        const familyGuests = guestsByFamily.get(family.id) ?? [];
+        const signals = familyGuestSignals(
+            familyGuests.map((guest) => ({
+                needsNameConfirmation: guest.needs_name_confirmation,
+                needsTransport: guest.needs_transport,
+                dietaryRestrictions: guest.dietary_restrictions,
+            })),
+        );
 
         return {
             id: family.id,
@@ -265,10 +277,13 @@ export async function listFamilies(): Promise<AdminFamilyListItem[]> {
             invitationSlug: family.invitation_slug,
             invitationUrl: buildInvitationUrl(family.invitation_slug),
             confirmedGuestCount: rsvp?.confirmed_guest_count ?? null,
-            guestCount: guestCountByFamily.get(family.id) ?? 0,
+            guestCount: familyGuests.length,
             willAttend: rsvp?.will_attend ?? null,
             submittedAt: rsvp?.submitted_at ?? null,
             updatedAt: family.updated_at,
+            hasPendingName: signals.hasPendingName,
+            usesBus: signals.usesBus,
+            hasDietary: signals.hasDietary,
         };
     });
 
@@ -353,6 +368,13 @@ export async function getFamilyById(
         rsvpMessage: rsvp?.message ?? null,
         contactEmail: rsvp?.contact_email ?? null,
         contactPhone: rsvp?.contact_phone ?? null,
+        ...familyGuestSignals(
+            (guests ?? []).map((guest) => ({
+                needsNameConfirmation: guest.needs_name_confirmation,
+                needsTransport: guest.needs_transport,
+                dietaryRestrictions: guest.dietary_restrictions,
+            })),
+        ),
     };
 }
 
@@ -673,6 +695,98 @@ export async function updateFamily(input: {
         maximumGuests: input.maximumGuests,
         isEnabled: input.isEnabled,
     });
+}
+
+export type FamilyEnabledBatchResult = {
+    updated: number;
+    missing: number;
+};
+
+export async function setFamiliesEnabled(
+    familyIds: string[],
+    isEnabled: boolean,
+): Promise<FamilyEnabledBatchResult> {
+    const supabase = createAdminClient();
+    const uniqueFamilyIds = uniqueIds(familyIds);
+
+    const {data: found, error: loadError} = await supabase
+        .from("families")
+        .select("id, event_id")
+        .in("id", uniqueFamilyIds)
+        .returns<{id: string; event_id: string}[]>();
+
+    if (loadError) {
+        throw new Error("No se pudieron actualizar las familias.");
+    }
+
+    const rows = found ?? [];
+    const foundIds = rows.map((row) => row.id);
+
+    if (foundIds.length === 0) {
+        return {updated: 0, missing: uniqueFamilyIds.length};
+    }
+
+    if (!isEnabled) {
+        const {error} = await supabase
+            .from("families")
+            .update({is_enabled: false, status: "disabled"})
+            .in("id", foundIds);
+
+        if (error) {
+            throw new Error("No se pudieron desactivar las familias.");
+        }
+    } else {
+        const {error: enableError} = await supabase
+            .from("families")
+            .update({is_enabled: true})
+            .in("id", foundIds);
+
+        if (enableError) {
+            throw new Error("No se pudieron activar las familias.");
+        }
+
+        const {error: statusError} = await supabase
+            .from("families")
+            .update({status: "pending"})
+            .in("id", foundIds)
+            .eq("status", "disabled");
+
+        if (statusError) {
+            throw new Error("No se pudieron activar las familias.");
+        }
+    }
+
+    const {error: auditError} = await supabase.from("audit_events").insert(
+        rows.map((row) => ({
+            event_id: row.event_id,
+            family_id: row.id,
+            action: "family_updated",
+            metadata: {
+                source: "admin",
+                batch: true,
+                is_enabled: isEnabled,
+            },
+        })),
+    );
+
+    if (auditError) {
+        serverLog({
+            level: "error",
+            event: "admin_family_batch_audit_failed",
+            errorCode: "audit",
+        });
+    }
+
+    serverLog({
+        level: "info",
+        event: isEnabled ? "admin_family_batch_enable_ok" : "admin_family_batch_disable_ok",
+        familyCount: foundIds.length,
+    });
+
+    return {
+        updated: foundIds.length,
+        missing: uniqueFamilyIds.length - foundIds.length,
+    };
 }
 
 function classifyAdminFamilyError(message: string): string {

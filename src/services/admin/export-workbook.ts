@@ -6,11 +6,11 @@ import {getAnalyticsSnapshot, listAllGuests,} from "@/services/admin/analytics";
 import {listFamilies} from "@/services/admin/families";
 import {
     type AdminExportKind,
+    applyExportScope,
     buildExportSheetsForKind,
     exportFilenameForKind,
     type ExportSheet,
 } from "@/services/admin/export-workbook-rows";
-import {filterActiveFamilies} from "@/lib/admin/active-invitation";
 import {EVENT_TIMEZONE} from "@/lib/datetime/event-timezone";
 
 const HEADER_FILL: ExcelJS.Fill = {
@@ -52,6 +52,7 @@ function applySheet(workbook: ExcelJS.Workbook, sheet: ExportSheet): void {
 
 export async function buildAdminExportWorkbook(
     kind: AdminExportKind = "full",
+    scope?: {familyIds?: string[]; guestIds?: string[]},
 ): Promise<{
     buffer: Buffer;
     filename: string;
@@ -60,16 +61,17 @@ export async function buildAdminExportWorkbook(
     familyCount: number;
 }> {
     const [guests, families, snapshot] = await Promise.all([
-        listAllGuests(),
+        listAllGuests({includeInactive: Boolean(scope)}),
         listFamilies(),
         getAnalyticsSnapshot(),
     ]);
 
-    const activeFamilies = filterActiveFamilies(families);
+    const activeOrScoped = applyExportScope(guests, families, scope);
     const sheets = buildExportSheetsForKind(kind, {
         guests,
-        families: activeFamilies,
+        families,
         snapshot,
+        scope,
     });
     const workbook = new ExcelJS.Workbook();
     workbook.creator = "Wedding invitation admin";
@@ -90,7 +92,7 @@ export async function buildAdminExportWorkbook(
         buffer,
         filename: exportFilenameForKind(kind, dateStamp),
         sheetCount: sheets.length,
-        guestCount: guests.length,
-        familyCount: activeFamilies.length,
+        guestCount: activeOrScoped.guests.length,
+        familyCount: activeOrScoped.families.length,
     };
 }

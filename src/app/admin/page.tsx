@@ -7,16 +7,34 @@ import {admin} from "@/components/admin/admin-ui";
 import {adminCopy} from "@/lib/admin/admin-copy";
 import {adminFilterLinks} from "@/lib/admin/admin-filter-links";
 import {isActiveInvitation} from "@/lib/admin/active-invitation";
-import {buildRsvpCloseChecklist} from "@/lib/admin/rsvp-close-checklist";
-import {formatEventDateTime} from "@/lib/datetime/event-timezone";
+import {
+    buildCloseFollowUpItems,
+    buildRsvpCloseChecklist,
+} from "@/lib/admin/rsvp-close-checklist";
+import {daysUntilDeadline, formatEventDateTime} from "@/lib/datetime/event-timezone";
 import {getAnalyticsSnapshot, listAllGuests} from "@/services/admin/analytics";
 import {listFamilies} from "@/services/admin/families";
+import {getAdminMediaStats} from "@/services/admin/guest-media";
+
+function rsvpDeadlineLead(days: number | null): string | null {
+    if (days == null) {
+        return null;
+    }
+    if (days < 0) {
+        return adminCopy.operations.deadlinePassed;
+    }
+    if (days === 0) {
+        return adminCopy.operations.deadlineToday;
+    }
+    return adminCopy.operations.daysLeft(days);
+}
 
 export default async function AdminDashboardPage() {
-    const [metrics, families, guests] = await Promise.all([
+    const [metrics, families, guests, mediaStats] = await Promise.all([
         getAnalyticsSnapshot(),
         listFamilies(),
         listAllGuests(),
+        getAdminMediaStats(),
     ]);
 
     const familiesOpenedPending = families.filter(
@@ -28,6 +46,11 @@ export default async function AdminDashboardPage() {
     const guestsBusMissingPoint = guests.filter(
         (guest) => guest.needsTransport && !guest.transportBoardingPoint,
     ).length;
+    const familiesDisabledPending = families.filter(
+        (family) => !isActiveInvitation(family) && family.status === "pending",
+    ).length;
+    const daysUntilRsvp = daysUntilDeadline(metrics.rsvpDeadline);
+    const deadlineLead = rsvpDeadlineLead(daysUntilRsvp);
 
     const cards = [
         {
@@ -73,6 +96,7 @@ export default async function AdminDashboardPage() {
             <p className={admin.muted}>
                 {metrics.eventName ?? "Evento"} · {adminCopy.rsvp.deadline}:{" "}
                 {formatEventDateTime(metrics.rsvpDeadline)}
+                {deadlineLead ? ` · ${deadlineLead}` : ""}
             </p>
 
             <div className="mt-8 space-y-6">
@@ -82,6 +106,8 @@ export default async function AdminDashboardPage() {
                         familiesOpenedPending,
                         guestsNeedsName: metrics.guestsPendingNameConfirmation,
                         guestsBusMissingPoint,
+                        photosAwaitingReview: mediaStats.uploadedCount,
+                        familiesDisabledPending,
                     }}
                 />
                 <AdminRsvpCloseChecklist
@@ -92,6 +118,21 @@ export default async function AdminDashboardPage() {
                         familiesPending: metrics.familiesPending,
                         guestsPending: metrics.guestsPending,
                         guestsPendingNameConfirmation: metrics.guestsPendingNameConfirmation,
+                    })}
+                    followUps={buildCloseFollowUpItems({
+                        familiesPending: metrics.familiesPending,
+                        familiesPendingHref: adminFilterLinks.familiesPending,
+                        guestsPendingNameConfirmation:
+                            metrics.guestsPendingNameConfirmation,
+                        guestsPendingNameHref: adminFilterLinks.guestsNeedsName,
+                        guestsNeedingTransport: metrics.guestsNeedingTransport,
+                        guestsTransportHref: adminFilterLinks.guestsWithBus,
+                        guestsBusMissingPoint,
+                        guestsBusMissingHref: adminFilterLinks.guestsBusMissingPoint,
+                        guestsWithDietary: metrics.guestsWithDietary,
+                        guestsDietaryHref: adminFilterLinks.guestsWithDietary,
+                        photosAwaitingReview: mediaStats.uploadedCount,
+                        photosHref: "/admin/photos",
                     })}
                 />
             </div>

@@ -1,16 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import {useMemo, useState} from "react";
+import {useMemo, useState, useTransition} from "react";
 
+import {setFamiliesEnabledBatchAction} from "@/actions/admin/families-batch";
+import {AdminBatchBar} from "@/components/admin/admin-batch-bar";
 import {AdminExpandableFilters} from "@/components/admin/admin-expandable-filters";
 import {AdminFilterChips} from "@/components/admin/admin-filter-chips";
 import {AdminPagination} from "@/components/admin/admin-pagination";
+import {AdminFamilyOpsChips} from "@/components/admin/admin-family-ops-chips";
+import {AdminRowCheckbox} from "@/components/admin/admin-row-checkbox";
 import {FamilyStatusBadge} from "@/components/admin/admin-status-badge";
 import {AdminSelect} from "@/components/admin/admin-select";
 import {AdminSortHeader} from "@/components/admin/admin-sort-header";
 import {admin} from "@/components/admin/admin-ui";
+import {useAdminSelection} from "@/hooks/use-admin-selection";
+import {useScrollOnPageChange} from "@/hooks/use-scroll-on-page-change";
 import {adminCopy, familyStatusLabel} from "@/lib/admin/admin-copy";
+import {joinInvitationLinks} from "@/lib/admin/batch-clipboard";
+import {copyPlainText, downloadAdminExport} from "@/lib/admin/download-export";
+import {familyOperationChips} from "@/lib/admin/family-ops";
+import {pageSelectionState} from "@/lib/admin/selection";
 import {nextSortDir, paginateItems, sortItems} from "@/lib/admin/list-view";
 import {formatEventDateTimeShort} from "@/lib/datetime/event-timezone";
 import {
@@ -31,11 +41,15 @@ export type AdminFamilyBrowserItem = {
     isEnabled: boolean;
     lastOpenedAt: string | null;
     invitationSlug: string;
+    invitationUrl: string;
     confirmedGuestCount: number | null;
     guestCount: number;
     willAttend: boolean | null;
     submittedAt: string | null;
     updatedAt: string;
+    hasPendingName: boolean;
+    usesBus: boolean;
+    hasDietary: boolean;
 };
 
 type AdminFamiliesBrowserProps = {
@@ -70,6 +84,10 @@ export function AdminFamiliesBrowser({
                                          initialFilters,
                                      }: AdminFamiliesBrowserProps) {
     const [filters, setFilters] = useState(initialFilters);
+    const [notice, setNotice] = useState<string | null>(null);
+    const [pending, startTransition] = useTransition();
+    const selection = useAdminSelection();
+    const listTopRef = useScrollOnPageChange(filters.page);
     const hasActiveFilters = hasActiveAdminFamiliesFilters(filters);
     const chips = familiesFilterChips(filters);
     const sort = filters.sort || "displayName";
@@ -80,6 +98,22 @@ export function AdminFamiliesBrowser({
         return sortItems(matched, (family) => familySortValue(family, sort), filters.dir);
     }, [families, filters, sort]);
     const page = paginateItems(visibleFamilies, filters.page);
+    const pageIds = page.items.map((family) => family.id);
+    const pageState = pageSelectionState(pageIds, selection.selected);
+    const visibleIds = visibleFamilies.map((family) => family.id);
+
+    function selectedFamilies() {
+        const ids = new Set(selection.selectedIds);
+        return families.filter((family) => ids.has(family.id));
+    }
+
+    function reportCopy(ok: boolean, empty: boolean) {
+        if (empty) {
+            setNotice(adminCopy.batch.noneCopied);
+            return;
+        }
+        setNotice(ok ? adminCopy.batch.copied : adminCopy.batch.copyEmpty);
+    }
 
     function updateFilters(next: AdminFamiliesFilters) {
         setFilters(next);
@@ -98,10 +132,13 @@ export function AdminFamiliesBrowser({
         <>
             <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <p className={admin.muted}>
+                    <p ref={listTopRef} className={`${admin.muted} scroll-mt-32`}>
                         {visibleFamilies.length} familia
                         {visibleFamilies.length === 1 ? "" : "s"}
                         {hasActiveFilters ? " coinciden con los filtros." : " en total."}
+                        {page.totalPages > 1
+                            ? ` ${adminCopy.list.showing(page.from, page.to, page.total)}.`
+                            : ""}
                     </p>
                     <Link
                         href="/admin/families/new"
@@ -198,24 +235,38 @@ export function AdminFamiliesBrowser({
                 </p>
             ) : (
                 <>
-                    <ul className="mt-6 grid gap-3 lg:hidden">
+                    {notice ? (
+                        <p className={`mt-4 ${admin.muted}`} role="status">
+                            {notice}
+                        </p>
+                    ) : null}
+
+                    <ul className={`mt-6 grid gap-3 lg:hidden ${selection.count > 0 ? "pb-36" : ""}`}>
                         {page.items.map((family) => (
-                            <li key={family.id}>
+                            <li key={family.id} className={`${admin.card} flex items-start gap-1 p-2`}>
+                                <AdminRowCheckbox
+                                    checked={selection.isSelected(family.id)}
+                                    label={`Seleccionar ${family.displayName}`}
+                                    onChange={() => selection.toggle(family.id)}
+                                />
                                 <Link
                                     href={`/admin/families/${family.id}`}
-                                    className={`${admin.card} flex min-h-11 flex-col gap-3 p-4 transition-opacity hover:opacity-90`}
+                                    className="flex min-h-11 min-w-0 flex-1 flex-col gap-3 overflow-hidden p-2 transition-opacity hover:opacity-90"
                                 >
-                                    <div className="flex items-start justify-between gap-3">
-                                        <div className="min-w-0">
-                                            <p className="font-bold text-cover-cta-fg">
-                                                {family.displayName}
-                                            </p>
-                                            <p className="mt-0.5 truncate font-mono text-xs text-cover-cta-fg/65">
-                                                /i/{family.invitationSlug}
-                                            </p>
+                                    <div className="min-w-0">
+                                        <p className="break-words font-bold text-cover-cta-fg">
+                                            {family.displayName}
+                                        </p>
+                                        <p className="mt-0.5 truncate font-mono text-xs text-cover-cta-fg/65">
+                                            /i/{family.invitationSlug}
+                                        </p>
+                                        <div className="mt-2">
+                                            <FamilyStatusBadge status={family.status}/>
                                         </div>
-                                        <FamilyStatusBadge status={family.status}/>
                                     </div>
+                                    <AdminFamilyOpsChips
+                                        chips={familyOperationChips(family)}
+                                    />
                                     <p className={admin.muted}>
                                         Cupos {family.guestCount}/{family.maximumGuests}
                                         {family.confirmedGuestCount != null
@@ -231,10 +282,18 @@ export function AdminFamiliesBrowser({
                             </li>
                         ))}
                     </ul>
-                    <div className={`mt-6 hidden lg:block ${admin.tableShell}`}>
+                    <div className={`mt-6 hidden lg:block ${admin.tableShell} ${selection.count > 0 ? "mb-28" : ""}`}>
                         <table className="min-w-full text-left text-sm font-[family-name:var(--font-timer)]">
                             <thead className={admin.tableHead}>
                             <tr>
+                                <th className="w-12 px-2 py-3">
+                                    <AdminRowCheckbox
+                                        checked={pageState === "all"}
+                                        indeterminate={pageState === "some"}
+                                        label="Seleccionar esta página"
+                                        onChange={(checked) => selection.setMany(pageIds, checked)}
+                                    />
+                                </th>
                                 <AdminSortHeader
                                     label="Familia"
                                     column="displayName"
@@ -325,10 +384,22 @@ export function AdminFamiliesBrowser({
                             <tbody>
                             {page.items.map((family) => (
                                 <tr key={family.id} className={admin.tableRow}>
+                                    <td className="px-2 py-3">
+                                        <AdminRowCheckbox
+                                            checked={selection.isSelected(family.id)}
+                                            label={`Seleccionar ${family.displayName}`}
+                                            onChange={() => selection.toggle(family.id)}
+                                        />
+                                    </td>
                                     <td className="px-4 py-3 font-medium text-cover-cta-fg">
                                         <div>{family.displayName}</div>
                                         <div className="mt-0.5 font-mono text-xs font-normal text-cover-cta-fg/65">
                                             /i/{family.invitationSlug}
+                                        </div>
+                                        <div className="mt-2">
+                                            <AdminFamilyOpsChips
+                                                chips={familyOperationChips(family)}
+                                            />
                                         </div>
                                         {!family.isEnabled ? (
                                             <span className="ml-0 text-xs text-red-800">
@@ -371,6 +442,92 @@ export function AdminFamiliesBrowser({
                         list={page}
                         onPageChange={(nextPage) => updateFilters({...filters, page: nextPage})}
                     />
+                    <AdminBatchBar
+                        count={selection.count}
+                        visibleCount={visibleIds.length}
+                        onClear={selection.clear}
+                        onSelectVisible={() => selection.setMany(visibleIds, true)}
+                    >
+                        <button
+                            type="button"
+                            className={admin.btnSecondary}
+                            disabled={pending}
+                            onClick={() => {
+                                void (async () => {
+                                    const text = joinInvitationLinks(
+                                        selectedFamilies().map((family) => family.invitationUrl),
+                                    );
+                                    const ok = await copyPlainText(text);
+                                    reportCopy(ok, text.length === 0);
+                                })();
+                            }}
+                        >
+                            {adminCopy.batch.copyLinks}
+                        </button>
+                        <button
+                            type="button"
+                            className={admin.btnSecondary}
+                            disabled={pending}
+                            onClick={() => {
+                                startTransition(async () => {
+                                    const result = await downloadAdminExport({
+                                        familyIds: selection.selectedIds,
+                                    });
+                                    setNotice(result.ok ? adminCopy.batch.downloaded : result.error);
+                                });
+                            }}
+                        >
+                            {adminCopy.batch.exportSelected}
+                        </button>
+                        <button
+                            type="button"
+                            className={admin.btnSecondary}
+                            disabled={pending}
+                            onClick={() => {
+                                if (!window.confirm(adminCopy.batch.disableConfirm(selection.count))) {
+                                    return;
+                                }
+                                startTransition(async () => {
+                                    const result = await setFamiliesEnabledBatchAction(
+                                        selection.selectedIds,
+                                        false,
+                                    );
+                                    if (!result.ok) {
+                                        setNotice(result.error);
+                                        return;
+                                    }
+                                    setNotice(adminCopy.batch.updated(result.updated));
+                                    selection.clear();
+                                });
+                            }}
+                        >
+                            {adminCopy.batch.disable}
+                        </button>
+                        <button
+                            type="button"
+                            className={admin.btnSecondary}
+                            disabled={pending}
+                            onClick={() => {
+                                if (!window.confirm(adminCopy.batch.enableConfirm(selection.count))) {
+                                    return;
+                                }
+                                startTransition(async () => {
+                                    const result = await setFamiliesEnabledBatchAction(
+                                        selection.selectedIds,
+                                        true,
+                                    );
+                                    if (!result.ok) {
+                                        setNotice(result.error);
+                                        return;
+                                    }
+                                    setNotice(adminCopy.batch.updated(result.updated));
+                                    selection.clear();
+                                });
+                            }}
+                        >
+                            {adminCopy.batch.enable}
+                        </button>
+                    </AdminBatchBar>
                 </>
             )}
         </>

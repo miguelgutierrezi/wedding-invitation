@@ -186,7 +186,9 @@ export async function getAnalyticsSnapshot(): Promise<AnalyticsSnapshot> {
     };
 }
 
-export async function listAllGuests(): Promise<GuestListItem[]> {
+export async function listAllGuests(options?: {
+    includeInactive?: boolean;
+}): Promise<GuestListItem[]> {
     const supabase = createAdminClient();
 
     const [
@@ -217,8 +219,11 @@ export async function listAllGuests(): Promise<GuestListItem[]> {
 
     const items = (guests ?? []).flatMap((guest) => {
         const family = familyById.get(guest.family_id);
+        if (!family) {
+            return [];
+        }
         if (
-            !family ||
+            !options?.includeInactive &&
             !isActiveInvitation({
                 isEnabled: family.is_enabled,
                 status: family.status,

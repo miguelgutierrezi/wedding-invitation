@@ -4,8 +4,9 @@ import {revalidatePath} from "next/cache";
 
 import {requireAdmin} from "@/lib/auth/require-admin";
 import {adminMediaPreviewUrlsSchema, updateMediaQrWindowSchema,} from "@/lib/validation/guest-media";
+import {adminBatchIdListSchema} from "@/lib/validation/admin-batch";
 import {createAdminMediaPreviewUrls} from "@/services/admin/guest-media";
-import {deleteMediaUpload, reviewMediaUpload,} from "@/services/media/uploads";
+import {deleteMediaUpload, reviewMediaUpload, reviewMediaUploads,} from "@/services/media/uploads";
 import {rotateEventMediaQrToken, setEventMediaQrEnabled, updateEventMediaQrWindow,} from "@/services/media/qr-access";
 import {reconcileGuestMedia} from "@/services/media/cleanup";
 
@@ -20,6 +21,26 @@ export async function rejectMediaUploadAction(uploadId: string) {
     await requireAdmin();
     const result = await reviewMediaUpload(uploadId, "rejected");
     revalidatePath("/admin/photos");
+    return result;
+}
+
+export async function reviewMediaUploadsBatchAction(
+    uploadIds: string[],
+    status: "approved" | "rejected",
+) {
+    await requireAdmin();
+    const parsed = adminBatchIdListSchema.safeParse(uploadIds);
+    if (!parsed.success) {
+        return {
+            ok: false as const,
+            error: parsed.error.issues[0]?.message ?? "Selección inválida.",
+        };
+    }
+
+    const result = await reviewMediaUploads(parsed.data, status);
+    if (result.ok) {
+        revalidatePath("/admin/photos");
+    }
     return result;
 }
 

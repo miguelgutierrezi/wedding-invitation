@@ -253,16 +253,59 @@ export function parseAdminExportKind(value: string | null): AdminExportKind {
     return "full";
 }
 
+export type AdminExportScope = {
+    familyIds?: string[];
+    guestIds?: string[];
+};
+
+export function applyExportScope(
+    guests: GuestListItem[],
+    families: AdminFamilyListItem[],
+    scope?: AdminExportScope,
+): {guests: GuestListItem[]; families: AdminFamilyListItem[]} {
+    const hasFamilyScope = Boolean(scope?.familyIds?.length);
+    const hasGuestScope = Boolean(scope?.guestIds?.length);
+
+    if (!hasFamilyScope && !hasGuestScope) {
+        return {
+            families: filterActiveFamilies(families),
+            guests: filterGuestsOfActiveFamilies(guests, families),
+        };
+    }
+
+    let nextFamilies = families;
+    let nextGuests = guests;
+
+    if (scope?.familyIds?.length) {
+        const familyIds = new Set(scope.familyIds);
+        nextFamilies = nextFamilies.filter((family) => familyIds.has(family.id));
+        nextGuests = nextGuests.filter((guest) => familyIds.has(guest.familyId));
+    }
+
+    if (scope?.guestIds?.length) {
+        const guestIds = new Set(scope.guestIds);
+        nextGuests = nextGuests.filter((guest) => guestIds.has(guest.id));
+        const familyIds = new Set(nextGuests.map((guest) => guest.familyId));
+        nextFamilies = nextFamilies.filter((family) => familyIds.has(family.id));
+    }
+
+    return {guests: nextGuests, families: nextFamilies};
+}
+
 export function buildExportSheetsForKind(
     kind: AdminExportKind,
     input: {
         guests: GuestListItem[];
         families: AdminFamilyListItem[];
         snapshot: AnalyticsSnapshot;
+        scope?: AdminExportScope;
     },
 ): ExportSheet[] {
-    const families = filterActiveFamilies(input.families);
-    const guests = filterGuestsOfActiveFamilies(input.guests, input.families);
+    const {guests, families} = applyExportScope(
+        input.guests,
+        input.families,
+        input.scope,
+    );
     const scoped = {...input, guests, families};
 
     if (kind === "attending") {

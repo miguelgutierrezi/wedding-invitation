@@ -88,3 +88,20 @@ export function formatEventDayMonth(
         timezone,
     );
 }
+
+/** Whole days remaining until `iso` (negative if already past). */
+export function daysUntilDeadline(
+    iso: string | null | undefined,
+    now = new Date(),
+): number | null {
+    if (!iso) {
+        return null;
+    }
+
+    const target = new Date(iso);
+    if (Number.isNaN(target.getTime())) {
+        return null;
+    }
+
+    return Math.ceil((target.getTime() - now.getTime()) / 86_400_000);
+}

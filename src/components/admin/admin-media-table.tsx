@@ -7,9 +7,14 @@ import {
     createAdminMediaPreviewUrlsAction,
     deleteMediaUploadAction,
     rejectMediaUploadAction,
+    reviewMediaUploadsBatchAction,
 } from "@/actions/admin/guest-media";
+import {AdminBatchBar} from "@/components/admin/admin-batch-bar";
+import {AdminRowCheckbox} from "@/components/admin/admin-row-checkbox";
 import {admin} from "@/components/admin/admin-ui";
+import {useAdminSelection} from "@/hooks/use-admin-selection";
 import {adminCopy, mediaStatusLabel} from "@/lib/admin/admin-copy";
+import {pageSelectionState} from "@/lib/admin/selection";
 import {isReviewableStatus} from "@/lib/media/status";
 import type {AdminMediaListItem} from "@/types/guest-media";
 
@@ -25,6 +30,10 @@ type AdminMediaTableProps = {
 
 export function AdminMediaTable({items}: AdminMediaTableProps) {
     const [pending, startTransition] = useTransition();
+    const [notice, setNotice] = useState<string | null>(null);
+    const selection = useAdminSelection();
+    const itemIds = items.map((item) => item.id);
+    const pageState = pageSelectionState(itemIds, selection.selected);
     const previewableIds = useMemo(
         () =>
             items
@@ -68,6 +77,29 @@ export function AdminMediaTable({items}: AdminMediaTableProps) {
     const previewsLoading =
         requestKey.length > 0 && previewCache.key !== requestKey;
 
+    function reviewSelected(status: "approved" | "rejected") {
+        if (status === "rejected" && !window.confirm(adminCopy.batch.rejectConfirm(selection.count))) {
+            return;
+        }
+        startTransition(async () => {
+            const result = await reviewMediaUploadsBatchAction(
+                selection.selectedIds,
+                status,
+            );
+            if (!result.ok) {
+                setNotice(result.error);
+                return;
+            }
+            const skipped = result.data.skipped;
+            const parts = [adminCopy.batch.updated(result.data.updated)];
+            if (skipped > 0) {
+                parts.push(adminCopy.batch.skipped(skipped));
+            }
+            setNotice(parts.join(" "));
+            selection.clear();
+        });
+    }
+
     if (items.length === 0) {
         return (
             <p className={`mt-8 ${admin.muted}`}>Aún no hay archivos cargados.</p>
@@ -76,14 +108,25 @@ export function AdminMediaTable({items}: AdminMediaTableProps) {
 
     return (
         <>
-            <ul className="mt-8 grid gap-3 lg:hidden">
+            {notice ? (
+                <p className={`mt-6 ${admin.muted}`} role="status">
+                    {notice}
+                </p>
+            ) : null}
+            <ul className={`mt-8 grid gap-3 lg:hidden ${selection.count > 0 ? "pb-36" : ""}`}>
                 {items.map((item) => {
                     const previewUrl = previewUrls[item.id];
                     const canPreview = isReviewableStatus(item.status);
 
                     return (
                         <li key={item.id} className={`${admin.card} flex flex-col gap-3 p-4`}>
-                            <div className="flex gap-3">
+                            <div className="flex items-start gap-1">
+                                <AdminRowCheckbox
+                                    checked={selection.isSelected(item.id)}
+                                    label={`Seleccionar ${item.originalFilename}`}
+                                    onChange={() => selection.toggle(item.id)}
+                                />
+                                <div className="flex min-w-0 flex-1 gap-3">
                                 {previewUrl && item.mediaType === "image" ? (
                                     // eslint-disable-next-line @next/next/no-img-element
                                     <img
@@ -118,6 +161,7 @@ export function AdminMediaTable({items}: AdminMediaTableProps) {
                                     {canPreview && previewsLoading && !previewUrl ? (
                                         <span className="text-cover-cta-fg/50">…</span>
                                     ) : null}
+                                </div>
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 gap-2">
@@ -162,10 +206,18 @@ export function AdminMediaTable({items}: AdminMediaTableProps) {
                     );
                 })}
             </ul>
-            <div className={`mt-8 hidden lg:block ${admin.tableShell}`}>
+            <div className={`mt-8 hidden lg:block ${admin.tableShell} ${selection.count > 0 ? "mb-28" : ""}`}>
                 <table className="min-w-full text-left text-sm font-[family-name:var(--font-timer)]">
                     <thead className={admin.tableHead}>
                     <tr>
+                        <th className="w-12 px-2 py-3">
+                            <AdminRowCheckbox
+                                checked={pageState === "all"}
+                                indeterminate={pageState === "some"}
+                                label="Seleccionar esta página"
+                                onChange={(checked) => selection.setMany(itemIds, checked)}
+                            />
+                        </th>
                         <th className="px-4 py-3 font-medium">Vista</th>
                         <th className="px-4 py-3 font-medium">Archivo</th>
                         <th className="px-4 py-3 font-medium">Origen</th>
@@ -181,6 +233,13 @@ export function AdminMediaTable({items}: AdminMediaTableProps) {
 
                         return (
                             <tr key={item.id} className={admin.tableRow}>
+                                <td className="px-2 py-3">
+                                    <AdminRowCheckbox
+                                        checked={selection.isSelected(item.id)}
+                                        label={`Seleccionar ${item.originalFilename}`}
+                                        onChange={() => selection.toggle(item.id)}
+                                    />
+                                </td>
                                 <td className="px-4 py-3">
                                     {previewUrl && item.mediaType === "image" ? (
                                         // eslint-disable-next-line @next/next/no-img-element
@@ -269,6 +328,29 @@ export function AdminMediaTable({items}: AdminMediaTableProps) {
                     </tbody>
                 </table>
             </div>
+            <AdminBatchBar
+                count={selection.count}
+                visibleCount={itemIds.length}
+                onClear={selection.clear}
+                onSelectVisible={() => selection.setMany(itemIds, true)}
+            >
+                <button
+                    type="button"
+                    className={admin.btnSecondary}
+                    disabled={pending}
+                    onClick={() => reviewSelected("approved")}
+                >
+                    {adminCopy.batch.approve}
+                </button>
+                <button
+                    type="button"
+                    className={admin.btnSecondary}
+                    disabled={pending}
+                    onClick={() => reviewSelected("rejected")}
+                >
+                    {adminCopy.batch.reject}
+                </button>
+            </AdminBatchBar>
         </>
     );
 }

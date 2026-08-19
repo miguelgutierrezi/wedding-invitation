@@ -30,6 +30,10 @@ export type AuditEventAction =
     | "invitation_opened"
     | "rsvp_submitted"
     | "rsvp_updated"
+    | "family_created"
+    | "family_updated"
+    | "family_deleted"
+    | "invitation_token_regenerated"
     | "invitation_disabled"
     | "guest_limit_updated"
     | (string & {});

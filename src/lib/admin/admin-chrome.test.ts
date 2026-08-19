@@ -23,8 +23,9 @@ describe("compact admin chrome paths", () => {
         expect(showAdminNewFamilyFab("/admin/families/new")).toBe(false);
     });
 
-    it("shows the back arrow only on the create page", () => {
+    it("shows the back arrow on create and family detail", () => {
         expect(showAdminBackToFamilies("/admin/families/new")).toBe(true);
+        expect(showAdminBackToFamilies("/admin/families/abc-123")).toBe(true);
         expect(showAdminBackToFamilies("/admin/families")).toBe(false);
     });
 });

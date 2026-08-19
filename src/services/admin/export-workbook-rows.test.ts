@@ -44,6 +44,9 @@ const familyBase: AdminFamilyListItem = {
     willAttend: true,
     submittedAt: "2026-08-02T12:00:00.000Z",
     updatedAt: "2026-08-02T12:05:00.000Z",
+    hasPendingName: false,
+    usesBus: true,
+    hasDietary: true,
 };
 
 const snapshotBase: AnalyticsSnapshot = {
@@ -197,5 +200,32 @@ describe("export workbook rows", () => {
         expect(guestsSheet?.rows[0]?.[0]).toBe("Ana Pérez");
         expect(familiesSheet?.rows).toHaveLength(1);
         expect(familiesSheet?.rows[0]?.[0]).toBe("Familia Pérez");
+    });
+
+    it("includes an explicitly selected disabled family in a scoped export", () => {
+        const disabledFamily: AdminFamilyListItem = {
+            ...familyBase,
+            id: "f-off",
+            displayName: "Familia apagada",
+            status: "disabled",
+            isEnabled: false,
+        };
+        const disabledGuest: GuestListItem = {
+            ...guestBase,
+            id: "g-off",
+            familyId: "f-off",
+            familyName: "Familia apagada",
+            fullName: "Invitado apagado",
+        };
+
+        const sheets = buildExportSheetsForKind("full", {
+            guests: [guestBase, disabledGuest],
+            families: [familyBase, disabledFamily],
+            snapshot: snapshotBase,
+            scope: {familyIds: ["f-off"]},
+        });
+        const familiesSheet = sheets.find((sheet) => sheet.name === "Familias");
+        expect(familiesSheet?.rows).toHaveLength(1);
+        expect(familiesSheet?.rows[0]?.[0]).toBe("Familia apagada");
     });
 });

@@ -1,16 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import {useMemo, useState} from "react";
+import {useMemo, useState, useTransition} from "react";
 
+import {AdminBatchBar} from "@/components/admin/admin-batch-bar";
 import {AdminExpandableFilters} from "@/components/admin/admin-expandable-filters";
 import {AdminFilterChips} from "@/components/admin/admin-filter-chips";
 import {AdminPagination} from "@/components/admin/admin-pagination";
+import {AdminRowCheckbox} from "@/components/admin/admin-row-checkbox";
 import {GuestAttendanceBadge} from "@/components/admin/admin-status-badge";
 import {AdminSelect} from "@/components/admin/admin-select";
 import {AdminSortHeader} from "@/components/admin/admin-sort-header";
 import {admin} from "@/components/admin/admin-ui";
+import {useAdminSelection} from "@/hooks/use-admin-selection";
+import {useScrollOnPageChange} from "@/hooks/use-scroll-on-page-change";
 import {adminCopy} from "@/lib/admin/admin-copy";
+import {joinGuestContactLines} from "@/lib/admin/batch-clipboard";
+import {copyPlainText, downloadAdminExport} from "@/lib/admin/download-export";
+import {pageSelectionState} from "@/lib/admin/selection";
 import {formatTransportBoardingPoint} from "@/config/transport";
 import {nextSortDir, paginateItems, sortItems} from "@/lib/admin/list-view";
 import {
@@ -80,6 +87,10 @@ export function AdminGuestsBrowser({
                                        initialFilters,
                                    }: AdminGuestsBrowserProps) {
     const [filters, setFilters] = useState(initialFilters);
+    const [notice, setNotice] = useState<string | null>(null);
+    const [batchPending, startTransition] = useTransition();
+    const selection = useAdminSelection();
+    const listTopRef = useScrollOnPageChange(filters.page);
     const chips = guestsFilterChips(filters);
     const sort = filters.sort || "fullName";
     const visibleGuests = useMemo(() => {
@@ -91,6 +102,22 @@ export function AdminGuestsBrowser({
         );
     }, [filters, guests, sort]);
     const page = paginateItems(visibleGuests, filters.page);
+    const pageIds = page.items.map((guest) => guest.id);
+    const pageState = pageSelectionState(pageIds, selection.selected);
+    const visibleIds = visibleGuests.map((guest) => guest.id);
+
+    function selectedGuests() {
+        const ids = new Set(selection.selectedIds);
+        return guests.filter((guest) => ids.has(guest.id));
+    }
+
+    function reportCopy(text: string, ok: boolean) {
+        if (text.length === 0) {
+            setNotice(adminCopy.batch.noneCopied);
+            return;
+        }
+        setNotice(ok ? adminCopy.batch.copied : adminCopy.batch.copyEmpty);
+    }
     const attending = visibleGuests.filter(
         (guest) => guest.attendanceStatus === "attending",
     );
@@ -122,16 +149,23 @@ export function AdminGuestsBrowser({
 
     return (
         <>
-            <div className="space-y-4">
+            <div ref={listTopRef} className="scroll-mt-32 space-y-4">
                 <p className={`hidden lg:block ${admin.muted}`}>
                     Resumen invitado por invitado. En esta vista: {visibleGuests.length} ·
                     Asisten {attending.length} · No asisten {notAttending.length} ·
                     Pendientes {pending.length} · Bus {withBus.length}
+                    {page.totalPages > 1
+                        ? ` · ${adminCopy.list.showing(page.from, page.to, page.total)}`
+                        : ""}
                 </p>
                 <dl className="grid grid-cols-2 gap-2 lg:hidden">
-                    <div className={`${admin.panel} px-3 py-2`}>
+                    <div className={`${admin.panel} col-span-2 px-3 py-2`}>
                         <dt className={admin.eyebrow}>En esta vista</dt>
-                        <dd className="text-lg font-bold tabular-nums">{visibleGuests.length}</dd>
+                        <dd className="text-lg font-bold tabular-nums">
+                            {page.totalPages > 1
+                                ? adminCopy.list.showing(page.from, page.to, page.total)
+                                : visibleGuests.length}
+                        </dd>
                     </div>
                     <div className={`${admin.panel} px-3 py-2`}>
                         <dt className={admin.eyebrow}>Asisten</dt>
@@ -251,6 +285,11 @@ export function AdminGuestsBrowser({
                     Familias
                 </Link>
             </div>
+            {notice ? (
+                <p className={`mt-4 ${admin.muted}`} role="status">
+                    {notice}
+                </p>
+            ) : null}
 
             {guests.length === 0 ? (
                 <p className={`mt-8 ${admin.muted}`}>
@@ -262,25 +301,31 @@ export function AdminGuestsBrowser({
                 </p>
             ) : (
                 <>
-                    <ul className="mt-6 grid gap-3 lg:hidden">
+                    <ul className={`mt-6 grid gap-3 lg:hidden ${selection.count > 0 ? "pb-36" : ""}`}>
                         {page.items.map((guest) => (
-                            <li key={guest.id} className={`${admin.card} flex flex-col gap-3 p-4`}>
-                                <div className="flex items-start justify-between gap-3">
-                                    <div className="min-w-0">
-                                        <p className="font-bold text-cover-cta-fg">{guest.fullName}</p>
-                                        <p className={`mt-0.5 ${admin.muted}`}>{guest.familyName}</p>
-                                        {guest.isPrimaryContact ? (
-                                            <p className="mt-1 text-xs text-cover-cta-fg/65">
-                                                {adminCopy.guest.primaryContact}
-                                            </p>
-                                        ) : null}
-                                        {guest.needsNameConfirmation ? (
-                                            <p className="mt-1 text-xs text-cover-cta-fg/65">
-                                                falta el nombre
-                                            </p>
-                                        ) : null}
+                            <li key={guest.id} className={`${admin.card} flex items-start gap-1 p-2`}>
+                                <AdminRowCheckbox
+                                    checked={selection.isSelected(guest.id)}
+                                    label={`Seleccionar ${guest.fullName}`}
+                                    onChange={() => selection.toggle(guest.id)}
+                                />
+                                <div className="flex min-w-0 flex-1 flex-col gap-3 overflow-hidden p-2">
+                                <div className="min-w-0">
+                                    <p className="break-words font-bold text-cover-cta-fg">{guest.fullName}</p>
+                                    <p className={`mt-0.5 ${admin.muted}`}>{guest.familyName}</p>
+                                    {guest.isPrimaryContact ? (
+                                        <p className="mt-1 text-xs text-cover-cta-fg/65">
+                                            {adminCopy.guest.primaryContact}
+                                        </p>
+                                    ) : null}
+                                    {guest.needsNameConfirmation ? (
+                                        <p className="mt-1 text-xs text-cover-cta-fg/65">
+                                            falta el nombre
+                                        </p>
+                                    ) : null}
+                                    <div className="mt-2">
+                                        <GuestAttendanceBadge status={guest.attendanceStatus}/>
                                     </div>
-                                    <GuestAttendanceBadge status={guest.attendanceStatus}/>
                                 </div>
                                 <p className={admin.muted}>
                                     {guest.needsTransport
@@ -300,13 +345,22 @@ export function AdminGuestsBrowser({
                                 >
                                     Ver familia
                                 </Link>
+                                </div>
                             </li>
                         ))}
                     </ul>
-                    <div className={`mt-8 hidden lg:block ${admin.tableShell}`}>
+                    <div className={`mt-8 hidden lg:block ${admin.tableShell} ${selection.count > 0 ? "mb-28" : ""}`}>
                         <table className="min-w-full text-left text-sm font-[family-name:var(--font-timer)]">
                             <thead className={admin.tableHead}>
                             <tr>
+                                <th className="w-12 px-2 py-3">
+                                    <AdminRowCheckbox
+                                        checked={pageState === "all"}
+                                        indeterminate={pageState === "some"}
+                                        label="Seleccionar esta página"
+                                        onChange={(checked) => selection.setMany(pageIds, checked)}
+                                    />
+                                </th>
                                 <AdminSortHeader
                                     label="Invitado"
                                     column="fullName"
@@ -409,6 +463,13 @@ export function AdminGuestsBrowser({
                             <tbody>
                             {page.items.map((guest) => (
                                 <tr key={guest.id} className={admin.tableRow}>
+                                    <td className="px-2 py-3">
+                                        <AdminRowCheckbox
+                                            checked={selection.isSelected(guest.id)}
+                                            label={`Seleccionar ${guest.fullName}`}
+                                            onChange={() => selection.toggle(guest.id)}
+                                        />
+                                    </td>
                                     <td className="px-4 py-3 font-medium text-cover-cta-fg">
                                         {guest.fullName}
                                         {guest.isPrimaryContact ? (
@@ -466,6 +527,56 @@ export function AdminGuestsBrowser({
                             updateFilters({...filters, page: nextPage})
                         }
                     />
+                    <AdminBatchBar
+                        count={selection.count}
+                        visibleCount={visibleIds.length}
+                        onClear={selection.clear}
+                        onSelectVisible={() => selection.setMany(visibleIds, true)}
+                    >
+                        <button
+                            type="button"
+                            className={admin.btnSecondary}
+                            disabled={batchPending}
+                            onClick={() => {
+                                void (async () => {
+                                    const text = joinGuestContactLines(selectedGuests(), "phone");
+                                    const ok = await copyPlainText(text);
+                                    reportCopy(text, ok);
+                                })();
+                            }}
+                        >
+                            {adminCopy.batch.copyPhones}
+                        </button>
+                        <button
+                            type="button"
+                            className={admin.btnSecondary}
+                            disabled={batchPending}
+                            onClick={() => {
+                                void (async () => {
+                                    const text = joinGuestContactLines(selectedGuests(), "email");
+                                    const ok = await copyPlainText(text);
+                                    reportCopy(text, ok);
+                                })();
+                            }}
+                        >
+                            {adminCopy.batch.copyEmails}
+                        </button>
+                        <button
+                            type="button"
+                            className={admin.btnSecondary}
+                            disabled={batchPending}
+                            onClick={() => {
+                                startTransition(async () => {
+                                    const result = await downloadAdminExport({
+                                        guestIds: selection.selectedIds,
+                                    });
+                                    setNotice(result.ok ? adminCopy.batch.downloaded : result.error);
+                                });
+                            }}
+                        >
+                            {adminCopy.batch.exportSelected}
+                        </button>
+                    </AdminBatchBar>
                 </>
             )}
         </>

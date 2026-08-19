@@ -263,8 +263,9 @@ Admin must not drift into a separate purple/gray SaaS look. Use `admin` tokens f
 nav, and metrics. Header uses `bg-accent` with cream type/pills; page shell uses `bg-cream-figma`.
 
 Compact admin (viewport `< lg`): hamburger drawer is the same accent band as the header. New-family **+** uses
-`.admin-new-family-fab` so iPad Safari keeps it at the visible bottom (not mid-list). Create-family screen: cream back
-chevron to `/admin/families`. Family/guest/photo **cards** replace tables until `lg`.
+`.admin-new-family-fab` so iPad Safari keeps it at the visible bottom (not mid-list). Back chevron on nueva familia
+**and** family detail. Family list chips (sin abrir / bus / dieta). Family detail: actividad reciente.
+Family/guest/photo **cards** replace tables until `lg`.
 
 Family create/edit: each guest row includes **nombre + género** (required). Gender powers the singular cover greeting
 only; it is not shown on the public invitation body.

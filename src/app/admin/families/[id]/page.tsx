@@ -1,12 +1,16 @@
 import {notFound} from "next/navigation";
 
+import {AdminFamilyActivity} from "@/components/admin/admin-family-activity";
+import {AdminFamilyOpsChips} from "@/components/admin/admin-family-ops-chips";
 import {AdminShell} from "@/components/admin/admin-shell";
 import {admin} from "@/components/admin/admin-ui";
 import {FamilyStatusBadge} from "@/components/admin/admin-status-badge";
 import {FamilyDetailForm} from "@/components/admin/family-detail-form";
 import {adminCopy} from "@/lib/admin/admin-copy";
+import {familyOperationChips} from "@/lib/admin/family-ops";
 import {formatEventDateTimeShort} from "@/lib/datetime/event-timezone";
 import {formatTransportBoardingPoint} from "@/config/transport";
+import {listFamilyActivity} from "@/services/admin/family-activity";
 import {getFamilyById} from "@/services/admin/families";
 
 type FamilyDetailPageProps = {
@@ -27,11 +31,16 @@ export default async function AdminFamilyDetailPage({
                                                         params,
                                                     }: FamilyDetailPageProps) {
     const {id} = await params;
-    const family = await getFamilyById(id);
+    const [family, activity] = await Promise.all([
+        getFamilyById(id),
+        listFamilyActivity(id),
+    ]);
 
     if (!family) {
         notFound();
     }
+
+    const opsChips = familyOperationChips(family);
 
     return (
         <AdminShell title={family.displayName}>
@@ -41,6 +50,11 @@ export default async function AdminFamilyDetailPage({
                     <p className={`mt-1 ${admin.body}`}>
                         <FamilyStatusBadge status={family.status}/>
                     </p>
+                    {opsChips.length > 0 ? (
+                        <div className="mt-2">
+                            <AdminFamilyOpsChips chips={opsChips}/>
+                        </div>
+                    ) : null}
                 </div>
                 <div>
                     <p className={admin.eyebrow}>Última actualización</p>
@@ -109,6 +123,10 @@ export default async function AdminFamilyDetailPage({
                         </li>
                     ))}
                 </ul>
+            </div>
+
+            <div className="mb-8">
+                <AdminFamilyActivity items={activity}/>
             </div>
 
             <div className={`max-w-xl ${admin.card} p-6 sm:p-8`}>

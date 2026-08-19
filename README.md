@@ -241,7 +241,8 @@ interacción en el navegador (countdown, galería, formulario RSVP, música, enl
 ## Flujo de trabajo
 
 Antes de implementar, leer `AGENTS.md` y `docs/current-phase.md`. No implementar fases futuras sin autorización en
-`current-phase.md` o petición explícita del usuario.
+`current-phase.md` o petición explícita del usuario. Cada cambio de comportamiento debe incluir tests y docs; no
+declarar listo sin `pnpm lint`, `pnpm typecheck`, `pnpm test` y `pnpm build` (`AGENTS.md`, Required checks).
 
 Para cambios de copy, media o layout de invitación, preferir `wedding.ts` + `docs/invitation-ui.md`. Nuevos puntos de
 bus requieren migración SQL + `transport.ts`.

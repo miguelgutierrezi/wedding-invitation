@@ -1,6 +1,7 @@
 # Repository instructions
 
-Follow `/AGENTS.md` for permanent engineering and workflow rules.
+Follow `/AGENTS.md` for permanent engineering and workflow rules (including the completion gate: tests + docs +
+`pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`).
 
 Before changing code, read:
 
@@ -16,8 +17,9 @@ sections as authorization to implement future phases.
 
 Couple display names are **Nychol** and **Miguel**. Bus RSVP requires a boarding point id (`modelia` | `villa_sonia`)
 kept in sync across `wedding.ts`, `transport.ts`, Zod, and SQL migrations. Ceremony maps URLs live in
-`weddingConfig.ceremony`; do not invent unfinished logistics (inspiration links, bus departure times). Use pnpm and run
-the relevant lint, typecheck, build, and test commands before claiming success.
+`weddingConfig.ceremony`; do not invent unfinished logistics (inspiration links, bus departure times). Use pnpm and do
+not claim success until tests and docs for the change are updated and `pnpm lint`, `pnpm typecheck`, `pnpm test`, and
+`pnpm build` have been run (see `AGENTS.md` **Required checks**).
 
 Presentation copy and media paths for the invitation belong in `src/config/wedding.ts` (see `docs/invitation-ui.md`).
 Admin shared styles: `src/components/admin/admin-ui.ts`. Edge auth for `/admin`: `src/proxy.ts` (Next.js 16 proxy

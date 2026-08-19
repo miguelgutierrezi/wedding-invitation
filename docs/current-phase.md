@@ -39,7 +39,8 @@ desktop bar + tables.
 
 - `src/components/admin/admin-chrome.tsx`: hamburger, slide-in drawer from the right (`bg-accent`, cream pills like the
   desktop nav), floating **+** (`bg-accent`, white Times plus, no olive border) except on `/admin/families/new`, back
-  arrow to `/admin/families` on create **and** family detail.
+  arrow to `/admin/families` on create **and** family detail. FAB is portaled to `document.body` with `bottom` +
+  visualViewport inset (iPad Safari and Chrome).
 - Lists (families, guests, photos): stacked cards below `lg`; tables from `lg` up. Primary/secondary actions are full
   width below `lg`.
 - Path helpers + tests: `src/lib/admin/admin-chrome.ts` (`isAdminNavActive`, FAB/back visibility).

@@ -66,7 +66,9 @@
 html {
     width: 100%;
     max-width: 100%;
-    overflow-x: hidden;
+    /* clip (not hidden): hidden + visible-y computes to a scrollport and iPad
+       Safari/Chrome then treat position:fixed as absolute. */
+    overflow-x: clip;
 }
 
 body {
@@ -76,7 +78,7 @@ body {
     background: var(--background);
     color: var(--foreground);
     font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
-    overflow-x: hidden;
+    overflow-x: clip;
 }
 
 /* Prevent common media / flex / grid overflow on mobile */
@@ -96,38 +98,26 @@ img[data-nimg="fill"] {
     width: 100%;
     max-width: 100%;
     min-width: 0;
-    overflow-x: hidden;
+    overflow-x: clip;
 }
 
 /*
- * Admin “+” FAB: do not use Tailwind `bottom-[max(1.25rem,env(...))]` — the comma
- * can drop `bottom`, and iPad Safari then vertically centers a `position:fixed`
- * flex child. Pin with `svh`/`dvh` from the top of the visual viewport instead.
+ * Admin “+” FAB: pin with `bottom` in this file (not Tailwind `max()` with a
+ * comma). `flex:none` + explicit inset so body `display:flex` cannot center it
+ * on iPad Safari/Chrome.
  */
 .admin-new-family-fab {
     position: fixed;
     z-index: 40;
-    right: 1rem;
+    flex: none;
+    align-self: auto;
+    right: max(1rem, env(safe-area-inset-right, 0px));
     left: auto;
     top: auto;
-    bottom: 1.25rem;
+    bottom: calc(
+        1.25rem + env(safe-area-inset-bottom, 0px) + var(--admin-vv-bottom, 0px)
+    );
     margin: 0;
-}
-
-@supports (height: 100dvh) {
-    .admin-new-family-fab {
-        top: calc(100dvh - 3.5rem - 1.25rem);
-        bottom: auto;
-    }
-}
-
-@supports (height: 100svh) {
-    .admin-new-family-fab {
-        top: calc(
-                100svh - 3.5rem - max(1.25rem, env(safe-area-inset-bottom, 0px))
-        );
-        bottom: auto;
-    }
 }
 
 @media (min-width: 1024px) {

@@ -5,9 +5,11 @@ import {usePathname} from "next/navigation";
 import {useEffect, useId, useState} from "react";
 
 import {signOutAdminAction} from "@/actions/admin/auth";
+import {AdminNewFamilyFab} from "@/components/admin/admin-new-family-fab";
 import {admin} from "@/components/admin/admin-ui";
-import {adminCopy} from "@/lib/admin/admin-copy";
+import {useVisualViewportBottom} from "@/hooks/use-visual-viewport-bottom";
 import {isAdminNavActive, showAdminBackToFamilies, showAdminNewFamilyFab,} from "@/lib/admin/admin-chrome";
+import {adminCopy} from "@/lib/admin/admin-copy";
 
 const navItems = [
     {href: "/admin", label: adminCopy.nav.summary},
@@ -55,6 +57,7 @@ export function AdminChrome({title, email}: AdminChromeProps) {
     const menuId = useId();
     const showFab = showAdminNewFamilyFab(pathname);
     const showBack = showAdminBackToFamilies(pathname);
+    useVisualViewportBottom();
 
     function closeMenu() {
         setOpen(false);
@@ -245,18 +248,7 @@ export function AdminChrome({title, email}: AdminChromeProps) {
                 </div>
             </div>
 
-            {showFab ? (
-                <Link
-                    href="/admin/families/new"
-                    prefetch={false}
-                    className="admin-new-family-fab inline-flex size-14 items-center justify-center rounded-full bg-accent font-[family-name:var(--font-timer)] text-3xl leading-none text-white shadow-[0_8px_20px_rgba(69,68,17,0.16)] transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none active:scale-[0.98]"
-                    aria-label={adminCopy.nav.newFamily}
-                >
-          <span aria-hidden="true" className="translate-y-[-1px]">
-            +
-          </span>
-                </Link>
-            ) : null}
+            {showFab ? <AdminNewFamilyFab /> : null}
         </>
     );
 }

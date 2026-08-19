@@ -297,7 +297,11 @@ Do not commit:
 
 ## Required checks
 
-Before declaring a task complete, run the relevant checks:
+A task is not complete until **all** of the following have been done (or an explicit skip is reported with a reason):
+
+1. Tests for the change (see **Documentation and tests** below).
+2. Docs for the change (same section).
+3. These commands, in this order:
 
 ```bash
 pnpm lint
@@ -306,19 +310,58 @@ pnpm test
 pnpm build
 ```
 
-Run tests when test coverage exists (`pnpm test`).
-
 Do not claim success if a check was not executed.
 
 Report:
 
 - Files created.
 - Files modified.
+- Documentation updated (or why none applied).
+- Tests added or extended (or why none applied).
 - Dependencies added.
 - Commands executed.
 - Validation results.
 - Known limitations.
 - Recommended next step.
+
+## Documentation and tests
+
+Treat docs and tests as part of the same delivery as lint/typecheck/test/build. Do not ship a behavior, API, schema, or
+workflow change that only lives in code.
+
+### Tests
+
+- Add or extend automated tests in the same change as the code.
+- Prefer Vitest next to the logic (`*.test.ts` beside the module, or under the same folder).
+- Extract branching rules, parsers, formatters, and viewport/layout math into plain functions so they can be tested
+  without rendering the full UI.
+- Cover the regression you just fixed (happy path + the failure case).
+- Do not leave “tests later” for a follow-up unless the user asked for docs-only or copy-only work.
+- Skip new tests only for: comment/typo edits, docs-only edits, or generated lockfile-only edits. Say so in the
+  completion report.
+
+### Documentation
+
+Update the living docs in the same change so they match the repository (not a historical handoff).
+
+| If the change touches… | Update |
+| --- | --- |
+| What is implemented / authorized / still out of scope | `docs/current-phase.md` (snapshot + relevant “Completed” section; `Last reviewed` date) |
+| Technical boundaries, stack, data flow, env, security | `docs/architecture.md` |
+| Public invitation layout, tokens, assets, maps, music | `docs/invitation-ui.md` |
+| Product behavior or long-term requirements | `docs/product-spec.md` |
+| Local setup, scripts, or how a human runs the app | `README.md` |
+| Permanent agent/engineering workflow | `AGENTS.md` |
+| Production smoke / go-live steps | `docs/go-live-checklist.md` |
+
+Rules:
+
+- Do not invent product scope in docs that was not requested.
+- If two docs would conflict, follow the precedence list below and fix the lower-precedence file or report the
+  conflict.
+- A one-line snapshot update in `docs/current-phase.md` is enough when the detailed convention already lives in
+  `invitation-ui.md` or `architecture.md`.
+- Skip extra docs only for the same cases as skipping tests (typos, comments, lockfile). Say so in the report.
 
 ## Agent workflow
 
@@ -337,7 +380,7 @@ During implementation:
 2. Preserve working behavior.
 3. Avoid unnecessary dependencies.
 4. Keep the application runnable.
-5. Document meaningful decisions.
+5. Add or extend tests for the change; update the docs in the table above.
 6. Do not implement features outside the current requested phase.
 
 When requirements are incomplete:

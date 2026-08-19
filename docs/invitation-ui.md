@@ -262,8 +262,9 @@ host TZ.
 Admin must not drift into a separate purple/gray SaaS look. Use `admin` tokens from `admin-ui.ts` for forms, tables,
 nav, and metrics. Header uses `bg-accent` with cream type/pills; page shell uses `bg-cream-figma`.
 
-Compact admin (viewport `< lg`): hamburger drawer is the same accent band as the header. New-family **+** uses
-`.admin-new-family-fab` so iPad Safari keeps it at the visible bottom (not mid-list). Back chevron on nueva familia
+Compact admin (viewport `< lg`): hamburger drawer is the same accent band as the header. New-family **+** is portaled
+onto `document.body` with `position:fixed; bottom` (plus visualViewport inset) so iPad Safari **and** Chrome keep it on
+the visible bottom, not mid-list. Back chevron on nueva familia
 **and** family detail. Family list chips (sin abrir / bus / dieta). Family detail: actividad reciente.
 Family/guest/photo **cards** replace tables until `lg`.
 

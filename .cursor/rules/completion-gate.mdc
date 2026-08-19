@@ -1,0 +1,16 @@
+---
+description: Completion gate — tests, docs, lint, typecheck, test, build
+alwaysApply: true
+---
+
+# Completion gate
+
+Do not mark a code change done until all of these are true (or an explicit skip is reported):
+
+1. Tests added or extended for the behavior (extract logic if the UI cannot be tested directly).
+2. Living docs updated so they match the repo (`docs/current-phase.md` at minimum for product/admin work; plus
+   architecture / invitation-ui / product-spec / README / AGENTS.md as relevant). See `AGENTS.md` **Documentation and
+   tests**.
+3. Commands run, in order: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`.
+
+Skip tests/docs only for typos, comments, or lockfile-only edits, and say so in the report.

@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 
-import {isAdminNavActive, showAdminBackToFamilies, showAdminNewFamilyFab,} from "@/lib/admin/admin-chrome";
+import {isAdminNavActive, ADMIN_DESKTOP_NAV_MIN_PX, ADMIN_FAB_HIDE_MIN_PX, showAdminBackToFamilies, showAdminNewFamilyFab,} from "@/lib/admin/admin-chrome";
 
 describe("isAdminNavActive", () => {
     it("marks only the dashboard for /admin", () => {
@@ -18,9 +18,14 @@ describe("isAdminNavActive", () => {
 });
 
 describe("compact admin chrome paths", () => {
-    it("hides the new-family FAB on the create page", () => {
+    it("keeps the FAB as a phone-only control (iPad 11\" and up hide it)", () => {
+        expect(ADMIN_FAB_HIDE_MIN_PX).toBe(834);
         expect(showAdminNewFamilyFab("/admin/families")).toBe(true);
         expect(showAdminNewFamilyFab("/admin/families/new")).toBe(false);
+    });
+
+    it("keeps the hamburger below desktop xl so iPad 11\" landscape still has it", () => {
+        expect(ADMIN_DESKTOP_NAV_MIN_PX).toBe(1280);
     });
 
     it("shows the back arrow on create and family detail", () => {

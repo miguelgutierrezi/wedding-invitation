@@ -115,10 +115,9 @@ confirmar”). Outfit inspiration routes are implemented under `/inspiracion/*`.
   the invitation body. Controlled by `features.music` + `assets.music`.
 - RSVP form is embedded in the invitation (cream band); it is not a separate navigation-only CTA page.
 - Cap multi-column invitation layouts on ultra-wide viewports so copy and CTAs stay visually grouped.
-- Admin chrome reuses invitation brand (accent header, cream page, Times/olive type). Below `lg` (phone and tablet
-  portrait): hamburger with a right slide-in **accent** drawer (cream type/pills, same as the desktop header nav),
-  floating **+** to add a family (`bg-accent`, white plus, hidden on `/admin/families/new`), back chevron on the
-  create-family header, stacked cards instead of wide tables, full-width actions. From `lg` up: inline nav and tables.
+- Admin chrome reuses invitation brand (accent header, cream page, Times/olive type). Hamburger / drawer until `xl`
+  (1280px) so iPad 11" keeps it. Floating **+** is phone-only (hidden from 834px / iPad 11" up); the drawer has **Nueva
+  familia**. Closed drawer overlay does not capture taps. Cards below `lg`; tables from `lg`; inline nav from `xl`.
   Path rules live in `src/lib/admin/admin-chrome.ts`.
 - Admin family/guest lists filter in memory, show active-filter chips, sort by column, and paginate at 25 rows. Query
   string (`q`, filters, `sort`, `dir`, `page`) is updated with `history.replaceState`. SQL push-down can wait until a

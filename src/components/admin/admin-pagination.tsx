@@ -15,7 +15,7 @@ export function AdminPagination({list, onPageChange}: AdminPaginationProps) {
     }
 
     return (
-        <div className="mt-4 flex flex-col gap-3 pr-16 lg:pr-0">
+        <div className="mt-4 flex flex-col gap-3 pr-16 min-[834px]:pr-0">
             <p className={`${admin.muted} text-center sm:text-left`}>
                 {adminCopy.list.showing(list.from, list.to, list.total)}
             </p>

@@ -121,7 +121,7 @@ img[data-nimg="fill"] {
     transform: none;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 834px) {
     .admin-new-family-fab {
         display: none;
     }

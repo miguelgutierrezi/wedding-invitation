@@ -85,7 +85,7 @@ export function AdminChrome({title, email}: AdminChromeProps) {
     }, [open]);
 
     const desktopNav = (
-        <nav className="hidden gap-2 lg:flex" aria-label="Menú de administración">
+        <nav className="hidden gap-2 xl:flex" aria-label="Menú de administración">
             {navItems.map((item) => (
                 <Link
                     key={item.href}
@@ -152,14 +152,14 @@ export function AdminChrome({title, email}: AdminChromeProps) {
                                     Administración
                                 </p>
                                 <h1 className={admin.titleOnAccent}>{title}</h1>
-                                <p className="mt-1 hidden truncate font-[family-name:var(--font-timer)] text-sm text-cream-figma/85 lg:block">
+                                <p className="mt-1 hidden truncate font-[family-name:var(--font-timer)] text-sm text-cream-figma/85 xl:block">
                                     {email}
                                 </p>
                             </div>
                         </div>
                         <button
                             type="button"
-                            className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-cream-figma hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-cream-figma/60 focus-visible:outline-none lg:hidden"
+                            className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-cream-figma hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-cream-figma/60 focus-visible:outline-none xl:hidden"
                             aria-label={open ? adminCopy.nav.closeMenu : adminCopy.nav.menu}
                             aria-expanded={open}
                             aria-controls={menuId}
@@ -174,7 +174,7 @@ export function AdminChrome({title, email}: AdminChromeProps) {
 
             <div
                 id={menuId}
-                className={`fixed inset-0 z-50 lg:hidden ${open ? "" : "pointer-events-none"}`}
+                className={`fixed inset-0 z-50 xl:hidden ${open ? "" : "invisible pointer-events-none"}`}
                 role="dialog"
                 aria-modal={open}
                 aria-hidden={!open}
@@ -183,12 +183,12 @@ export function AdminChrome({title, email}: AdminChromeProps) {
                 <button
                     type="button"
                     tabIndex={open ? 0 : -1}
-                    className={`absolute inset-0 bg-cover-cta-fg/35 transition-opacity duration-300 ease-out motion-reduce:transition-none ${open ? "opacity-100" : "opacity-0"}`}
+                    className={`absolute inset-0 bg-cover-cta-fg/35 transition-opacity duration-300 ease-out motion-reduce:transition-none ${open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
                     aria-label={adminCopy.nav.closeMenu}
                     onClick={closeMenu}
                 />
                 <div
-                    className={`absolute inset-y-0 right-0 flex w-full max-w-sm flex-col bg-accent pt-[max(0.75rem,env(safe-area-inset-top))] shadow-[-16px_0_40px_rgba(69,68,17,0.18)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${open ? "translate-x-0" : "translate-x-full"}`}
+                    className={`absolute inset-y-0 right-0 flex w-full max-w-sm flex-col bg-accent pt-[max(0.75rem,env(safe-area-inset-top))] shadow-[-16px_0_40px_rgba(69,68,17,0.18)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${open ? "pointer-events-auto translate-x-0" : "pointer-events-none translate-x-full"}`}
                 >
                     <div className="flex items-center justify-between gap-3 px-4 py-3">
                         <p className="font-[family-name:var(--font-timer)] text-xs font-medium tracking-[0.18em] text-cream-figma/80 uppercase">
@@ -221,6 +221,15 @@ export function AdminChrome({title, email}: AdminChromeProps) {
                                 {item.label}
                             </Link>
                         ))}
+                        <Link
+                            href="/admin/families/new"
+                            prefetch={false}
+                            tabIndex={open ? 0 : -1}
+                            onClick={closeMenu}
+                            className="mt-2 inline-flex min-h-11 items-center justify-center rounded-full border-2 border-cover-cta-fg bg-cream-figma px-4 font-[family-name:var(--font-timer)] text-sm font-medium text-cover-cta-fg"
+                        >
+                            {adminCopy.nav.newFamily}
+                        </Link>
                         <a
                             href="/api/admin/export"
                             tabIndex={open ? 0 : -1}

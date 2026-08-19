@@ -23,7 +23,7 @@ proceed when the user requests it explicitly.
 | Event TZ display (`America/Bogota`)         | Implemented (`event-timezone.ts`)                                              |
 | Admin Excel export                          | Full workbook + `kind=attending\|transport\|dietary\|contacts`                 |
 | Admin families/guests lists                 | Filters, chips, column sort, page size 25; cards below `lg`                    |
-| Admin compact chrome                        | Hamburger (accent drawer), FAB +, back arrow on create/detail  |
+| Admin compact chrome                        | Hamburger until `xl`; FAB phone-only (hidden iPad 11"+)        |
 | Guest phone/email                           | Mirrored from family RSVP onto `guests`                                        |
 | Admin plain-language UI                     | Non-technical Spanish labels in admin panel                                    |
 | Delete family (admin)                       | RPC + confirm-by-name in family detail                                         |
@@ -32,19 +32,15 @@ proceed when the user requests it explicitly.
 | WhatsApp scheduled send                     | Not implemented                                                                |
 | Resend / settings UI                        | Not implemented                                                                |
 
-## Completed: admin compact chrome (phone + tablet portrait)
+## Completed: admin compact chrome (phone + tablet)
 
-Breakpoint: Tailwind `lg` (1024px). Below it (phone and tablet vertical) the admin is compact; from `lg` up it is the
-desktop bar + tables.
-
-- `src/components/admin/admin-chrome.tsx`: hamburger, slide-in drawer from the right (`bg-accent`, cream pills like the
-  desktop nav), floating **+** (`bg-accent`, white Times plus, no olive border) except on `/admin/families/new`, back
-  arrow to `/admin/families` on create **and** family detail. FAB is portaled to `document.body` with `bottom`.
-  VisualViewport inset is ignored when iPad Chrome reports a half-screen gap.
-- Lists (families, guests, photos): stacked cards below `lg`; tables from `lg` up. Primary/secondary actions are full
-  width below `lg`.
-- Path helpers + tests: `src/lib/admin/admin-chrome.ts` (`isAdminNavActive`, FAB/back visibility).
-- Drawer respects `prefers-reduced-motion` (no slide, instant show/hide).
+- Hamburger / drawer until Tailwind `xl` (1280px), so iPad 11" (834×1194) keeps it in portrait and landscape. Closed
+  drawer overlay uses `pointer-events-none` so it cannot swallow the hamburger tap (iPad Chrome).
+- Floating **+** is **phone-only** (hidden from 834px / iPad 11" up). Tablets use **Nueva familia** in the drawer (and
+  the families page button). Still hidden on `/admin/families/new`.
+- Lists: cards below `lg`; tables from `lg`. Desktop inline nav from `xl`.
+- Path helpers + tests: `src/lib/admin/admin-chrome.ts` (`ADMIN_FAB_HIDE_MIN_PX`, `ADMIN_DESKTOP_NAV_MIN_PX`).
+- Drawer respects `prefers-reduced-motion`. Back chevron on create and family detail.
 
 ## Completed: admin batch actions
 

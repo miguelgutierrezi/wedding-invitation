@@ -262,11 +262,10 @@ host TZ.
 Admin must not drift into a separate purple/gray SaaS look. Use `admin` tokens from `admin-ui.ts` for forms, tables,
 nav, and metrics. Header uses `bg-accent` with cream type/pills; page shell uses `bg-cream-figma`.
 
-Compact admin (viewport `< lg`): hamburger drawer is the same accent band as the header. New-family **+** is portaled
-onto `document.body` with `position:fixed; bottom`. VisualViewport inset is capped so iPad Chrome cannot park the
-button mid-screen (`innerHeight` ≈ 2× `visualViewport.height`). Back chevron on nueva familia
-**and** family detail. Family list chips (sin abrir / bus / dieta). Family detail: actividad reciente.
-Family/guest/photo **cards** replace tables until `lg`.
+Compact admin: hamburger drawer until `xl` (1280px) so iPad 11" keeps it. New-family **+** is phone-only (hidden from
+834px / iPad 11" up); the drawer includes **Nueva familia**. Closed overlay cannot intercept hamburger taps. Back
+chevron on nueva familia **and** family detail. Family list chips (sin abrir / bus / dieta). Family detail: actividad
+reciente. Family/guest/photo **cards** replace tables until `lg`.
 
 Family create/edit: each guest row includes **nombre + género** (required). Gender powers the singular cover greeting
 only; it is not shown on the public invitation body.

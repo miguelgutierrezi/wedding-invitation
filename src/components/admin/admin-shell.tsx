@@ -21,7 +21,7 @@ export async function AdminShell({children, title}: AdminShellProps) {
                 <AdminChrome title={title} email={session.email}/>
             </div>
             <main
-                className="mx-auto w-full min-w-0 max-w-6xl flex-1 px-4 py-6 pb-[max(6.5rem,calc(env(safe-area-inset-bottom)+5.5rem))] lg:px-8 lg:py-10 lg:pb-[max(2.5rem,env(safe-area-inset-bottom))]">
+                className="mx-auto w-full min-w-0 max-w-6xl flex-1 px-4 py-6 pb-[max(6.5rem,calc(env(safe-area-inset-bottom)+5.5rem))] min-[834px]:pb-[max(2.5rem,env(safe-area-inset-bottom))] lg:px-8 lg:py-10">
                 {children}
             </main>
         </div>

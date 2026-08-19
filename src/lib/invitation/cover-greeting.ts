@@ -1,14 +1,14 @@
-import { weddingConfig } from "@/config/wedding";
-import type { GuestGender } from "@/types/guest";
+import {weddingConfig} from "@/config/wedding";
+import type {GuestGender} from "@/types/guest";
 
 export type CoverGreetingGuest = {
-  fullName: string;
-  gender: GuestGender | null;
+    fullName: string;
+    gender: GuestGender | null;
 };
 
 type CoverGreetingInput = {
-  displayName: string;
-  guests: readonly CoverGreetingGuest[];
+    displayName: string;
+    guests: readonly CoverGreetingGuest[];
 };
 
 /**
@@ -18,32 +18,32 @@ type CoverGreetingInput = {
  * - 3+ → Querida Familia X (family display name)
  */
 export function formatCoverGreeting({
-  displayName,
-  guests,
-}: CoverGreetingInput): string {
-  const { cover } = weddingConfig;
-  const people = guests
-    .map((guest) => ({
-      fullName: guest.fullName.trim(),
-      gender: guest.gender,
-    }))
-    .filter((guest) => guest.fullName.length > 0);
+                                        displayName,
+                                        guests,
+                                    }: CoverGreetingInput): string {
+    const {cover} = weddingConfig;
+    const people = guests
+        .map((guest) => ({
+            fullName: guest.fullName.trim(),
+            gender: guest.gender,
+        }))
+        .filter((guest) => guest.fullName.length > 0);
 
-  if (people.length === 1) {
-    const person = people[0];
-    const prefix =
-      person.gender === "male"
-        ? cover.greetingPrefixSingularMale
-        : person.gender === "female"
-          ? cover.greetingPrefixSingularFemale
-          : cover.greetingPrefixSingularUnspecified;
-    return `${prefix} ${person.fullName}`;
-  }
+    if (people.length === 1) {
+        const person = people[0];
+        const prefix =
+            person.gender === "male"
+                ? cover.greetingPrefixSingularMale
+                : person.gender === "female"
+                    ? cover.greetingPrefixSingularFemale
+                    : cover.greetingPrefixSingularUnspecified;
+        return `${prefix} ${person.fullName}`;
+    }
 
-  if (people.length === 2) {
-    return `${cover.greetingPrefixDual} ${people[0].fullName} y ${people[1].fullName}`;
-  }
+    if (people.length === 2) {
+        return `${cover.greetingPrefixDual} ${people[0].fullName} y ${people[1].fullName}`;
+    }
 
-  const familyLabel = displayName.trim() || "familia";
-  return `${cover.greetingPrefix} ${familyLabel}`;
+    const familyLabel = displayName.trim() || "familia";
+    return `${cover.greetingPrefix} ${familyLabel}`;
 }

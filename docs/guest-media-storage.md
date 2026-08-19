@@ -3,7 +3,8 @@
 **Phase:** Guest Media Uploads  
 **Last reviewed:** 2026-08-12
 
-Private bucket `guest-media` stores original photos and videos. Metadata and review state live in PostgreSQL (`guest_media_uploads`). Bytes never transit Vercel Server Actions or Route Handlers.
+Private bucket `guest-media` stores original photos and videos. Metadata and review state live in PostgreSQL
+(`guest_media_uploads`). Bytes never transit Vercel Server Actions or Route Handlers.
 
 ## Architecture
 
@@ -20,18 +21,21 @@ Supabase Storage (private bucket) + PostgreSQL
 Provider port: `src/services/media/storage-provider.ts`  
 Supabase adapter: `src/services/media/supabase-storage-provider.ts`
 
-Future R2/S3: implement the same port and swap `getMediaStorageProvider()`; migrate objects offline (rclone / S3 sync). Metadata rows keep `object_key` (optionally prefix with provider).
+Future R2/S3: implement the same port and swap `getMediaStorageProvider()`; migrate objects offline (rclone / S3 sync).
+Metadata rows keep `object_key` (optionally prefix with provider).
 
 ## Manual Supabase configuration (hosted)
 
-1. Prefer **Supabase Pro** (or a plan that allows large object uploads). Free tiers often keep a low global file size limit.
+1. Prefer **Supabase Pro** (or a plan that allows large object uploads). Free tiers often keep a low global file size
+   limit.
 2. Dashboard → **Storage** → raise the **global file size limit** to at least **3 GiB** (videos).
 3. Ensure bucket `guest-media` exists (migration inserts it). Confirm:
-   - Public: **off**
-   - File size limit: **3 GiB**
-   - Allowed MIME: jpeg, png, webp, mp4, quicktime, webm
+    - Public: **off**
+    - File size limit: **3 GiB**
+    - Allowed MIME: jpeg, png, webp, mp4, quicktime, webm
 4. Do **not** add public read/list policies for `anon` / `authenticated` on this bucket.
-5. Uploads use **service-role minted signed upload URLs** (`createSignedUploadUrl`) and TUS endpoint `/storage/v1/upload/resumable/sign` with `x-signature`.
+5. Uploads use **service-role minted signed upload URLs** (`createSignedUploadUrl`) and TUS endpoint
+   `/storage/v1/upload/resumable/sign` with `x-signature`.
 6. Set `GUEST_MEDIA_STORAGE_QUOTA_BYTES` in Vercel to the soft budget used for admin alerts (default 50 GiB in config).
 
 Local (`supabase/config.toml`):
@@ -55,18 +59,21 @@ supabase db push    # linked / CI remote
 
 ## QR access
 
-Table `event_guest_media_access` stores **SHA-256 token hash** + preview. Admin → **Fotos** → rotate token to obtain `/fotos?code=…` once, preview the QR, and **download PNG** for print. Enable/disable without rotating. Optional `opens_at` / `closes_at`.
+Table `event_guest_media_access` stores **SHA-256 token hash** + preview. Admin → **Fotos** → rotate token to obtain
+`/fotos?code=…` once, preview the QR, and **download PNG** for print. Enable/disable without rotating. Optional
+`opens_at` / `closes_at`.
 
 ## Quotas and rate limits
 
-| Guard | Default | Where |
-|-------|---------|--------|
-| Session bytes | 20 GiB | DB sum by `session_id` cookie |
-| IP/token window | 50 GiB / 24h | DB sum by `client_ip_hash` |
-| Active uploads / session | 8 | DB count pending/uploading |
-| Authorize rate limit | 60 / 15 min / IP | In-memory (`rate-limit.ts`) |
+| Guard                    | Default          | Where                         |
+|--------------------------|------------------|-------------------------------|
+| Session bytes            | 20 GiB           | DB sum by `session_id` cookie |
+| IP/token window          | 50 GiB / 24h     | DB sum by `client_ip_hash`    |
+| Active uploads / session | 8                | DB count pending/uploading    |
+| Authorize rate limit     | 60 / 15 min / IP | In-memory (`rate-limit.ts`)   |
 
-In-memory limits are **per Vercel isolate** — not globally strong. Documented interface exists; durable store (Upstash/Redis) is a future option without changing call sites much. Complement with Cloudflare WAF.
+In-memory limits are **per Vercel isolate** — not globally strong. Documented interface exists; durable store
+(Upstash/Redis) is a future option without changing call sites much. Complement with Cloudflare WAF.
 
 ## Cleanup / reconciliation
 
@@ -111,14 +118,16 @@ Not enabled. Revisit only after Safari, Android, Storage, and admin preview are 
 
 Rough planning for ~90 guests:
 
-| Scenario | Estimate |
-|----------|----------|
-| ~30 guests × 20 photos × 4 MB | ~2.4 GiB |
-| + 40 short videos × 200 MB | ~8 GiB |
-| Heavy day (many 1 GB clips) | tens of GiB |
+| Scenario                      | Estimate    |
+|-------------------------------|-------------|
+| ~30 guests × 20 photos × 4 MB | ~2.4 GiB    |
+| + 40 short videos × 200 MB    | ~8 GiB      |
+| Heavy day (many 1 GB clips)   | tens of GiB |
 
 Set `GUEST_MEDIA_STORAGE_QUOTA_BYTES` and watch admin alerts at 60/80/90%.
 
 ## Slug security note
 
-Invitation media routes reuse `/i/[slug]`. Human-readable slugs are easier to guess than opaque tokens. Uploads never list other families' files; `family_id` is bound server-side from the validated slug. Prefer non-guessable slugs in production when practical. QR route never reveals family lists.
+Invitation media routes reuse `/i/[slug]`. Human-readable slugs are easier to guess than opaque tokens. Uploads never
+list other families' files; `family_id` is bound server-side from the validated slug. Prefer non-guessable slugs in
+production when practical. QR route never reveals family lists.

@@ -4,16 +4,16 @@
  */
 
 export function isAdminNavActive(pathname: string, href: string): boolean {
-  if (href === "/admin") {
-    return pathname === "/admin";
-  }
-  return pathname === href || pathname.startsWith(`${href}/`);
+    if (href === "/admin") {
+        return pathname === "/admin";
+    }
+    return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function showAdminNewFamilyFab(pathname: string): boolean {
-  return pathname !== "/admin/families/new";
+    return pathname !== "/admin/families/new";
 }
 
 export function showAdminBackToFamilies(pathname: string): boolean {
-  return pathname === "/admin/families/new";
+    return pathname === "/admin/families/new";
 }

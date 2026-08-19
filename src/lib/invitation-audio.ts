@@ -8,106 +8,106 @@ const MUTED_KEY = "invitation-music-muted";
 const GLOBAL_AUDIO_KEY = "__weddingInvitationAudio";
 
 type InvitationAudioStore = {
-  element: HTMLAudioElement | null;
+    element: HTMLAudioElement | null;
 };
 
 function canUseDom(): boolean {
-  return typeof window !== "undefined";
+    return typeof window !== "undefined";
 }
 
 function getAudioStore(): InvitationAudioStore {
-  const globalRef = globalThis as typeof globalThis & {
-    [GLOBAL_AUDIO_KEY]?: InvitationAudioStore;
-  };
+    const globalRef = globalThis as typeof globalThis & {
+        [GLOBAL_AUDIO_KEY]?: InvitationAudioStore;
+    };
 
-  if (!globalRef[GLOBAL_AUDIO_KEY]) {
-    globalRef[GLOBAL_AUDIO_KEY] = { element: null };
-  }
+    if (!globalRef[GLOBAL_AUDIO_KEY]) {
+        globalRef[GLOBAL_AUDIO_KEY] = {element: null};
+    }
 
-  return globalRef[GLOBAL_AUDIO_KEY];
+    return globalRef[GLOBAL_AUDIO_KEY];
 }
 
 function readSessionFlag(key: string): boolean {
-  if (!canUseDom()) {
-    return false;
-  }
-  try {
-    return sessionStorage.getItem(key) === "1";
-  } catch {
-    return false;
-  }
+    if (!canUseDom()) {
+        return false;
+    }
+    try {
+        return sessionStorage.getItem(key) === "1";
+    } catch {
+        return false;
+    }
 }
 
 function writeSessionFlag(key: string, value: boolean): void {
-  if (!canUseDom()) {
-    return;
-  }
-  try {
-    if (value) {
-      sessionStorage.setItem(key, "1");
-    } else {
-      sessionStorage.removeItem(key);
+    if (!canUseDom()) {
+        return;
     }
-  } catch {
-    // sessionStorage may be blocked (private mode).
-  }
+    try {
+        if (value) {
+            sessionStorage.setItem(key, "1");
+        } else {
+            sessionStorage.removeItem(key);
+        }
+    } catch {
+        // sessionStorage may be blocked (private mode).
+    }
 }
 
 function attachAudioToDocument(element: HTMLAudioElement): void {
-  if (element.isConnected || !document.body) {
-    return;
-  }
+    if (element.isConnected || !document.body) {
+        return;
+    }
 
-  element.setAttribute("data-invitation-audio", "true");
-  element.setAttribute("playsinline", "true");
-  element.className = "pointer-events-none fixed h-px w-px opacity-0";
-  element.tabIndex = -1;
-  document.body.appendChild(element);
+    element.setAttribute("data-invitation-audio", "true");
+    element.setAttribute("playsinline", "true");
+    element.className = "pointer-events-none fixed h-px w-px opacity-0";
+    element.tabIndex = -1;
+    document.body.appendChild(element);
 }
 
 export function getInvitationAudio(src: string): HTMLAudioElement | null {
-  if (!canUseDom() || !src) {
-    return null;
-  }
+    if (!canUseDom() || !src) {
+        return null;
+    }
 
-  const store = getAudioStore();
+    const store = getAudioStore();
 
-  if (!store.element || store.element.dataset.src !== src) {
-    store.element?.pause();
-    store.element?.remove();
-    store.element = new Audio(src);
-    store.element.dataset.src = src;
-    store.element.loop = true;
-    store.element.preload = "auto";
-    store.element.volume = 0.55;
-    attachAudioToDocument(store.element);
-  } else {
-    attachAudioToDocument(store.element);
-  }
+    if (!store.element || store.element.dataset.src !== src) {
+        store.element?.pause();
+        store.element?.remove();
+        store.element = new Audio(src);
+        store.element.dataset.src = src;
+        store.element.loop = true;
+        store.element.preload = "auto";
+        store.element.volume = 0.55;
+        attachAudioToDocument(store.element);
+    } else {
+        attachAudioToDocument(store.element);
+    }
 
-  return store.element;
+    return store.element;
 }
 
 /** Mark that the guest intended music when opening the invitation. */
 export function setInvitationMusicPlayIntent(): void {
-  writeSessionFlag(PLAY_INTENT_KEY, true);
-  writeSessionFlag(MUTED_KEY, false);
+    writeSessionFlag(PLAY_INTENT_KEY, true);
+    writeSessionFlag(MUTED_KEY, false);
 }
 
 export function consumeInvitationMusicPlayIntent(): boolean {
-  if (!readSessionFlag(PLAY_INTENT_KEY)) {
-    return false;
-  }
-  writeSessionFlag(PLAY_INTENT_KEY, false);
-  return true;
+    if (!readSessionFlag(PLAY_INTENT_KEY)) {
+        return false;
+    }
+    writeSessionFlag(PLAY_INTENT_KEY, false);
+    return true;
 }
 
 export function hasInvitationMusicPlayIntent(): boolean {
-  return readSessionFlag(PLAY_INTENT_KEY);
+    return readSessionFlag(PLAY_INTENT_KEY);
 }
 
 export function isInvitationMusicMutedByUser(): boolean {
-  return readSessionFlag(MUTED_KEY);
+    return readSessionFlag(MUTED_KEY);
 }
 
 /**
@@ -115,19 +115,19 @@ export function isInvitationMusicMutedByUser(): boolean {
  * (cover CTA, inspiration links, back). Safe to call again on body routes.
  */
 export async function startInvitationMusic(src: string): Promise<boolean> {
-  const element = getInvitationAudio(src);
-  if (!element) {
-    return false;
-  }
+    const element = getInvitationAudio(src);
+    if (!element) {
+        return false;
+    }
 
-  setInvitationMusicPlayIntent();
+    setInvitationMusicPlayIntent();
 
-  try {
-    await element.play();
-    return true;
-  } catch {
-    return false;
-  }
+    try {
+        await element.play();
+        return true;
+    } catch {
+        return false;
+    }
 }
 
 /**
@@ -135,57 +135,57 @@ export async function startInvitationMusic(src: string): Promise<boolean> {
  * No-op if there was never play intent or the user muted.
  */
 export async function continueInvitationMusicIfNeeded(
-  src: string,
+    src: string,
 ): Promise<boolean> {
-  if (!hasInvitationMusicPlayIntent() || isInvitationMusicMutedByUser()) {
-    return isInvitationMusicPlaying();
-  }
+    if (!hasInvitationMusicPlayIntent() || isInvitationMusicMutedByUser()) {
+        return isInvitationMusicPlaying();
+    }
 
-  const element = getInvitationAudio(src);
-  if (!element) {
-    return false;
-  }
+    const element = getInvitationAudio(src);
+    if (!element) {
+        return false;
+    }
 
-  if (!element.paused) {
-    return true;
-  }
+    if (!element.paused) {
+        return true;
+    }
 
-  try {
-    await element.play();
-    return true;
-  } catch {
-    return false;
-  }
+    try {
+        await element.play();
+        return true;
+    } catch {
+        return false;
+    }
 }
 
 export async function pauseInvitationMusic(): Promise<void> {
-  getAudioStore().element?.pause();
+    getAudioStore().element?.pause();
 }
 
 export async function toggleInvitationMusic(src: string): Promise<boolean> {
-  const element = getInvitationAudio(src);
-  if (!element) {
-    return false;
-  }
+    const element = getInvitationAudio(src);
+    if (!element) {
+        return false;
+    }
 
-  if (!element.paused) {
-    element.pause();
-    writeSessionFlag(MUTED_KEY, true);
-    return false;
-  }
+    if (!element.paused) {
+        element.pause();
+        writeSessionFlag(MUTED_KEY, true);
+        return false;
+    }
 
-  writeSessionFlag(MUTED_KEY, false);
-  writeSessionFlag(PLAY_INTENT_KEY, true);
+    writeSessionFlag(MUTED_KEY, false);
+    writeSessionFlag(PLAY_INTENT_KEY, true);
 
-  try {
-    await element.play();
-    return true;
-  } catch {
-    return false;
-  }
+    try {
+        await element.play();
+        return true;
+    } catch {
+        return false;
+    }
 }
 
 export function isInvitationMusicPlaying(): boolean {
-  const element = getAudioStore().element;
-  return Boolean(element && !element.paused);
+    const element = getAudioStore().element;
+    return Boolean(element && !element.paused);
 }

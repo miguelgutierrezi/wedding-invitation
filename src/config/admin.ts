@@ -3,6 +3,6 @@
  * Case-insensitive. Keep this list intentionally small.
  */
 export const ADMIN_ALLOWED_EMAILS = [
-  "migueangel97@hotmail.com",
-  "nycholpg@gmail.com",
+    "migueangel97@hotmail.com",
+    "nycholpg@gmail.com",
 ] as const;

@@ -1,10 +1,13 @@
 # Go-live checklist
 
-Operational checklist before sharing invitation links widely. Does not authorize new product features — see `docs/current-phase.md`.
+Operational checklist before sharing invitation links widely. Does not authorize new product features — see
+`docs/current-phase.md`.
 
 ## Environments
 
-- [ ] Latest SQL migrations applied on remote Supabase (including boarding, family RPCs, guest media, **`guest_gender`**, **`guest_gender_unspecified`**, **`placeholder_companion_names`**, **`update_family_guests_by_id`**, **`guest_contact_from_rsvp`**, and **`delete_family`**).
+- [ ] Latest SQL migrations applied on remote Supabase (including boarding, family RPCs, guest media, **
+  `guest_gender`**, **`guest_gender_unspecified`**, **`placeholder_companion_names`**, **`update_family_guests_by_id`**,
+  **`guest_contact_from_rsvp`**, and **`delete_family`**).
 - [ ] Vercel env vars set: `NEXT_PUBLIC_*`, `SUPABASE_SERVICE_ROLE_KEY`, admin emails.
 - [ ] Optional: `TZ=America/Bogota` on Vercel (display helpers already pin Colombia TZ).
 - [ ] `NEXT_PUBLIC_APP_URL` matches the public domain.
@@ -13,7 +16,8 @@ Operational checklist before sharing invitation links widely. Does not authorize
 ## Smoke — admin
 
 - [ ] `/admin/login` with allowlisted account.
-- [ ] Create a test family with 2 guests (**nombre + género** each) and copy `/i/[slug]` (atomic create — no orphan family without guests).
+- [ ] Create a test family with 2 guests (**nombre + género** each) and copy `/i/[slug]` (atomic create — no orphan
+  family without guests).
 - [ ] Create or edit a **single-guest** family and confirm cover shows Querido/Querida correctly.
 - [ ] Edit an existing family (rename guest, change gender/seats, toggle enabled) and confirm no partial state.
 - [ ] Regenerate slug if needed; old slug should stop resolving.
@@ -21,9 +25,11 @@ Operational checklist before sharing invitation links widely. Does not authorize
 - [ ] Dashboard metric cards deep-link to pre-filtered lists (pending families, guests with bus, etc.).
 - [ ] Dashboard shows action queue + RSVP close checklist; **Descargar lista** from Resumen.
 - [ ] Family detail: copy invitation URL and WhatsApp reminder; confirm before disable / regenerate.
-- [ ] Phone + tablet portrait (`< lg`): hamburger slide-in (accent drawer), **+** opens nueva familia, lists are cards; landscape/desktop: inline nav + tables.
+- [ ] Phone + tablet portrait (`< lg`): hamburger slide-in (accent drawer), **+** opens nueva familia, lists are cards;
+  landscape/desktop: inline nav + tables.
 - [ ] Nueva familia: back arrow returns to `/admin/families`; no floating **+** on that page.
-- [ ] Delete a test family from family detail (type the family name to confirm); it disappears from lists and the invitation link 404s.
+- [ ] Delete a test family from family detail (type the family name to confirm); it disappears from lists and the
+  invitation link 404s.
 
 ## Smoke — public invitation
 
@@ -56,7 +62,8 @@ pnpm build
 
 ## Out of scope for this checklist
 
-- Resend email and WhatsApp Cloud API (tracked as future work). Excel export slices and guest media uploads are available in admin.
+- Resend email and WhatsApp Cloud API (tracked as future work). Excel export slices and guest media uploads are
+  available in admin.
 - Distributed (Redis) rate limiting — in-app limiter is best-effort per isolate; prefer Cloudflare for global edge.
 - Bus departure times toward Subachoque still “por confirmar” until product provides them.
 - Hosted Supabase Storage global limit ≥3 GiB for guest videos (see `docs/guest-media-storage.md`).

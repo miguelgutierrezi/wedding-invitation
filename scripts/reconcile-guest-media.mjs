@@ -10,9 +10,9 @@
  * See docs/guest-media-storage.md.
  */
 console.log(
-  [
-    "Guest media reconciliation runs inside the app (admin action).",
-    "Open /admin/photos and use “Reconciliar Storage”.",
-    "For orphan objects / bulk backup see docs/guest-media-storage.md.",
-  ].join("\n"),
+    [
+        "Guest media reconciliation runs inside the app (admin action).",
+        "Open /admin/photos and use “Reconciliar Storage”.",
+        "For orphan objects / bulk backup see docs/guest-media-storage.md.",
+    ].join("\n"),
 );

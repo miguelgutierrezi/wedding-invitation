@@ -2,7 +2,8 @@
 
 ## Project overview
 
-This repository contains a full-stack wedding invitation web application for approximately 90 guests (couple: **Nychol** and **Miguel**).
+This repository contains a full-stack wedding invitation web application for approximately 90 guests (couple: **Nychol**
+and **Miguel**).
 
 The application provides:
 
@@ -189,7 +190,8 @@ Rules:
 - Validate that each guest belongs to the family being updated.
 - Enforce guest limits on the server.
 - Enforce RSVP deadlines on the server.
-- When transport is requested, require a valid boarding point id on the server (`modelia` | `villa_sonia`; keep config, Zod, and SQL in sync).
+- When transport is requested, require a valid boarding point id on the server (`modelia` | `villa_sonia`; keep config,
+  Zod, and SQL in sync).
 - Prevent accidental duplicate submissions.
 - Avoid leaking whether arbitrary tokens exist.
 
@@ -231,18 +233,21 @@ Invitation presentation conventions (tokens, sections, assets) live in:
 docs/invitation-ui.md
 ```
 
-Copy and media paths belong in `src/config/wedding.ts`. Do not scatter Figma hex values or asset paths across many components.
+Copy and media paths belong in `src/config/wedding.ts`. Do not scatter Figma hex values or asset paths across many
+components.
 
 Avoid:
 
 - Heavy animations.
-- Autoplay audio without an explicit user gesture (invitation music after “Ver Invitación” is allowed when `features.music` is on).
+- Autoplay audio without an explicit user gesture (invitation music after “Ver Invitación” is allowed when
+  `features.music` is on).
 - Large background videos.
 - Generic template appearance.
 - Excessive gradients.
 - Excessive shadows.
 - Excessive client-side JavaScript.
-- Cropping dress-code or transport illustrations with aggressive `object-cover` when the subject must remain fully visible.
+- Cropping dress-code or transport illustrations with aggressive `object-cover` when the subject must remain fully
+  visible.
 - The deprecated `middleware` file convention; use `src/proxy.ts` for the admin edge gate.
 
 ## Data model direction
@@ -369,7 +374,8 @@ Instruction precedence, from highest to lowest:
 5. `docs/product-spec.md` for product behavior and long-term requirements.
 6. This file for permanent repository workflow and engineering defaults.
 
-If two documents conflict, follow the higher-precedence source and report the conflict. Do not interpret the product roadmap as authorization to implement future work.
+If two documents conflict, follow the higher-precedence source and report the conflict. Do not interpret the product
+roadmap as authorization to implement future work.
 
 Permanent engineering rules live in this file.
 
@@ -399,4 +405,5 @@ docs/current-phase.md
 
 Do not implement future phases unless explicitly requested.
 
-When a phase is completed, update `docs/current-phase.md` before beginning another phase so that it reflects the repository rather than a historical handoff.
+When a phase is completed, update `docs/current-phase.md` before beginning another phase so that it reflects the
+repository rather than a historical handoff.

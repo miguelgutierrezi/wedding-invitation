@@ -11,8 +11,14 @@ Before changing code, read:
 5. `/docs/product-spec.md` for product requirements relevant to the task.
 6. `/README.md` for the verified local workflow.
 
-Inspect the current implementation before creating or replacing files. Do not treat roadmap items or historical handoff sections as authorization to implement future phases.
+Inspect the current implementation before creating or replacing files. Do not treat roadmap items or historical handoff
+sections as authorization to implement future phases.
 
-Couple display names are **Nychol** and **Miguel**. Bus RSVP requires a boarding point id (`modelia` | `villa_sonia`) kept in sync across `wedding.ts`, `transport.ts`, Zod, and SQL migrations. Ceremony maps URLs live in `weddingConfig.ceremony`; do not invent unfinished logistics (inspiration links, bus departure times). Use pnpm and run the relevant lint, typecheck, build, and test commands before claiming success.
+Couple display names are **Nychol** and **Miguel**. Bus RSVP requires a boarding point id (`modelia` | `villa_sonia`)
+kept in sync across `wedding.ts`, `transport.ts`, Zod, and SQL migrations. Ceremony maps URLs live in
+`weddingConfig.ceremony`; do not invent unfinished logistics (inspiration links, bus departure times). Use pnpm and run
+the relevant lint, typecheck, build, and test commands before claiming success.
 
-Presentation copy and media paths for the invitation belong in `src/config/wedding.ts` (see `docs/invitation-ui.md`). Admin shared styles: `src/components/admin/admin-ui.ts`. Edge auth for `/admin`: `src/proxy.ts` (Next.js 16 proxy convention).
+Presentation copy and media paths for the invitation belong in `src/config/wedding.ts` (see `docs/invitation-ui.md`).
+Admin shared styles: `src/components/admin/admin-ui.ts`. Edge auth for `/admin`: `src/proxy.ts` (Next.js 16 proxy
+convention).

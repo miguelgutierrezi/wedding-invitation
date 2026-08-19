@@ -1,82 +1,82 @@
 @import "tailwindcss";
 
 :root {
-  /* Invitation palette — Canva primary brand */
-  --background: #f3efe6;
-  --foreground: #1f2a24;
-  --muted: #5c6b63;
-  /* Principal app / Canva brand */
-  --accent: #beb950;
-  --accent-deep: #9a9638;
-  --cream: #f5f0e6;
-  /* Figma section / date chip cream */
-  --cream-figma: #f5f5dc;
-  --cream-deep: #ebe4d6;
-  --gold: #beb950;
-  --gold-soft: #d4ce70;
-  --timer-title: #beb950;
-  /* System Times for Canva “Times New Roman” (countdown and matching slots). */
-  --font-timer-stack: "Times New Roman", Times, "Liberation Serif", Georgia,
+    /* Invitation palette — Canva primary brand */
+    --background: #f3efe6;
+    --foreground: #1f2a24;
+    --muted: #5c6b63;
+    /* Principal app / Canva brand */
+    --accent: #beb950;
+    --accent-deep: #9a9638;
+    --cream: #f5f0e6;
+    /* Figma section / date chip cream */
+    --cream-figma: #f5f5dc;
+    --cream-deep: #ebe4d6;
+    --gold: #beb950;
+    --gold-soft: #d4ce70;
+    --timer-title: #beb950;
+    /* System Times for Canva “Times New Roman” (countdown and matching slots). */
+    --font-timer-stack: "Times New Roman", Times, "Liberation Serif", Georgia,
     serif;
-  --forest: #1a241c;
-  --surface: rgba(255, 255, 255, 0.78);
-  --ring: rgba(190, 185, 80, 0.4);
-  /* Text on photos / forest only; on brand yellow use --foreground */
-  --on-dark: #f7f3eb;
-  /* Figma cover labels */
-  --on-dark-label: rgba(255, 255, 255, 0.96);
-  /* Figma cover CTA */
-  --cover-cta-bg: #cfcfcf;
-  --cover-cta-fg: #454411;
-  /* Figma countdown numbers */
-  --countdown-number: #111827;
-  /* Figma gallery carousel dots */
-  --gallery-dot: #4a5d2a;
-  --photo-placeholder: #2a332c;
+    --forest: #1a241c;
+    --surface: rgba(255, 255, 255, 0.78);
+    --ring: rgba(190, 185, 80, 0.4);
+    /* Text on photos / forest only; on brand yellow use --foreground */
+    --on-dark: #f7f3eb;
+    /* Figma cover labels */
+    --on-dark-label: rgba(255, 255, 255, 0.96);
+    /* Figma cover CTA */
+    --cover-cta-bg: #cfcfcf;
+    --cover-cta-fg: #454411;
+    /* Figma countdown numbers */
+    --countdown-number: #111827;
+    /* Figma gallery carousel dots */
+    --gallery-dot: #4a5d2a;
+    --photo-placeholder: #2a332c;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
-  --color-accent: var(--accent);
-  --color-accent-deep: var(--accent-deep);
-  --color-cream: var(--cream);
-  --color-cream-figma: var(--cream-figma);
-  --color-cream-deep: var(--cream-deep);
-  --color-gold: var(--gold);
-  --color-gold-soft: var(--gold-soft);
-  --color-timer-title: var(--timer-title);
-  --color-forest: var(--forest);
-  --color-surface: var(--surface);
-  --color-on-dark: var(--on-dark);
-  --color-on-dark-label: var(--on-dark-label);
-  --color-cover-cta-bg: var(--cover-cta-bg);
-  --color-cover-cta-fg: var(--cover-cta-fg);
-  --color-countdown-number: var(--countdown-number);
-  --color-gallery-dot: var(--gallery-dot);
-  --color-photo-placeholder: var(--photo-placeholder);
-  --font-sans: var(--font-body);
-  --font-display: var(--font-display);
-  --font-script: var(--font-script);
-  --font-cover-serif: var(--font-cover-serif);
-  --font-timer: var(--font-timer-stack);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-muted: var(--muted);
+    --color-accent: var(--accent);
+    --color-accent-deep: var(--accent-deep);
+    --color-cream: var(--cream);
+    --color-cream-figma: var(--cream-figma);
+    --color-cream-deep: var(--cream-deep);
+    --color-gold: var(--gold);
+    --color-gold-soft: var(--gold-soft);
+    --color-timer-title: var(--timer-title);
+    --color-forest: var(--forest);
+    --color-surface: var(--surface);
+    --color-on-dark: var(--on-dark);
+    --color-on-dark-label: var(--on-dark-label);
+    --color-cover-cta-bg: var(--cover-cta-bg);
+    --color-cover-cta-fg: var(--cover-cta-fg);
+    --color-countdown-number: var(--countdown-number);
+    --color-gallery-dot: var(--gallery-dot);
+    --color-photo-placeholder: var(--photo-placeholder);
+    --font-sans: var(--font-body);
+    --font-display: var(--font-display);
+    --font-script: var(--font-script);
+    --font-cover-serif: var(--font-cover-serif);
+    --font-timer: var(--font-timer-stack);
 }
 
 html {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 body {
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
-  overflow-x: hidden;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+    overflow-x: hidden;
 }
 
 /* Prevent common media / flex / grid overflow on mobile */
@@ -84,82 +84,116 @@ img,
 video,
 canvas,
 svg {
-  max-width: 100%;
+    max-width: 100%;
 }
 
 /* next/image with fill must not inherit max-width:100% constraints wrongly */
 img[data-nimg="fill"] {
-  max-width: none;
+    max-width: none;
 }
 
 .page-shell {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+}
+
+/*
+ * Admin “+” FAB: do not use Tailwind `bottom-[max(1.25rem,env(...))]` — the comma
+ * can drop `bottom`, and iPad Safari then vertically centers a `position:fixed`
+ * flex child. Pin with `svh`/`dvh` from the top of the visual viewport instead.
+ */
+.admin-new-family-fab {
+    position: fixed;
+    z-index: 40;
+    right: 1rem;
+    left: auto;
+    top: auto;
+    bottom: 1.25rem;
+    margin: 0;
+}
+
+@supports (height: 100dvh) {
+    .admin-new-family-fab {
+        top: calc(100dvh - 3.5rem - 1.25rem);
+        bottom: auto;
+    }
+}
+
+@supports (height: 100svh) {
+    .admin-new-family-fab {
+        top: calc(
+                100svh - 3.5rem - max(1.25rem, env(safe-area-inset-bottom, 0px))
+        );
+        bottom: auto;
+    }
+}
+
+@media (min-width: 1024px) {
+    .admin-new-family-fab {
+        display: none;
+    }
 }
 
 /* Decorative torn-paper edge at section boundaries */
 .torn-edge {
-  position: relative;
-  isolation: isolate;
+    position: relative;
+    isolation: isolate;
 }
 
 .torn-edge::before,
 .torn-edge::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 18px;
-  z-index: 2;
-  pointer-events: none;
-  background-repeat: repeat-x;
-  background-size: 48px 18px;
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 18px;
+    z-index: 2;
+    pointer-events: none;
+    background-repeat: repeat-x;
+    background-size: 48px 18px;
 }
 
 .torn-edge-top::before {
-  top: -1px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 18' preserveAspectRatio='none'%3E%3Cpath fill='%23f3efe6' d='M0 0v8c3 6 6-2 9 4s6-4 9 2 6-6 9 2 6-2 9 4 6-6 12 0V0H0z'/%3E%3C/svg%3E");
+    top: -1px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 18' preserveAspectRatio='none'%3E%3Cpath fill='%23f3efe6' d='M0 0v8c3 6 6-2 9 4s6-4 9 2 6-6 9 2 6-2 9 4 6-6 12 0V0H0z'/%3E%3C/svg%3E");
 }
 
 .torn-edge-bottom::after {
-  bottom: -1px;
-  transform: scaleY(-1);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 18' preserveAspectRatio='none'%3E%3Cpath fill='%23f3efe6' d='M0 0v8c3 6 6-2 9 4s6-4 9 2 6-6 9 2 6-2 9 4 6-6 12 0V0H0z'/%3E%3C/svg%3E");
+    bottom: -1px;
+    transform: scaleY(-1);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 18' preserveAspectRatio='none'%3E%3Cpath fill='%23f3efe6' d='M0 0v8c3 6 6-2 9 4s6-4 9 2 6-6 9 2 6-2 9 4 6-6 12 0V0H0z'/%3E%3C/svg%3E");
 }
 
 .torn-edge-top-cream::before {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 18' preserveAspectRatio='none'%3E%3Cpath fill='%23f5f0e6' d='M0 0v8c3 6 6-2 9 4s6-4 9 2 6-6 9 2 6-2 9 4 6-6 12 0V0H0z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 18' preserveAspectRatio='none'%3E%3Cpath fill='%23f5f0e6' d='M0 0v8c3 6 6-2 9 4s6-4 9 2 6-6 9 2 6-2 9 4 6-6 12 0V0H0z'/%3E%3C/svg%3E");
 }
 
 .torn-edge-bottom-cream::after {
-  bottom: -1px;
-  transform: scaleY(-1);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 18' preserveAspectRatio='none'%3E%3Cpath fill='%23f5f0e6' d='M0 0v8c3 6 6-2 9 4s6-4 9 2 6-6 9 2 6-2 9 4 6-6 12 0V0H0z'/%3E%3C/svg%3E");
+    bottom: -1px;
+    transform: scaleY(-1);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 18' preserveAspectRatio='none'%3E%3Cpath fill='%23f5f0e6' d='M0 0v8c3 6 6-2 9 4s6-4 9 2 6-6 9 2 6-2 9 4 6-6 12 0V0H0z'/%3E%3C/svg%3E");
 }
 
 .torn-edge-top-accent::before {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 18' preserveAspectRatio='none'%3E%3Cpath fill='%23beb950' d='M0 0v8c3 6 6-2 9 4s6-4 9 2 6-6 9 2 6-2 9 4 6-6 12 0V0H0z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 18' preserveAspectRatio='none'%3E%3Cpath fill='%23beb950' d='M0 0v8c3 6 6-2 9 4s6-4 9 2 6-6 9 2 6-2 9 4 6-6 12 0V0H0z'/%3E%3C/svg%3E");
 }
 
 .media-placeholder {
-  background:
-    linear-gradient(160deg, rgba(26, 36, 28, 0.55), rgba(26, 36, 28, 0.2)),
+    background: linear-gradient(160deg, rgba(26, 36, 28, 0.55), rgba(26, 36, 28, 0.2)),
     radial-gradient(ellipse at 30% 20%, rgba(190, 185, 80, 0.45), transparent 55%),
     radial-gradient(ellipse at 80% 80%, rgba(31, 42, 36, 0.75), #1a241c);
 }
 
 .forest-overlay {
-  background:
-    linear-gradient(180deg, rgba(12, 18, 14, 0.45) 0%, rgba(12, 18, 14, 0.55) 45%, rgba(12, 18, 14, 0.7) 100%),
+    background: linear-gradient(180deg, rgba(12, 18, 14, 0.45) 0%, rgba(12, 18, 14, 0.55) 45%, rgba(12, 18, 14, 0.7) 100%),
     radial-gradient(ellipse at center, transparent 0%, rgba(8, 12, 10, 0.35) 100%);
 }
 
 /* Cover (Figma): light scrim so photo stays dominant and white type stays legible. */
 .cover-overlay {
-  background:
-    linear-gradient(180deg, rgba(8, 12, 10, 0.22) 0%, rgba(8, 12, 10, 0.32) 50%, rgba(8, 12, 10, 0.48) 100%),
+    background: linear-gradient(180deg, rgba(8, 12, 10, 0.22) 0%, rgba(8, 12, 10, 0.32) 50%, rgba(8, 12, 10, 0.48) 100%),
     radial-gradient(ellipse at 50% 40%, transparent 0%, rgba(8, 12, 10, 0.28) 100%);
 }
 
@@ -168,25 +202,24 @@ img[data-nimg="fill"] {
  * top so heads/sky are not cropped by vertical centering. Raise X % → more right.
  */
 .cover-photo {
-  background-position: 47% top;
+    background-position: 47% top;
 }
 
 @media (min-width: 640px) {
-  .cover-photo {
-    background-position: 48.5% top;
-  }
+    .cover-photo {
+        background-position: 48.5% top;
+    }
 }
 
 @media (min-width: 1024px) {
-  .cover-photo {
-    background-position: center top;
-  }
+    .cover-photo {
+        background-position: center top;
+    }
 }
 
 /* Hero: light vignette so brand yellow type stays readable on photo. */
 .hero-overlay {
-  background:
-    linear-gradient(180deg, rgba(12, 18, 14, 0.15) 0%, rgba(12, 18, 14, 0.28) 55%, rgba(12, 18, 14, 0.42) 100%);
+    background: linear-gradient(180deg, rgba(12, 18, 14, 0.15) 0%, rgba(12, 18, 14, 0.28) 55%, rgba(12, 18, 14, 0.42) 100%);
 }
 
 /*
@@ -194,72 +227,72 @@ img[data-nimg="fill"] {
  * stay in frame (cover). Raise % → more right; lower % → more center/left.
  */
 .hero-photo {
-  background-position: 53.5% top;
+    background-position: 53.5% top;
 }
 
 @media (min-width: 640px) and (orientation: portrait) {
-  .hero-photo {
-    background-position: 52.5% top;
-  }
+    .hero-photo {
+        background-position: 52.5% top;
+    }
 }
 
 @media (min-width: 1024px), (orientation: landscape) {
-  .hero-photo {
-    background-position: center top;
-  }
+    .hero-photo {
+        background-position: center top;
+    }
 }
 
 /* Full-width swipe transition between gallery buffers. */
 @keyframes gallery-swipe-in-next {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
 }
 
 @keyframes gallery-swipe-out-next {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-100%);
-  }
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-100%);
+    }
 }
 
 @keyframes gallery-swipe-in-prev {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(0);
-  }
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
 }
 
 @keyframes gallery-swipe-out-prev {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(100%);
-  }
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(100%);
+    }
 }
 
 .gallery-swipe-in-next {
-  animation: gallery-swipe-in-next 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: gallery-swipe-in-next 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .gallery-swipe-out-next {
-  animation: gallery-swipe-out-next 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: gallery-swipe-out-next 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .gallery-swipe-in-prev {
-  animation: gallery-swipe-in-prev 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: gallery-swipe-in-prev 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .gallery-swipe-out-prev {
-  animation: gallery-swipe-out-prev 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: gallery-swipe-out-prev 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /*
@@ -267,45 +300,45 @@ img[data-nimg="fill"] {
  * Cap height to viewport; do not stretch short images.
  */
 .gallery-slide-photo {
-  display: block;
-  object-fit: contain;
-  object-position: top center;
+    display: block;
+    object-fit: contain;
+    object-position: top center;
 }
 
 .gallery-slide-photo--mobile {
-  width: 100%;
-  height: auto;
-  max-width: 100%;
-  max-height: 100svh;
-  max-height: 100dvh;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    max-height: 100svh;
+    max-height: 100dvh;
 }
 
 .gallery-slide-photo--desktop {
-  width: 100%;
-  height: auto;
-  max-width: 100%;
-  max-height: 100svh;
-  max-height: 100dvh;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    max-height: 100svh;
+    max-height: 100dvh;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .gallery-swipe-in-next,
-  .gallery-swipe-out-next,
-  .gallery-swipe-in-prev,
-  .gallery-swipe-out-prev,
-  .gallery-slide-advance-next,
-  .gallery-slide-advance-prev {
-    animation: none;
-  }
+    .gallery-swipe-in-next,
+    .gallery-swipe-out-next,
+    .gallery-swipe-in-prev,
+    .gallery-swipe-out-prev,
+    .gallery-slide-advance-next,
+    .gallery-slide-advance-prev {
+        animation: none;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }

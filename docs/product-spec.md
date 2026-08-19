@@ -1,50 +1,58 @@
 # Product specification: Wedding Invitation
 
-**Status:** product direction — invitation UI, admin, RSVP + boarding, hardening complete for authorized slices — see `current-phase.md`
+**Status:** product direction — invitation UI, admin, RSVP + boarding, hardening complete for authorized slices — see
+`current-phase.md`
 
 **Last reviewed:** 2026-08-12
 
-Este documento define qué producto se quiere construir. No autoriza por sí mismo la implementación de todas sus secciones. El alcance actualmente permitido está únicamente en `docs/current-phase.md`, y las decisiones técnicas aprobadas están en `docs/architecture.md`.
+Este documento define qué producto se quiere construir. No autoriza por sí mismo la implementación de todas sus
+secciones. El alcance actualmente permitido está únicamente en `docs/current-phase.md`, y las decisiones técnicas
+aprobadas están en `docs/architecture.md`.
 
 ### Estado de implementación (2026-08)
 
-| Capacidad | Estado |
-|-----------|--------|
-| Invitación pública (Figma + polish) | Implementada — ver **`docs/invitation-ui.md`** |
-| Saludo de portada | 1 / 2 / 3+ invitados; Querido/Querida según género |
-| Inspiración de vestimenta | `/inspiracion/ellos` · `/inspiracion/ellas` |
-| Zona horaria de etiquetas | `America/Bogota` (`event-timezone.ts`) |
-| Nombres de pareja | **Nychol** & **Miguel** (`weddingConfig` + `events`) |
-| Lugar / cómo llegar | Embed de mapa + Google Maps / Waze / Apple Maps (solo Apple) |
-| Música de fondo | Tras gesto “Ver Invitación”; mute flotante; requiere asset |
-| RSVP embebido | Asistencia por invitado, dietas, contacto (teléfono obligatorio) |
-| Transporte (bus) | Opt-in + **punto de embarque obligatorio** (`modelia` / `villa_sonia`); copy: gratuito |
-| Admin | Login, resumen, analytics, invitados, familias (nombre + **género**), enlaces |
-| Visual admin | Alineado con brand de invitación |
-| Edge auth (Next.js 16) | `src/proxy.ts` (antes middleware) |
-| Tests unitarios (Vitest) | RSVP Zod, transport, slugs, cover greeting, TZ, guest media — `pnpm test` |
-| Admin family create/update | RPC transaccionales (+ géneros) + `serverLog` |
-| Rate limit + logging | In-memory RSVP/lookup gates + JSON logs sin PII |
-| Checklist go-live | `docs/go-live-checklist.md` |
-| Export Excel (admin) | Implementado (`/api/admin/export`) |
-| Guest media uploads | Implementado (`/i/[slug]/fotos`, `/fotos?code=`, `/admin/photos`, Storage privado) |
-| Email / settings UI | No implementado |
-| Admin listados reutilizables | Filtros + chips + orden por columna + paginación |
-| Contacto en `guests` | Teléfono/correo copiados desde el RSVP familiar |
+| Capacidad                           | Estado                                                                                 |
+|-------------------------------------|----------------------------------------------------------------------------------------|
+| Invitación pública (Figma + polish) | Implementada — ver **`docs/invitation-ui.md`**                                         |
+| Saludo de portada                   | 1 / 2 / 3+ invitados; Querido/Querida según género                                     |
+| Inspiración de vestimenta           | `/inspiracion/ellos` · `/inspiracion/ellas`                                            |
+| Zona horaria de etiquetas           | `America/Bogota` (`event-timezone.ts`)                                                 |
+| Nombres de pareja                   | **Nychol** & **Miguel** (`weddingConfig` + `events`)                                   |
+| Lugar / cómo llegar                 | Embed de mapa + Google Maps / Waze / Apple Maps (solo Apple)                           |
+| Música de fondo                     | Tras gesto “Ver Invitación”; mute flotante; requiere asset                             |
+| RSVP embebido                       | Asistencia por invitado, dietas, contacto (teléfono obligatorio)                       |
+| Transporte (bus)                    | Opt-in + **punto de embarque obligatorio** (`modelia` / `villa_sonia`); copy: gratuito |
+| Admin                               | Login, resumen, analytics, invitados, familias (nombre + **género**), enlaces          |
+| Visual admin                        | Alineado con brand de invitación                                                       |
+| Edge auth (Next.js 16)              | `src/proxy.ts` (antes middleware)                                                      |
+| Tests unitarios (Vitest)            | RSVP Zod, transport, slugs, cover greeting, TZ, guest media — `pnpm test`              |
+| Admin family create/update          | RPC transaccionales (+ géneros) + `serverLog`                                          |
+| Rate limit + logging                | In-memory RSVP/lookup gates + JSON logs sin PII                                        |
+| Checklist go-live                   | `docs/go-live-checklist.md`                                                            |
+| Export Excel (admin)                | Implementado (`/api/admin/export`)                                                     |
+| Guest media uploads                 | Implementado (`/i/[slug]/fotos`, `/fotos?code=`, `/admin/photos`, Storage privado)     |
+| Email / settings UI                 | No implementado                                                                        |
+| Admin listados reutilizables        | Filtros + chips + orden por columna + paginación                                       |
+| Contacto en `guests`                | Teléfono/correo copiados desde el RSVP familiar                                        |
 
-Config de copy y rutas de medios: **`src/config/wedding.ts`**. Ids de puntos de bus: **`src/config/transport.ts`**. Storage invitados: **`docs/guest-media-storage.md`**.
+Config de copy y rutas de medios: **`src/config/wedding.ts`**. Ids de puntos de bus: **`src/config/transport.ts`**.
+Storage invitados: **`docs/guest-media-storage.md`**.
 
-Pendiente a nivel producto (salvo autorización en `current-phase.md`): email (Resend), editor de settings en admin, galería pública colaborativa, horarios de salida del bus hacia Subachoque si aún “por confirmar”.
+Pendiente a nivel producto (salvo autorización en `current-phase.md`): email (Resend), editor de settings en admin,
+galería pública colaborativa, horarios de salida del bus hacia Subachoque si aún “por confirmar”.
 
 ## 1. Propósito del proyecto
 
-Estamos construyendo una invitación web moderna, elegante, personalizada y responsive para un matrimonio de aproximadamente 90 invitados.
+Estamos construyendo una invitación web moderna, elegante, personalizada y responsive para un matrimonio de
+aproximadamente 90 invitados.
 
 La aplicación debe servir como invitación digital y como sistema de gestión de confirmaciones de asistencia.
 
-El objetivo principal es que cada familia o grupo de invitados reciba un enlace personalizado, pueda consultar la información del evento y confirmar quiénes asistirán.
+El objetivo principal es que cada familia o grupo de invitados reciba un enlace personalizado, pueda consultar la
+información del evento y confirmar quiénes asistirán.
 
-La aplicación también tendrá un panel administrativo privado para gestionar familias, invitados, respuestas, restricciones alimentarias y exportaciones.
+La aplicación también tendrá un panel administrativo privado para gestionar familias, invitados, respuestas,
+restricciones alimentarias y exportaciones.
 
 La solución debe ser:
 
@@ -419,11 +427,11 @@ Debe incluir:
 
 La portada (`/i/[slug]`) muestra un saludo según la cantidad de invitados de la familia:
 
-| Invitados | Ejemplo |
-|-----------|---------|
-| 1 | `Querido Luis` / `Querida Ana` / `Hola Alex` (según `guests.gender`) |
-| 2 | `Queridos Ana y Luis` |
-| 3+ | `Querida Familia Gutiérrez` (`families.display_name`) |
+| Invitados | Ejemplo                                                              |
+|-----------|----------------------------------------------------------------------|
+| 1         | `Querido Luis` / `Querida Ana` / `Hola Alex` (según `guests.gender`) |
+| 2         | `Queridos Ana y Luis`                                                |
+| 3+        | `Querida Familia Gutiérrez` (`families.display_name`)                |
 
 El subtítulo de portada y el resto del cuerpo de la invitación viven en `weddingConfig`.
 
@@ -646,13 +654,17 @@ created_at
 updated_at
 ```
 
-`gender`: `male` \| `female` \| `unspecified` (nullable for legacy rows). Required when creating/updating families in admin. Used for the singular cover greeting (`Querido` / `Querida` / `Hola`).
+`gender`: `male` \| `female` \| `unspecified` (nullable for legacy rows). Required when creating/updating families in
+admin. Used for the singular cover greeting (`Querido` / `Querida` / `Hola`).
 
-`needs_name_confirmation`: true for plus-ones stored as “Acompañante” (or similar). The RSVP form requires a real name; they still count in analytics totals.
+`needs_name_confirmation`: true for plus-ones stored as “Acompañante” (or similar). The RSVP form requires a real name;
+they still count in analytics totals.
 
-`transport_boarding_point`: nullable; values in use: `modelia`, `villa_sonia`. Required when `needs_transport` is true for an attending guest (enforced in RPC + Zod).
+`transport_boarding_point`: nullable; values in use: `modelia`, `villa_sonia`. Required when `needs_transport` is true
+for an attending guest (enforced in RPC + Zod).
 
-`email` / `phone` on `guests`: mirrored from the family RSVP contact on submit (and backfilled for existing responses). The public form still has one family contact; per-guest JSON overrides are reserved for a later form.
+`email` / `phone` on `guests`: mirrored from the family RSVP contact on submit (and backfilled for existing responses).
+The public form still has one family contact; per-guest JSON overrides are reserved for a later form.
 
 Estados:
 
@@ -961,7 +973,8 @@ export const weddingConfig = {
 } as const;
 ```
 
-Los **ids** de `meetingPoints` son contrato con Zod, RPC y constraints SQL. No dispersar textos del evento en múltiples componentes.
+Los **ids** de `meetingPoints` son contrato con Zod, RPC y constraints SQL. No dispersar textos del evento en múltiples
+componentes.
 
 ---
 
@@ -1404,7 +1417,9 @@ No debe incluir inicialmente:
 
 # 29. Handoff histórico: Project Foundation
 
-> Esta sección y las secciones 30–31 se conservan como contexto histórico del handoff inicial. Pueden estar desactualizadas y no deben usarse como checklist operativo. La fuente vigente y verificable es `docs/current-phase.md`; las reglas permanentes están en `AGENTS.md`. El UI de la invitación se documenta en `docs/invitation-ui.md`.
+> Esta sección y las secciones 30–31 se conservan como contexto histórico del handoff inicial. Pueden estar
+> desactualizadas y no deben usarse como checklist operativo. La fuente vigente y verificable es `docs/current-phase.md`;
+> las reglas permanentes están en `AGENTS.md`. El UI de la invitación se documenta en `docs/invitation-ui.md`.
 
 El entorno ya está listo.
 

@@ -108,7 +108,7 @@ export function AdminMediaQrPanel({
         </label>
       </div>
       <p className={`mt-2 ${admin.muted}`}>{windowHint}</p>
-      <div className="mt-3 flex flex-wrap gap-3">
+      <div className="mt-3 flex flex-col gap-3 lg:flex-row lg:flex-wrap">
         <button
           type="button"
           disabled={pending}
@@ -179,7 +179,7 @@ export function AdminMediaQrPanel({
         </>
       ) : null}
 
-      <div className="mt-5 flex flex-wrap gap-3">
+      <div className="mt-5 flex flex-col gap-3 lg:flex-row lg:flex-wrap">
         <button
           type="button"
           disabled={pending}

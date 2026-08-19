@@ -1,4 +1,8 @@
 import { adminCopy, familyStatusLabel } from "@/lib/admin/admin-copy";
+import {
+  filterActiveFamilies,
+  filterGuestsOfActiveFamilies,
+} from "@/lib/admin/active-invitation";
 import { formatTransportBoardingPoint } from "@/config/transport";
 import { formatEventDateTime } from "@/lib/datetime/event-timezone";
 import type { GuestListItem, AnalyticsSnapshot } from "@/services/admin/analytics";
@@ -154,7 +158,7 @@ export function buildSummarySheet(snapshot: AnalyticsSnapshot): ExportSheet {
       ["Familias", String(snapshot.familyCount)],
       ["Familias respondidas", String(snapshot.familiesResponded)],
       ["Familias pendientes", String(snapshot.familiesPending)],
-      ["Familias deshabilitadas", String(snapshot.familiesDisabled)],
+      ["Familias desactivadas", String(snapshot.familiesDisabled)],
       ["Familias que abrieron enlace", String(snapshot.familiesOpened)],
       ["Tasa respuesta familias (%)", String(snapshot.familyResponseRate)],
       ["Cupos asignados", String(snapshot.assignedSeats)],
@@ -188,4 +192,112 @@ export function buildAllExportSheets(input: {
     buildTransportSheet(input.guests),
     buildDietSheet(input.guests),
   ];
+}
+
+export function buildAttendingSheet(guests: GuestListItem[]): ExportSheet {
+  const attending = guests.filter(
+    (guest) => guest.attendanceStatus === "attending",
+  );
+
+  return {
+    name: "Asistentes",
+    headers: [
+      "Invitado",
+      "Familia",
+      "Bus",
+      "Punto de salida",
+      "Dieta",
+      "Teléfono",
+      "Correo",
+    ],
+    rows: attending.map((guest) => [
+      guest.fullName,
+      guest.familyName,
+      yesNo(guest.needsTransport),
+      formatTransportBoardingPoint(guest.transportBoardingPoint),
+      textOrDash(guest.dietaryRestrictions),
+      textOrDash(guest.phone),
+      textOrDash(guest.email),
+    ]),
+  };
+}
+
+export function buildPrimaryContactsSheet(guests: GuestListItem[]): ExportSheet {
+  const contacts = guests.filter((guest) => guest.isPrimaryContact);
+
+  return {
+    name: "Contactos",
+    headers: ["Familia", "Invitado", "Teléfono", "Correo"],
+    rows: contacts.map((guest) => [
+      guest.familyName,
+      guest.fullName,
+      textOrDash(guest.phone),
+      textOrDash(guest.email),
+    ]),
+  };
+}
+
+export type AdminExportKind =
+  | "full"
+  | "attending"
+  | "transport"
+  | "dietary"
+  | "contacts";
+
+export function parseAdminExportKind(value: string | null): AdminExportKind {
+  if (
+    value === "attending" ||
+    value === "transport" ||
+    value === "dietary" ||
+    value === "contacts"
+  ) {
+    return value;
+  }
+  return "full";
+}
+
+export function buildExportSheetsForKind(
+  kind: AdminExportKind,
+  input: {
+    guests: GuestListItem[];
+    families: AdminFamilyListItem[];
+    snapshot: AnalyticsSnapshot;
+  },
+): ExportSheet[] {
+  const families = filterActiveFamilies(input.families);
+  const guests = filterGuestsOfActiveFamilies(input.guests, input.families);
+  const scoped = { ...input, guests, families };
+
+  if (kind === "attending") {
+    return [buildAttendingSheet(guests)];
+  }
+  if (kind === "transport") {
+    return [buildTransportSheet(guests)];
+  }
+  if (kind === "dietary") {
+    return [buildDietSheet(guests)];
+  }
+  if (kind === "contacts") {
+    return [buildPrimaryContactsSheet(guests)];
+  }
+  return buildAllExportSheets(scoped);
+}
+
+export function exportFilenameForKind(
+  kind: AdminExportKind,
+  dateStamp: string,
+): string {
+  if (kind === "attending") {
+    return `boda-asistentes-${dateStamp}.xlsx`;
+  }
+  if (kind === "transport") {
+    return `boda-buses-${dateStamp}.xlsx`;
+  }
+  if (kind === "dietary") {
+    return `boda-dietas-${dateStamp}.xlsx`;
+  }
+  if (kind === "contacts") {
+    return `boda-contactos-${dateStamp}.xlsx`;
+  }
+  return `boda-lista-${dateStamp}.xlsx`;
 }

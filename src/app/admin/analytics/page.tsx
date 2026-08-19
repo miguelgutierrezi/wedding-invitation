@@ -1,8 +1,10 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import { admin } from "@/components/admin/admin-ui";
 import { adminCopy } from "@/lib/admin/admin-copy";
+import { adminFilterLinks } from "@/lib/admin/admin-filter-links";
 import { getTransportBoardingPoint } from "@/config/transport";
 import { weddingConfig } from "@/config/wedding";
 import { formatEventDateTime } from "@/lib/datetime/event-timezone";
@@ -29,24 +31,91 @@ function RateBar({ label, percent }: { label: string; percent: number }) {
   );
 }
 
+function MetricCard({
+  label,
+  value,
+  href,
+}: {
+  label: string;
+  value: number;
+  href?: string;
+}) {
+  const inner: ReactNode = (
+    <>
+      <p className={admin.eyebrow}>{label}</p>
+      <p className={`mt-2 ${admin.metricValue}`}>{value}</p>
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className={`${admin.card} px-5 py-4 transition-opacity hover:opacity-90`}
+      >
+        {inner}
+      </Link>
+    );
+  }
+
+  return <div className={`${admin.card} px-5 py-4`}>{inner}</div>;
+}
+
 export default async function AdminAnalyticsPage() {
   const analytics = await getAnalyticsSnapshot();
 
   const cards = [
-    { label: "Familias", value: analytics.familyCount },
-    { label: "Familias que confirmaron", value: analytics.familiesResponded },
-    { label: "Familias sin confirmar", value: analytics.familiesPending },
-    { label: "Abrieron la invitación", value: analytics.familiesOpened },
-    { label: "Familias desactivadas", value: analytics.familiesDisabled },
-    { label: "Invitados totales", value: analytics.totalGuests },
-    { label: "Asistentes", value: analytics.guestsAttending },
-    { label: "No asisten", value: analytics.guestsNotAttending },
-    { label: "Sin confirmar", value: analytics.guestsPending },
-    { label: "Cupos de bus", value: analytics.guestsNeedingTransport },
-    { label: "Con dieta especial", value: analytics.guestsWithDietary },
+    { label: "Familias", value: analytics.familyCount, href: adminFilterLinks.families },
+    {
+      label: "Familias que confirmaron",
+      value: analytics.familiesResponded,
+      href: adminFilterLinks.familiesResponded,
+    },
+    {
+      label: "Familias sin confirmar",
+      value: analytics.familiesPending,
+      href: adminFilterLinks.familiesPending,
+    },
+    {
+      label: "Abrieron la invitación",
+      value: analytics.familiesOpened,
+      href: adminFilterLinks.familiesOpened,
+    },
+    {
+      label: "Familias desactivadas",
+      value: analytics.familiesDisabled,
+      href: adminFilterLinks.familiesDisabled,
+    },
+    { label: "Invitados totales", value: analytics.totalGuests, href: adminFilterLinks.guests },
+    {
+      label: "Asistentes",
+      value: analytics.guestsAttending,
+      href: adminFilterLinks.guestsAttending,
+    },
+    {
+      label: "No asisten",
+      value: analytics.guestsNotAttending,
+      href: adminFilterLinks.guestsNotAttending,
+    },
+    {
+      label: "Sin confirmar",
+      value: analytics.guestsPending,
+      href: adminFilterLinks.guestsPending,
+    },
+    {
+      label: "Cupos de bus",
+      value: analytics.guestsNeedingTransport,
+      href: adminFilterLinks.guestsWithBus,
+    },
+    {
+      label: "Con dieta especial",
+      value: analytics.guestsWithDietary,
+      href: adminFilterLinks.guestsWithDietary,
+    },
     {
       label: "Nombres por confirmar",
       value: analytics.guestsPendingNameConfirmation,
+      href: adminFilterLinks.guestsNeedsName,
     },
   ] as const;
 
@@ -89,13 +158,21 @@ export default async function AdminAnalyticsPage() {
             const detail = getTransportBoardingPoint(point.id);
 
             return (
-              <div key={point.id} className={`${admin.panel} px-5 py-4`}>
+              <Link
+                key={point.id}
+                href={
+                  point.id === "modelia"
+                    ? adminFilterLinks.guestsBusModelia
+                    : adminFilterLinks.guestsBusVillaSonia
+                }
+                className={`${admin.panel} px-5 py-4 transition-opacity hover:opacity-90`}
+              >
                 <p className={admin.eyebrow}>{point.title}</p>
                 <p className={`mt-1 ${admin.muted}`}>
                   {detail?.place ?? point.place}
                 </p>
                 <p className={`mt-2 ${admin.metricValue}`}>{count}</p>
-              </div>
+              </Link>
             );
           })}
         </div>
@@ -103,20 +180,13 @@ export default async function AdminAnalyticsPage() {
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((card) => (
-          <div key={card.label} className={`${admin.card} px-5 py-4`}>
-            <p className={admin.eyebrow}>{card.label}</p>
-            <p className={`mt-2 ${admin.metricValue}`}>{card.value}</p>
-          </div>
+          <MetricCard
+            key={card.label}
+            label={card.label}
+            value={card.value}
+            href={"href" in card ? card.href : undefined}
+          />
         ))}
-      </div>
-
-      <div className="mt-10 flex flex-wrap gap-3">
-        <Link href="/admin/guests" className={admin.btnPrimary}>
-          Ver invitados uno a uno
-        </Link>
-        <Link href="/admin/families" className={admin.btnSecondary}>
-          Ver familias
-        </Link>
       </div>
     </AdminShell>
   );

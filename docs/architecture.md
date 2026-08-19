@@ -2,7 +2,7 @@
 
 **Status:** Guest Media Uploads complete; invitation polish (cover greeting + guest gender) documented
 
-**Last reviewed:** 2026-08-12
+**Last reviewed:** 2026-08-19
 
 This document describes the intended technical architecture and its boundaries. It does not authorize implementation beyond `current-phase.md`.
 
@@ -57,14 +57,14 @@ Use:
 /inspiracion/ellos     outfit inspiration (men)
 /inspiracion/ellas     outfit inspiration (women)
 /admin/login           administrator sign-in
-/admin                 dashboard (summary metrics)
+/admin                 dashboard (action queue, RSVP close checklist, metrics)
 /admin/analytics       rates + transport boarding breakdown
 /admin/guests          per-guest listing
 /admin/families        family list
 /admin/families/new    create family + invitation link
 /admin/families/[id]   family detail / edit
 /admin/photos          guest media moderation + QR URL
-/api/admin/export      Excel export
+/api/admin/export      Excel export (`?kind=` attending|transport|dietary|contacts)
 /api/...               HTTP endpoints only when appropriate
 ```
 
@@ -95,8 +95,12 @@ Ceremony maps URLs live on `weddingConfig.ceremony` (`mapsUrl`, `wazeUrl`, `appl
 - Music: module singleton `src/lib/invitation-audio.ts`; start after cover “Ver Invitación” gesture; floating mute on the invitation body. Controlled by `features.music` + `assets.music`.
 - RSVP form is embedded in the invitation (cream band); it is not a separate navigation-only CTA page.
 - Cap multi-column invitation layouts on ultra-wide viewports so copy and CTAs stay visually grouped.
-- Admin chrome reuses invitation brand (accent header, cream page, Times/olive type).
+- Admin chrome reuses invitation brand (accent header, cream page, Times/olive type). Below `lg` (phone and tablet portrait): hamburger with a right slide-in **accent** drawer (cream type/pills, same as the desktop header nav), floating **+** to add a family (`bg-accent`, white plus, hidden on `/admin/families/new`), back chevron on the create-family header, stacked cards instead of wide tables, full-width actions. From `lg` up: inline nav and tables. Path rules live in `src/lib/admin/admin-chrome.ts`.
 - Admin family/guest lists filter in memory, show active-filter chips, sort by column, and paginate at 25 rows. Query string (`q`, filters, `sort`, `dir`, `page`) is updated with `history.replaceState`. SQL push-down can wait until a commercial install outgrows a few hundred guests.
+- **Admin filter convention:** `src/lib/validation/admin-filters.ts` owns parse (search params → typed filters), match (in-memory predicate), chips (active-filter labels), and `buildAdmin*FilterQuery` (typed filters → query string). Presets for dashboard/analytics live in `src/lib/admin/admin-filter-links.ts`. Sort/pagination helpers live in `src/lib/admin/list-view.ts`.
+- **Admin family delete:** `delete_family` RPC (service-role) removes the family row; guests and RSVP rows cascade. Guest media `family_id` is set null. The UI requires typing the family display name.
+- **Admin operations:** dashboard action queue and RSVP close checklist (`src/lib/admin/rsvp-close-checklist.ts`, 95% family/guest rates and zero pending companion names). WhatsApp reminders are clipboard-only (`src/lib/admin/whatsapp-reminder.ts` + `weddingConfig.admin.whatsappReminderTemplate`). Resumen offers a single Excel download; optional `?kind=` slices remain on `/api/admin/export`. Disable/regenerate invitation confirm in the family form.
+- **Disabled invitations:** planning counts, guest listing, and Excel omit families with `is_enabled = false` or `status = disabled`. The analytics “Familias desactivadas” card is the dedicated count; the families list still shows them when filtered.
 
 ## Edge proxy (admin auth)
 
@@ -121,10 +125,12 @@ Unit tests use **Vitest** (`pnpm test`). Prefer fast tests of Zod schemas and pu
 Current coverage targets:
 
 - `submitRsvpSchema` (boarding, honeypot, attendance rules, slug/email).
+- RSVP guest contact payload (`email`/`phone` copied onto every guest JSON).
 - Transport boarding id sync with `weddingConfig`.
 - Invitation slug helpers.
 - In-memory rate limiter + `serverLog` PII stripping.
-- Admin `updateFamily` / `createFamily` RPC error mapping.
+- Admin `updateFamily` / `createFamily` / `deleteFamily` RPC error mapping and actions.
+- Admin list filter parse/match/chips/query + list-view sort/pagination.
 - Cover greeting helper (`formatCoverGreeting`).
 - Placeholder companion names (`isPlaceholderGuestName`).
 - Event timezone helpers.
@@ -145,7 +151,7 @@ Integration tests against live Supabase / RPC are optional and must not require 
 
 - **Structured logs:** `src/lib/logging/server-log.ts` emits one JSON object per line. Do not log emails, phones, dietary text, messages, or raw invitation tokens/slugs (use `fingerprintPublicId` when correlation is needed).
 - **RSVP action:** logs validation failures, honeypot hits, rate limits, success, and sanitized failure codes.
-- **Admin mutations:** `createFamily` / `updateFamily` / slug regen and admin auth actions emit `serverLog` events (`admin_family_*`, `admin_sign_in_*`) without emails or guest names.
+- **Admin mutations:** `createFamily` / `updateFamily` / `deleteFamily` / slug regen and admin auth actions emit `serverLog` events (`admin_family_*`, `admin_sign_in_*`) without emails or guest names.
 - **Invitation lookup:** rate-limited per IP; misses log `invitation_lookup_miss` with slug fingerprint only.
 - **Rate limit:** `src/lib/security/rate-limit.ts` + `src/config/rate-limit.ts`. In-memory / per-isolate — complement with Cloudflare WAF for global protection. Budgets are intentionally generous for WhatsApp retries.
 

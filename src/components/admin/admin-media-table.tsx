@@ -75,7 +75,94 @@ export function AdminMediaTable({ items }: AdminMediaTableProps) {
   }
 
   return (
-    <div className={`mt-8 ${admin.tableShell}`}>
+    <>
+      <ul className="mt-8 grid gap-3 lg:hidden">
+        {items.map((item) => {
+          const previewUrl = previewUrls[item.id];
+          const canPreview = isReviewableStatus(item.status);
+
+          return (
+            <li key={item.id} className={`${admin.card} flex flex-col gap-3 p-4`}>
+              <div className="flex gap-3">
+                {previewUrl && item.mediaType === "image" ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={previewUrl}
+                    alt=""
+                    className="size-16 shrink-0 rounded-lg object-cover"
+                  />
+                ) : null}
+                <div className="min-w-0">
+                  <p className="truncate font-medium text-cover-cta-fg">
+                    {item.originalFilename}
+                  </p>
+                  <p className={admin.muted}>
+                    {mediaStatusLabel(item.status)} · {formatBytes(item.sizeBytes)}
+                  </p>
+                  <p className={admin.muted}>
+                    {item.source === "invitation"
+                      ? adminCopy.media.sourceInvitation
+                      : adminCopy.media.sourceQr}
+                    {item.familyName ? ` · ${item.familyName}` : null}
+                  </p>
+                  {previewUrl && item.mediaType !== "image" ? (
+                    <a
+                      href={previewUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={`${admin.link} mt-1 inline-block`}
+                    >
+                      Ver video
+                    </a>
+                  ) : null}
+                  {canPreview && previewsLoading && !previewUrl ? (
+                    <span className="text-cover-cta-fg/50">…</span>
+                  ) : null}
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-2">
+                <button
+                  type="button"
+                  disabled={pending}
+                  className={admin.btnSecondary}
+                  onClick={() =>
+                    startTransition(async () => {
+                      await approveMediaUploadAction(item.id);
+                    })
+                  }
+                >
+                  Aprobar
+                </button>
+                <button
+                  type="button"
+                  disabled={pending}
+                  className={admin.btnSecondary}
+                  onClick={() =>
+                    startTransition(async () => {
+                      await rejectMediaUploadAction(item.id);
+                    })
+                  }
+                >
+                  Rechazar
+                </button>
+                <button
+                  type="button"
+                  disabled={pending}
+                  className={admin.btnSecondary}
+                  onClick={() =>
+                    startTransition(async () => {
+                      await deleteMediaUploadAction(item.id);
+                    })
+                  }
+                >
+                  Eliminar
+                </button>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      <div className={`mt-8 hidden lg:block ${admin.tableShell}`}>
       <table className="min-w-full text-left text-sm font-[family-name:var(--font-timer)]">
         <thead className={admin.tableHead}>
           <tr>
@@ -181,6 +268,7 @@ export function AdminMediaTable({ items }: AdminMediaTableProps) {
           })}
         </tbody>
       </table>
-    </div>
+      </div>
+    </>
   );
 }

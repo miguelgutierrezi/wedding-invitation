@@ -8,9 +8,9 @@ export const admin = {
   eyebrow:
     "font-[family-name:var(--font-timer)] text-xs font-medium tracking-[0.18em] text-cover-cta-fg/70 uppercase",
   title:
-    "font-[family-name:var(--font-timer)] text-[clamp(1.75rem,4vw,2.25rem)] leading-tight font-bold text-cover-cta-fg",
+    "font-[family-name:var(--font-timer)] text-[clamp(1.75rem,4vw,2.25rem)] leading-tight font-bold break-words text-cover-cta-fg",
   titleOnAccent:
-    "font-[family-name:var(--font-timer)] text-[clamp(1.75rem,4vw,2.25rem)] leading-tight font-bold text-cream-figma",
+    "font-[family-name:var(--font-timer)] text-[clamp(1.75rem,4vw,2.25rem)] leading-tight font-bold break-words text-cream-figma",
   body: "font-[family-name:var(--font-timer)] text-[clamp(1rem,1.8vw,1.125rem)] leading-7 text-cover-cta-fg",
   muted:
     "font-[family-name:var(--font-timer)] text-sm leading-6 text-cover-cta-fg/70",
@@ -34,19 +34,21 @@ export const admin = {
   selectTrigger:
     "inline-flex min-h-11 w-full items-center justify-between gap-3 rounded-2xl border-2 border-cover-cta-fg/30 bg-white/85 px-4 font-[family-name:var(--font-timer)] text-left text-cover-cta-fg outline-none transition-[border-color,box-shadow] hover:border-cover-cta-fg/55 focus-visible:border-cover-cta-fg focus-visible:ring-2 focus-visible:ring-accent",
   selectMenu:
-    "absolute top-[calc(100%+0.35rem)] z-20 m-0 w-full list-none overflow-hidden rounded-2xl border-2 border-cover-cta-fg/20 bg-cream-figma py-1 font-[family-name:var(--font-timer)] text-cover-cta-fg shadow-[0_10px_24px_rgba(69,68,17,0.08)]",
+    "absolute top-[calc(100%+0.35rem)] z-20 m-0 max-h-[min(16rem,50vh)] w-full list-none overflow-y-auto rounded-2xl border-2 border-cover-cta-fg/20 bg-cream-figma py-1 font-[family-name:var(--font-timer)] text-cover-cta-fg shadow-[0_10px_24px_rgba(69,68,17,0.08)]",
   selectOption:
     "flex min-h-11 w-full items-center px-4 text-left font-[family-name:var(--font-timer)] text-cover-cta-fg outline-none transition-colors hover:bg-accent/25 focus-visible:bg-accent/25",
   btnPrimary:
-    "inline-flex min-h-11 items-center justify-center rounded-full border-2 border-cover-cta-fg bg-accent px-5 font-[family-name:var(--font-timer)] text-sm font-medium text-cover-cta-fg transition-[transform,opacity] hover:opacity-90 focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60",
+    "inline-flex min-h-11 w-full items-center justify-center rounded-full border-2 border-cover-cta-fg bg-accent px-5 font-[family-name:var(--font-timer)] text-sm font-medium text-cover-cta-fg transition-[transform,opacity] hover:opacity-90 focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto",
   btnSecondary:
-    "inline-flex min-h-11 items-center justify-center rounded-full border-2 border-cover-cta-fg/40 bg-cream-figma/90 px-5 font-[family-name:var(--font-timer)] text-sm font-medium text-cover-cta-fg transition-[background-color,opacity] hover:bg-cream-figma focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45",
+    "inline-flex min-h-11 w-full items-center justify-center rounded-full border-2 border-cover-cta-fg/40 bg-cream-figma/90 px-5 font-[family-name:var(--font-timer)] text-sm font-medium text-cover-cta-fg transition-[background-color,opacity] hover:bg-cream-figma focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45 lg:w-auto",
   btnGhost:
-    "inline-flex min-h-11 items-center justify-center rounded-full px-4 font-[family-name:var(--font-timer)] text-sm font-medium text-cream-figma/95 transition-colors hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-cream-figma/60 focus-visible:outline-none",
+    "inline-flex min-h-11 shrink-0 items-center justify-center rounded-full px-4 font-[family-name:var(--font-timer)] text-sm font-medium text-cream-figma/95 transition-colors hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-cream-figma/60 focus-visible:outline-none",
+  navScroller:
+    "flex gap-2 overflow-x-auto overscroll-x-contain pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
   navLink:
-    "inline-flex min-h-11 items-center rounded-full px-4 font-[family-name:var(--font-timer)] text-sm font-medium text-cream-figma/95 transition-colors hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-cream-figma/60 focus-visible:outline-none",
+    "inline-flex min-h-11 shrink-0 items-center rounded-full px-4 font-[family-name:var(--font-timer)] text-sm font-medium text-cream-figma/95 transition-colors hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-cream-figma/60 focus-visible:outline-none",
   navLinkActive:
-    "inline-flex min-h-11 items-center rounded-full bg-cream-figma px-4 font-[family-name:var(--font-timer)] text-sm font-medium text-cover-cta-fg",
+    "inline-flex min-h-11 shrink-0 items-center rounded-full bg-cream-figma px-4 font-[family-name:var(--font-timer)] text-sm font-medium text-cover-cta-fg",
   link:
     "font-[family-name:var(--font-timer)] text-sm font-medium text-cover-cta-fg underline-offset-4 hover:underline",
   metricValue:
@@ -60,6 +62,14 @@ export const admin = {
   error: "font-[family-name:var(--font-timer)] text-sm text-red-800",
   chip:
     "inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-cover-cta-fg/20 bg-cream-figma px-3 font-[family-name:var(--font-timer)] text-sm text-cover-cta-fg transition-colors hover:border-cover-cta-fg/45 hover:bg-white/80",
+  badge:
+    "inline-flex min-h-7 shrink-0 items-center whitespace-nowrap rounded-full px-2.5 text-xs font-medium",
+  badgePending:
+    "inline-flex min-h-7 shrink-0 items-center whitespace-nowrap rounded-full bg-cover-cta-fg/10 px-2.5 text-xs font-medium text-cover-cta-fg",
+  badgeResponded:
+    "inline-flex min-h-7 shrink-0 items-center whitespace-nowrap rounded-full bg-accent/40 px-2.5 text-xs font-medium text-cover-cta-fg",
+  badgeDisabled:
+    "inline-flex min-h-7 shrink-0 items-center whitespace-nowrap rounded-full bg-red-800/10 px-2.5 text-xs font-medium text-red-800",
   sortButton:
     "inline-flex min-h-11 items-center gap-1.5 px-4 py-3 text-left font-[family-name:var(--font-timer)] text-xs font-medium tracking-wide text-cover-cta-fg/70 uppercase transition-colors hover:text-cover-cta-fg",
 } as const;

@@ -1,23 +1,13 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { signOutAdminAction } from "@/actions/admin/auth";
+import { AdminChrome } from "@/components/admin/admin-chrome";
 import { admin } from "@/components/admin/admin-ui";
-import { adminCopy } from "@/lib/admin/admin-copy";
 import { requireAdmin } from "@/lib/auth/require-admin";
 
 type AdminShellProps = {
   children: ReactNode;
   title: string;
 };
-
-const navItems = [
-  { href: "/admin", label: adminCopy.nav.summary },
-  { href: "/admin/analytics", label: adminCopy.nav.statistics },
-  { href: "/admin/guests", label: adminCopy.nav.guests },
-  { href: "/admin/families", label: adminCopy.nav.families },
-  { href: "/admin/photos", label: adminCopy.nav.photos },
-] as const;
 
 /**
  * Admin chrome: accent header + cream page, Times/olive type (invitation brand).
@@ -27,58 +17,8 @@ export async function AdminShell({ children, title }: AdminShellProps) {
 
   return (
     <div className={`${admin.page} flex min-h-full flex-1 flex-col`}>
-      <header className="border-b-2 border-cover-cta-fg/15 bg-accent">
-        <div className="mx-auto flex w-full min-w-0 max-w-6xl flex-col gap-5 px-6 py-5 sm:px-8">
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="font-[family-name:var(--font-timer)] text-xs font-medium tracking-[0.18em] text-cream-figma/80 uppercase">
-                Administración
-              </p>
-              <h1 className={admin.titleOnAccent}>{title}</h1>
-            </div>
-            <p className="font-[family-name:var(--font-timer)] text-sm text-cream-figma/85">
-              {session.email}
-            </p>
-          </div>
-
-          <nav
-            className="flex flex-wrap items-center gap-2"
-            aria-label="Menú de administración"
-          >
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                prefetch={false}
-                className={admin.navLink}
-              >
-                {item.label}
-              </Link>
-            ))}
-            <Link
-              href="/admin/families/new"
-              prefetch={false}
-              className="inline-flex min-h-11 items-center rounded-full border-2 border-cover-cta-fg bg-cream-figma px-4 font-[family-name:var(--font-timer)] text-sm font-medium text-cover-cta-fg transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-cream-figma focus-visible:outline-none"
-            >
-              {adminCopy.nav.newFamily}
-            </Link>
-            <a
-              href="/api/admin/export"
-              className={admin.navLink}
-              download
-            >
-              {adminCopy.nav.exportList}
-            </a>
-            <form action={signOutAdminAction} className="ml-auto sm:ml-0">
-              <button type="submit" className={admin.btnGhost}>
-                {adminCopy.nav.signOut}
-              </button>
-            </form>
-          </nav>
-        </div>
-      </header>
-
-      <main className="mx-auto w-full min-w-0 max-w-6xl flex-1 px-6 py-10 sm:px-8">
+      <AdminChrome title={title} email={session.email} />
+      <main className="mx-auto w-full min-w-0 max-w-6xl flex-1 px-4 py-6 pb-[max(6.5rem,calc(env(safe-area-inset-bottom)+5.5rem))] lg:px-8 lg:py-10 lg:pb-[max(2.5rem,env(safe-area-inset-bottom))]">
         {children}
       </main>
     </div>

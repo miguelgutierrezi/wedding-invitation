@@ -69,7 +69,7 @@ export function AdminMediaQrDownload({ url }: AdminMediaQrDownloadProps) {
   }
 
   return (
-    <div className="mt-5 flex flex-col items-start gap-4 sm:flex-row sm:items-end">
+    <div className="mt-5 flex flex-col items-start gap-4 lg:flex-row lg:items-end">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={dataUrl}

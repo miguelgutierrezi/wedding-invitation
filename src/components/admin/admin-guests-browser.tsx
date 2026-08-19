@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { AdminExpandableFilters } from "@/components/admin/admin-expandable-filters";
 import { AdminFilterChips } from "@/components/admin/admin-filter-chips";
 import { AdminPagination } from "@/components/admin/admin-pagination";
+import { GuestAttendanceBadge } from "@/components/admin/admin-status-badge";
 import { AdminSelect } from "@/components/admin/admin-select";
 import { AdminSortHeader } from "@/components/admin/admin-sort-header";
 import { admin } from "@/components/admin/admin-ui";
@@ -33,6 +34,7 @@ export type AdminGuestBrowserItem = {
   dietaryRestrictions: string | null;
   email: string | null;
   phone: string | null;
+  needsNameConfirmation: boolean;
 };
 
 type AdminGuestsBrowserProps = {
@@ -121,11 +123,29 @@ export function AdminGuestsBrowser({
   return (
     <>
       <div className="space-y-4">
-        <p className={admin.muted}>
+        <p className={`hidden lg:block ${admin.muted}`}>
           Resumen invitado por invitado. En esta vista: {visibleGuests.length} ·
           Asisten {attending.length} · No asisten {notAttending.length} ·
           Pendientes {pending.length} · Bus {withBus.length}
         </p>
+        <dl className="grid grid-cols-2 gap-2 lg:hidden">
+          <div className={`${admin.panel} px-3 py-2`}>
+            <dt className={admin.eyebrow}>En esta vista</dt>
+            <dd className="text-lg font-bold tabular-nums">{visibleGuests.length}</dd>
+          </div>
+          <div className={`${admin.panel} px-3 py-2`}>
+            <dt className={admin.eyebrow}>Asisten</dt>
+            <dd className="text-lg font-bold tabular-nums">{attending.length}</dd>
+          </div>
+          <div className={`${admin.panel} px-3 py-2`}>
+            <dt className={admin.eyebrow}>No asisten</dt>
+            <dd className="text-lg font-bold tabular-nums">{notAttending.length}</dd>
+          </div>
+          <div className={`${admin.panel} px-3 py-2`}>
+            <dt className={admin.eyebrow}>Bus</dt>
+            <dd className="text-lg font-bold tabular-nums">{withBus.length}</dd>
+          </div>
+        </dl>
 
         <AdminExpandableFilters
           activeFilterCount={chips.length}
@@ -211,10 +231,19 @@ export function AdminGuestsBrowser({
               { value: "other", label: "Otros invitados" },
             ]}
           />
+          <AdminSelect
+            label="Nombre del acompañante"
+            value={filters.name}
+            onChange={(name) => changeFilters({ name })}
+            options={[
+              { value: "all", label: "Todos" },
+              { value: "needs_name", label: "Falta el nombre" },
+            ]}
+          />
         </AdminExpandableFilters>
       </div>
 
-      <div className="mt-6 flex flex-wrap gap-3">
+      <div className="mt-6 grid grid-cols-1 gap-3 lg:flex lg:flex-wrap">
         <Link href="/admin/analytics" className={admin.btnSecondary}>
           {adminCopy.nav.statistics}
         </Link>
@@ -233,7 +262,48 @@ export function AdminGuestsBrowser({
         </p>
       ) : (
         <>
-          <div className={`mt-8 ${admin.tableShell}`}>
+          <ul className="mt-6 grid gap-3 lg:hidden">
+            {page.items.map((guest) => (
+              <li key={guest.id} className={`${admin.card} flex flex-col gap-3 p-4`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-bold text-cover-cta-fg">{guest.fullName}</p>
+                    <p className={`mt-0.5 ${admin.muted}`}>{guest.familyName}</p>
+                    {guest.isPrimaryContact ? (
+                      <p className="mt-1 text-xs text-cover-cta-fg/65">
+                        {adminCopy.guest.primaryContact}
+                      </p>
+                    ) : null}
+                    {guest.needsNameConfirmation ? (
+                      <p className="mt-1 text-xs text-cover-cta-fg/65">
+                        falta el nombre
+                      </p>
+                    ) : null}
+                  </div>
+                  <GuestAttendanceBadge status={guest.attendanceStatus} />
+                </div>
+                <p className={admin.muted}>
+                  {guest.needsTransport
+                    ? `Bus · ${formatTransportBoardingPoint(guest.transportBoardingPoint)}`
+                    : "Sin bus"}
+                  {guest.dietaryRestrictions?.trim()
+                    ? ` · ${guest.dietaryRestrictions}`
+                    : ""}
+                </p>
+                <p className={admin.muted}>
+                  {guest.phone ?? "Sin teléfono"}
+                  {guest.email ? ` · ${guest.email}` : ""}
+                </p>
+                <Link
+                  href={`/admin/families/${guest.familyId}`}
+                  className={admin.btnSecondary}
+                >
+                  Ver familia
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className={`mt-8 hidden lg:block ${admin.tableShell}`}>
             <table className="min-w-full text-left text-sm font-[family-name:var(--font-timer)]">
               <thead className={admin.tableHead}>
                 <tr>
@@ -340,18 +410,23 @@ export function AdminGuestsBrowser({
                 {page.items.map((guest) => (
                   <tr key={guest.id} className={admin.tableRow}>
                     <td className="px-4 py-3 font-medium text-cover-cta-fg">
-                      {guest.fullName}
-                      {guest.isPrimaryContact ? (
-                        <span className="ml-2 text-xs text-cover-cta-fg/65">
-                          {adminCopy.guest.primaryContact}
-                        </span>
-                      ) : null}
+                    {guest.fullName}
+                    {guest.isPrimaryContact ? (
+                      <span className="ml-2 text-xs text-cover-cta-fg/65">
+                        {adminCopy.guest.primaryContact}
+                      </span>
+                    ) : null}
+                    {guest.needsNameConfirmation ? (
+                      <span className="ml-2 text-xs text-cover-cta-fg/65">
+                        falta el nombre
+                      </span>
+                    ) : null}
                     </td>
                     <td className="px-4 py-3 text-cover-cta-fg/75">
                       {guest.familyName}
                     </td>
                     <td className="px-4 py-3 text-cover-cta-fg/75">
-                      {statusLabel(guest.attendanceStatus)}
+                      <GuestAttendanceBadge status={guest.attendanceStatus} />
                     </td>
                     <td className="px-4 py-3 text-cover-cta-fg/75">
                       {guest.needsTransport ? "Sí" : "—"}

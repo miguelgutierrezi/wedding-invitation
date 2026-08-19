@@ -9,6 +9,7 @@ import {
   updateFamilyAction,
 } from "@/actions/admin/auth";
 import { admin } from "@/components/admin/admin-ui";
+import { CopyWhatsAppReminder } from "@/components/admin/copy-whatsapp-reminder";
 import { CopyInvitationLink } from "@/components/admin/copy-invitation-link";
 import { adminCopy, familyStatusLabel } from "@/lib/admin/admin-copy";
 import type { AdminFamilyDetail } from "@/services/admin/families";
@@ -117,7 +118,13 @@ function FamilyDetailFormInner({ family }: FamilyDetailFormProps) {
         <p className={admin.muted}>
           Estado: {familyStatusLabel(family.status)}
         </p>
-        <CopyInvitationLink url={family.invitationUrl} />
+        <div className="flex flex-col gap-3">
+          <CopyInvitationLink url={family.invitationUrl} />
+          <CopyWhatsAppReminder
+            familyName={family.displayName}
+            invitationUrl={family.invitationUrl}
+          />
+        </div>
       </div>
 
       <form
@@ -205,7 +212,17 @@ function FamilyDetailFormInner({ family }: FamilyDetailFormProps) {
           <input
             type="checkbox"
             checked={isEnabled}
-            onChange={(event) => setIsEnabled(event.target.checked)}
+            onChange={(event) => {
+              const nextEnabled = event.target.checked;
+              if (
+                isEnabled &&
+                !nextEnabled &&
+                !window.confirm(adminCopy.actions.disableConfirm)
+              ) {
+                return;
+              }
+              setIsEnabled(nextEnabled);
+            }}
             className="size-4 accent-[color:var(--accent-deep)]"
           />
           <span className={admin.body}>{adminCopy.invitation.enabled}</span>
@@ -307,6 +324,9 @@ function FamilyDetailFormInner({ family }: FamilyDetailFormProps) {
           type="button"
           disabled={isPending}
           onClick={() => {
+            if (!window.confirm(adminCopy.actions.regenerateConfirm)) {
+              return;
+            }
             setError(null);
             setMessage(null);
             startTransition(async () => {

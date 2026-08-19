@@ -5,8 +5,9 @@ import {
   TRANSPORT_BOARDING_POINT_IDS,
   type TransportBoardingPointId,
 } from "@/config/transport";
+import { computeActivePlanningCounts } from "@/lib/admin/admin-counts";
+import { isActiveInvitation } from "@/lib/admin/active-invitation";
 import {
-  getDashboardMetrics,
   type DashboardMetrics,
 } from "@/services/admin/families";
 
@@ -22,6 +23,7 @@ export type GuestListItem = {
   dietaryRestrictions: string | null;
   email: string | null;
   phone: string | null;
+  needsNameConfirmation: boolean;
 };
 
 export type AnalyticsSnapshot = DashboardMetrics & {
@@ -56,6 +58,12 @@ type GuestRow = {
   dietary_restrictions: string | null;
   email: string | null;
   phone: string | null;
+  needs_name_confirmation: boolean;
+};
+
+type EventRow = {
+  name: string;
+  rsvp_deadline: string;
 };
 
 function emptyBoardingCounts(): Record<TransportBoardingPointId, number> {
@@ -67,31 +75,33 @@ function emptyBoardingCounts(): Record<TransportBoardingPointId, number> {
 
 export async function getAnalyticsSnapshot(): Promise<AnalyticsSnapshot> {
   const supabase = createAdminClient();
-  const base = await getDashboardMetrics();
 
   const [
     { data: families, error: familiesError },
     { data: guests, error: guestsError },
+    { data: event, error: eventError },
   ] = await Promise.all([
     supabase
       .from("families")
-      .select("id, status, is_enabled, last_opened_at")
+      .select("id, status, is_enabled, last_opened_at, maximum_guests")
       .returns<
         {
           id: string;
           status: string;
           is_enabled: boolean;
           last_opened_at: string | null;
+          maximum_guests: number;
         }[]
       >(),
     supabase
       .from("guests")
       .select(
-        "id, attendance_status, needs_transport, transport_boarding_point, dietary_restrictions, needs_name_confirmation",
+        "id, family_id, attendance_status, needs_transport, transport_boarding_point, dietary_restrictions, needs_name_confirmation",
       )
       .returns<
         {
           id: string;
+          family_id: string;
           attendance_status: string;
           needs_transport: boolean;
           transport_boarding_point: string | null;
@@ -99,47 +109,53 @@ export async function getAnalyticsSnapshot(): Promise<AnalyticsSnapshot> {
           needs_name_confirmation: boolean;
         }[]
       >(),
+    supabase
+      .from("events")
+      .select("name, rsvp_deadline")
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle<EventRow>(),
   ]);
 
-  if (familiesError || guestsError) {
+  if (familiesError || guestsError || eventError) {
     throw new Error("No se pudieron cargar las analíticas.");
   }
 
   const familyRows = families ?? [];
   const guestRows = guests ?? [];
-  const totalGuests = guestRows.length;
-  const respondedOrDisabledAnswered = familyRows.filter(
-    (f) => f.status === "responded",
-  ).length;
-  const activeFamilies = familyRows.filter((f) => f.is_enabled).length;
+  const counts = computeActivePlanningCounts({
+    families: familyRows.map((family) => ({
+      id: family.id,
+      status: family.status,
+      isEnabled: family.is_enabled,
+      maximumGuests: family.maximum_guests,
+      lastOpenedAt: family.last_opened_at,
+    })),
+    guests: guestRows.map((guest) => ({
+      familyId: guest.family_id,
+      attendanceStatus: guest.attendance_status,
+      needsTransport: guest.needs_transport,
+      dietaryRestrictions: guest.dietary_restrictions,
+      needsNameConfirmation: guest.needs_name_confirmation,
+    })),
+  });
 
-  const familyResponseRate =
-    activeFamilies > 0
-      ? Math.round((respondedOrDisabledAnswered / activeFamilies) * 100)
-      : 0;
-
-  const decidedGuests = guestRows.filter(
-    (g) => g.attendance_status !== "pending",
-  ).length;
-  const guestConfirmRate =
-    totalGuests > 0 ? Math.round((decidedGuests / totalGuests) * 100) : 0;
-
-  const attending = guestRows.filter(
-    (g) => g.attendance_status === "attending",
-  ).length;
-  const transportAmongAttendingRate =
-    attending > 0
-      ? Math.round(
-          (guestRows.filter(
-            (g) => g.attendance_status === "attending" && g.needs_transport,
-          ).length /
-            attending) *
-            100,
-        )
-      : 0;
+  const activeFamilyIds = new Set(
+    familyRows
+      .filter((family) =>
+        isActiveInvitation({
+          isEnabled: family.is_enabled,
+          status: family.status,
+        }),
+      )
+      .map((family) => family.id),
+  );
 
   const transportByBoardingPoint = emptyBoardingCounts();
   for (const guest of guestRows) {
+    if (!activeFamilyIds.has(guest.family_id)) {
+      continue;
+    }
     if (!guest.needs_transport || guest.attendance_status !== "attending") {
       continue;
     }
@@ -153,21 +169,24 @@ export async function getAnalyticsSnapshot(): Promise<AnalyticsSnapshot> {
   }
 
   return {
-    ...base,
-    totalGuests,
-    familiesOpened: familyRows.filter((f) => f.last_opened_at != null).length,
-    familiesDisabled: familyRows.filter((f) => !f.is_enabled).length,
-    guestsWithDietary: guestRows.filter(
-      (g) =>
-        g.dietary_restrictions != null &&
-        g.dietary_restrictions.trim().length > 0,
-    ).length,
-    guestsPendingNameConfirmation: guestRows.filter(
-      (g) => g.needs_name_confirmation,
-    ).length,
-    familyResponseRate,
-    guestConfirmRate,
-    transportAmongAttendingRate,
+    familyCount: counts.familyCount,
+    familiesResponded: counts.familiesResponded,
+    familiesPending: counts.familiesPending,
+    assignedSeats: counts.assignedSeats,
+    guestsAttending: counts.guestsAttending,
+    guestsNotAttending: counts.guestsNotAttending,
+    guestsPending: counts.guestsPending,
+    guestsNeedingTransport: counts.guestsNeedingTransport,
+    rsvpDeadline: event?.rsvp_deadline ?? null,
+    eventName: event?.name ?? null,
+    totalGuests: counts.totalGuests,
+    familiesOpened: counts.familiesOpened,
+    familiesDisabled: counts.familiesDisabled,
+    guestsWithDietary: counts.guestsWithDietary,
+    guestsPendingNameConfirmation: counts.guestsPendingNameConfirmation,
+    familyResponseRate: counts.familyResponseRate,
+    guestConfirmRate: counts.guestConfirmRate,
+    transportAmongAttendingRate: counts.transportAmongAttendingRate,
     transportByBoardingPoint,
   };
 }
@@ -187,7 +206,7 @@ export async function listAllGuests(): Promise<GuestListItem[]> {
     supabase
       .from("guests")
       .select(
-        "id, family_id, full_name, is_primary_contact, attendance_status, needs_transport, transport_boarding_point, dietary_restrictions, email, phone",
+        "id, family_id, full_name, is_primary_contact, attendance_status, needs_transport, transport_boarding_point, dietary_restrictions, email, phone, needs_name_confirmation",
       )
       .order("full_name", { ascending: true })
       .returns<GuestRow[]>(),
@@ -201,22 +220,34 @@ export async function listAllGuests(): Promise<GuestListItem[]> {
     (families ?? []).map((family) => [family.id, family]),
   );
 
-  const items = (guests ?? []).map((guest) => {
+  const items = (guests ?? []).flatMap((guest) => {
     const family = familyById.get(guest.family_id);
+    if (
+      !family ||
+      !isActiveInvitation({
+        isEnabled: family.is_enabled,
+        status: family.status,
+      })
+    ) {
+      return [];
+    }
 
-    return {
-      id: guest.id,
-      fullName: guest.full_name,
-      familyId: guest.family_id,
-      familyName: family?.display_name ?? "Familia",
-      isPrimaryContact: guest.is_primary_contact,
-      attendanceStatus: guest.attendance_status,
-      needsTransport: guest.needs_transport,
-      transportBoardingPoint: guest.transport_boarding_point,
-      dietaryRestrictions: guest.dietary_restrictions,
-      email: guest.email,
-      phone: guest.phone,
-    };
+    return [
+      {
+        id: guest.id,
+        fullName: guest.full_name,
+        familyId: guest.family_id,
+        familyName: family.display_name,
+        isPrimaryContact: guest.is_primary_contact,
+        attendanceStatus: guest.attendance_status,
+        needsTransport: guest.needs_transport,
+        transportBoardingPoint: guest.transport_boarding_point,
+        dietaryRestrictions: guest.dietary_restrictions,
+        email: guest.email,
+        phone: guest.phone,
+        needsNameConfirmation: Boolean(guest.needs_name_confirmation),
+      },
+    ];
   });
 
   return items;

@@ -26,7 +26,7 @@ export function CreateFamilyForm() {
           </p>
         </div>
         <CopyInvitationLink url={invitationUrl} />
-        <div className="flex flex-col gap-3 sm:flex-row">
+        <div className="flex flex-col gap-3 lg:flex-row">
           {familyId ? (
             <button
               type="button"

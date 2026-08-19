@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  deleteFamilySchema,
   parseAdminGuestFormEntries,
   parseIsEnabledFormValue,
   updateFamilySchema,
@@ -78,5 +79,22 @@ describe("updateFamilySchema guest ids", () => {
     });
 
     expect(parsed.success).toBe(false);
+  });
+});
+
+describe("deleteFamilySchema", () => {
+  it("requires a confirmation name", () => {
+    expect(
+      deleteFamilySchema.safeParse({
+        familyId: "11111111-1111-4111-8111-111111111111",
+        confirmName: "  ",
+      }).success,
+    ).toBe(false);
+    expect(
+      deleteFamilySchema.safeParse({
+        familyId: "11111111-1111-4111-8111-111111111111",
+        confirmName: "Familia García",
+      }).success,
+    ).toBe(true);
   });
 });

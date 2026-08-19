@@ -15,10 +15,10 @@ export function AdminPagination({ list, onPageChange }: AdminPaginationProps) {
 
   return (
     <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <p className={admin.muted}>
+      <p className={`${admin.muted} text-center sm:text-left`}>
         Mostrando {list.from}–{list.to} de {list.total}
       </p>
-      <div className="flex flex-wrap gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:flex">
         <button
           type="button"
           className={admin.btnSecondary}

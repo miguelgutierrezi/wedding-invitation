@@ -16,6 +16,7 @@ import {
 } from "@/services/admin/admin-family-rpc-errors";
 import type { GuestGender } from "@/types/guest";
 import { parseGuestGender } from "@/types/guest";
+import { computeActivePlanningCounts } from "@/lib/admin/admin-counts";
 
 export type DashboardMetrics = {
   familyCount: number;
@@ -43,6 +44,7 @@ export type AdminFamilyListItem = {
   guestCount: number;
   willAttend: boolean | null;
   submittedAt: string | null;
+  updatedAt: string;
 };
 
 export type AdminGuestDetail = {
@@ -77,6 +79,7 @@ type FamilyRow = {
   last_opened_at: string | null;
   invitation_slug: string;
   custom_message: string | null;
+  updated_at: string;
 };
 
 type RsvpRow = {
@@ -142,14 +145,25 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
   ] = await Promise.all([
     supabase
       .from("families")
-      .select("id, status, maximum_guests")
+      .select("id, status, maximum_guests, is_enabled")
       .returns<
-        { id: string; status: string; maximum_guests: number }[]
+        {
+          id: string;
+          status: string;
+          maximum_guests: number;
+          is_enabled: boolean;
+        }[]
       >(),
     supabase
       .from("guests")
-      .select("attendance_status, needs_transport")
-      .returns<{ attendance_status: string; needs_transport: boolean }[]>(),
+      .select("family_id, attendance_status, needs_transport")
+      .returns<
+        {
+          family_id: string;
+          attendance_status: string;
+          needs_transport: boolean;
+        }[]
+      >(),
     supabase
       .from("events")
       .select("name, rsvp_deadline")
@@ -162,25 +176,29 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     throw new Error("No se pudieron cargar las métricas del panel.");
   }
 
-  const familyRows = families ?? [];
-  const guestRows = guests ?? [];
+  const counts = computeActivePlanningCounts({
+    families: (families ?? []).map((family) => ({
+      id: family.id,
+      status: family.status,
+      isEnabled: family.is_enabled,
+      maximumGuests: family.maximum_guests,
+    })),
+    guests: (guests ?? []).map((guest) => ({
+      familyId: guest.family_id,
+      attendanceStatus: guest.attendance_status,
+      needsTransport: guest.needs_transport,
+    })),
+  });
 
   return {
-    familyCount: familyRows.length,
-    familiesResponded: familyRows.filter((f) => f.status === "responded")
-      .length,
-    familiesPending: familyRows.filter((f) => f.status === "pending").length,
-    assignedSeats: familyRows.reduce((sum, f) => sum + f.maximum_guests, 0),
-    guestsAttending: guestRows.filter((g) => g.attendance_status === "attending")
-      .length,
-    guestsNotAttending: guestRows.filter(
-      (g) => g.attendance_status === "not_attending",
-    ).length,
-    guestsPending: guestRows.filter((g) => g.attendance_status === "pending")
-      .length,
-    guestsNeedingTransport: guestRows.filter(
-      (g) => g.needs_transport && g.attendance_status === "attending",
-    ).length,
+    familyCount: counts.familyCount,
+    familiesResponded: counts.familiesResponded,
+    familiesPending: counts.familiesPending,
+    assignedSeats: counts.assignedSeats,
+    guestsAttending: counts.guestsAttending,
+    guestsNotAttending: counts.guestsNotAttending,
+    guestsPending: counts.guestsPending,
+    guestsNeedingTransport: counts.guestsNeedingTransport,
     rsvpDeadline: event?.rsvp_deadline ?? null,
     eventName: event?.name ?? null,
   };
@@ -192,7 +210,7 @@ export async function listFamilies(): Promise<AdminFamilyListItem[]> {
   const { data: families, error: familiesError } = await supabase
     .from("families")
     .select(
-      "id, display_name, maximum_guests, status, is_enabled, last_opened_at, invitation_slug, custom_message",
+      "id, display_name, maximum_guests, status, is_enabled, last_opened_at, invitation_slug, custom_message, updated_at",
     )
     .order("display_name", { ascending: true })
     .returns<FamilyRow[]>();
@@ -250,6 +268,7 @@ export async function listFamilies(): Promise<AdminFamilyListItem[]> {
       guestCount: guestCountByFamily.get(family.id) ?? 0,
       willAttend: rsvp?.will_attend ?? null,
       submittedAt: rsvp?.submitted_at ?? null,
+      updatedAt: family.updated_at,
     };
   });
 
@@ -264,7 +283,7 @@ export async function getFamilyById(
   const { data: family, error } = await supabase
     .from("families")
     .select(
-      "id, display_name, maximum_guests, status, is_enabled, last_opened_at, invitation_slug, custom_message",
+      "id, display_name, maximum_guests, status, is_enabled, last_opened_at, invitation_slug, custom_message, updated_at",
     )
     .eq("id", familyId)
     .maybeSingle<FamilyRow>();
@@ -315,6 +334,7 @@ export async function getFamilyById(
     guestCount: (guests ?? []).length,
     willAttend: rsvp?.will_attend ?? null,
     submittedAt: rsvp?.submitted_at ?? null,
+    updatedAt: family.updated_at,
     guests: (guests ?? []).map((guest) => ({
       id: guest.id,
       fullName: guest.full_name,

@@ -90,6 +90,7 @@ describe("parseAdminGuestsFilters", () => {
       boarding: "all",
       dietary: "all",
       primary: "all",
+      name: "all",
       sort: "",
       dir: "asc",
       page: 1,
@@ -113,6 +114,7 @@ describe("parseAdminGuestsFilters", () => {
       boarding: "villa_sonia",
       dietary: "with_dietary",
       primary: "primary",
+      name: "all",
       sort: "",
       dir: "asc",
       page: 1,
@@ -135,6 +137,7 @@ describe("parseAdminGuestsFilters", () => {
       boarding: "all",
       dietary: "all",
       primary: "all",
+      name: "all",
       sort: "",
       dir: "asc",
       page: 1,
@@ -195,6 +198,7 @@ describe("guestMatchesFilters", () => {
     transportBoardingPoint: "modelia",
     dietaryRestrictions: "Vegetariana",
     isPrimaryContact: true,
+    needsNameConfirmation: false,
   };
 
   it("matches search against contact fields", () => {
@@ -221,6 +225,24 @@ describe("guestMatchesFilters", () => {
       }),
     ).toBe(false);
   });
+
+  it("filters companions that still need a name", () => {
+    expect(
+      guestMatchesFilters(guest, {
+        ...DEFAULT_ADMIN_GUESTS_FILTERS,
+        name: "needs_name",
+      }),
+    ).toBe(false);
+    expect(
+      guestMatchesFilters(
+        { ...guest, needsNameConfirmation: true },
+        {
+          ...DEFAULT_ADMIN_GUESTS_FILTERS,
+          name: "needs_name",
+        },
+      ),
+    ).toBe(true);
+  });
 });
 
 describe("filter chips", () => {
@@ -245,10 +267,12 @@ describe("filter chips", () => {
         ...DEFAULT_ADMIN_GUESTS_FILTERS,
         attendance: "attending",
         primary: "primary",
+        name: "needs_name",
       }),
     ).toEqual([
       { id: "attendance", label: "Asiste" },
       { id: "primary", label: "contacto principal" },
+      { id: "name", label: "Nombre por confirmar" },
     ]);
   });
 });

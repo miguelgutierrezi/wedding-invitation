@@ -229,6 +229,11 @@ export const weddingConfig = {
     faq: false,
     music: true,
   },
+  admin: {
+    /** Ready-to-copy WhatsApp reminder. Placeholders: {familia} {enlace} {pareja} */
+    whatsappReminderTemplate:
+      "Hola {familia}, los invitamos con mucho cariño a nuestra boda. Aquí está su invitación: {enlace}\n\nCuando puedan, confirmen asistencia. Con cariño, {pareja}.",
+  },
 } as const;
 
 export type WeddingConfig = typeof weddingConfig;

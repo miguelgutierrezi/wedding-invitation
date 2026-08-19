@@ -4,10 +4,15 @@ import type { GuestListItem, AnalyticsSnapshot } from "@/services/admin/analytic
 import type { AdminFamilyListItem } from "@/services/admin/families";
 import {
   buildAllExportSheets,
+  buildAttendingSheet,
   buildDietSheet,
+  buildExportSheetsForKind,
   buildFamiliesSheet,
   buildGuestsSheet,
+  buildPrimaryContactsSheet,
   buildTransportSheet,
+  exportFilenameForKind,
+  parseAdminExportKind,
 } from "@/services/admin/export-workbook-rows";
 
 const guestBase: GuestListItem = {
@@ -22,6 +27,7 @@ const guestBase: GuestListItem = {
   dietaryRestrictions: "Vegetariana",
   email: "ana@example.com",
   phone: "3001112233",
+  needsNameConfirmation: false,
 };
 
 const familyBase: AdminFamilyListItem = {
@@ -37,6 +43,7 @@ const familyBase: AdminFamilyListItem = {
   guestCount: 2,
   willAttend: true,
   submittedAt: "2026-08-02T12:00:00.000Z",
+  updatedAt: "2026-08-02T12:05:00.000Z",
 };
 
 const snapshotBase: AnalyticsSnapshot = {
@@ -123,5 +130,72 @@ describe("export workbook rows", () => {
       "Buses",
       "Dietas",
     ]);
+  });
+
+  it("builds attending and contact slices", () => {
+    const notAttending: GuestListItem = {
+      ...guestBase,
+      id: "g2",
+      fullName: "Luis",
+      isPrimaryContact: false,
+      attendanceStatus: "not_attending",
+      needsTransport: false,
+      dietaryRestrictions: null,
+    };
+    expect(buildAttendingSheet([guestBase, notAttending]).rows).toHaveLength(1);
+    expect(buildPrimaryContactsSheet([guestBase, notAttending]).rows).toHaveLength(
+      1,
+    );
+  });
+
+  it("maps export kinds to a single planning sheet", () => {
+    expect(parseAdminExportKind("dietary")).toBe("dietary");
+    expect(parseAdminExportKind("nope")).toBe("full");
+    expect(exportFilenameForKind("contacts", "2026-08-19")).toBe(
+      "boda-contactos-2026-08-19.xlsx",
+    );
+
+    const input = {
+      guests: [guestBase],
+      families: [familyBase],
+      snapshot: snapshotBase,
+    };
+    expect(buildExportSheetsForKind("transport", input).map((s) => s.name)).toEqual(
+      ["Buses"],
+    );
+    expect(buildExportSheetsForKind("dietary", input).map((s) => s.name)).toEqual([
+      "Dietas",
+    ]);
+    expect(buildExportSheetsForKind("full", input)).toHaveLength(5);
+  });
+
+  it("omits disabled families and their guests from Excel sheets", () => {
+    const disabledFamily: AdminFamilyListItem = {
+      ...familyBase,
+      id: "f-off",
+      displayName: "Familia apagada",
+      status: "disabled",
+      isEnabled: false,
+    };
+    const disabledGuest: GuestListItem = {
+      ...guestBase,
+      id: "g-off",
+      familyId: "f-off",
+      familyName: "Familia apagada",
+      fullName: "Invitado apagado",
+    };
+
+    const sheets = buildExportSheetsForKind("full", {
+      guests: [guestBase, disabledGuest],
+      families: [familyBase, disabledFamily],
+      snapshot: snapshotBase,
+    });
+    const guestsSheet = sheets.find((sheet) => sheet.name === "Invitados");
+    const familiesSheet = sheets.find((sheet) => sheet.name === "Familias");
+
+    expect(guestsSheet?.rows).toHaveLength(1);
+    expect(guestsSheet?.rows[0]?.[0]).toBe("Ana Pérez");
+    expect(familiesSheet?.rows).toHaveLength(1);
+    expect(familiesSheet?.rows[0]?.[0]).toBe("Familia Pérez");
   });
 });

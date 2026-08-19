@@ -16,7 +16,7 @@ Cada familia recibe un enlace privado (`/i/[slug]`) para ver la invitación y co
 | Música | Tras “Ver Invitación”; mute flotante; archivo en `public/invitation/soundtrack.mp3` |
 | Inspiración outfit | `/inspiracion/ellos` · `/inspiracion/ellas` (boards móvil + desktop) |
 | RSVP | Formulario embebido: asistencia, bus, **punto de encuentro**, dietas, contacto |
-| Admin `/admin` | Login, resumen, analytics, invitados, familias (**género** por invitado), **fotos**, export Excel |
+| Admin `/admin` | Login, resumen, estadísticas, invitados, familias, fotos, Excel. En móvil/tablet vertical: menú hamburguesa, **+** nueva familia, listados en tarjetas |
 | Visual admin | Misma paleta/tipografía que la invitación (`admin-ui.ts`) |
 | Auth edge | Next.js 16 `src/proxy.ts` (gate `/admin` + `/api/admin`) |
 | Automated tests | Vitest (`pnpm test`): RSVP, transport, slugs, cover greeting, TZ, guest media |

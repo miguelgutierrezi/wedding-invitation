@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { AdminExpandableFilters } from "@/components/admin/admin-expandable-filters";
 import { AdminFilterChips } from "@/components/admin/admin-filter-chips";
 import { AdminPagination } from "@/components/admin/admin-pagination";
+import { FamilyStatusBadge } from "@/components/admin/admin-status-badge";
 import { AdminSelect } from "@/components/admin/admin-select";
 import { AdminSortHeader } from "@/components/admin/admin-sort-header";
 import { admin } from "@/components/admin/admin-ui";
@@ -34,6 +35,7 @@ export type AdminFamilyBrowserItem = {
   guestCount: number;
   willAttend: boolean | null;
   submittedAt: string | null;
+  updatedAt: string;
 };
 
 type AdminFamiliesBrowserProps = {
@@ -56,6 +58,8 @@ function familySortValue(
       return family.lastOpenedAt;
     case "submittedAt":
       return family.submittedAt;
+    case "updatedAt":
+      return family.updatedAt;
     default:
       return family.displayName;
   }
@@ -99,7 +103,10 @@ export function AdminFamiliesBrowser({
             {visibleFamilies.length === 1 ? "" : "s"}
             {hasActiveFilters ? " coinciden con los filtros." : " en total."}
           </p>
-          <Link href="/admin/families/new" className={admin.btnPrimary}>
+          <Link
+            href="/admin/families/new"
+            className={`${admin.btnPrimary} hidden lg:inline-flex`}
+          >
             Nueva familia
           </Link>
         </div>
@@ -191,7 +198,40 @@ export function AdminFamiliesBrowser({
         </p>
       ) : (
         <>
-          <div className={`mt-6 ${admin.tableShell}`}>
+          <ul className="mt-6 grid gap-3 lg:hidden">
+            {page.items.map((family) => (
+              <li key={family.id}>
+                <Link
+                  href={`/admin/families/${family.id}`}
+                  className={`${admin.card} flex min-h-11 flex-col gap-3 p-4 transition-opacity hover:opacity-90`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-bold text-cover-cta-fg">
+                        {family.displayName}
+                      </p>
+                      <p className="mt-0.5 truncate font-mono text-xs text-cover-cta-fg/65">
+                        /i/{family.invitationSlug}
+                      </p>
+                    </div>
+                    <FamilyStatusBadge status={family.status} />
+                  </div>
+                  <p className={admin.muted}>
+                    Cupos {family.guestCount}/{family.maximumGuests}
+                    {family.confirmedGuestCount != null
+                      ? ` · Confirmados ${family.confirmedGuestCount}`
+                      : ""}
+                  </p>
+                  <p className={admin.muted}>
+                    Abrió {formatEventDateTimeShort(family.lastOpenedAt)} ·{" "}
+                    {adminCopy.rsvp.submitted}{" "}
+                    {formatEventDateTimeShort(family.submittedAt)}
+                  </p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className={`mt-6 hidden lg:block ${admin.tableShell}`}>
             <table className="min-w-full text-left text-sm font-[family-name:var(--font-timer)]">
               <thead className={admin.tableHead}>
                 <tr>
@@ -267,6 +307,18 @@ export function AdminFamiliesBrowser({
                       })
                     }
                   />
+                  <AdminSortHeader
+                    label="Último cambio"
+                    column="updatedAt"
+                    sort={sort}
+                    dir={filters.dir}
+                    onSort={(column) =>
+                      changeFilters({
+                        sort: column,
+                        dir: nextSortDir(sort, filters.dir, column),
+                      })
+                    }
+                  />
                   <th className="px-4 py-3 font-medium" />
                 </tr>
               </thead>
@@ -291,13 +343,16 @@ export function AdminFamiliesBrowser({
                       {family.confirmedGuestCount ?? "—"}
                     </td>
                     <td className="px-4 py-3 text-cover-cta-fg/75">
-                      {familyStatusLabel(family.status)}
+                      <FamilyStatusBadge status={family.status} />
                     </td>
                     <td className="px-4 py-3 text-cover-cta-fg/75">
                       {formatEventDateTimeShort(family.lastOpenedAt)}
                     </td>
                     <td className="px-4 py-3 text-cover-cta-fg/75">
                       {formatEventDateTimeShort(family.submittedAt)}
+                    </td>
+                    <td className="px-4 py-3 text-cover-cta-fg/75">
+                      {formatEventDateTimeShort(family.updatedAt)}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <Link

@@ -1,3 +1,16 @@
+/**
+ * Admin list filters.
+ *
+ * Convention (keep this file as the single module):
+ * 1. parse* — search params → typed filters
+ * 2. *MatchesFilters — in-memory predicate
+ * 3. *FilterChips — active-filter labels
+ * 4. buildAdmin*FilterQuery — typed filters → query string
+ *
+ * Named dashboard/analytics URLs: `src/lib/admin/admin-filter-links.ts`.
+ * Sort + pagination: `src/lib/admin/list-view.ts`.
+ */
+
 import { z } from "zod";
 
 import { adminCopy, familyStatusLabel } from "@/lib/admin/admin-copy";
@@ -93,6 +106,7 @@ const adminGuestsFiltersSchema = z.object({
   primary: enumSearchParam(["all", "primary", "other"], "all").default(
     "all",
   ),
+  name: enumSearchParam(["all", "needs_name"], "all").default("all"),
   sort: trimmedStringSchema.default(""),
   dir: enumSearchParam(["asc", "desc"], "asc").default("asc"),
   page: searchParamValueSchema
@@ -110,6 +124,7 @@ export type AdminGuestsFilters = {
   boarding: "all" | (typeof TRANSPORT_BOARDING_POINT_IDS)[number] | "none";
   dietary: "all" | "with_dietary" | "without_dietary";
   primary: "all" | "primary" | "other";
+  name: "all" | "needs_name";
   sort: string;
   dir: "asc" | "desc";
   page: number;
@@ -127,6 +142,7 @@ export function parseAdminGuestsFilters(
     boarding: parsed.boarding as AdminGuestsFilters["boarding"],
     dietary: parsed.dietary as AdminGuestsFilters["dietary"],
     primary: parsed.primary as AdminGuestsFilters["primary"],
+    name: parsed.name as AdminGuestsFilters["name"],
     sort: parsed.sort,
     dir: parsed.dir as AdminGuestsFilters["dir"],
     page: parsed.page,
@@ -151,6 +167,7 @@ export const DEFAULT_ADMIN_GUESTS_FILTERS: AdminGuestsFilters = {
   boarding: "all",
   dietary: "all",
   primary: "all",
+  name: "all",
   sort: "",
   dir: "asc",
   page: 1,
@@ -183,7 +200,8 @@ export function hasActiveAdminGuestsFilters(filters: AdminGuestsFilters): boolea
     filters.transport !== "all" ||
     filters.boarding !== "all" ||
     filters.dietary !== "all" ||
-    filters.primary !== "all"
+    filters.primary !== "all" ||
+    filters.name !== "all"
   );
 }
 
@@ -259,6 +277,7 @@ export type AdminGuestFilterItem = {
   transportBoardingPoint: string | null;
   dietaryRestrictions: string | null;
   isPrimaryContact: boolean;
+  needsNameConfirmation?: boolean;
 };
 
 export function guestMatchesFilters(
@@ -326,6 +345,10 @@ export function guestMatchesFilters(
     return false;
   }
 
+  if (filters.name === "needs_name" && !guest.needsNameConfirmation) {
+    return false;
+  }
+
   return true;
 }
 
@@ -373,6 +396,7 @@ export function buildAdminGuestsFilterQuery(filters: AdminGuestsFilters): string
   appendNonDefault(params, "boarding", filters.boarding);
   appendNonDefault(params, "dietary", filters.dietary);
   appendNonDefault(params, "primary", filters.primary);
+  appendNonDefault(params, "name", filters.name);
   if (filters.sort) {
     params.set("sort", filters.sort);
   }
@@ -492,6 +516,12 @@ export function guestsFilterChips(filters: AdminGuestsFilters): AdminFilterChipI
         filters.primary === "primary"
           ? adminCopy.guest.primaryContact
           : "Otros invitados",
+    });
+  }
+  if (filters.name !== "all") {
+    chips.push({
+      id: "name",
+      label: "Nombre por confirmar",
     });
   }
 

@@ -2,7 +2,7 @@
 
 **Status:** implemented against Figma “Invitación boda” + post-Figma polish (maps, music, cover crop, gifts, outfit inspiration, personalized cover greeting)
 
-**Last reviewed:** 2026-08-12
+**Last reviewed:** 2026-08-19
 
 This document describes the **public invitation presentation layer** and shared brand rules used by the admin UI. It does not authorize product features outside `docs/current-phase.md`.
 
@@ -244,13 +244,15 @@ RSVP deadlines and event dates may also exist in Supabase `events`; the page pre
 
 Admin must not drift into a separate purple/gray SaaS look. Use `admin` tokens from `admin-ui.ts` for forms, tables, nav, and metrics. Header uses `bg-accent` with cream type/pills; page shell uses `bg-cream-figma`.
 
+Compact admin (viewport `< lg`): hamburger drawer is the same accent band as the header (not a cream “settings” sheet). Floating new-family control: accent fill, white Times “+”, no olive border. Create-family screen: cream back chevron to `/admin/families`. Family/guest/photo **cards** replace tables until `lg`.
+
 Family create/edit: each guest row includes **nombre + género** (required). Gender powers the singular cover greeting only; it is not shown on the public invitation body.
 
 ## Accessibility & motion
 
 - Gallery: keyboard arrows on desktop when section is focused or in view; pause on hover/focus.
 - Submit and choice controls: min height 44px where interactive.
-- `prefers-reduced-motion: reduce` disables gallery swipe/autoplay animations.
+- `prefers-reduced-motion: reduce` disables gallery swipe/autoplay animations. The admin hamburger drawer also skips the slide.
 - Music mute control must remain keyboard and screen-reader usable when shown.
 
 ## Do not

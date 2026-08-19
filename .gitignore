@@ -51,4 +51,9 @@ supabase/.temp/
 .env.*.local
 !.env.example
 
+# JetBrains / Copilot local workspace noise
+.idea/copilotDiffState.xml
+.idea/workspace.xml
+.idea/shelf/
+
 .ai/**

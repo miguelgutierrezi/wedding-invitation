@@ -29,7 +29,7 @@ export function CopyInvitationLink({
   return (
     <div
       className={cn(
-        "flex flex-col gap-2 sm:flex-row sm:items-center",
+        "flex flex-col gap-2 lg:flex-row lg:items-center",
         className,
       )}
     >

@@ -2,8 +2,10 @@ import { notFound } from "next/navigation";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import { admin } from "@/components/admin/admin-ui";
+import { FamilyStatusBadge } from "@/components/admin/admin-status-badge";
 import { FamilyDetailForm } from "@/components/admin/family-detail-form";
-import { adminCopy, familyStatusLabel } from "@/lib/admin/admin-copy";
+import { adminCopy } from "@/lib/admin/admin-copy";
+import { formatEventDateTimeShort } from "@/lib/datetime/event-timezone";
 import { formatTransportBoardingPoint } from "@/config/transport";
 import { getFamilyById } from "@/services/admin/families";
 
@@ -33,11 +35,17 @@ export default async function AdminFamilyDetailPage({
 
   return (
     <AdminShell title={family.displayName}>
-      <div className={`mb-8 grid gap-4 ${admin.card} p-5 sm:grid-cols-3`}>
+      <div className={`mb-8 grid gap-4 ${admin.card} p-5 lg:grid-cols-3`}>
         <div>
           <p className={admin.eyebrow}>Estado</p>
           <p className={`mt-1 ${admin.body}`}>
-            {familyStatusLabel(family.status)}
+            <FamilyStatusBadge status={family.status} />
+          </p>
+        </div>
+        <div>
+          <p className={admin.eyebrow}>Última actualización</p>
+          <p className={`mt-1 ${admin.body}`}>
+            {formatEventDateTimeShort(family.updatedAt)}
           </p>
         </div>
         <div>
@@ -66,7 +74,7 @@ export default async function AdminFamilyDetailPage({
           </p>
         </div>
         {family.rsvpMessage ? (
-          <div className="sm:col-span-3">
+          <div className="lg:col-span-3">
             <p className={admin.eyebrow}>Mensaje</p>
             <p className={`mt-1 ${admin.body}`}>{family.rsvpMessage}</p>
           </div>

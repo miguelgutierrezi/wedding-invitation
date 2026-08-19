@@ -8,9 +8,12 @@ import {
 } from "@/services/admin/analytics";
 import { listFamilies } from "@/services/admin/families";
 import {
-  buildAllExportSheets,
+  buildExportSheetsForKind,
+  exportFilenameForKind,
+  type AdminExportKind,
   type ExportSheet,
 } from "@/services/admin/export-workbook-rows";
+import { filterActiveFamilies } from "@/lib/admin/active-invitation";
 import { EVENT_TIMEZONE } from "@/lib/datetime/event-timezone";
 
 const HEADER_FILL: ExcelJS.Fill = {
@@ -50,7 +53,9 @@ function applySheet(workbook: ExcelJS.Workbook, sheet: ExportSheet): void {
   });
 }
 
-export async function buildAdminExportWorkbook(): Promise<{
+export async function buildAdminExportWorkbook(
+  kind: AdminExportKind = "full",
+): Promise<{
   buffer: Buffer;
   filename: string;
   sheetCount: number;
@@ -63,7 +68,12 @@ export async function buildAdminExportWorkbook(): Promise<{
     getAnalyticsSnapshot(),
   ]);
 
-  const sheets = buildAllExportSheets({ guests, families, snapshot });
+  const activeFamilies = filterActiveFamilies(families);
+  const sheets = buildExportSheetsForKind(kind, {
+    guests,
+    families: activeFamilies,
+    snapshot,
+  });
   const workbook = new ExcelJS.Workbook();
   workbook.creator = "Wedding invitation admin";
   workbook.created = new Date();
@@ -81,9 +91,9 @@ export async function buildAdminExportWorkbook(): Promise<{
 
   return {
     buffer,
-    filename: `boda-export-${dateStamp}.xlsx`,
+    filename: exportFilenameForKind(kind, dateStamp),
     sheetCount: sheets.length,
     guestCount: guests.length,
-    familyCount: families.length,
+    familyCount: activeFamilies.length,
   };
 }

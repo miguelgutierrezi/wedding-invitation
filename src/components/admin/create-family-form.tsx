@@ -107,7 +107,7 @@ export function CreateFamilyForm() {
             <label className="grid gap-2">
               <span className={admin.muted}>
                 Invitado {index + 1}
-                {index === 0 ? " (contacto)" : ""}
+                {index === 0 ? " (contacto principal)" : ""}
               </span>
               <input name="guestNames" required className={admin.input} />
             </label>

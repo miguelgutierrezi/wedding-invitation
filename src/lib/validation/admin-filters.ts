@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { adminCopy, familyStatusLabel } from "@/lib/admin/admin-copy";
 import { TRANSPORT_BOARDING_POINT_IDS } from "@/config/transport";
 import type { AttendanceStatus } from "@/types/guest";
 
@@ -398,15 +399,9 @@ export type AdminFilterChipItem = {
   label: string;
 };
 
-const familyStatusLabels: Record<string, string> = {
-  pending: "Pendiente",
-  responded: "Respondida",
-  disabled: "Deshabilitada",
-};
-
 const familyResponseLabels: Record<string, string> = {
-  pending: "Sin respuesta",
-  responded: "Respondida",
+  pending: adminCopy.rsvp.noResponse,
+  responded: adminCopy.rsvp.responded,
   attending: "Asistirá",
   not_attending: "No asistirá",
 };
@@ -422,25 +417,28 @@ export function familiesFilterChips(
   if (filters.status !== "all") {
     chips.push({
       id: "status",
-      label: `Estado: ${familyStatusLabels[filters.status] ?? filters.status}`,
+      label: `Estado: ${familyStatusLabel(filters.status as "pending" | "responded" | "disabled")}`,
     });
   }
   if (filters.enabled !== "all") {
     chips.push({
       id: "enabled",
-      label: filters.enabled === "enabled" ? "Habilitada" : "Deshabilitada",
+      label: filters.enabled === "enabled" ? "Activa" : "Desactivada",
     });
   }
   if (filters.opened !== "all") {
     chips.push({
       id: "opened",
-      label: filters.opened === "opened" ? "Abierta" : "Sin abrir",
+      label:
+        filters.opened === "opened"
+          ? adminCopy.invitation.opened
+          : adminCopy.invitation.notOpened,
     });
   }
   if (filters.response !== "all") {
     chips.push({
       id: "response",
-      label: `RSVP: ${familyResponseLabels[filters.response] ?? filters.response}`,
+      label: `${adminCopy.rsvp.response}: ${familyResponseLabels[filters.response] ?? filters.response}`,
     });
   }
 
@@ -490,7 +488,10 @@ export function guestsFilterChips(filters: AdminGuestsFilters): AdminFilterChipI
   if (filters.primary !== "all") {
     chips.push({
       id: "primary",
-      label: filters.primary === "primary" ? "Principal" : "Otros invitados",
+      label:
+        filters.primary === "primary"
+          ? adminCopy.guest.primaryContact
+          : "Otros invitados",
     });
   }
 

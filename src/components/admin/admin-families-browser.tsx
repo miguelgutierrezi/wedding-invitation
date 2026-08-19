@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import { AdminExpandableFilters } from "@/components/admin/admin-expandable-filters";
 import { AdminFilterChips } from "@/components/admin/admin-filter-chips";
 import { AdminPagination } from "@/components/admin/admin-pagination";
 import { AdminSelect } from "@/components/admin/admin-select";
 import { AdminSortHeader } from "@/components/admin/admin-sort-header";
 import { admin } from "@/components/admin/admin-ui";
+import { adminCopy, familyStatusLabel } from "@/lib/admin/admin-copy";
 import { nextSortDir, paginateItems, sortItems } from "@/lib/admin/list-view";
 import { formatEventDateTimeShort } from "@/lib/datetime/event-timezone";
 import {
@@ -39,12 +41,6 @@ type AdminFamiliesBrowserProps = {
   initialFilters: AdminFamiliesFilters;
 };
 
-const familyStatusLabels: Record<AdminFamilyBrowserItem["status"], string> = {
-  pending: "Pendiente",
-  responded: "Respondida",
-  disabled: "Deshabilitada",
-};
-
 function familySortValue(
   family: AdminFamilyBrowserItem,
   column: string,
@@ -55,7 +51,7 @@ function familySortValue(
     case "guestCount":
       return family.guestCount;
     case "status":
-      return familyStatusLabels[family.status];
+      return familyStatusLabel(family.status);
     case "lastOpenedAt":
       return family.lastOpenedAt;
     case "submittedAt":
@@ -108,14 +104,29 @@ export function AdminFamiliesBrowser({
           </Link>
         </div>
 
-        <div className={`${admin.card} relative z-10 grid gap-4 overflow-visible p-4 sm:grid-cols-2 xl:grid-cols-5`}>
+        <AdminExpandableFilters
+          activeFilterCount={chips.length}
+          chips={
+            <AdminFilterChips
+              chips={chips}
+              onRemove={removeChip}
+              onClearAll={() =>
+                updateFilters({
+                  ...DEFAULT_ADMIN_FAMILIES_FILTERS,
+                  sort: filters.sort,
+                  dir: filters.dir,
+                })
+              }
+            />
+          }
+        >
           <label className="grid gap-2 xl:col-span-2">
             <span className={admin.label}>Buscar</span>
             <input
               type="search"
               value={filters.query}
               onChange={(event) => changeFilters({ query: event.target.value })}
-              placeholder="Familia, slug…"
+              placeholder="Nombre de familia o enlace…"
               className={admin.input}
             />
           </label>
@@ -126,9 +137,9 @@ export function AdminFamiliesBrowser({
             onChange={(status) => changeFilters({ status })}
             options={[
               { value: "all", label: "Todos" },
-              { value: "pending", label: "Pendiente" },
-              { value: "responded", label: "Respondida" },
-              { value: "disabled", label: "Deshabilitada" },
+              { value: "pending", label: adminCopy.family.status.pending },
+              { value: "responded", label: adminCopy.family.status.responded },
+              { value: "disabled", label: adminCopy.family.status.disabled },
             ]}
           />
 
@@ -138,48 +149,36 @@ export function AdminFamiliesBrowser({
             onChange={(enabled) => changeFilters({ enabled })}
             options={[
               { value: "all", label: "Todas" },
-              { value: "enabled", label: "Habilitada" },
-              { value: "disabled", label: "Deshabilitada" },
+              { value: "enabled", label: "Activa" },
+              { value: "disabled", label: "Desactivada" },
             ]}
           />
 
           <AdminSelect
-            label="Apertura"
+            label="Vió invitación"
             value={filters.opened}
             onChange={(opened) => changeFilters({ opened })}
             options={[
               { value: "all", label: "Todas" },
-              { value: "opened", label: "Abierta" },
-              { value: "not_opened", label: "Sin abrir" },
+              { value: "opened", label: adminCopy.invitation.opened },
+              { value: "not_opened", label: adminCopy.invitation.notOpened },
             ]}
           />
 
           <AdminSelect
-            label="RSVP"
+            label={adminCopy.rsvp.response}
             className="sm:col-span-2 xl:col-span-2"
             value={filters.response}
             onChange={(response) => changeFilters({ response })}
             options={[
               { value: "all", label: "Todos" },
-              { value: "pending", label: "Sin respuesta" },
-              { value: "responded", label: "Respondida" },
+              { value: "pending", label: adminCopy.rsvp.noResponse },
+              { value: "responded", label: adminCopy.rsvp.responded },
               { value: "attending", label: "Asistirá" },
               { value: "not_attending", label: "No asistirá" },
             ]}
           />
-
-          <AdminFilterChips
-            chips={chips}
-            onRemove={removeChip}
-            onClearAll={() =>
-              updateFilters({
-                ...DEFAULT_ADMIN_FAMILIES_FILTERS,
-                sort: filters.sort,
-                dir: filters.dir,
-              })
-            }
-          />
-        </div>
+        </AdminExpandableFilters>
       </div>
 
       {families.length === 0 ? (
@@ -245,7 +244,7 @@ export function AdminFamiliesBrowser({
                     }
                   />
                   <AdminSortHeader
-                    label="Abierta"
+                    label="Abrió invitación"
                     column="lastOpenedAt"
                     sort={sort}
                     dir={filters.dir}
@@ -257,7 +256,7 @@ export function AdminFamiliesBrowser({
                     }
                   />
                   <AdminSortHeader
-                    label="RSVP"
+                    label={adminCopy.rsvp.submitted}
                     column="submittedAt"
                     sort={sort}
                     dir={filters.dir}
@@ -280,7 +279,9 @@ export function AdminFamiliesBrowser({
                         /i/{family.invitationSlug}
                       </div>
                       {!family.isEnabled ? (
-                        <span className="ml-0 text-xs text-red-800">off</span>
+                        <span className="ml-0 text-xs text-red-800">
+                          {adminCopy.invitation.disabled}
+                        </span>
                       ) : null}
                     </td>
                     <td className="px-4 py-3 text-cover-cta-fg/75">
@@ -290,7 +291,7 @@ export function AdminFamiliesBrowser({
                       {family.confirmedGuestCount ?? "—"}
                     </td>
                     <td className="px-4 py-3 text-cover-cta-fg/75">
-                      {familyStatusLabels[family.status]}
+                      {familyStatusLabel(family.status)}
                     </td>
                     <td className="px-4 py-3 text-cover-cta-fg/75">
                       {formatEventDateTimeShort(family.lastOpenedAt)}

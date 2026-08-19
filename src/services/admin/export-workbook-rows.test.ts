@@ -107,7 +107,7 @@ describe("export workbook rows", () => {
     const sheet = buildFamiliesSheet([familyBase]);
     expect(sheet.name).toBe("Familias");
     expect(sheet.rows[0]?.[0]).toBe("Familia Pérez");
-    expect(sheet.rows[0]?.[1]).toBe("Respondida");
+    expect(sheet.rows[0]?.[1]).toBe("Confirmó");
   });
 
   it("returns five planning sheets", () => {

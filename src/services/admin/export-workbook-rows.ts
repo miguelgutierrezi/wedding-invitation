@@ -1,3 +1,4 @@
+import { adminCopy, familyStatusLabel } from "@/lib/admin/admin-copy";
 import { formatTransportBoardingPoint } from "@/config/transport";
 import { formatEventDateTime } from "@/lib/datetime/event-timezone";
 import type { GuestListItem, AnalyticsSnapshot } from "@/services/admin/analytics";
@@ -20,15 +21,10 @@ function attendanceLabel(status: GuestListItem["attendanceStatus"]): string {
   }
 }
 
-function familyStatusLabel(status: AdminFamilyListItem["status"]): string {
-  switch (status) {
-    case "responded":
-      return "Respondida";
-    case "disabled":
-      return "Deshabilitada";
-    default:
-      return "Pendiente";
-  }
+function familyStatusLabelForExport(
+  status: AdminFamilyListItem["status"],
+): string {
+  return familyStatusLabel(status);
 }
 
 function yesNo(value: boolean): string {
@@ -79,15 +75,15 @@ export function buildFamiliesSheet(families: AdminFamilyListItem[]): ExportSheet
       "Habilitada",
       "Cupos máximos",
       "Invitados cargados",
-      "Confirmados RSVP",
-      "Asistirá (familia)",
+      "Personas confirmadas",
+      "Familia asiste",
       "Enlace",
-      "Última apertura",
-      "RSVP enviado",
+      "Abrió invitación",
+      adminCopy.rsvp.submitted,
     ],
     rows: families.map((family) => [
       family.displayName,
-      familyStatusLabel(family.status),
+      familyStatusLabelForExport(family.status),
       yesNo(family.isEnabled),
       String(family.maximumGuests),
       String(family.guestCount),
@@ -154,7 +150,7 @@ export function buildSummarySheet(snapshot: AnalyticsSnapshot): ExportSheet {
     headers: ["Métrica", "Valor"],
     rows: [
       ["Evento", textOrDash(snapshot.eventName)],
-      ["Límite RSVP", formatEventDateTime(snapshot.rsvpDeadline, "—")],
+      [adminCopy.rsvp.deadline, formatEventDateTime(snapshot.rsvpDeadline, "—")],
       ["Familias", String(snapshot.familyCount)],
       ["Familias respondidas", String(snapshot.familiesResponded)],
       ["Familias pendientes", String(snapshot.familiesPending)],

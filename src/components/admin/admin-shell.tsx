@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { signOutAdminAction } from "@/actions/admin/auth";
 import { admin } from "@/components/admin/admin-ui";
+import { adminCopy } from "@/lib/admin/admin-copy";
 import { requireAdmin } from "@/lib/auth/require-admin";
 
 type AdminShellProps = {
@@ -11,11 +12,11 @@ type AdminShellProps = {
 };
 
 const navItems = [
-  { href: "/admin", label: "Resumen" },
-  { href: "/admin/analytics", label: "Analytics" },
-  { href: "/admin/guests", label: "Invitados" },
-  { href: "/admin/families", label: "Familias" },
-  { href: "/admin/photos", label: "Fotos" },
+  { href: "/admin", label: adminCopy.nav.summary },
+  { href: "/admin/analytics", label: adminCopy.nav.statistics },
+  { href: "/admin/guests", label: adminCopy.nav.guests },
+  { href: "/admin/families", label: adminCopy.nav.families },
+  { href: "/admin/photos", label: adminCopy.nav.photos },
 ] as const;
 
 /**
@@ -59,18 +60,18 @@ export async function AdminShell({ children, title }: AdminShellProps) {
               prefetch={false}
               className="inline-flex min-h-11 items-center rounded-full border-2 border-cover-cta-fg bg-cream-figma px-4 font-[family-name:var(--font-timer)] text-sm font-medium text-cover-cta-fg transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-cream-figma focus-visible:outline-none"
             >
-              Nueva familia
+              {adminCopy.nav.newFamily}
             </Link>
             <a
               href="/api/admin/export"
               className={admin.navLink}
               download
             >
-              Exportar Excel
+              {adminCopy.nav.exportList}
             </a>
             <form action={signOutAdminAction} className="ml-auto sm:ml-0">
               <button type="submit" className={admin.btnGhost}>
-                Salir
+                {adminCopy.nav.signOut}
               </button>
             </form>
           </nav>

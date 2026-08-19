@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import { AdminExpandableFilters } from "@/components/admin/admin-expandable-filters";
 import { AdminFilterChips } from "@/components/admin/admin-filter-chips";
 import { AdminPagination } from "@/components/admin/admin-pagination";
 import { AdminSelect } from "@/components/admin/admin-select";
 import { AdminSortHeader } from "@/components/admin/admin-sort-header";
 import { admin } from "@/components/admin/admin-ui";
+import { adminCopy } from "@/lib/admin/admin-copy";
 import { formatTransportBoardingPoint } from "@/config/transport";
 import { nextSortDir, paginateItems, sortItems } from "@/lib/admin/list-view";
 import {
@@ -125,7 +127,22 @@ export function AdminGuestsBrowser({
           Pendientes {pending.length} · Bus {withBus.length}
         </p>
 
-        <div className={`${admin.card} relative z-10 grid gap-4 overflow-visible p-4 sm:grid-cols-2 xl:grid-cols-5`}>
+        <AdminExpandableFilters
+          activeFilterCount={chips.length}
+          chips={
+            <AdminFilterChips
+              chips={chips}
+              onRemove={removeChip}
+              onClearAll={() =>
+                updateFilters({
+                  ...DEFAULT_ADMIN_GUESTS_FILTERS,
+                  sort: filters.sort,
+                  dir: filters.dir,
+                })
+              }
+            />
+          }
+        >
           <label className="grid gap-2 xl:col-span-2">
             <span className={admin.label}>Buscar</span>
             <input
@@ -184,34 +201,22 @@ export function AdminGuestsBrowser({
           />
 
           <AdminSelect
-            label="Contacto"
+            label="Tipo de invitado"
             className="sm:col-span-2 xl:col-span-2"
             value={filters.primary}
             onChange={(primary) => changeFilters({ primary })}
             options={[
               { value: "all", label: "Todos" },
-              { value: "primary", label: "Principal" },
+              { value: "primary", label: "Contacto principal" },
               { value: "other", label: "Otros invitados" },
             ]}
           />
-
-          <AdminFilterChips
-            chips={chips}
-            onRemove={removeChip}
-            onClearAll={() =>
-              updateFilters({
-                ...DEFAULT_ADMIN_GUESTS_FILTERS,
-                sort: filters.sort,
-                dir: filters.dir,
-              })
-            }
-          />
-        </div>
+        </AdminExpandableFilters>
       </div>
 
       <div className="mt-6 flex flex-wrap gap-3">
         <Link href="/admin/analytics" className={admin.btnSecondary}>
-          Analytics
+          {adminCopy.nav.statistics}
         </Link>
         <Link href="/admin/families" className={admin.btnSecondary}>
           Familias
@@ -338,7 +343,7 @@ export function AdminGuestsBrowser({
                       {guest.fullName}
                       {guest.isPrimaryContact ? (
                         <span className="ml-2 text-xs text-cover-cta-fg/65">
-                          principal
+                          {adminCopy.guest.primaryContact}
                         </span>
                       ) : null}
                     </td>

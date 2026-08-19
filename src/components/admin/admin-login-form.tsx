@@ -21,17 +21,23 @@ export function AdminLoginForm({
   );
   const [isPending, startTransition] = useTransition();
 
+  function submitLogin(form: HTMLFormElement) {
+    setError(null);
+    const formData = new FormData(form);
+    startTransition(async () => {
+      const result = await signInAdminAction(formData);
+      if (result && !result.ok) {
+        setError(result.error);
+      }
+    });
+  }
+
   return (
     <form
       className="space-y-5"
-      action={(formData) => {
-        setError(null);
-        startTransition(async () => {
-          const result = await signInAdminAction(formData);
-          if (result && !result.ok) {
-            setError(result.error);
-          }
-        });
+      onSubmit={(event) => {
+        event.preventDefault();
+        submitLogin(event.currentTarget);
       }}
     >
       <input type="hidden" name="next" value={nextPath} />

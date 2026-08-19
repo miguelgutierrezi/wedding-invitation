@@ -30,11 +30,17 @@ export default async function AdminPhotosPage() {
 
   const cards = [
     { label: "Archivos", value: String(stats.totalFiles) },
-    { label: "Espacio usado", value: formatBytes(stats.totalBytes) },
+    {
+      label: "Espacio usado",
+      value: formatBytes(stats.totalBytes),
+    },
     { label: "Fotos", value: String(stats.imageCount) },
     { label: "Videos", value: String(stats.videoCount) },
     { label: "Completados", value: String(stats.uploadedCount) },
-    { label: "Pendientes", value: String(stats.pendingCount) },
+    {
+      label: "En revisión",
+      value: String(stats.pendingCount),
+    },
     { label: "Fallidos", value: String(stats.failedCount) },
     {
       label: "Cuota Storage",
@@ -45,10 +51,9 @@ export default async function AdminPhotosPage() {
   return (
     <AdminShell title="Fotos y videos">
       <p className={admin.muted}>
-        Moderación de cargas de invitados. Las vistas previas se firman en lote
-        tras cargar el listado (URLs temporales). La descarga masiva ZIP no corre
-        por Vercel — usa Supabase CLI, rclone o cliente S3 (ver
-        docs/guest-media-storage.md).
+        Moderación de fotos y videos de invitados. Las miniaturas usan enlaces
+        temporales. Para descargar muchos archivos a la vez, usa las
+        herramientas de Supabase descritas en la documentación del proyecto.
       </p>
 
       {stats.quotaAlert !== "none" ? (
@@ -71,9 +76,9 @@ export default async function AdminPhotosPage() {
       </div>
 
       <p className={`mt-4 ${admin.muted}`}>
-        Origen invitación: {stats.invitationSourceCount} · QR:{" "}
-        {stats.qrSourceCount} · Aprobados: {stats.approvedCount} · Rechazados:{" "}
-        {stats.rejectedCount}
+        Desde invitación: {stats.invitationSourceCount} · Desde código del
+        evento: {stats.qrSourceCount} · Aprobados: {stats.approvedCount} ·
+        Rechazados: {stats.rejectedCount}
       </p>
 
       {qr && eventId ? (

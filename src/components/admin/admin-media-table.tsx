@@ -9,6 +9,7 @@ import {
   rejectMediaUploadAction,
 } from "@/actions/admin/guest-media";
 import { admin } from "@/components/admin/admin-ui";
+import { adminCopy, mediaStatusLabel } from "@/lib/admin/admin-copy";
 import { isReviewableStatus } from "@/lib/media/status";
 import type { AdminMediaListItem } from "@/types/guest-media";
 
@@ -123,11 +124,15 @@ export function AdminMediaTable({ items }: AdminMediaTableProps) {
                   <p className="text-xs text-cover-cta-fg/65">{item.mimeType}</p>
                 </td>
                 <td className="px-4 py-3 text-cover-cta-fg/75">
-                  {item.source === "invitation" ? "Invitación" : "QR"}
+                  {item.source === "invitation"
+                    ? adminCopy.media.sourceInvitation
+                    : adminCopy.media.sourceQr}
                   {item.familyName ? ` · ${item.familyName}` : null}
                   {item.uploaderName ? ` · ${item.uploaderName}` : null}
                 </td>
-                <td className="px-4 py-3 text-cover-cta-fg/75">{item.status}</td>
+                <td className="px-4 py-3 text-cover-cta-fg/75">
+                  {mediaStatusLabel(item.status)}
+                </td>
                 <td className="px-4 py-3 text-cover-cta-fg/75">
                   {formatBytes(item.sizeBytes)}
                 </td>

@@ -210,6 +210,7 @@ Relevant migrations include:
 …_placeholder_companion_names.sql
 …_update_family_guests_by_id.sql
 …_guest_contact_from_rsvp.sql
+…_delete_family.sql
 ```
 
 ## Invitation token / slug boundary

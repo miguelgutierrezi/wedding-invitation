@@ -15,12 +15,14 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import {
   createFamilySchema,
+  deleteFamilySchema,
   parseAdminGuestFormEntries,
   parseIsEnabledFormValue,
   updateFamilySchema,
 } from "@/lib/validation/admin-family";
 import {
   createFamily,
+  deleteFamily,
   updateFamily,
   updateFamilyInvitationSlug,
 } from "@/services/admin/families";
@@ -252,7 +254,7 @@ export async function regenerateInvitationAction(
       ok: true,
       invitationUrl: buildInvitationUrl(slug),
       message:
-        "Slug regenerado a partir del nombre de la familia. El enlace anterior deja de funcionar si era distinto.",
+        "Enlace nuevo generado a partir del nombre de la familia. El enlace anterior deja de funcionar si era distinto.",
     };
   } catch (error) {
     serverLog({
@@ -267,6 +269,60 @@ export async function regenerateInvitationAction(
         error instanceof Error
           ? error.message
           : "No se pudo regenerar el enlace.",
+    };
+  }
+}
+
+export async function deleteFamilyAction(
+  formData: FormData,
+): Promise<AdminActionResult> {
+  await requireAdmin();
+
+  const parsed = deleteFamilySchema.safeParse({
+    familyId: formData.get("familyId"),
+    confirmName: formData.get("confirmName"),
+  });
+
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: parsed.error.issues[0]?.message ?? "Datos inválidos.",
+    };
+  }
+
+  const { getFamilyById } = await import("@/services/admin/families");
+  const family = await getFamilyById(parsed.data.familyId);
+
+  if (!family) {
+    return { ok: false, error: "Familia no encontrada." };
+  }
+
+  if (
+    family.displayName.trim().toLocaleLowerCase() !==
+    parsed.data.confirmName.toLocaleLowerCase()
+  ) {
+    return {
+      ok: false,
+      error: "El nombre escrito no coincide con el de la familia.",
+    };
+  }
+
+  try {
+    await deleteFamily(parsed.data.familyId);
+    redirect("/admin/families");
+  } catch (error) {
+    serverLog({
+      level: "error",
+      event: "admin_family_delete_action_failed",
+      slugFp: fingerprintPublicId(parsed.data.familyId),
+      errorName: error instanceof Error ? error.name : "UnknownError",
+    });
+    return {
+      ok: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "No se pudo eliminar la familia.",
     };
   }
 }

@@ -3,12 +3,23 @@ import { notFound } from "next/navigation";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { admin } from "@/components/admin/admin-ui";
 import { FamilyDetailForm } from "@/components/admin/family-detail-form";
+import { adminCopy, familyStatusLabel } from "@/lib/admin/admin-copy";
 import { formatTransportBoardingPoint } from "@/config/transport";
 import { getFamilyById } from "@/services/admin/families";
 
 type FamilyDetailPageProps = {
   params: Promise<{ id: string }>;
 };
+
+function guestAttendanceLabel(status: string): string {
+  if (status === "attending") {
+    return "asiste";
+  }
+  if (status === "not_attending") {
+    return "no asiste";
+  }
+  return "sin confirmar";
+}
 
 export default async function AdminFamilyDetailPage({
   params,
@@ -22,34 +33,30 @@ export default async function AdminFamilyDetailPage({
 
   return (
     <AdminShell title={family.displayName}>
-      <div
-        className={`mb-8 grid gap-4 ${admin.card} p-5 sm:grid-cols-3`}
-      >
+      <div className={`mb-8 grid gap-4 ${admin.card} p-5 sm:grid-cols-3`}>
         <div>
           <p className={admin.eyebrow}>Estado</p>
-          <p className={`mt-1 capitalize ${admin.body}`}>{family.status}</p>
+          <p className={`mt-1 ${admin.body}`}>
+            {familyStatusLabel(family.status)}
+          </p>
         </div>
         <div>
-          <p className={admin.eyebrow}>RSVP</p>
+          <p className={admin.eyebrow}>{adminCopy.rsvp.noun}</p>
           <p className={`mt-1 ${admin.body}`}>
             {family.willAttend === null
-              ? "Sin respuesta"
+              ? adminCopy.rsvp.noResponse
               : family.willAttend
                 ? `Asisten (${family.confirmedGuestCount ?? 0})`
                 : "No asisten"}
           </p>
         </div>
         <div>
-          <p className={admin.eyebrow}>Teléfono RSVP</p>
-          <p className={`mt-1 ${admin.body}`}>
-            {family.contactPhone ?? "—"}
-          </p>
+          <p className={admin.eyebrow}>{adminCopy.rsvp.phone}</p>
+          <p className={`mt-1 ${admin.body}`}>{family.contactPhone ?? "—"}</p>
         </div>
         <div>
-          <p className={admin.eyebrow}>Correo RSVP</p>
-          <p className={`mt-1 ${admin.body}`}>
-            {family.contactEmail ?? "—"}
-          </p>
+          <p className={admin.eyebrow}>{adminCopy.rsvp.email}</p>
+          <p className={`mt-1 ${admin.body}`}>{family.contactEmail ?? "—"}</p>
         </div>
         <div>
           <p className={admin.eyebrow}>Transporte</p>
@@ -72,8 +79,8 @@ export default async function AdminFamilyDetailPage({
           {family.guests.map((guest) => (
             <li key={guest.id} className="flex flex-wrap gap-x-3 gap-y-1">
               <span className="font-bold">{guest.fullName}</span>
-              <span className="capitalize text-cover-cta-fg/70">
-                {guest.attendanceStatus}
+              <span className="text-cover-cta-fg/70">
+                {guestAttendanceLabel(guest.attendanceStatus)}
               </span>
               {guest.needsTransport ? (
                 <span className="font-bold text-accent-deep">

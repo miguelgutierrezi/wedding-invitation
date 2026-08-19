@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import { admin } from "@/components/admin/admin-ui";
+import { adminCopy } from "@/lib/admin/admin-copy";
 import { formatEventDateTime } from "@/lib/datetime/event-timezone";
 import { getDashboardMetrics } from "@/services/admin/families";
 
@@ -22,7 +23,7 @@ export default async function AdminDashboardPage() {
   return (
     <AdminShell title="Resumen">
       <p className={admin.muted}>
-        {metrics.eventName ?? "Evento"} · Límite RSVP:{" "}
+        {metrics.eventName ?? "Evento"} · {adminCopy.rsvp.deadline}:{" "}
         {formatEventDateTime(metrics.rsvpDeadline)}
       </p>
 
@@ -36,10 +37,10 @@ export default async function AdminDashboardPage() {
       </div>
       <div className="mt-10 flex flex-wrap gap-3">
         <a href="/api/admin/export" className={admin.btnPrimary} download>
-          Exportar Excel
+          {adminCopy.nav.exportList}
         </a>
         <Link href="/admin/analytics" className={admin.btnSecondary}>
-          Ver analytics
+          Ver estadísticas
         </Link>
         <Link href="/admin/guests" className={admin.btnSecondary}>
           Ver invitados

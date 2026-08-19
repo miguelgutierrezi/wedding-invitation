@@ -4,11 +4,13 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import {
+  deleteFamilyAction,
   regenerateInvitationAction,
   updateFamilyAction,
 } from "@/actions/admin/auth";
 import { admin } from "@/components/admin/admin-ui";
 import { CopyInvitationLink } from "@/components/admin/copy-invitation-link";
+import { adminCopy, familyStatusLabel } from "@/lib/admin/admin-copy";
 import type { AdminFamilyDetail } from "@/services/admin/families";
 import type { GuestGender } from "@/types/guest";
 
@@ -19,7 +21,7 @@ function attendanceStatusLabel(status: string): string {
   if (status === "not_attending") {
     return "no asiste";
   }
-  return "pendiente";
+  return "sin confirmar";
 }
 
 type GuestFormRow = {
@@ -93,19 +95,27 @@ function FamilyDetailFormInner({ family }: FamilyDetailFormProps) {
   const [guestRows, setGuestRows] = useState(() =>
     guestRowsFromFamily(family, Math.max(family.guests.length, 1)),
   );
+  const [confirmDeleteName, setConfirmDeleteName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  const deleteNameMatches =
+    confirmDeleteName.trim().toLocaleLowerCase() ===
+    family.displayName.trim().toLocaleLowerCase();
+
   return (
     <div className="space-y-10">
       <div className={`${admin.panel} space-y-3 p-5`}>
-        <p className={admin.label}>Enlace de invitación</p>
+        <p className={admin.label}>{adminCopy.invitation.link}</p>
         <p className={admin.muted}>
-          Slug:{" "}
+          {adminCopy.invitation.slug}:{" "}
           <code className="rounded bg-white/70 px-1.5 py-0.5 font-mono text-cover-cta-fg">
             {family.invitationSlug}
           </code>
+        </p>
+        <p className={admin.muted}>
+          Estado: {familyStatusLabel(family.status)}
         </p>
         <CopyInvitationLink url={family.invitationUrl} />
       </div>
@@ -145,7 +155,7 @@ function FamilyDetailFormInner({ family }: FamilyDetailFormProps) {
         </label>
 
         <label className="grid gap-2">
-          <span className={admin.label}>Slug de la URL (minúsculas)</span>
+          <span className={admin.label}>{adminCopy.invitation.slug}</span>
           <input
             name="invitationSlug"
             required
@@ -156,7 +166,8 @@ function FamilyDetailFormInner({ family }: FamilyDetailFormProps) {
             placeholder="familia-gutierrez-panqueva"
           />
           <span className={admin.muted}>
-            La invitación queda en /i/{family.invitationSlug}
+            {adminCopy.invitation.slugHint}.{" "}
+            {adminCopy.invitation.slugPath(invitationSlug || family.invitationSlug)}
           </span>
         </label>
 
@@ -197,7 +208,7 @@ function FamilyDetailFormInner({ family }: FamilyDetailFormProps) {
             onChange={(event) => setIsEnabled(event.target.checked)}
             className="size-4 accent-[color:var(--accent-deep)]"
           />
-          <span className={admin.body}>Invitación habilitada</span>
+          <span className={admin.body}>{adminCopy.invitation.enabled}</span>
         </label>
 
         <fieldset className="space-y-3">
@@ -260,7 +271,7 @@ function FamilyDetailFormInner({ family }: FamilyDetailFormProps) {
               </label>
               {family.guests[index]?.needsNameConfirmation ? (
                 <p className={`sm:col-span-2 ${admin.muted}`}>
-                  En el RSVP le pediremos el nombre real de esta persona.
+                  {adminCopy.guest.placeholderNameHint}
                 </p>
               ) : null}
             </div>
@@ -289,13 +300,9 @@ function FamilyDetailFormInner({ family }: FamilyDetailFormProps) {
 
       <div className="border-t-2 border-cover-cta-fg/15 pt-8">
         <h2 className="font-[family-name:var(--font-timer)] text-xl font-bold text-cover-cta-fg">
-          Regenerar slug desde el nombre
+          {adminCopy.invitation.regenerateTitle}
         </h2>
-        <p className={`mt-2 ${admin.muted}`}>
-          Vuelve a generar el slug a partir del nombre de la familia (p. ej. Familia
-          Gutiérrez Panqueva → familia-gutierrez-panqueva). El enlace anterior deja
-          de funcionar.
-        </p>
+        <p className={`mt-2 ${admin.muted}`}>{adminCopy.invitation.regenerateBody}</p>
         <button
           type="button"
           disabled={isPending}
@@ -314,8 +321,48 @@ function FamilyDetailFormInner({ family }: FamilyDetailFormProps) {
           }}
           className={`mt-4 ${admin.btnSecondary}`}
         >
-          Regenerar slug
+          {adminCopy.invitation.regenerateButton}
         </button>
+      </div>
+
+      <div className="rounded-2xl border-2 border-red-800/25 bg-red-50/40 p-6">
+        <h2 className="font-[family-name:var(--font-timer)] text-xl font-bold text-red-900">
+          {adminCopy.family.deleteTitle}
+        </h2>
+        <p className={`mt-2 ${admin.muted}`}>{adminCopy.family.deleteWarning}</p>
+        <form
+          className="mt-4 space-y-4"
+          action={(formData) => {
+            setError(null);
+            setMessage(null);
+            startTransition(async () => {
+              const result = await deleteFamilyAction(formData);
+              if (result && !result.ok) {
+                setError(result.error);
+              }
+            });
+          }}
+        >
+          <input type="hidden" name="familyId" value={family.id} />
+          <label className="grid gap-2">
+            <span className={admin.label}>{adminCopy.family.deleteConfirmLabel}</span>
+            <input
+              name="confirmName"
+              value={confirmDeleteName}
+              onChange={(event) => setConfirmDeleteName(event.target.value)}
+              autoComplete="off"
+              placeholder={family.displayName}
+              className={admin.input}
+            />
+          </label>
+          <button
+            type="submit"
+            disabled={isPending || !deleteNameMatches}
+            className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-red-800 bg-red-800/10 px-5 font-[family-name:var(--font-timer)] text-sm font-medium text-red-900 transition-opacity hover:bg-red-800/15 disabled:cursor-not-allowed disabled:opacity-45"
+          >
+            {isPending ? adminCopy.family.deleting : adminCopy.family.deleteButton}
+          </button>
+        </form>
       </div>
     </div>
   );

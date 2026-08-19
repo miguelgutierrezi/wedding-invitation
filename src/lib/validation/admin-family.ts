@@ -122,3 +122,13 @@ export const updateFamilySchema = guestsWithGendersRefine(
 );
 
 export type UpdateFamilyInput = z.infer<typeof updateFamilySchema>;
+
+export const deleteFamilySchema = z.object({
+  familyId: z.string().uuid(),
+  confirmName: z
+    .string()
+    .trim()
+    .min(1, "Escribe el nombre de la familia para confirmar."),
+});
+
+export type DeleteFamilyInput = z.infer<typeof deleteFamilySchema>;

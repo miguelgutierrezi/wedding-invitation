@@ -28,15 +28,15 @@ function mapSharedAdminFamilyRpcError(message: string): string | null {
   }
 
   if (message.includes("SLUG_IN_USE")) {
-    return "Ese slug de invitación ya está en uso.";
+    return "Esa dirección del enlace ya está en uso. Prueba otra.";
   }
 
   if (message.includes("INVALID_SLUG")) {
-    return "El slug de invitación no es válido.";
+    return "La dirección del enlace no es válida.";
   }
 
   if (message.includes("GUEST_DELETE_BLOCKED")) {
-    return "No se pudieron eliminar invitados sobrantes. Puede haber respuestas RSVP vinculadas.";
+    return "No se pudieron quitar invitados sobrantes porque ya hay confirmaciones guardadas.";
   }
 
   return null;
@@ -50,6 +50,12 @@ export function mapUpdateFamilyRpcError(message: string): string {
 
 export function mapCreateFamilyRpcError(message: string): string {
   return mapSharedAdminFamilyRpcError(message) ?? "No se pudo crear la familia.";
+}
+
+export function mapDeleteFamilyRpcError(message: string): string {
+  return (
+    mapSharedAdminFamilyRpcError(message) ?? "No se pudo eliminar la familia."
+  );
 }
 
 /** @deprecated Prefer mapUpdateFamilyRpcError / mapCreateFamilyRpcError */

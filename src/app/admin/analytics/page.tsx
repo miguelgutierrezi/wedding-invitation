@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import { admin } from "@/components/admin/admin-ui";
+import { adminCopy } from "@/lib/admin/admin-copy";
 import { getTransportBoardingPoint } from "@/config/transport";
 import { weddingConfig } from "@/config/wedding";
 import { formatEventDateTime } from "@/lib/datetime/event-timezone";
@@ -33,32 +34,35 @@ export default async function AdminAnalyticsPage() {
 
   const cards = [
     { label: "Familias", value: analytics.familyCount },
-    { label: "Familias respondidas", value: analytics.familiesResponded },
-    { label: "Familias pendientes", value: analytics.familiesPending },
-    { label: "Invitaciones abiertas", value: analytics.familiesOpened },
-    { label: "Familias deshabilitadas", value: analytics.familiesDisabled },
+    { label: "Familias que confirmaron", value: analytics.familiesResponded },
+    { label: "Familias sin confirmar", value: analytics.familiesPending },
+    { label: "Abrieron la invitación", value: analytics.familiesOpened },
+    { label: "Familias desactivadas", value: analytics.familiesDisabled },
     { label: "Invitados totales", value: analytics.totalGuests },
     { label: "Asistentes", value: analytics.guestsAttending },
     { label: "No asisten", value: analytics.guestsNotAttending },
-    { label: "Sin responder", value: analytics.guestsPending },
+    { label: "Sin confirmar", value: analytics.guestsPending },
     { label: "Cupos de bus", value: analytics.guestsNeedingTransport },
     { label: "Con dieta especial", value: analytics.guestsWithDietary },
-    { label: "Nombres por confirmar", value: analytics.guestsPendingNameConfirmation },
+    {
+      label: "Nombres por confirmar",
+      value: analytics.guestsPendingNameConfirmation,
+    },
   ] as const;
 
   return (
-    <AdminShell title="Analytics">
+    <AdminShell title={adminCopy.nav.statistics}>
       <p className={admin.muted}>
-        {analytics.eventName ?? "Evento"} · Límite RSVP:{" "}
+        {analytics.eventName ?? "Evento"} · {adminCopy.rsvp.deadline}:{" "}
         {formatEventDateTime(analytics.rsvpDeadline)}
       </p>
 
       <section className={`mt-8 space-y-5 ${admin.card} p-6`}>
         <h2 className="font-[family-name:var(--font-timer)] text-xl font-bold text-cover-cta-fg">
-          Tasas
+          Porcentajes
         </h2>
         <RateBar
-          label="Familias que ya respondieron (habilitadas)"
+          label="Familias que ya confirmaron (activas)"
           percent={analytics.familyResponseRate}
         />
         <RateBar
@@ -81,8 +85,7 @@ export default async function AdminAnalyticsPage() {
         </p>
         <div className="grid gap-4 sm:grid-cols-2">
           {weddingConfig.transport.meetingPoints.map((point) => {
-            const count =
-              analytics.transportByBoardingPoint[point.id] ?? 0;
+            const count = analytics.transportByBoardingPoint[point.id] ?? 0;
             const detail = getTransportBoardingPoint(point.id);
 
             return (

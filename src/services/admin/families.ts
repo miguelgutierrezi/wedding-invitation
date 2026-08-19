@@ -11,6 +11,7 @@ import { serverLog } from "@/lib/logging/server-log";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   mapCreateFamilyRpcError,
+  mapDeleteFamilyRpcError,
   mapUpdateFamilyRpcError,
 } from "@/services/admin/admin-family-rpc-errors";
 import type { GuestGender } from "@/types/guest";
@@ -679,4 +680,28 @@ function classifyAdminFamilyError(message: string): string {
     return "guest_delete";
   }
   return "unknown";
+}
+
+export async function deleteFamily(familyId: string): Promise<void> {
+  const supabase = createAdminClient();
+
+  const { error } = await supabase.rpc("delete_family", {
+    p_family_id: familyId,
+  });
+
+  if (error) {
+    serverLog({
+      level: "error",
+      event: "admin_family_delete_failed",
+      slugFp: fingerprintPublicId(familyId),
+      errorName: error.message.slice(0, 80),
+    });
+    throw new Error(mapDeleteFamilyRpcError(error.message));
+  }
+
+  serverLog({
+    level: "info",
+    event: "admin_family_delete_ok",
+    slugFp: fingerprintPublicId(familyId),
+  });
 }

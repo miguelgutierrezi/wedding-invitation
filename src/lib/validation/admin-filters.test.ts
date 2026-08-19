@@ -235,7 +235,7 @@ describe("filter chips", () => {
       }),
     ).toEqual([
       { id: "query", label: "Buscar: Pérez" },
-      { id: "status", label: "Estado: Pendiente" },
+      { id: "status", label: "Estado: Sin confirmar" },
     ]);
   });
 
@@ -248,7 +248,7 @@ describe("filter chips", () => {
       }),
     ).toEqual([
       { id: "attendance", label: "Asiste" },
-      { id: "primary", label: "Principal" },
+      { id: "primary", label: "contacto principal" },
     ]);
   });
 });

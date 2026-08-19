@@ -11,6 +11,7 @@ import {
 } from "@/actions/admin/guest-media";
 import { AdminMediaQrDownload } from "@/components/admin/admin-media-qr-download";
 import { admin } from "@/components/admin/admin-ui";
+import { adminCopy } from "@/lib/admin/admin-copy";
 
 type AdminMediaQrPanelProps = {
   eventId: string;
@@ -64,33 +65,31 @@ export function AdminMediaQrPanel({
 
   const windowHint = useMemo(() => {
     if (!opensInput && !closesInput) {
-      return "Sin ventana: si está activo, acepta cargas en cualquier momento.";
+      return "Sin fechas límite: si está activo, acepta fotos en cualquier momento.";
     }
-    return "La ventana se evalúa en el servidor al abrir /fotos?code=…";
+    return "Las fechas se revisan al abrir el enlace con código.";
   }, [opensInput, closesInput]);
 
   return (
     <section className={`${admin.card} mt-8 p-5`}>
-      <h2 className={admin.title}>Acceso QR del evento</h2>
-      <p className={`mt-2 ${admin.muted}`}>
-        La URL completa va en el QR. El invitado no escribe códigos. Tras rotar,
-        copia la URL o descarga el PNG ahora: el token completo no se vuelve a
-        mostrar.
-      </p>
+      <h2 className={admin.title}>{adminCopy.media.qrTitle}</h2>
+      <p className={`mt-2 ${admin.muted}`}>{adminCopy.media.qrBody}</p>
       <dl className="mt-4 grid gap-2 font-[family-name:var(--font-timer)] text-sm text-cover-cta-fg/80">
         <div>
           <dt className="inline font-medium text-cover-cta-fg">Estado: </dt>
           <dd className="inline">{isEnabled ? "Activo" : "Desactivado"}</dd>
         </div>
         <div>
-          <dt className="inline font-medium text-cover-cta-fg">Preview: </dt>
+          <dt className="inline font-medium text-cover-cta-fg">
+            {adminCopy.media.qrReference}:{" "}
+          </dt>
           <dd className="inline">{tokenPreview}</dd>
         </div>
       </dl>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <label className={admin.label}>
-          Abre
+          Desde
           <input
             type="datetime-local"
             value={opensInput}
@@ -99,7 +98,7 @@ export function AdminMediaQrPanel({
           />
         </label>
         <label className={admin.label}>
-          Cierra
+          Hasta
           <input
             type="datetime-local"
             value={closesInput}
@@ -126,7 +125,7 @@ export function AdminMediaQrPanel({
                 return;
               }
               if (nextOpens && nextCloses && nextOpens > nextCloses) {
-                setMessage("La fecha de apertura debe ser anterior al cierre.");
+                setMessage("La fecha de inicio debe ser anterior al cierre.");
                 return;
               }
               const result = await updateMediaQrWindowAction({
@@ -135,7 +134,7 @@ export function AdminMediaQrPanel({
                 closesAt: nextCloses,
               });
               if (result.ok) {
-                setMessage("Ventana de carga QR actualizada.");
+                setMessage("Fechas de subida actualizadas.");
                 router.refresh();
               } else {
                 setMessage(result.error);
@@ -143,7 +142,7 @@ export function AdminMediaQrPanel({
             });
           }}
         >
-          Guardar ventana
+          {adminCopy.media.saveWindow}
         </button>
         <button
           type="button"
@@ -159,7 +158,7 @@ export function AdminMediaQrPanel({
                 closesAt: null,
               });
               if (result.ok) {
-                setMessage("Ventana QR limpiada (sin límite de fechas).");
+                setMessage("Fechas quitadas (sin límite).");
                 router.refresh();
               } else {
                 setMessage(result.error);
@@ -167,7 +166,7 @@ export function AdminMediaQrPanel({
             });
           }}
         >
-          Quitar fechas
+          {adminCopy.media.clearWindow}
         </button>
       </div>
 
@@ -191,14 +190,14 @@ export function AdminMediaQrPanel({
               if (result.ok) {
                 setFreshUrl(result.data.publicUrl);
                 setMessage(
-                  "Token rotado. Descarga el QR o copia la URL antes de salir.",
+                  "Código nuevo generado. Copia el enlace o descarga la imagen antes de salir.",
                 );
                 router.refresh();
               }
             });
           }}
         >
-          Rotar token / generar QR
+          {adminCopy.media.generateQr}
         </button>
         <button
           type="button"
@@ -217,14 +216,14 @@ export function AdminMediaQrPanel({
               }
               setMessage(
                 nextEnabled
-                  ? "Cargas por QR activadas."
-                  : "Cargas por QR desactivadas.",
+                  ? "Subida de fotos por código activada."
+                  : "Subida de fotos por código desactivada.",
               );
               router.refresh();
             });
           }}
         >
-          {isEnabled ? "Desactivar QR" : "Activar QR"}
+          {isEnabled ? adminCopy.media.disableQr : adminCopy.media.enableQr}
         </button>
         <button
           type="button"
@@ -235,14 +234,14 @@ export function AdminMediaQrPanel({
               const result = await reconcileGuestMediaAction();
               if (result.ok) {
                 setMessage(
-                  `Reconciliación: abandonados ${result.data.abandonedMarkedFailed}, objetos faltantes ${result.data.missingObjectsMarkedFailed}.`,
+                  `Revisión terminada: ${result.data.abandonedMarkedFailed} archivos incompletos, ${result.data.missingObjectsMarkedFailed} archivos no encontrados.`,
                 );
                 router.refresh();
               }
             });
           }}
         >
-          Reconciliar Storage
+          {adminCopy.media.reconcile}
         </button>
       </div>
       {message ? <p className={`mt-3 ${admin.muted}`}>{message}</p> : null}

@@ -24,4 +24,20 @@ describe("visualViewportBottomCover", () => {
     it("is zero without a visual viewport API", () => {
         expect(visualViewportBottomCover(800, null)).toBe(0);
     });
+
+    it("ignores iPad Chrome’s ~half-screen innerHeight vs visualViewport gap", () => {
+        expect(
+            visualViewportBottomCover(1180, {height: 590, offsetTop: 0}),
+        ).toBe(0);
+    });
+
+    it("ignores pinch-zoom scale so the FAB is not shifted", () => {
+        expect(
+            visualViewportBottomCover(800, {
+                height: 740,
+                offsetTop: 0,
+                scale: 2,
+            }),
+        ).toBe(0);
+    });
 });

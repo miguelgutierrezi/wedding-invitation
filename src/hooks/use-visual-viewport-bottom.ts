@@ -16,7 +16,13 @@ export function useVisualViewportBottom() {
         function sync() {
             const inset = visualViewportBottomCover(
                 window.innerHeight,
-                window.visualViewport,
+                window.visualViewport
+                    ? {
+                          height: window.visualViewport.height,
+                          offsetTop: window.visualViewport.offsetTop,
+                          scale: window.visualViewport.scale,
+                      }
+                    : null,
             );
             root.style.setProperty(CSS_VAR, `${inset}px`);
         }

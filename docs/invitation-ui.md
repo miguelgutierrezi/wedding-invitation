@@ -263,8 +263,8 @@ Admin must not drift into a separate purple/gray SaaS look. Use `admin` tokens f
 nav, and metrics. Header uses `bg-accent` with cream type/pills; page shell uses `bg-cream-figma`.
 
 Compact admin (viewport `< lg`): hamburger drawer is the same accent band as the header. New-family **+** is portaled
-onto `document.body` with `position:fixed; bottom` (plus visualViewport inset) so iPad Safari **and** Chrome keep it on
-the visible bottom, not mid-list. Back chevron on nueva familia
+onto `document.body` with `position:fixed; bottom`. VisualViewport inset is capped so iPad Chrome cannot park the
+button mid-screen (`innerHeight` ≈ 2× `visualViewport.height`). Back chevron on nueva familia
 **and** family detail. Family list chips (sin abrir / bus / dieta). Family detail: actividad reciente.
 Family/guest/photo **cards** replace tables until `lg`.
 

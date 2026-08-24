@@ -94,7 +94,7 @@ should not scatter event copy, asset paths, or brand colors across the UI.
 - **Guest gender:** `guests.gender` (`male` \| `female` \| `unspecified`, nullable for legacy rows). Required on admin
   create/update. Singular cover greeting uses Querido / Querida / Hola.
 - **Placeholder plus-ones:** `guests.needs_name_confirmation`. Names like “Acompañante” are backfilled as unspecified +
-  flag; RSVP must send a real `full_name`.
+  flag; RSVP must send a real `full_name` **only when that guest will attend**. Partial attendance is allowed.
 
 Asset paths under `public/invitation/` are listed in `weddingConfig.assets` and documented in `docs/invitation-ui.md`.
 
@@ -135,6 +135,8 @@ confirmar”). Outfit inspiration routes are implemented under `/inspiracion/*`.
 - **Disabled invitations:** planning counts, guest listing, and Excel omit families with `is_enabled = false` or
   `status = disabled`. The analytics “Familias desactivadas” card is the dedicated count; the families list still shows
   them when filtered.
+- **Example families:** analytics (`getAnalyticsSnapshot`, also used by Resumen cards) omit families whose display name
+  contains the word `ejemplo` (`src/lib/admin/example-family.ts`). Lists, Excel, and action-queue rows still include them.
 
 ## Edge proxy (admin auth)
 
@@ -165,10 +167,12 @@ Current coverage targets:
 - Invitation slug helpers.
 - In-memory rate limiter + `serverLog` PII stripping.
 - Admin `updateFamily` / `createFamily` / `deleteFamily` RPC error mapping and actions.
+- Family delete confirm-name helper (saved name or unsaved draft).
 - Admin list filter parse/match/chips/query + list-view sort/pagination.
 - Family activity labels + open-event collapsing; family operational chips.
 - Admin batch id validation, row selection helpers, export scope.
 - Admin compact chrome path helpers.
+- Example-family name helper (`ejemplo` word, analytics exclusion).
 - Cover greeting helper (`formatCoverGreeting`).
 - Placeholder companion names (`isPlaceholderGuestName`).
 - Event timezone helpers.
@@ -242,7 +246,8 @@ Approved decisions:
 - **Guest gender:** `guests.gender` text nullable with check `male` \| `female` \| `unspecified`. Admin Zod + RPC
   require a gender array aligned with guest names (`p_guest_genders`) and, on update, guest ids (`p_guest_ids`).
 - **Companion names:** `needs_name_confirmation` plus `is_placeholder_guest_name()`; RSVP RPC `submit_family_rsvp`
-  accepts `full_name` only when the flag is set.
+  requires `full_name` only when the flag is set **and** that guest is attending. Partial attendance (some guests no) is
+  allowed.
 - **Transport:**
     - `needs_transport` (boolean) on guest / rsvp_response_guest.
     - `transport_boarding_point` text nullable; allowed values `modelia` \| `villa_sonia`; **required server-side when**

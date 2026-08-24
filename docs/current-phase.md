@@ -3,7 +3,7 @@
 **Status:** Admin operations (action queue, WhatsApp copy, RSVP close checklist, practical Excel exports) **complete**
 in repo (apply hosted migrations)
 
-**Last reviewed:** 2026-08-19
+**Last reviewed:** 2026-08-24
 
 **Authorized scope:** Guest media QR PNG download authorized by explicit request. Admin list pagination/chips/column
 sort, RSVP contact mirror onto `guests`, and admin operations (action queue, clipboard WhatsApp reminder, RSVP close
@@ -15,9 +15,9 @@ proceed when the user requests it explicitly.
 
 | Area                                        | State                                                                          |
 |---------------------------------------------|--------------------------------------------------------------------------------|
-| Invitation + RSVP + boarding                | Implemented                                                                    |
+| Invitation + RSVP + boarding                | Implemented; **per-guest attend / not attend**                                 |
 | Cover greeting (1 / 2 / 3+ guests + gender) | Implemented (`cover-greeting.ts` + `guests.gender`)                            |
-| Plus-ones “Acompañante”                     | Implemented (`needs_name_confirmation` + RSVP name field)                      |
+| Plus-ones “Acompañante”                     | Implemented; name required **only if that person attends**                     |
 | Gender `unspecified`                        | Implemented (admin + cover “Hola”)                                             |
 | Outfit inspiration pages                    | Implemented (`/inspiracion/ellos\|ellas`)                                      |
 | Event TZ display (`America/Bogota`)         | Implemented (`event-timezone.ts`)                                              |
@@ -26,11 +26,23 @@ proceed when the user requests it explicitly.
 | Admin compact chrome                        | Hamburger until `xl`; FAB phone-only (hidden iPad 11"+)        |
 | Guest phone/email                           | Mirrored from family RSVP onto `guests`                                        |
 | Admin plain-language UI                     | Non-technical Spanish labels in admin panel                                    |
-| Delete family (admin)                       | RPC + confirm-by-name in family detail                                         |
+| Delete family (admin)                       | RPC + confirm-by-name; works with unsaved edits                                |
 | Admin operations                            | Action queue, close follow-ups, family activity, **batch actions** |
+| Analytics example families                  | Names containing the word **ejemplo** omitted from stats           |
 | Guest media uploads                         | **Implemented**                                                                |
 | WhatsApp scheduled send                     | Not implemented                                                                |
 | Resend / settings UI                        | Not implemented                                                                |
+
+## Completed: analytics omit example families
+
+`/admin/analytics` (and Resumen cards that share `getAnalyticsSnapshot`) ignore families whose display name contains the
+word **ejemplo**. They remain on the families/guests lists and in Excel.
+
+## Completed: delete family with unsaved edits
+
+Family detail delete does not require Guardar cambios first. Confirmation accepts the saved name or the draft on
+screen. The delete form is isolated (`noValidate` + `form=`) so empty required guest fields cannot block it. The
+server still checks the name stored in the database.
 
 ## Completed: admin compact chrome (phone + tablet)
 
@@ -41,6 +53,12 @@ proceed when the user requests it explicitly.
 - Lists: cards below `lg`; tables from `lg`. Desktop inline nav from `xl`.
 - Path helpers + tests: `src/lib/admin/admin-chrome.ts` (`ADMIN_FAB_HIDE_MIN_PX`, `ADMIN_DESKTOP_NAV_MIN_PX`).
 - Drawer respects `prefers-reduced-motion`. Back chevron on create and family detail.
+
+## Completed: RSVP partial attendance
+
+A family can confirm some guests and decline others (including a plus-one named “Acompañante”). The companion name is
+required only if that person will attend. Per-guest radios Asistirá / No asistirá. Migration
+`…_rsvp_partial_attendance.sql` updates `submit_family_rsvp`. Apply it on hosted Supabase.
 
 ## Completed: admin batch actions
 
@@ -67,6 +85,7 @@ Reusable row selection (`src/lib/admin/selection.ts`, max `ADMIN_BATCH_MAX_IDS`)
   not shown as extra buttons.
 - Family/guest lists: status badges, last-updated column, name-confirmation filter. Disable invitation and regenerate
   link ask for `window.confirm`.
+- Analytics omit families whose name includes the word **ejemplo** (Resumen cards share the same snapshot).
 - Disabled invitations (`is_enabled = false` / `status = disabled`) are excluded from resumen, estadísticas, guest list,
   RSVP close checklist, and Excel. They remain on `/admin/families` via the desactivada filter and only feed the
   “Familias desactivadas” metric.
@@ -122,6 +141,7 @@ Apply in timestamp order. Omitting later files leaves hosted DB behind the app:
 …_update_family_guests_by_id.sql
 …_guest_contact_from_rsvp.sql   # copies RSVP contact onto guests; updates submit_family_rsvp
 …_delete_family.sql             # admin delete_family RPC
+…_rsvp_partial_attendance.sql   # companion name required only when that guest attends
 ```
 
 ## Invitation polish (user-requested, post media)
@@ -138,6 +158,7 @@ Documented in `docs/invitation-ui.md` / `docs/architecture.md`:
 1. On hosted Supabase: apply **all** pending migrations, including **`update_family_guests_by_id`**, **
    `guest_contact_from_rsvp`**, and **`delete_family`** (see `docs/architecture.md` and `docs/go-live-checklist.md`).
    Raise Storage limits; rotate QR in `/admin/photos`.
-2. Confirm plus-ones named “Acompañante” show the RSVP name field and still count in analytics.
+2. Confirm plus-ones named “Acompañante”: attending requires a real name; **No asistirá** saves without a name. Apply
+   `…_rsvp_partial_attendance.sql` on hosted Supabase.
 3. Manual E2E: invitation fotos + QR fotos + admin approve/reject; cover greetings for 1 / 2 / 3+ guests.
 4. WhatsApp optional send / Resend when needed.

@@ -4,6 +4,10 @@ import {createAdminClient} from "@/lib/supabase/admin";
 import {TRANSPORT_BOARDING_POINT_IDS, type TransportBoardingPointId,} from "@/config/transport";
 import {computeActivePlanningCounts} from "@/lib/admin/admin-counts";
 import {isActiveInvitation} from "@/lib/admin/active-invitation";
+import {
+    omitExampleFamilies,
+    omitGuestsOfExampleFamilies,
+} from "@/lib/admin/example-family";
 import {type DashboardMetrics,} from "@/services/admin/families";
 
 export type GuestListItem = {
@@ -78,10 +82,11 @@ export async function getAnalyticsSnapshot(): Promise<AnalyticsSnapshot> {
     ] = await Promise.all([
         supabase
             .from("families")
-            .select("id, status, is_enabled, last_opened_at, maximum_guests")
+            .select("id, display_name, status, is_enabled, last_opened_at, maximum_guests")
             .returns<
                 {
                     id: string;
+                    display_name: string;
                     status: string;
                     is_enabled: boolean;
                     last_opened_at: string | null;
@@ -116,30 +121,34 @@ export async function getAnalyticsSnapshot(): Promise<AnalyticsSnapshot> {
         throw new Error("No se pudieron cargar las analíticas.");
     }
 
-    const familyRows = families ?? [];
-    const guestRows = guests ?? [];
+    const namedFamilies = (families ?? []).map((family) => ({
+        id: family.id,
+        displayName: family.display_name,
+        status: family.status,
+        isEnabled: family.is_enabled,
+        maximumGuests: family.maximum_guests,
+        lastOpenedAt: family.last_opened_at,
+    }));
+    const namedGuests = (guests ?? []).map((guest) => ({
+        familyId: guest.family_id,
+        attendanceStatus: guest.attendance_status,
+        needsTransport: guest.needs_transport,
+        dietaryRestrictions: guest.dietary_restrictions,
+        needsNameConfirmation: guest.needs_name_confirmation,
+        transportBoardingPoint: guest.transport_boarding_point,
+    }));
+    const familyRows = omitExampleFamilies(namedFamilies);
+    const guestRows = omitGuestsOfExampleFamilies(namedGuests, namedFamilies);
     const counts = computeActivePlanningCounts({
-        families: familyRows.map((family) => ({
-            id: family.id,
-            status: family.status,
-            isEnabled: family.is_enabled,
-            maximumGuests: family.maximum_guests,
-            lastOpenedAt: family.last_opened_at,
-        })),
-        guests: guestRows.map((guest) => ({
-            familyId: guest.family_id,
-            attendanceStatus: guest.attendance_status,
-            needsTransport: guest.needs_transport,
-            dietaryRestrictions: guest.dietary_restrictions,
-            needsNameConfirmation: guest.needs_name_confirmation,
-        })),
+        families: familyRows,
+        guests: guestRows,
     });
 
     const activeFamilyIds = new Set(
         familyRows
             .filter((family) =>
                 isActiveInvitation({
-                    isEnabled: family.is_enabled,
+                    isEnabled: family.isEnabled,
                     status: family.status,
                 }),
             )
@@ -148,13 +157,13 @@ export async function getAnalyticsSnapshot(): Promise<AnalyticsSnapshot> {
 
     const transportByBoardingPoint = emptyBoardingCounts();
     for (const guest of guestRows) {
-        if (!activeFamilyIds.has(guest.family_id)) {
+        if (!activeFamilyIds.has(guest.familyId)) {
             continue;
         }
-        if (!guest.needs_transport || guest.attendance_status !== "attending") {
+        if (!guest.needsTransport || guest.attendanceStatus !== "attending") {
             continue;
         }
-        const point = guest.transport_boarding_point;
+        const point = guest.transportBoardingPoint;
         if (
             point &&
             (TRANSPORT_BOARDING_POINT_IDS as readonly string[]).includes(point)

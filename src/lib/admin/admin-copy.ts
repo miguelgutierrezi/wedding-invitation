@@ -47,8 +47,9 @@ export const adminCopy = {
         },
         deleteTitle: "Eliminar familia",
         deleteWarning:
-            "Esta acción no se puede deshacer. Se borrarán los invitados, las confirmaciones y el enlace de invitación. Las fotos subidas desde esta familia quedarán sin nombre de familia.",
-        deleteConfirmLabel: "Escribe el nombre de la familia para confirmar",
+            "Esta acción no se puede deshacer. No hace falta guardar los cambios de esta pantalla. Se borrarán los invitados, las confirmaciones y el enlace. Las fotos subidas desde esta familia quedarán sin nombre de familia.",
+        deleteConfirmLabel:
+            "Escribe el nombre de la familia (el guardado o el de esta pantalla) para confirmar",
         deleteButton: "Eliminar familia",
         deleting: "Eliminando…",
     },
@@ -78,6 +79,10 @@ export const adminCopy = {
             rejected: "Rechazado",
             failed: "Falló",
         },
+    },
+    analytics: {
+        exampleFamiliesExcluded:
+            "Las familias cuyo nombre incluye “ejemplo” no entran en estas cifras.",
     },
     export: {
         confirmedCount: "Personas confirmadas",

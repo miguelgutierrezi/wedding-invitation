@@ -8,6 +8,7 @@ import {useFieldArray, useForm, useWatch} from "react-hook-form";
 import {submitRsvpAction} from "@/actions/rsvp/submit-rsvp";
 import {isTransportBoardingPointId, type TransportBoardingPointId,} from "@/config/transport";
 import {weddingConfig} from "@/config/wedding";
+import {defaultGuestWillAttend} from "@/lib/rsvp/guest-attendance";
 import {cn} from "@/lib/utils";
 import {type SubmitRsvpInput, submitRsvpSchema,} from "@/lib/validation/rsvp";
 import type {InvitationGuest, InvitationRsvp,} from "@/services/invitations/get-invitation-by-token";
@@ -71,8 +72,10 @@ function buildDefaultValues(
 
             return {
                 guestId: guest.id,
-                willAttend:
-                    existing?.willAttend ?? guest.attendanceStatus === "attending",
+                willAttend: defaultGuestWillAttend({
+                    existingWillAttend: existing?.willAttend,
+                    attendanceStatus: guest.attendanceStatus,
+                }),
                 needsTransport:
                     existing?.needsTransport ?? guest.needsTransport ?? false,
                 transportBoardingPoint: toBoardingDefault(
@@ -127,6 +130,30 @@ export function RsvpForm({
     const guestValues = useWatch({control, name: "guests"}) ?? [];
     const attendingCount = guestValues.filter((guest) => guest.willAttend).length;
 
+    function setGuestAttendance(index: number, attending: boolean) {
+        setValue(`guests.${index}.willAttend`, attending, {
+            shouldDirty: true,
+            shouldValidate: true,
+        });
+        if (!attending) {
+            setValue(`guests.${index}.needsTransport`, false, {
+                shouldDirty: true,
+                shouldValidate: true,
+            });
+            setValue(`guests.${index}.transportBoardingPoint`, "", {
+                shouldDirty: true,
+                shouldValidate: true,
+            });
+        }
+    }
+
+    function setFamilyAttendance(attending: boolean) {
+        setValue("willAttend", attending, {shouldDirty: true, shouldValidate: true});
+        guestValues.forEach((_, index) => {
+            setGuestAttendance(index, attending);
+        });
+    }
+
     const closedMessage =
         closedReason === "deadline"
             ? "La fecha límite para confirmar ya pasó."
@@ -173,8 +200,8 @@ export function RsvpForm({
             noValidate
         >
             <p className={`${labelClass} text-center text-cover-cta-fg/85`}>
-                Cupos de esta invitación: {maximumGuests}. Puedes actualizar tu
-                respuesta mientras el formulario esté abierto.
+                Cupos de esta invitación: {maximumGuests}. Marca quién asiste: puedes
+                dejar al acompañante o a cualquier persona de la lista sin ir.
             </p>
 
             {closedMessage ? (
@@ -201,22 +228,18 @@ export function RsvpForm({
                             type="radio"
                             className="size-4 accent-[color:var(--accent-deep)]"
                             checked={willAttend}
-                            onChange={() =>
-                                setValue("willAttend", true, {shouldDirty: true})
-                            }
+                            onChange={() => setFamilyAttendance(true)}
                         />
-                        <span>Sí, asistiremos</span>
+                        <span>Sí, al menos una persona asiste</span>
                     </label>
                     <label className={choiceClass}>
                         <input
                             type="radio"
                             className="size-4 accent-[color:var(--accent-deep)]"
                             checked={!willAttend}
-                            onChange={() =>
-                                setValue("willAttend", false, {shouldDirty: true})
-                            }
+                            onChange={() => setFamilyAttendance(false)}
                         />
-                        <span>No podremos asistir</span>
+                        <span>Nadie podrá asistir</span>
                     </label>
                 </div>
             </fieldset>
@@ -225,7 +248,8 @@ export function RsvpForm({
                 <legend className={sectionLegendClass}>Invitados</legend>
                 {willAttend ? (
                     <p className={`${labelClass} text-cover-cta-fg/85`}>
-                        Seleccionados: {attendingCount} / {maximumGuests}
+                        Asisten: {attendingCount} / {maximumGuests}. Elige Asistirá o No
+                        asistirá en cada persona.
                     </p>
                 ) : null}
                 <div className="space-y-4">
@@ -247,39 +271,40 @@ export function RsvpForm({
                                                 Contacto principal
                                             </p>
                                         ) : null}
-                                        {guest?.needsNameConfirmation ? (
+                                        {guest?.needsNameConfirmation &&
+                                        guestValues[index]?.willAttend ? (
                                             <p className="mt-1 font-[family-name:var(--font-timer)] text-sm leading-6 text-cover-cta-fg/80">
                                                 Por favor escribe el nombre de esta persona.
                                             </p>
                                         ) : null}
+                                        {guest?.needsNameConfirmation &&
+                                        !guestValues[index]?.willAttend ? (
+                                            <p className="mt-1 font-[family-name:var(--font-timer)] text-sm leading-6 text-cover-cta-fg/80">
+                                                Si no va, no hace falta indicar un nombre.
+                                            </p>
+                                        ) : null}
                                     </div>
                                     {willAttend ? (
-                                        <label className={choiceClass}>
-                                            <input
-                                                type="checkbox"
-                                                className="size-4 accent-[color:var(--accent-deep)]"
-                                                checked={Boolean(guestValues[index]?.willAttend)}
-                                                onChange={(event) => {
-                                                    const checked = event.target.checked;
-                                                    setValue(`guests.${index}.willAttend`, checked, {
-                                                        shouldDirty: true,
-                                                        shouldValidate: true,
-                                                    });
-                                                    if (!checked) {
-                                                        setValue(`guests.${index}.needsTransport`, false, {
-                                                            shouldDirty: true,
-                                                            shouldValidate: true,
-                                                        });
-                                                        setValue(
-                                                            `guests.${index}.transportBoardingPoint`,
-                                                            "",
-                                                            {shouldDirty: true, shouldValidate: true},
-                                                        );
-                                                    }
-                                                }}
-                                            />
-                                            <span>Asistirá</span>
-                                        </label>
+                                        <div className="flex flex-col gap-2 sm:items-end">
+                                            <label className={choiceClass}>
+                                                <input
+                                                    type="radio"
+                                                    className="size-4 accent-[color:var(--accent-deep)]"
+                                                    checked={Boolean(guestValues[index]?.willAttend)}
+                                                    onChange={() => setGuestAttendance(index, true)}
+                                                />
+                                                <span>Asistirá</span>
+                                            </label>
+                                            <label className={choiceClass}>
+                                                <input
+                                                    type="radio"
+                                                    className="size-4 accent-[color:var(--accent-deep)]"
+                                                    checked={!guestValues[index]?.willAttend}
+                                                    onChange={() => setGuestAttendance(index, false)}
+                                                />
+                                                <span>No asistirá</span>
+                                            </label>
+                                        </div>
                                     ) : null}
                                 </div>
 
@@ -288,12 +313,13 @@ export function RsvpForm({
                                     {...register(`guests.${index}.guestId`)}
                                 />
 
-                                {guest?.needsNameConfirmation ? (
+                                {guest?.needsNameConfirmation &&
+                                willAttend &&
+                                guestValues[index]?.willAttend ? (
                                     <label className="mt-4 grid gap-2">
                                         <span className={fieldLabelClass}>Nombre completo</span>
                                         <input
                                             type="text"
-                                            required
                                             autoComplete="name"
                                             className={inputClass}
                                             placeholder="Nombre y apellido"

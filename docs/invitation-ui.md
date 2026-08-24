@@ -58,7 +58,7 @@ Logic: `formatCoverGreeting` in `src/lib/invitation/cover-greeting.ts` (prefixes
 
 Admin create/edit family forms require a gender per guest (`male`, `female`, or `unspecified`) so singular invitations
 stay correct. Plus-ones named “Acompañante” are stored as `unspecified` with `needs_name_confirmation`; the RSVP form
-asks for the real name.
+asks for the real name **only if that person will attend**. Each listed guest can be marked Asistirá / No asistirá.
 
 ## Design language
 
@@ -171,11 +171,13 @@ When an attending guest checks “Usará el transporte (bus)”:
 3. Clearing attendance or bus clears the boarding selection.
 4. Ids must stay: `modelia` (Modelia), `villa_sonia` (Villa Sonia).
 
-Admin analytics and guest tables surface the same points for planning bus capacity.
+Admin analytics and guest tables surface the same points for planning bus capacity. Analytics omit families whose
+name contains the word **ejemplo**.
 
-Guests with `needs_name_confirmation` (typically labeled “Acompañante”) show a required **nombre completo** field.
-Placeholder labels are rejected server-side. Those guests still count in analytics totals (`Nombres por confirmar` is an
-extra metric, not an exclusion).
+Guests with `needs_name_confirmation` (typically labeled “Acompañante”) show **nombre completo** only when that person
+will attend. Placeholder labels are rejected server-side. A family can leave the plus-one (or any other listed person)
+as **No asistirá** without inventing a name. Those guest rows still count in invitation totals (`Nombres por confirmar`
+is an extra metric, not an exclusion).
 
 ### Dress code layout
 
@@ -265,7 +267,7 @@ nav, and metrics. Header uses `bg-accent` with cream type/pills; page shell uses
 Compact admin: hamburger drawer until `xl` (1280px) so iPad 11" keeps it. New-family **+** is phone-only (hidden from
 834px / iPad 11" up); the drawer includes **Nueva familia**. Closed overlay cannot intercept hamburger taps. Back
 chevron on nueva familia **and** family detail. Family list chips (sin abrir / bus / dieta). Family detail: actividad
-reciente. Family/guest/photo **cards** replace tables until `lg`.
+reciente; eliminar familia no exige guardar el formulario. Family/guest/photo **cards** replace tables until `lg`.
 
 Family create/edit: each guest row includes **nombre + género** (required). Gender powers the singular cover greeting
 only; it is not shown on the public invitation body.

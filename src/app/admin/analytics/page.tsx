@@ -125,6 +125,9 @@ export default async function AdminAnalyticsPage() {
                 {analytics.eventName ?? "Evento"} · {adminCopy.rsvp.deadline}:{" "}
                 {formatEventDateTime(analytics.rsvpDeadline)}
             </p>
+            <p className={`mt-2 ${admin.muted}`}>
+                {adminCopy.analytics.exampleFamiliesExcluded}
+            </p>
 
             <section className={`mt-8 space-y-5 ${admin.card} p-6`}>
                 <h2 className="font-[family-name:var(--font-timer)] text-xl font-bold text-cover-cta-fg">

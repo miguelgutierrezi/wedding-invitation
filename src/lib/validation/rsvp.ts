@@ -1,6 +1,7 @@
 import {z} from "zod";
 
 import {isPlaceholderGuestName} from "@/lib/invitation/placeholder-guest-name";
+import {isCompanionNameRequired} from "@/lib/rsvp/guest-attendance";
 import {isTransportBoardingPointId, TRANSPORT_BOARDING_POINT_IDS,} from "@/config/transport";
 
 export const transportBoardingPointSchema = z.enum(TRANSPORT_BOARDING_POINT_IDS);
@@ -71,7 +72,13 @@ export const submitRsvpSchema = z
         }
 
         value.guests.forEach((guest, index) => {
-            if (guest.needsNameConfirmation) {
+            if (
+                isCompanionNameRequired({
+                    familyWillAttend: value.willAttend,
+                    guestWillAttend: guest.willAttend,
+                    needsNameConfirmation: guest.needsNameConfirmation,
+                })
+            ) {
                 if (!guest.fullName) {
                     ctx.addIssue({
                         code: "custom",

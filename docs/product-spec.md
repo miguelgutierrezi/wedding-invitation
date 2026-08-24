@@ -657,8 +657,8 @@ updated_at
 `gender`: `male` \| `female` \| `unspecified` (nullable for legacy rows). Required when creating/updating families in
 admin. Used for the singular cover greeting (`Querido` / `Querida` / `Hola`).
 
-`needs_name_confirmation`: true for plus-ones stored as “Acompañante” (or similar). The RSVP form requires a real name;
-they still count in analytics totals.
+`needs_name_confirmation`: true for plus-ones stored as “Acompañante” (or similar). The RSVP form requires a real name
+only if that person attends; they still count in invitation totals.
 
 `transport_boarding_point`: nullable; values in use: `modelia`, `villa_sonia`. Required when `needs_transport` is true
 for an attending guest (enforced in RPC + Zod).
@@ -1203,6 +1203,8 @@ Rutas esperadas:
 
 Dashboard / analytics:
 
+- Las familias cuyo nombre incluye la palabra **ejemplo** no entran en las cifras de estadísticas (ni en las tarjetas
+  de Resumen que usan el mismo snapshot). Siguen apareciendo en listados.
 - Total de invitados.
 - Cupos asignados.
 - Confirmados.

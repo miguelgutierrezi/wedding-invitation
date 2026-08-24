@@ -46,7 +46,7 @@ function mapRpcError(message: string): string {
     }
 
     if (message.includes("GUEST_NAME_REQUIRED")) {
-        return "Indica el nombre real de cada acompañante.";
+        return "Indica el nombre real de cada acompañante que asiste.";
     }
 
     return "No se pudo guardar la confirmación. Inténtalo de nuevo.";

@@ -8,6 +8,7 @@ import {admin} from "@/components/admin/admin-ui";
 import {CopyWhatsAppReminder} from "@/components/admin/copy-whatsapp-reminder";
 import {CopyInvitationLink} from "@/components/admin/copy-invitation-link";
 import {adminCopy, familyStatusLabel} from "@/lib/admin/admin-copy";
+import {familyDeleteNameMatches} from "@/lib/admin/family-delete-name";
 import type {AdminFamilyDetail} from "@/services/admin/families";
 import type {GuestGender} from "@/types/guest";
 
@@ -97,9 +98,11 @@ function FamilyDetailFormInner({family}: FamilyDetailFormProps) {
     const [message, setMessage] = useState<string | null>(null);
     const [isPending, startTransition] = useTransition();
 
-    const deleteNameMatches =
-        confirmDeleteName.trim().toLocaleLowerCase() ===
-        family.displayName.trim().toLocaleLowerCase();
+    const deleteNameMatches = familyDeleteNameMatches(
+        confirmDeleteName,
+        family.displayName,
+        displayName,
+    );
 
     return (
         <div className="space-y-10">
@@ -124,6 +127,7 @@ function FamilyDetailFormInner({family}: FamilyDetailFormProps) {
             </div>
 
             <form
+                id="admin-family-save"
                 className="space-y-6"
                 action={(formData) => {
                     setError(null);
@@ -304,6 +308,7 @@ function FamilyDetailFormInner({family}: FamilyDetailFormProps) {
 
                 <button
                     type="submit"
+                    form="admin-family-save"
                     disabled={isPending}
                     className={admin.btnPrimary}
                 >
@@ -347,8 +352,21 @@ function FamilyDetailFormInner({family}: FamilyDetailFormProps) {
                 </h2>
                 <p className={`mt-2 ${admin.muted}`}>{adminCopy.family.deleteWarning}</p>
                 <form
+                    id="admin-family-delete"
+                    noValidate
                     className="mt-4 space-y-4"
                     action={(formData) => {
+                        if (
+                            !familyDeleteNameMatches(
+                                String(formData.get("confirmName") ?? ""),
+                                family.displayName,
+                                displayName,
+                            )
+                        ) {
+                            setError("El nombre escrito no coincide con el de la familia.");
+                            return;
+                        }
+                        formData.set("confirmName", family.displayName);
                         setError(null);
                         setMessage(null);
                         startTransition(async () => {
@@ -363,16 +381,19 @@ function FamilyDetailFormInner({family}: FamilyDetailFormProps) {
                     <label className="grid gap-2">
                         <span className={admin.label}>{adminCopy.family.deleteConfirmLabel}</span>
                         <input
+                            form="admin-family-delete"
                             name="confirmName"
                             value={confirmDeleteName}
                             onChange={(event) => setConfirmDeleteName(event.target.value)}
                             autoComplete="off"
-                            placeholder={family.displayName}
+                            placeholder={displayName || family.displayName}
                             className={admin.input}
                         />
                     </label>
                     <button
                         type="submit"
+                        form="admin-family-delete"
+                        formNoValidate
                         disabled={isPending || !deleteNameMatches}
                         className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-red-800 bg-red-800/10 px-5 font-[family-name:var(--font-timer)] text-sm font-medium text-red-900 transition-opacity hover:bg-red-800/15 disabled:cursor-not-allowed disabled:opacity-45"
                     >

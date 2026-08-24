@@ -319,4 +319,66 @@ describe("submitRsvpSchema", () => {
         );
         expect(named.success).toBe(true);
     });
+
+    it("allows skipping a plus-one without a real name", () => {
+        const result = submitRsvpSchema.safeParse(
+            basePayload({
+                willAttend: true,
+                guests: [
+                    {
+                        guestId: GUEST_A,
+                        willAttend: true,
+                        needsTransport: false,
+                        transportBoardingPoint: "",
+                        dietaryRestrictions: "",
+                        menuOption: "",
+                        fullName: "",
+                        needsNameConfirmation: false,
+                    },
+                    {
+                        guestId: GUEST_B,
+                        willAttend: false,
+                        needsTransport: false,
+                        transportBoardingPoint: "",
+                        dietaryRestrictions: "",
+                        menuOption: "",
+                        fullName: "",
+                        needsNameConfirmation: true,
+                    },
+                ],
+            }),
+        );
+        expect(result.success).toBe(true);
+    });
+
+    it("allows one named guest to decline while another attends", () => {
+        const result = submitRsvpSchema.safeParse(
+            basePayload({
+                willAttend: true,
+                guests: [
+                    {
+                        guestId: GUEST_A,
+                        willAttend: true,
+                        needsTransport: false,
+                        transportBoardingPoint: "",
+                        dietaryRestrictions: "",
+                        menuOption: "",
+                        fullName: "",
+                        needsNameConfirmation: false,
+                    },
+                    {
+                        guestId: GUEST_B,
+                        willAttend: false,
+                        needsTransport: false,
+                        transportBoardingPoint: "",
+                        dietaryRestrictions: "",
+                        menuOption: "",
+                        fullName: "",
+                        needsNameConfirmation: false,
+                    },
+                ],
+            }),
+        );
+        expect(result.success).toBe(true);
+    });
 });

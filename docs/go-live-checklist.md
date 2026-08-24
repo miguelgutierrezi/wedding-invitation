@@ -21,7 +21,8 @@ Operational checklist before sharing invitation links widely. Does not authorize
 - [ ] Create or edit a **single-guest** family and confirm cover shows Querido/Querida correctly.
 - [ ] Edit an existing family (rename guest, change gender/seats, toggle enabled) and confirm no partial state.
 - [ ] Regenerate slug if needed; old slug should stop resolving.
-- [ ] Dashboard / analytics / guests / photos pages load without errors.
+- [ ] Dashboard / analytics / guests / photos pages load without errors. Analytics omit families whose name includes
+  **ejemplo**.
 - [ ] Dashboard metric cards deep-link to pre-filtered lists (pending families, guests with bus, etc.).
 - [ ] Dashboard shows action queue + RSVP close checklist; **Descargar lista** from Resumen.
 - [ ] Family detail: copy invitation URL and WhatsApp reminder; confirm before disable / regenerate.
@@ -31,8 +32,8 @@ Operational checklist before sharing invitation links widely. Does not authorize
 - [ ] Family detail shows actividad reciente after opening the invitation / submitting RSVP.
 - [ ] Batch: select families → copy links / download Excel / disable with confirm; guests copy phones; photos approve selected.
 - [ ] Resumen shows days until RSVP deadline and close follow-up rows (bus, dietas, fotos).
-- [ ] Delete a test family from family detail (type the family name to confirm); it disappears from lists and the
-  invitation link 404s.
+- [ ] Delete a test family from family detail without saving pending edits (type the saved or on-screen name); it
+  disappears from lists and the invitation link 404s.
 
 ## Smoke — public invitation
 
@@ -46,7 +47,8 @@ Operational checklist before sharing invitation links widely. Does not authorize
 ## Smoke — RSVP
 
 - [ ] Confirm attendance for one guest without bus.
-- [ ] Family with “Acompañante”: RSVP requires a real name; analytics still counts that guest.
+- [ ] Family with “Acompañante”: attending companion requires a real name; declining the companion (or any listed
+      guest) submits without a name. Admin still lists the plus-one row.
 - [ ] Confirm with bus + boarding point (`modelia` or `villa_sonia`).
 - [ ] Attempt bus without boarding point → client/server rejection.
 - [ ] Update previous RSVP; counts refresh in admin.

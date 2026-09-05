@@ -15,6 +15,14 @@ describe("isAdminNavActive", () => {
         );
         expect(isAdminNavActive("/admin/guests", "/admin/families")).toBe(false);
     });
+
+    it("marks the admins section as a dedicated menu route", () => {
+        expect(isAdminNavActive("/admin/admins", "/admin/admins")).toBe(true);
+        expect(isAdminNavActive("/admin/admins/new", "/admin/admins")).toBe(
+            true,
+        );
+        expect(isAdminNavActive("/admin", "/admin/admins")).toBe(false);
+    });
 });
 
 describe("compact admin chrome paths", () => {

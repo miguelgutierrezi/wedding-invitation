@@ -2,6 +2,7 @@ import {beforeEach, describe, expect, it, vi} from "vitest";
 import {
     createFamilyAction,
     deleteFamilyAction,
+    deletePendingAdminInviteAction,
     inviteAdminAction,
     signInAdminAction,
     updateFamilyAction,
@@ -17,6 +18,8 @@ const {
     updateFamilyInvitationSlug,
     getFamilyById,
     redirect,
+    listUsers,
+    deleteUser,
 } = vi.hoisted(() => ({
     requireAdmin: vi.fn(),
     createClient: vi.fn(),
@@ -29,6 +32,8 @@ const {
     redirect: vi.fn((url: string) => {
         throw new Error(`REDIRECT:${url}`);
     }),
+    listUsers: vi.fn(),
+    deleteUser: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/require-admin", () => ({
@@ -53,6 +58,16 @@ const familyId = "11111111-1111-4111-8111-111111111111";
 describe("admin auth and family mutation actions", () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        process.env.NEXT_PUBLIC_APP_URL = "https://wedding.example.com";
+        createAdminClient.mockImplementation(() => ({
+            auth: {
+                admin: {
+                    inviteUserByEmail: async () => ({error: null}),
+                    listUsers,
+                    deleteUser,
+                },
+            },
+        }));
         requireAdmin.mockResolvedValue({
             id: "admin-1",
             email: "migueangel97@hotmail.com",
@@ -75,6 +90,74 @@ describe("admin auth and family mutation actions", () => {
             ok: true,
         });
         expect(createAdminClient).toHaveBeenCalledOnce();
+    });
+
+    it("lists pending admin invites that were sent but not accepted", async () => {
+        listUsers.mockResolvedValue({
+            data: {
+                users: [
+                    {
+                        id: "u-pending",
+                        email: "pendiente@example.com",
+                        app_metadata: {role: "admin"},
+                        email_confirmed_at: null,
+                    },
+                    {
+                        id: "u-accepted",
+                        email: "aceptada@example.com",
+                        app_metadata: {role: "admin"},
+                        email_confirmed_at: "2026-09-05T10:00:00.000Z",
+                    },
+                ],
+            },
+            error: null,
+        });
+
+        const result = await (await import("@/actions/admin/auth")).listPendingAdminInvites();
+
+        expect(result).toEqual([
+            {
+                id: "u-pending",
+                email: "pendiente@example.com",
+            },
+        ]);
+    });
+
+    it("deletes a pending admin invite that was never accepted", async () => {
+        listUsers.mockResolvedValue({
+            data: {
+                users: [
+                    {
+                        id: "u-pending",
+                        email: "pendiente@example.com",
+                        app_metadata: {role: "admin"},
+                        email_confirmed_at: null,
+                    },
+                ],
+            },
+            error: null,
+        });
+        deleteUser.mockResolvedValue({error: null});
+
+        const formData = new FormData();
+        formData.set("userId", "u-pending");
+
+        await expect(deletePendingAdminInviteAction(formData)).resolves.toMatchObject({
+            ok: true,
+        });
+        expect(deleteUser).toHaveBeenCalledWith("u-pending");
+    });
+
+    it("rejects sending an admin invitation when the app URL is not configured", async () => {
+        delete process.env.NEXT_PUBLIC_APP_URL;
+        const formData = new FormData();
+        formData.set("email", "nuevo-admin@example.com");
+
+        await expect(inviteAdminAction(formData)).resolves.toMatchObject({
+            ok: false,
+            error: "Falta NEXT_PUBLIC_APP_URL para enviar la invitación.",
+        });
+        expect(createAdminClient).not.toHaveBeenCalled();
     });
 
     it("rejects sign-in without credentials", async () => {

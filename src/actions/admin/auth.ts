@@ -21,6 +21,40 @@ export type AdminActionResult =
     | { ok: true; message?: string; invitationUrl?: string; familyId?: string }
     | { ok: false; error: string };
 
+export type PendingAdminInvite = {
+    id: string;
+    email: string;
+};
+
+export async function listPendingAdminInvites(): Promise<PendingAdminInvite[]> {
+    await requireAdmin();
+
+    const supabase = createAdminClient();
+    const {data, error} = await supabase.auth.admin.listUsers();
+
+    if (error) {
+        serverLog({
+            level: "error",
+            event: "admin_invites_list_failed",
+            errorCode: error.message,
+        });
+        throw new Error("No se pudieron cargar las invitaciones pendientes.");
+    }
+
+    return (data?.users ?? [])
+        .filter(
+            (user) =>
+                user.app_metadata?.role === "admin" &&
+                user.email &&
+                !user.email_confirmed_at,
+        )
+        .map((user) => ({
+            id: user.id,
+            email: user.email!,
+        }))
+        .sort((a, b) => a.email.localeCompare(b.email));
+}
+
 export async function signInAdminAction(
     formData: FormData,
 ): Promise<AdminActionResult> {
@@ -91,9 +125,15 @@ export async function inviteAdminAction(
         return {ok: false, error: "El correo no es válido."};
     }
 
-    const appUrl =
-        process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
-        "http://localhost:3000";
+    const rawAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+    if (!rawAppUrl) {
+        return {
+            ok: false,
+            error: "Falta NEXT_PUBLIC_APP_URL para enviar la invitación.",
+        };
+    }
+
+    const appUrl = rawAppUrl.replace(/\/$/, "");
     const supabase = createAdminClient();
     const {error} = await supabase.auth.admin.inviteUserByEmail(email, {
         redirectTo: `${appUrl}/admin/login`,
@@ -121,6 +161,73 @@ export async function inviteAdminAction(
         ok: true,
         message: `Invitación enviada a ${email}. Revisa tu correo para aceptar y crear la contraseña.`,
     };
+}
+
+export async function deletePendingAdminInviteAction(
+    formData: FormData,
+): Promise<AdminActionResult> {
+    await requireAdmin();
+
+    const userId = String(formData.get("userId") ?? "").trim();
+    if (!userId) {
+        return {ok: false, error: "No se indicó la invitación a eliminar."};
+    }
+
+    const supabase = createAdminClient();
+    const {data, error: listError} = await supabase.auth.admin.listUsers();
+
+    if (listError) {
+        serverLog({
+            level: "error",
+            event: "admin_invite_delete_lookup_failed",
+            errorCode: listError.message,
+        });
+        return {ok: false, error: "No se pudo validar la invitación pendiente."};
+    }
+
+    const invite = (data?.users ?? []).find(
+        (user) => user.id === userId && user.app_metadata?.role === "admin",
+    );
+
+    if (!invite || invite.email_confirmed_at) {
+        return {
+            ok: false,
+            error: "Solo se pueden eliminar invitaciones pendientes sin aceptar.",
+        };
+    }
+
+    try {
+        const {error} = await supabase.auth.admin.deleteUser(userId);
+        if (error) {
+            serverLog({
+                level: "error",
+                event: "admin_invite_delete_failed",
+                errorCode: error.message,
+            });
+            return {
+                ok: false,
+                error: "No se pudo borrar la invitación pendiente.",
+            };
+        }
+
+        return {
+            ok: true,
+            message: `Invitación eliminada para ${invite.email}.`,
+        };
+    } catch (error) {
+        serverLog({
+            level: "error",
+            event: "admin_invite_delete_failed",
+            errorName: error instanceof Error ? error.name : "UnknownError",
+        });
+        return {
+            ok: false,
+            error:
+                error instanceof Error
+                    ? error.message
+                    : "No se pudo borrar la invitación pendiente.",
+        };
+    }
 }
 
 export async function signOutAdminAction(): Promise<void> {

@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import {AdminActionQueue} from "@/components/admin/admin-action-queue";
-import {AdminInviteForm} from "@/components/admin/admin-invite-form";
 import {AdminRsvpCloseChecklist} from "@/components/admin/admin-rsvp-close-checklist";
 import {AdminShell} from "@/components/admin/admin-shell";
 import {admin} from "@/components/admin/admin-ui";
@@ -166,11 +165,10 @@ export default async function AdminDashboardPage() {
                     );
                 })}
             </div>
-            <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="mt-10">
                 <a href="/api/admin/export" className={admin.btnPrimary} download>
                     {adminCopy.nav.exportList}
                 </a>
-                <AdminInviteForm />
             </div>
         </AdminShell>
     );

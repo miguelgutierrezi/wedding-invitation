@@ -17,6 +17,7 @@ const navItems = [
     {href: "/admin/guests", label: adminCopy.nav.guests},
     {href: "/admin/families", label: adminCopy.nav.families},
     {href: "/admin/photos", label: adminCopy.nav.photos},
+    {href: "/admin/admins", label: adminCopy.nav.admins},
 ] as const;
 
 function MenuIcon({open}: { open: boolean }) {

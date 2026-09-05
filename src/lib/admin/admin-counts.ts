@@ -68,7 +68,7 @@ export function computeActivePlanningCounts(input: {
         ).length,
         guestsPendingNameConfirmation: activeGuests.filter(
             (guest) =>
-                guest.attendanceStatus === "attending" &&
+                guest.attendanceStatus !== "not_attending" &&
                 guest.needsNameConfirmation,
         ).length,
         familyResponseRate:

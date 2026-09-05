@@ -69,9 +69,9 @@ Reusable row selection (`src/lib/admin/selection.ts`, max `ADMIN_BATCH_MAX_IDS`)
 
 Admins can now be invited from the dashboard by email. The app calls Supabase Auth `inviteUserByEmail`, sends the invitation, and the invited admin completes the signup flow by accepting the email and choosing a password. The admin gate is based on signed-in Supabase auth rather than a hardcoded email allowlist.
 
-## Completed: no pending companion for declined families
+## Completed: pending companion count by attendance state
 
-A companion placeholder no longer counts as “Nombre por confirmar” when the family already confirmed that the guest is not attending. The admin counters, family chips, and list filters now exclude those cases.
+A companion placeholder counts as “Nombre por confirmar” while the guest is still pending or already attending, and it is excluded only when the guest has already declined. The admin counters, family chips, and list filters follow that rule consistently.
 
 - Families: copy invitation links, Excel of the selection, enable/disable (confirm).
 - Guests: copy phones/emails, Excel of the selection.

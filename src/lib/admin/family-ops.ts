@@ -1,4 +1,5 @@
 export type FamilyGuestSignalSource = {
+  attendanceStatus?: string;
   needsNameConfirmation?: boolean;
   needsTransport: boolean;
   dietaryRestrictions?: string | null;
@@ -14,7 +15,13 @@ export function familyGuestSignals(
   guests: FamilyGuestSignalSource[],
 ): FamilyGuestSignals {
   return {
-    hasPendingName: guests.some((guest) => Boolean(guest.needsNameConfirmation)),
+    hasPendingName: guests.some((guest) => {
+      if (guest.attendanceStatus === "not_attending") {
+        return false;
+      }
+
+      return Boolean(guest.needsNameConfirmation);
+    }),
     usesBus: guests.some((guest) => guest.needsTransport),
     hasDietary: guests.some((guest) =>
       Boolean(guest.dietaryRestrictions?.trim()),

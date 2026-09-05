@@ -73,4 +73,21 @@ describe("computeActivePlanningCounts", () => {
             ),
         ).toEqual([{familyId: "active"}]);
     });
+
+    it("ignores placeholder companions when the family already declined", () => {
+        const counts = computeActivePlanningCounts({
+            families: [activeFamily],
+            guests: [
+                {
+                    familyId: "active",
+                    attendanceStatus: "not_attending",
+                    needsTransport: false,
+                    dietaryRestrictions: null,
+                    needsNameConfirmation: true,
+                },
+            ],
+        });
+
+        expect(counts.guestsPendingNameConfirmation).toBe(0);
+    });
 });

@@ -67,7 +67,9 @@ export function computeActivePlanningCounts(input: {
             (guest) => Boolean(guest.dietaryRestrictions?.trim()),
         ).length,
         guestsPendingNameConfirmation: activeGuests.filter(
-            (guest) => guest.needsNameConfirmation,
+            (guest) =>
+                guest.attendanceStatus === "attending" &&
+                guest.needsNameConfirmation,
         ).length,
         familyResponseRate:
             activeFamilies.length > 0

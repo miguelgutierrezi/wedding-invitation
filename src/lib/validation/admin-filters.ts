@@ -345,7 +345,10 @@ export function guestMatchesFilters(
         return false;
     }
 
-    if (filters.name === "needs_name" && !guest.needsNameConfirmation) {
+    if (
+        filters.name === "needs_name" &&
+        (guest.attendanceStatus === "not_attending" || !guest.needsNameConfirmation)
+    ) {
         return false;
     }
 

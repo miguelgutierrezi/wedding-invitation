@@ -1,9 +1,16 @@
 import {beforeEach, describe, expect, it, vi} from "vitest";
-import {createFamilyAction, deleteFamilyAction, signInAdminAction, updateFamilyAction,} from "@/actions/admin/auth";
+import {
+    createFamilyAction,
+    deleteFamilyAction,
+    inviteAdminAction,
+    signInAdminAction,
+    updateFamilyAction,
+} from "@/actions/admin/auth";
 
 const {
     requireAdmin,
     createClient,
+    createAdminClient,
     createFamily,
     updateFamily,
     deleteFamily,
@@ -13,6 +20,7 @@ const {
 } = vi.hoisted(() => ({
     requireAdmin: vi.fn(),
     createClient: vi.fn(),
+    createAdminClient: vi.fn(),
     createFamily: vi.fn(),
     updateFamily: vi.fn(),
     deleteFamily: vi.fn(),
@@ -29,6 +37,7 @@ vi.mock("@/lib/auth/require-admin", () => ({
         email === "migueangel97@hotmail.com" || email === "nycholpg@gmail.com",
 }));
 vi.mock("@/lib/supabase/server", () => ({createClient}));
+vi.mock("@/lib/supabase/admin", () => ({createAdminClient}));
 vi.mock("@/services/admin/families", () => ({
     createFamily,
     updateFamily,
@@ -48,6 +57,24 @@ describe("admin auth and family mutation actions", () => {
             id: "admin-1",
             email: "migueangel97@hotmail.com",
         });
+    });
+
+    it("sends an admin invitation email", async () => {
+        createAdminClient.mockReturnValue({
+            auth: {
+                admin: {
+                    inviteUserByEmail: async () => ({error: null}),
+                },
+            },
+        });
+
+        const formData = new FormData();
+        formData.set("email", "nuevo-admin@example.com");
+
+        await expect(inviteAdminAction(formData)).resolves.toMatchObject({
+            ok: true,
+        });
+        expect(createAdminClient).toHaveBeenCalledOnce();
     });
 
     it("rejects sign-in without credentials", async () => {

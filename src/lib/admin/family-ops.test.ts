@@ -23,6 +23,23 @@ describe("familyGuestSignals", () => {
       hasDietary: true,
     });
   });
+
+  it("ignores companion placeholders for guests who are not attending", () => {
+    expect(
+      familyGuestSignals([
+        {
+          needsNameConfirmation: true,
+          needsTransport: false,
+          dietaryRestrictions: null,
+          attendanceStatus: "not_attending",
+        },
+      ]),
+    ).toEqual({
+      hasPendingName: false,
+      usesBus: false,
+      hasDietary: false,
+    });
+  });
 });
 
 describe("familyOperationChips", () => {

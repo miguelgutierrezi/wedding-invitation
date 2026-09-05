@@ -319,9 +319,9 @@ Guests do not create accounts; their invitation link grants narrowly scoped acce
 Administrators authenticate through Supabase Auth.
 
 RLS remains deny-by-default for anon/authenticated on domain tables. Admin pages require server-side authorization after
-a signed-in allowlisted user; hiding navigation in the client is not access control.
+a signed-in Supabase Auth user. The current app uses the authenticated session as the access check; static allowlists are no longer the source of truth for admin access.
 
-Fixed allowlist: `src/config/admin.ts`. Optional extras: `ADMIN_EMAIL` / `ADMIN_EMAILS`.
+Admin onboarding uses `inviteUserByEmail` from Supabase Auth and redirect back to `/admin/login` after the invite is accepted. Optional extras: `ADMIN_EMAIL` / `ADMIN_EMAILS` remain available as supplementary configuration but are not the primary access gate.
 
 ## UI and delivery constraints
 

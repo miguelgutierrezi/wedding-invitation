@@ -14,20 +14,17 @@ vi.mock("@/lib/supabase/server", () => ({
     createClient: vi.fn(),
 }));
 
-describe("admin allowlist", () => {
+describe("admin auth access", () => {
     afterEach(() => {
         vi.clearAllMocks();
         delete process.env.ADMIN_EMAIL;
         delete process.env.ADMIN_EMAILS;
     });
 
-    it("allows fixed admin emails", () => {
+    it("accepts any non-empty authenticated email", () => {
         expect(isEmailAllowed("migueangel97@hotmail.com")).toBe(true);
-        expect(isEmailAllowed("nycholpg@gmail.com")).toBe(true);
-    });
-
-    it("rejects unknown emails", () => {
-        expect(isEmailAllowed("random@example.com")).toBe(false);
+        expect(isEmailAllowed("random@example.com")).toBe(true);
+        expect(isEmailAllowed(" ")).toBe(false);
     });
 
     it("requireAdmin redirects when unauthenticated", async () => {
@@ -41,7 +38,7 @@ describe("admin allowlist", () => {
         expect(redirect).toHaveBeenCalled();
     });
 
-    it("requireAdmin redirects forbidden for non-allowlisted user", async () => {
+    it("requireAdmin accepts any authenticated email", async () => {
         vi.mocked(createClient).mockResolvedValue({
             auth: {
                 getUser: async () => ({
@@ -53,26 +50,9 @@ describe("admin allowlist", () => {
             },
         } as never);
 
-        await expect(requireAdmin()).rejects.toThrow(
-            "REDIRECT:/admin/login?error=forbidden",
-        );
-    });
-
-    it("requireAdmin returns allowlisted user", async () => {
-        vi.mocked(createClient).mockResolvedValue({
-            auth: {
-                getUser: async () => ({
-                    data: {
-                        user: {id: "u1", email: "migueangel97@hotmail.com"},
-                    },
-                    error: null,
-                }),
-            },
-        } as never);
-
         await expect(requireAdmin()).resolves.toEqual({
             id: "u1",
-            email: "migueangel97@hotmail.com",
+            email: "intruder@example.com",
         });
     });
 });

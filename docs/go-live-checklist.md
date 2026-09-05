@@ -11,11 +11,11 @@ Operational checklist before sharing invitation links widely. Does not authorize
 - [ ] Vercel env vars set: `NEXT_PUBLIC_*`, `SUPABASE_SERVICE_ROLE_KEY`, admin emails.
 - [ ] Optional: `TZ=America/Bogota` on Vercel (display helpers already pin Colombia TZ).
 - [ ] `NEXT_PUBLIC_APP_URL` matches the public domain.
-- [ ] Admin allowlist emails exist as Supabase Auth users.
+- [ ] At least one admin account has accepted a Supabase Auth invite and set a password.
 
 ## Smoke — admin
 
-- [ ] `/admin/login` with allowlisted account.
+- [ ] `/admin/login` works with the invited admin account.
 - [ ] Create a test family with 2 guests (**nombre + género** each) and copy `/i/[slug]` (atomic create — no orphan
   family without guests).
 - [ ] Create or edit a **single-guest** family and confirm cover shows Querido/Querida correctly.

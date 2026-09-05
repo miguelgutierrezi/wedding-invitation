@@ -28,10 +28,11 @@ proceed when the user requests it explicitly.
 | Admin plain-language UI                     | Non-technical Spanish labels in admin panel                                    |
 | Delete family (admin)                       | RPC + confirm-by-name; works with unsaved edits                                |
 | Admin operations                            | Action queue, close follow-ups, family activity, **batch actions** |
+| Admin invite flow                          | **Implemented** via Supabase Auth invitation email                     |
 | Analytics example families                  | Names containing the word **ejemplo** omitted from stats           |
 | Guest media uploads                         | **Implemented**                                                                |
 | WhatsApp scheduled send                     | Not implemented                                                                |
-| Resend / settings UI                        | Not implemented                                                                |
+| Resend / settings UI                       | Not implemented (Supabase invite handles admin onboarding)         |
 
 ## Completed: analytics omit example families
 
@@ -63,6 +64,14 @@ required only if that person will attend. Per-guest radios Asistirá / No asisti
 ## Completed: admin batch actions
 
 Reusable row selection (`src/lib/admin/selection.ts`, max `ADMIN_BATCH_MAX_IDS`) on families, guests, and photos:
+
+## Completed: admin invite flow
+
+Admins can now be invited from the dashboard by email. The app calls Supabase Auth `inviteUserByEmail`, sends the invitation, and the invited admin completes the signup flow by accepting the email and choosing a password. The admin gate is based on signed-in Supabase auth rather than a hardcoded email allowlist.
+
+## Completed: no pending companion for declined families
+
+A companion placeholder no longer counts as “Nombre por confirmar” when the family already confirmed that the guest is not attending. The admin counters, family chips, and list filters now exclude those cases.
 
 - Families: copy invitation links, Excel of the selection, enable/disable (confirm).
 - Guests: copy phones/emails, Excel of the selection.

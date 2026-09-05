@@ -261,6 +261,7 @@ export async function listFamilies(): Promise<AdminFamilyListItem[]> {
         const familyGuests = guestsByFamily.get(family.id) ?? [];
         const signals = familyGuestSignals(
             familyGuests.map((guest) => ({
+                attendanceStatus: guest.attendance_status,
                 needsNameConfirmation: guest.needs_name_confirmation,
                 needsTransport: guest.needs_transport,
                 dietaryRestrictions: guest.dietary_restrictions,
@@ -354,7 +355,9 @@ export async function getFamilyById(
             id: guest.id,
             fullName: guest.full_name,
             gender: parseGuestGender(guest.gender),
-            needsNameConfirmation: Boolean(guest.needs_name_confirmation),
+            needsNameConfirmation:
+                guest.attendance_status !== "not_attending" &&
+                Boolean(guest.needs_name_confirmation),
             isPrimaryContact: guest.is_primary_contact,
             attendanceStatus: guest.attendance_status,
             dietaryRestrictions: guest.dietary_restrictions,
@@ -370,6 +373,7 @@ export async function getFamilyById(
         contactPhone: rsvp?.contact_phone ?? null,
         ...familyGuestSignals(
             (guests ?? []).map((guest) => ({
+                attendanceStatus: guest.attendance_status,
                 needsNameConfirmation: guest.needs_name_confirmation,
                 needsTransport: guest.needs_transport,
                 dietaryRestrictions: guest.dietary_restrictions,

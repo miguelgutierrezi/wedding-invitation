@@ -254,7 +254,9 @@ export async function listAllGuests(options?: {
                 dietaryRestrictions: guest.dietary_restrictions,
                 email: guest.email,
                 phone: guest.phone,
-                needsNameConfirmation: Boolean(guest.needs_name_confirmation),
+                needsNameConfirmation:
+                    guest.attendance_status !== "not_attending" &&
+                    Boolean(guest.needs_name_confirmation),
             },
         ];
     });

@@ -243,6 +243,18 @@ describe("guestMatchesFilters", () => {
             ),
         ).toBe(true);
     });
+
+    it("ignores the pending-name filter when the guest already declined", () => {
+        expect(
+            guestMatchesFilters(
+                {...guest, attendanceStatus: "not_attending", needsNameConfirmation: true},
+                {
+                    ...DEFAULT_ADMIN_GUESTS_FILTERS,
+                    name: "needs_name",
+                },
+            ),
+        ).toBe(false);
+    });
 });
 
 describe("filter chips", () => {

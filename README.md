@@ -26,7 +26,7 @@ la invitación.
 | Admin family create/update | Transactional RPCs (+ géneros) + structured admin logs                                                                                                 |
 | Rate limit / logs          | RSVP + invitation lookup + media authorize; JSON logs without PII                                                                                      |
 | Guest media uploads        | `/i/[slug]/fotos`, `/fotos?code=`, Storage privado, `/admin/photos`                                                                                    |
-| Email (Resend)             | Pendiente de fase futura                                                                                                                               |
+| Admin invitation emails    | Implementado con Supabase Auth (`inviteUserByEmail`)                                                                                                    |
 
 El alcance autorizado se define solo en [`docs/current-phase.md`](docs/current-phase.md). Checklist operativo: [
 `docs/go-live-checklist.md`](docs/go-live-checklist.md). Storage de invitados: [
@@ -39,13 +39,11 @@ El alcance autorizado se define solo en [`docs/current-phase.md`](docs/current-p
 
 ### Usuario administrador (local o cloud)
 
-1. Crea en Supabase **Authentication → Users** las cuentas con email:
-    - `migueangel97@hotmail.com`
-    - `nycholpg@gmail.com`
-      (ambos están siempre en la allowlist de `src/config/admin.ts`).
-2. Abre `/admin/login` en local o en tu dominio.
+1. En el panel de admin, usa **Invitar admin** e ingresa el correo del nuevo administrador.
+2. Supabase Auth envía la invitación por correo; la persona acepta y crea su contraseña.
+3. Luego puede iniciar sesión en `/admin/login` en local o en tu dominio.
 
-Opcional: emails adicionales con `ADMIN_EMAIL` / `ADMIN_EMAILS` en el entorno.
+Los emails extra con `ADMIN_EMAIL` / `ADMIN_EMAILS` siguen siendo opcionales, pero no son el mecanismo de acceso primario; la autorización real está en la sesión autenticada de Supabase.
 
 ### Assets de invitación
 

@@ -2,7 +2,6 @@ import "server-only";
 
 import {redirect} from "next/navigation";
 
-import {ADMIN_ALLOWED_EMAILS} from "@/config/admin";
 import {createClient} from "@/lib/supabase/server";
 
 export type AdminUser = {
@@ -11,29 +10,16 @@ export type AdminUser = {
 };
 
 /**
- * Fixed admin allowlist from `src/config/admin.ts`.
- * Optional extra emails via `ADMIN_EMAIL` / `ADMIN_EMAILS` (comma-separated).
+ * This app does not enforce a fixed admin allowlist.
+ * Any authenticated Supabase account can access `/admin`.
  */
-export function getAdminEmailAllowlist(): string[] {
-    const fixed = ADMIN_ALLOWED_EMAILS.map((email) => email.toLowerCase());
-
-    const fromEnv = [process.env.ADMIN_EMAIL, process.env.ADMIN_EMAILS]
-        .filter((value): value is string => Boolean(value?.trim()))
-        .join(",")
-        .split(/[,;\s]+/)
-        .map((entry) => entry.trim().toLowerCase())
-        .filter(Boolean);
-
-    return [...new Set([...fixed, ...fromEnv])];
-}
-
 export function isEmailAllowed(email: string): boolean {
-    return getAdminEmailAllowlist().includes(email.trim().toLowerCase());
+    return Boolean(email.trim());
 }
 
 /**
  * Ensures a Supabase Auth session exists for admin routes.
- * Data mutations still use the service-role client after this gate.
+ * If you want stricter access later, add a DB role check here.
  */
 export async function requireAdmin(): Promise<AdminUser> {
     const supabase = await createClient();

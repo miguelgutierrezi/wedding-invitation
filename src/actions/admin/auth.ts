@@ -2,10 +2,11 @@
 
 import {redirect} from "next/navigation";
 
-import {isEmailAllowed, requireAdmin,} from "@/lib/auth/require-admin";
+import {requireAdmin} from "@/lib/auth/require-admin";
 import {fingerprintPublicId} from "@/lib/logging/fingerprint";
 import {serverLog} from "@/lib/logging/server-log";
 import {buildInvitationUrl, slugFromDisplayName,} from "@/lib/security/generate-invitation-slug";
+import {createAdminClient} from "@/lib/supabase/admin";
 import {createClient} from "@/lib/supabase/server";
 import {
     createFamilySchema,
@@ -50,16 +51,16 @@ export async function signInAdminAction(
         data: {user},
     } = await supabase.auth.getUser();
 
-    if (user?.email && !isEmailAllowed(user.email)) {
+    if (!user?.email) {
         await supabase.auth.signOut();
         serverLog({
             level: "warn",
             event: "admin_sign_in_denied",
-            errorCode: "allowlist",
+            errorCode: "missing_email",
         });
         return {
             ok: false,
-            error: "Esta cuenta no está autorizada para administrar.",
+            error: "No se pudo validar la sesión de administración.",
         };
     }
 
@@ -74,6 +75,52 @@ export async function signInAdminAction(
     });
 
     redirect(safeNext);
+}
+
+export async function inviteAdminAction(
+    formData: FormData,
+): Promise<AdminActionResult> {
+    await requireAdmin();
+
+    const email = String(formData.get("email") ?? "").trim();
+    if (!email) {
+        return {ok: false, error: "Indica un correo para invitar al administrador."};
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return {ok: false, error: "El correo no es válido."};
+    }
+
+    const appUrl =
+        process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
+        "http://localhost:3000";
+    const supabase = createAdminClient();
+    const {error} = await supabase.auth.admin.inviteUserByEmail(email, {
+        redirectTo: `${appUrl}/admin/login`,
+        data: {role: "admin"},
+    });
+
+    if (error) {
+        serverLog({
+            level: "error",
+            event: "admin_invite_failed",
+            errorCode: error.message,
+        });
+        return {
+            ok: false,
+            error: "No se pudo enviar la invitación. Intenta de nuevo.",
+        };
+    }
+
+    serverLog({
+        level: "info",
+        event: "admin_invite_sent",
+    });
+
+    return {
+        ok: true,
+        message: `Invitación enviada a ${email}. Revisa tu correo para aceptar y crear la contraseña.`,
+    };
 }
 
 export async function signOutAdminAction(): Promise<void> {

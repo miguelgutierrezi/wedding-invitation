@@ -47,6 +47,7 @@ export async function listPendingAdminInvites(): Promise<PendingAdminInvite[]> {
             isPendingAdminInvite({
                 email: user.email,
                 emailConfirmedAt: user.email_confirmed_at,
+                invitedAt: user.invited_at,
                 userMetadata: user.user_metadata,
             }),
         )
@@ -155,6 +156,7 @@ export async function inviteAdminAction(
             isPendingAdminInvite({
                 email: user.email,
                 emailConfirmedAt: user.email_confirmed_at,
+                invitedAt: user.invited_at,
                 userMetadata: user.user_metadata,
             }),
     );
@@ -229,6 +231,7 @@ export async function deletePendingAdminInviteAction(
             isPendingAdminInvite({
                 email: user.email,
                 emailConfirmedAt: user.email_confirmed_at,
+                invitedAt: user.invited_at,
                 userMetadata: user.user_metadata,
             }),
     );

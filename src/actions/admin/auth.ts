@@ -3,6 +3,7 @@
 import {redirect} from "next/navigation";
 
 import {requireAdmin} from "@/lib/auth/require-admin";
+import {isPendingAdminInvite} from "@/lib/auth/admin-invite";
 import {fingerprintPublicId} from "@/lib/logging/fingerprint";
 import {serverLog} from "@/lib/logging/server-log";
 import {buildInvitationUrl, slugFromDisplayName,} from "@/lib/security/generate-invitation-slug";
@@ -42,11 +43,12 @@ export async function listPendingAdminInvites(): Promise<PendingAdminInvite[]> {
     }
 
     return (data?.users ?? [])
-        .filter(
-            (user) =>
-                user.app_metadata?.role === "admin" &&
-                user.email &&
-                !user.email_confirmed_at,
+        .filter((user) =>
+            isPendingAdminInvite({
+                email: user.email,
+                emailConfirmedAt: user.email_confirmed_at,
+                userMetadata: user.user_metadata,
+            }),
         )
         .map((user) => ({
             id: user.id,
@@ -135,6 +137,42 @@ export async function inviteAdminAction(
 
     const appUrl = rawAppUrl.replace(/\/$/, "");
     const supabase = createAdminClient();
+    const {data: usersData, error: usersError} = await supabase.auth.admin.listUsers();
+
+    if (usersError) {
+        serverLog({
+            level: "error",
+            event: "admin_invite_lookup_failed",
+            errorCode: usersError.message,
+        });
+        return {ok: false, error: "No se pudo validar la invitación anterior."};
+    }
+
+    const normalizedEmail = email.toLocaleLowerCase();
+    const previousInvite = (usersData?.users ?? []).find(
+        (user) =>
+            user.email?.toLocaleLowerCase() === normalizedEmail &&
+            isPendingAdminInvite({
+                email: user.email,
+                emailConfirmedAt: user.email_confirmed_at,
+                userMetadata: user.user_metadata,
+            }),
+    );
+
+    if (previousInvite) {
+        const {error: deleteError} = await supabase.auth.admin.deleteUser(
+            previousInvite.id,
+        );
+        if (deleteError) {
+            serverLog({
+                level: "error",
+                event: "admin_invite_replace_failed",
+                errorCode: deleteError.message,
+            });
+            return {ok: false, error: "No se pudo reemplazar la invitación anterior."};
+        }
+    }
+
     const {error} = await supabase.auth.admin.inviteUserByEmail(email, {
         redirectTo: `${appUrl}/admin/login`,
         data: {role: "admin"},
@@ -186,10 +224,16 @@ export async function deletePendingAdminInviteAction(
     }
 
     const invite = (data?.users ?? []).find(
-        (user) => user.id === userId && user.app_metadata?.role === "admin",
+        (user) =>
+            user.id === userId &&
+            isPendingAdminInvite({
+                email: user.email,
+                emailConfirmedAt: user.email_confirmed_at,
+                userMetadata: user.user_metadata,
+            }),
     );
 
-    if (!invite || invite.email_confirmed_at) {
+    if (!invite) {
         return {
             ok: false,
             error: "Solo se pueden eliminar invitaciones pendientes sin aceptar.",

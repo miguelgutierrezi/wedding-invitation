@@ -1,11 +1,13 @@
 "use client";
 
+import {useRouter} from "next/navigation";
 import {useState, useTransition} from "react";
 
 import {inviteAdminAction} from "@/actions/admin/auth";
 import {admin} from "@/components/admin/admin-ui";
 
 export function AdminInviteForm() {
+    const router = useRouter();
     const [message, setMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isPending, startTransition] = useTransition();
@@ -30,6 +32,7 @@ export function AdminInviteForm() {
 
                     setMessage(result.message ?? "Invitación enviada.");
                     form.reset();
+                    router.refresh();
                 });
             }}
         >

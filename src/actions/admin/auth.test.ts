@@ -75,10 +75,13 @@ describe("admin auth and family mutation actions", () => {
     });
 
     it("sends an admin invitation email", async () => {
+        listUsers.mockResolvedValue({data: {users: []}, error: null});
         createAdminClient.mockReturnValue({
             auth: {
                 admin: {
                     inviteUserByEmail: async () => ({error: null}),
+                    listUsers,
+                    deleteUser,
                 },
             },
         });
@@ -92,6 +95,31 @@ describe("admin auth and family mutation actions", () => {
         expect(createAdminClient).toHaveBeenCalledOnce();
     });
 
+    it("replaces an unaccepted invite before sending it again to the same email", async () => {
+        listUsers.mockResolvedValue({
+            data: {
+                users: [
+                    {
+                        id: "u-pending",
+                        email: "nuevo-admin@example.com",
+                        email_confirmed_at: null,
+                        user_metadata: {role: "admin"},
+                    },
+                ],
+            },
+            error: null,
+        });
+        deleteUser.mockResolvedValue({error: null});
+
+        const formData = new FormData();
+        formData.set("email", "nuevo-admin@example.com");
+
+        await expect(inviteAdminAction(formData)).resolves.toMatchObject({
+            ok: true,
+        });
+        expect(deleteUser).toHaveBeenCalledWith("u-pending");
+    });
+
     it("lists pending admin invites that were sent but not accepted", async () => {
         listUsers.mockResolvedValue({
             data: {
@@ -99,13 +127,13 @@ describe("admin auth and family mutation actions", () => {
                     {
                         id: "u-pending",
                         email: "pendiente@example.com",
-                        app_metadata: {role: "admin"},
+                        user_metadata: {role: "admin"},
                         email_confirmed_at: null,
                     },
                     {
                         id: "u-accepted",
                         email: "aceptada@example.com",
-                        app_metadata: {role: "admin"},
+                        user_metadata: {role: "admin"},
                         email_confirmed_at: "2026-09-05T10:00:00.000Z",
                     },
                 ],
@@ -130,7 +158,7 @@ describe("admin auth and family mutation actions", () => {
                     {
                         id: "u-pending",
                         email: "pendiente@example.com",
-                        app_metadata: {role: "admin"},
+                        user_metadata: {role: "admin"},
                         email_confirmed_at: null,
                     },
                 ],

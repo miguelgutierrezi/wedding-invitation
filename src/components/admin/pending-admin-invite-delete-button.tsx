@@ -1,11 +1,13 @@
 "use client";
 
+import {useRouter} from "next/navigation";
 import {useTransition} from "react";
 
 import {deletePendingAdminInviteAction} from "@/actions/admin/auth";
 import {admin} from "@/components/admin/admin-ui";
 
 export function PendingAdminInviteDeleteButton({inviteId}: { inviteId: string }) {
+    const router = useRouter();
     const [isPending, startTransition] = useTransition();
 
     return (
@@ -25,8 +27,10 @@ export function PendingAdminInviteDeleteButton({inviteId}: { inviteId: string })
                 formData.set("userId", inviteId);
 
                 startTransition(async () => {
-                    await deletePendingAdminInviteAction(formData);
-                    window.location.reload();
+                    const result = await deletePendingAdminInviteAction(formData);
+                    if (result.ok) {
+                        router.refresh();
+                    }
                 });
             }}
         >

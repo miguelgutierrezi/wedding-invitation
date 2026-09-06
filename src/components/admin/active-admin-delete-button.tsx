@@ -5,6 +5,7 @@ import {useState, useTransition} from "react";
 
 import {deleteActiveAdminAction} from "@/actions/admin/auth";
 import {admin} from "@/components/admin/admin-ui";
+import {adminDirectoryBtnDangerClass} from "@/lib/admin/admin-directory-layout";
 
 export function ActiveAdminDeleteButton({
     adminId,
@@ -18,22 +19,24 @@ export function ActiveAdminDeleteButton({
     const [isPending, startTransition] = useTransition();
 
     return (
-        <div className="flex flex-col items-stretch gap-2 sm:items-end">
+        <div className="flex flex-col items-end gap-1">
             <button
                 type="button"
-                className={`${admin.btnSecondary} sm:w-auto`}
+                className={adminDirectoryBtnDangerClass}
                 disabled={isPending}
                 onClick={() => {
-                    const confirmed = window.confirm(
-                        `¿Eliminar a ${adminEmail}? Dejará de poder entrar al panel.`,
+                    const typed = window.prompt(
+                        `Para eliminar a ${adminEmail}, escribe su correo exacto:`,
+                        "",
                     );
-                    if (!confirmed) {
+                    if (typed == null) {
                         return;
                     }
 
                     setError(null);
                     const formData = new FormData();
                     formData.set("userId", adminId);
+                    formData.set("confirmEmail", typed.trim());
 
                     startTransition(async () => {
                         const result = await deleteActiveAdminAction(formData);

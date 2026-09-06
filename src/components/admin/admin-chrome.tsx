@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {usePathname} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import {useEffect, useId, useState} from "react";
 
 import {signOutAdminAction} from "@/actions/admin/auth";
@@ -10,6 +10,7 @@ import {admin} from "@/components/admin/admin-ui";
 import {useVisualViewportBottom} from "@/hooks/use-visual-viewport-bottom";
 import {isAdminNavActive, showAdminBackToFamilies, showAdminNewFamilyFab,} from "@/lib/admin/admin-chrome";
 import {adminCopy} from "@/lib/admin/admin-copy";
+import {readAdminFamiliesListReturnHref} from "@/lib/admin/admin-list-return";
 
 const navItems = [
     {href: "/admin", label: adminCopy.nav.summary},
@@ -54,6 +55,7 @@ type AdminChromeProps = {
 
 export function AdminChrome({title, email}: AdminChromeProps) {
     const pathname = usePathname();
+    const router = useRouter();
     const [open, setOpen] = useState(false);
     const menuId = useId();
     const showFab = showAdminNewFamilyFab(pathname);
@@ -126,11 +128,13 @@ export function AdminChrome({title, email}: AdminChromeProps) {
                     <div className="flex min-w-0 items-start justify-between gap-3">
                         <div className="flex min-w-0 flex-1 items-start gap-1">
                             {showBack ? (
-                                <Link
-                                    href="/admin/families"
-                                    prefetch={false}
+                                <button
+                                    type="button"
                                     className="-ml-2 inline-flex size-11 shrink-0 items-center justify-center rounded-full text-cream-figma hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-cream-figma/60 focus-visible:outline-none"
                                     aria-label={adminCopy.nav.backToFamilies}
+                                    onClick={() => {
+                                        router.push(readAdminFamiliesListReturnHref());
+                                    }}
                                 >
                                     <svg
                                         viewBox="0 0 24 24"
@@ -146,7 +150,7 @@ export function AdminChrome({title, email}: AdminChromeProps) {
                                             strokeLinejoin="round"
                                         />
                                     </svg>
-                                </Link>
+                                </button>
                             ) : null}
                             <div className="min-w-0">
                                 <p className="font-[family-name:var(--font-timer)] text-xs font-medium tracking-[0.18em] text-cream-figma/80 uppercase">

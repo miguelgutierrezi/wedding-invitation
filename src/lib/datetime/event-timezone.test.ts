@@ -3,6 +3,7 @@ import {describe, expect, it} from "vitest";
 import {
     daysUntilDeadline,
     EVENT_TIMEZONE,
+    formatEventDate,
     formatEventDateTime,
     formatEventLongDate,
     resolveEventTimezone,
@@ -46,5 +47,15 @@ describe("event timezone", () => {
         expect(daysUntilDeadline("2026-09-15T23:59:59-05:00", now)).toBe(15);
         expect(daysUntilDeadline("2026-08-31T12:00:00-05:00", now)).toBeLessThan(0);
         expect(daysUntilDeadline(null, now)).toBeNull();
+    });
+
+    it("formats a short calendar date without time", () => {
+        const label = formatEventDate(
+            "2026-09-06T14:48:00.000Z",
+            "—",
+            "America/Bogota",
+        );
+        expect(label).toMatch(/6\/09\/\d{2}/);
+        expect(label).not.toMatch(/:/);
     });
 });

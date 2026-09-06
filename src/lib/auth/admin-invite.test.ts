@@ -2,9 +2,13 @@ import {describe, expect, it} from "vitest";
 
 import {
     canDeleteActiveAdmin,
+    formatAdminInviteSentLabel,
     hasAdminRole,
     isActiveAdminAccount,
+    isAdminInviteLikelyExpired,
     isPendingAdminInvite,
+    isProtectedOwnerEmail,
+    normalizeAdminEmail,
 } from "@/lib/auth/admin-invite";
 
 describe("isPendingAdminInvite", () => {
@@ -86,10 +90,54 @@ describe("isActiveAdminAccount", () => {
 });
 
 describe("canDeleteActiveAdmin", () => {
-    it("allows deleting another admin but not the signed-in account", () => {
-        expect(canDeleteActiveAdmin("u-other", "u-self")).toBe(true);
-        expect(canDeleteActiveAdmin("u-self", "u-self")).toBe(false);
+    it("allows deleting another non-owner admin but not self or owners", () => {
+        expect(canDeleteActiveAdmin("u-other", "u-self", "otro@example.com")).toBe(
+            true,
+        );
+        expect(canDeleteActiveAdmin("u-self", "u-self", "self@example.com")).toBe(
+            false,
+        );
         expect(canDeleteActiveAdmin("", "u-self")).toBe(false);
+        expect(
+            canDeleteActiveAdmin(
+                "u-owner",
+                "u-self",
+                "migueangel97@hotmail.com",
+            ),
+        ).toBe(false);
+        expect(
+            canDeleteActiveAdmin("u-owner", "u-self", "NycholPG@gmail.com"),
+        ).toBe(false);
+    });
+});
+
+describe("isProtectedOwnerEmail", () => {
+    it("normalizes case when matching owner emails", () => {
+        expect(isProtectedOwnerEmail("MIGUEANGEL97@HOTMAIL.COM")).toBe(true);
+        expect(isProtectedOwnerEmail("otro@example.com")).toBe(false);
+        expect(normalizeAdminEmail("  A@B.Com ")).toBe("a@b.com");
+    });
+});
+
+describe("admin invite timing", () => {
+    it("flags invites past the OTP expiry window", () => {
+        const now = new Date("2026-09-06T12:00:00.000Z");
+        expect(
+            isAdminInviteLikelyExpired("2026-09-05T11:00:00.000Z", now, 3600),
+        ).toBe(true);
+        expect(
+            isAdminInviteLikelyExpired("2026-09-06T11:30:00.000Z", now, 3600),
+        ).toBe(false);
+    });
+
+    it("formats a relative sent label and caducada hint", () => {
+        const now = new Date("2026-09-06T12:00:00.000Z");
+        expect(
+            formatAdminInviteSentLabel("2026-09-06T10:00:00.000Z", now),
+        ).toMatch(/Enviada/i);
+        expect(
+            formatAdminInviteSentLabel("2026-09-01T12:00:00.000Z", now),
+        ).toMatch(/caducado/i);
     });
 });
 

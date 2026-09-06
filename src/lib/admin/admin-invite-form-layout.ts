@@ -1,7 +1,7 @@
 /**
- * Invite email + submit stay stacked until `lg`, matching `admin.btnSecondary`
- * (`w-full` until `lg:w-auto`). An earlier `sm:flex-row` crushed the email field
- * on phones in landscape and tablets in portrait.
+ * Invite email + submit stay stacked through tablet portrait, then sit in one
+ * row from `lg` (tablet landscape + desktop — Figma `85:40` / `85:133` / `85:220`).
+ * Matches `admin.btnPrimary` (`w-full` → `lg:w-auto`).
  */
 export const adminInviteFieldsRowClass =
-    "flex flex-col gap-3 lg:flex-row lg:items-stretch";
+    "flex flex-col gap-2 md:gap-3 lg:flex-row lg:items-center lg:gap-4";

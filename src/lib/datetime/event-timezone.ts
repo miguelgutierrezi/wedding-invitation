@@ -65,6 +65,23 @@ export function formatEventDateTimeShort(
     }
 }
 
+/** Admin lists that only need the calendar day (e.g. “Invitado el”). */
+export function formatEventDate(
+    iso: string | null | undefined,
+    emptyLabel = "—",
+    timezone?: string | null,
+): string {
+    if (!iso) {
+        return emptyLabel;
+    }
+
+    try {
+        return formatInEventTimezone(iso, {dateStyle: "short"}, timezone);
+    } catch {
+        return emptyLabel;
+    }
+}
+
 /** Invitation labels: long Spanish date in event TZ. */
 export function formatEventLongDate(
     iso: string,

@@ -81,7 +81,11 @@ describe("partitionAdminDirectory", () => {
         ]);
 
         expect(result.pending).toEqual([
-            {id: "u-pending", email: "pendiente@example.com"},
+            {
+                id: "u-pending",
+                email: "pendiente@example.com",
+                invitedAt: "2026-09-05T10:00:00.000Z",
+            },
         ]);
         expect(result.active).toEqual([
             {

@@ -41,6 +41,12 @@ export const admin = {
         "inline-flex min-h-11 w-full items-center justify-center rounded-full border-2 border-cover-cta-fg bg-accent px-5 font-[family-name:var(--font-timer)] text-sm font-medium text-cover-cta-fg transition-[transform,opacity] hover:opacity-90 focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto",
     btnSecondary:
         "inline-flex min-h-11 w-full items-center justify-center rounded-full border-2 border-cover-cta-fg/40 bg-cream-figma/90 px-5 font-[family-name:var(--font-timer)] text-sm font-medium text-cover-cta-fg transition-[background-color,opacity] hover:bg-cream-figma focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45 lg:w-auto",
+    btnDanger:
+        "inline-flex min-h-11 w-full items-center justify-center rounded-full border border-red-800 bg-red-100 px-4 font-[family-name:var(--font-timer)] text-sm font-bold text-red-800 transition-[transform,opacity] hover:opacity-90 focus-visible:ring-2 focus-visible:ring-red-800/40 focus-visible:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto",
+    btnImmutable:
+        "inline-flex min-h-9 w-full cursor-not-allowed items-center justify-center rounded-full bg-neutral-200 px-4 font-[family-name:var(--font-timer)] text-sm font-bold text-neutral-400 opacity-60 lg:w-auto",
+    btnSecondarySoft:
+        "inline-flex min-h-11 w-full items-center justify-center rounded-full border border-olive-muted bg-olive-wash px-4 font-[family-name:var(--font-timer)] text-sm font-bold text-olive-muted transition-[background-color,opacity] hover:bg-cream-figma focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45 lg:w-auto",
     btnGhost:
         "inline-flex min-h-11 shrink-0 items-center justify-center rounded-full px-4 font-[family-name:var(--font-timer)] text-sm font-medium text-cream-figma/95 transition-colors hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-cream-figma/60 focus-visible:outline-none",
     navScroller:
@@ -65,9 +71,13 @@ export const admin = {
     badge:
         "inline-flex min-h-7 shrink-0 items-center whitespace-nowrap rounded-full px-2.5 text-xs font-medium",
     badgePending:
-        "inline-flex min-h-7 shrink-0 items-center whitespace-nowrap rounded-full bg-cover-cta-fg/10 px-2.5 text-xs font-medium text-cover-cta-fg",
+        "inline-flex min-h-7 shrink-0 items-center whitespace-nowrap rounded-full bg-status-pending-bg px-3 py-1 text-xs font-semibold text-status-pending-fg",
     badgeResponded:
         "inline-flex min-h-7 shrink-0 items-center whitespace-nowrap rounded-full bg-accent/40 px-2.5 text-xs font-medium text-cover-cta-fg",
+    badgeActive:
+        "inline-flex min-h-7 shrink-0 items-center whitespace-nowrap rounded-full bg-status-active-bg px-3 py-1 text-xs font-semibold text-status-active-fg",
+    badgeYou:
+        "inline-flex shrink-0 items-center rounded px-2 py-0.5 text-[11px] font-semibold tracking-wide text-cover-cta-fg uppercase bg-olive-border",
     badgeDisabled:
         "inline-flex min-h-7 shrink-0 items-center whitespace-nowrap rounded-full bg-red-800/10 px-2.5 text-xs font-medium text-red-800",
     sortButton:

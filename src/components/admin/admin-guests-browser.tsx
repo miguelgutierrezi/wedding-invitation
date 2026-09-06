@@ -12,6 +12,7 @@ import {GuestAttendanceBadge} from "@/components/admin/admin-status-badge";
 import {AdminSelect} from "@/components/admin/admin-select";
 import {AdminSortHeader} from "@/components/admin/admin-sort-header";
 import {admin} from "@/components/admin/admin-ui";
+import {useAdminListFilters} from "@/hooks/use-admin-list-filters";
 import {useAdminSelection} from "@/hooks/use-admin-selection";
 import {useScrollOnPageChange} from "@/hooks/use-scroll-on-page-change";
 import {adminCopy} from "@/lib/admin/admin-copy";
@@ -26,7 +27,6 @@ import {
     DEFAULT_ADMIN_GUESTS_FILTERS,
     guestMatchesFilters,
     guestsFilterChips,
-    replaceQueryString,
 } from "@/lib/validation/admin-filters";
 
 export type AdminGuestBrowserItem = {
@@ -86,7 +86,11 @@ export function AdminGuestsBrowser({
                                        guests,
                                        initialFilters,
                                    }: AdminGuestsBrowserProps) {
-    const [filters, setFilters] = useState(initialFilters);
+    const {filters, updateFilters} = useAdminListFilters({
+        pathname: "/admin/guests",
+        initialFilters,
+        buildQuery: buildAdminGuestsFilterQuery,
+    });
     const [notice, setNotice] = useState<string | null>(null);
     const [batchPending, startTransition] = useTransition();
     const selection = useAdminSelection();
@@ -128,11 +132,6 @@ export function AdminGuestsBrowser({
         (guest) => guest.attendanceStatus === "pending",
     );
     const withBus = visibleGuests.filter((guest) => guest.needsTransport);
-
-    function updateFilters(next: AdminGuestsFilters) {
-        setFilters(next);
-        replaceQueryString("/admin/guests", buildAdminGuestsFilterQuery(next));
-    }
 
     function changeFilters(patch: Partial<AdminGuestsFilters>) {
         updateFilters({...filters, ...patch, page: 1});

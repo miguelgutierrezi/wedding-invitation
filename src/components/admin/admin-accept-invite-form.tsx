@@ -4,6 +4,7 @@ import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {useEffect, useState, useTransition} from "react";
 
+import {recordAdminAcceptedAction} from "@/actions/admin/auth";
 import {admin} from "@/components/admin/admin-ui";
 import {
     isInviteAuthType,
@@ -195,6 +196,7 @@ export function AdminAcceptInviteForm({
                         return;
                     }
 
+                    await recordAdminAcceptedAction();
                     router.replace("/admin");
                     router.refresh();
                 });

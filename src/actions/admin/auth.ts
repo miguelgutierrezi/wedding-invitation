@@ -3,10 +3,13 @@
 import {redirect} from "next/navigation";
 
 import {ADMIN_ACCEPT_INVITE_PATH} from "@/lib/auth/admin-accept-invite";
+import {recordAdminDirectoryAudit} from "@/lib/admin/admin-audit";
 import {
     canDeleteActiveAdmin,
     isActiveAdminAccount,
     isPendingAdminInvite,
+    isProtectedOwnerEmail,
+    normalizeAdminEmail,
 } from "@/lib/auth/admin-invite";
 import {
     listAllAuthUsers,
@@ -35,6 +38,7 @@ export type AdminActionResult =
 export type PendingAdminInvite = {
     id: string;
     email: string;
+    invitedAt: string | null;
 };
 
 export type ActiveAdminAccount = {
@@ -71,7 +75,11 @@ export async function listAdminDirectory(): Promise<AdminDirectory> {
             email: entry.email,
             lastSignInAt: entry.lastSignInAt ?? null,
         })),
-        pending,
+        pending: pending.map((entry) => ({
+            id: entry.id,
+            email: entry.email,
+            invitedAt: entry.invitedAt ?? null,
+        })),
     };
 }
 
@@ -140,7 +148,7 @@ export async function signInAdminAction(
 export async function inviteAdminAction(
     formData: FormData,
 ): Promise<AdminActionResult> {
-    await requireAdmin();
+    const currentAdmin = await requireAdmin();
 
     const email = String(formData.get("email") ?? "").trim();
     if (!email) {
@@ -160,6 +168,7 @@ export async function inviteAdminAction(
     }
 
     const appUrl = rawAppUrl.replace(/\/$/, "");
+    const redirectTo = `${appUrl}${ADMIN_ACCEPT_INVITE_PATH}`;
     const supabase = createAdminClient();
     const {users, error: usersError} = await listAllAuthUsers(supabase);
 
@@ -172,31 +181,69 @@ export async function inviteAdminAction(
         return {ok: false, error: "No se pudo validar la invitación anterior."};
     }
 
-    const normalizedEmail = email.toLocaleLowerCase();
-    const previousInvite = users.find(
-        (user) =>
-            user.email?.toLocaleLowerCase() === normalizedEmail &&
-            isPendingAdminInvite(toAdminInviteUser(user)),
+    const normalizedEmail = normalizeAdminEmail(email);
+    const matchingUsers = users.filter(
+        (user) => user.email && normalizeAdminEmail(user.email) === normalizedEmail,
+    );
+    const activeMatch = matchingUsers.find((user) =>
+        isActiveAdminAccount(toAdminInviteUser(user)),
+    );
+    if (activeMatch) {
+        return {
+            ok: false,
+            error: "Ese correo ya es administrador activo.",
+        };
+    }
+
+    const pendingMatch = matchingUsers.find((user) =>
+        isPendingAdminInvite(toAdminInviteUser(user)),
     );
 
-    if (previousInvite) {
-        const {error: deleteError} = await supabase.auth.admin.deleteUser(
-            previousInvite.id,
-        );
-        if (deleteError) {
+    if (pendingMatch) {
+        const {error: resendError} = await supabase.auth.admin.generateLink({
+            type: "invite",
+            email,
+            options: {
+                redirectTo,
+                data: {role: "admin"},
+            },
+        });
+
+        if (resendError) {
             serverLog({
                 level: "error",
-                event: "admin_invite_replace_failed",
-                errorCode: deleteError.message,
+                event: "admin_invite_resend_failed",
+                errorCode: resendError.message,
             });
-            return {ok: false, error: "No se pudo reemplazar la invitación anterior."};
+            return {
+                ok: false,
+                error: "No se pudo reenviar la invitación. Intenta de nuevo.",
+            };
         }
+
+        await recordAdminDirectoryAudit({
+            action: "admin_invite_resent",
+            actorAdminId: currentAdmin.id,
+            actorEmail: currentAdmin.email,
+            targetEmail: email,
+            targetUserId: pendingMatch.id,
+        });
+
+        serverLog({
+            level: "info",
+            event: "admin_invite_resent",
+        });
+
+        return {
+            ok: true,
+            message: `Invitación reenviada a ${email}. El enlace anterior se invalida; usa el correo más reciente.`,
+        };
     }
 
     const {data: invited, error} = await supabase.auth.admin.inviteUserByEmail(
         email,
         {
-            redirectTo: `${appUrl}${ADMIN_ACCEPT_INVITE_PATH}`,
+            redirectTo,
             data: {role: "admin"},
         },
     );
@@ -236,6 +283,14 @@ export async function inviteAdminAction(
         }
     }
 
+    await recordAdminDirectoryAudit({
+        action: "admin_invited",
+        actorAdminId: currentAdmin.id,
+        actorEmail: currentAdmin.email,
+        targetEmail: email,
+        targetUserId: invited.user?.id ?? null,
+    });
+
     serverLog({
         level: "info",
         event: "admin_invite_sent",
@@ -250,7 +305,7 @@ export async function inviteAdminAction(
 export async function deletePendingAdminInviteAction(
     formData: FormData,
 ): Promise<AdminActionResult> {
-    await requireAdmin();
+    const currentAdmin = await requireAdmin();
 
     const userId = String(formData.get("userId") ?? "").trim();
     if (!userId) {
@@ -295,6 +350,14 @@ export async function deletePendingAdminInviteAction(
             };
         }
 
+        await recordAdminDirectoryAudit({
+            action: "admin_invite_cancelled",
+            actorAdminId: currentAdmin.id,
+            actorEmail: currentAdmin.email,
+            targetEmail: invite.email ?? null,
+            targetUserId: userId,
+        });
+
         return {
             ok: true,
             message: `Invitación eliminada para ${invite.email}.`,
@@ -321,15 +384,9 @@ export async function deleteActiveAdminAction(
     const currentAdmin = await requireAdmin();
 
     const userId = String(formData.get("userId") ?? "").trim();
+    const confirmEmail = String(formData.get("confirmEmail") ?? "").trim();
     if (!userId) {
         return {ok: false, error: "No se indicó el administrador a eliminar."};
-    }
-
-    if (!canDeleteActiveAdmin(userId, currentAdmin.id)) {
-        return {
-            ok: false,
-            error: "No puedes eliminar tu propia cuenta mientras estás en sesión.",
-        };
     }
 
     const supabase = createAdminClient();
@@ -349,10 +406,26 @@ export async function deleteActiveAdminAction(
             user.id === userId && isActiveAdminAccount(toAdminInviteUser(user)),
     );
 
-    if (!account) {
+    if (!account?.email) {
         return {
             ok: false,
             error: "Solo se pueden eliminar administradores activos.",
+        };
+    }
+
+    if (!canDeleteActiveAdmin(userId, currentAdmin.id, account.email)) {
+        return {
+            ok: false,
+            error: isProtectedOwnerEmail(account.email)
+                ? "Esa cuenta es de la pareja y no se puede eliminar."
+                : "No puedes eliminar tu propia cuenta mientras estás en sesión.",
+        };
+    }
+
+    if (normalizeAdminEmail(confirmEmail) !== normalizeAdminEmail(account.email)) {
+        return {
+            ok: false,
+            error: "Escribe el correo exacto del administrador para confirmar el borrado.",
         };
     }
 
@@ -369,6 +442,14 @@ export async function deleteActiveAdminAction(
                 error: "No se pudo borrar el administrador.",
             };
         }
+
+        await recordAdminDirectoryAudit({
+            action: "admin_deleted",
+            actorAdminId: currentAdmin.id,
+            actorEmail: currentAdmin.email,
+            targetEmail: account.email,
+            targetUserId: userId,
+        });
 
         serverLog({
             level: "info",
@@ -403,6 +484,73 @@ export async function signOutAdminAction(): Promise<void> {
         event: "admin_sign_out_ok",
     });
     redirect("/admin/login");
+}
+
+/**
+ * Sends a password-recovery email. Always returns a generic success message
+ * so the login form does not reveal whether the address exists.
+ */
+export async function requestAdminPasswordResetAction(
+    formData: FormData,
+): Promise<AdminActionResult> {
+    const email = String(formData.get("email") ?? "").trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return {ok: false, error: "Indica un correo válido."};
+    }
+
+    const rawAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+    if (!rawAppUrl) {
+        return {
+            ok: false,
+            error: "Falta NEXT_PUBLIC_APP_URL para enviar el enlace.",
+        };
+    }
+
+    const appUrl = rawAppUrl.replace(/\/$/, "");
+    const supabase = await createClient();
+    const {error} = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${appUrl}${ADMIN_ACCEPT_INVITE_PATH}`,
+    });
+
+    if (error) {
+        serverLog({
+            level: "warn",
+            event: "admin_password_reset_request_failed",
+            errorCode: error.message,
+        });
+    } else {
+        await recordAdminDirectoryAudit({
+            action: "admin_password_reset_requested",
+            actorAdminId: null,
+            actorEmail: null,
+            targetEmail: email,
+        });
+        serverLog({
+            level: "info",
+            event: "admin_password_reset_requested",
+        });
+    }
+
+    return {
+        ok: true,
+        message:
+            "Si ese correo tiene acceso al panel, recibirás un enlace para crear una contraseña nueva.",
+    };
+}
+
+/** Called after an invitee/recovery user successfully sets their password. */
+export async function recordAdminAcceptedAction(): Promise<AdminActionResult> {
+    const admin = await requireAdmin();
+
+    await recordAdminDirectoryAudit({
+        action: "admin_accepted",
+        actorAdminId: admin.id,
+        actorEmail: admin.email,
+        targetEmail: admin.email,
+        targetUserId: admin.id,
+    });
+
+    return {ok: true};
 }
 
 export async function createFamilyAction(

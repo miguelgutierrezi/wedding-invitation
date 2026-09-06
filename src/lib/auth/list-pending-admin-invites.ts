@@ -28,6 +28,7 @@ export type AdminDirectoryEntry = {
     id: string;
     email: string;
     lastSignInAt?: string | null;
+    invitedAt?: string | null;
 };
 
 /**
@@ -78,6 +79,7 @@ export function filterPendingAdminInvites(users: User[]): AdminDirectoryEntry[] 
         .map((user) => ({
             id: user.id,
             email: user.email!,
+            invitedAt: user.invited_at ?? null,
         }))
         .sort((a, b) => a.email.localeCompare(b.email));
 }

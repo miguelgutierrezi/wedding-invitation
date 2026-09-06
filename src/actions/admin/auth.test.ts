@@ -23,6 +23,7 @@ const {
     deleteUser,
     inviteUserByEmail,
     updateUserById,
+    generateLink,
 } = vi.hoisted(() => ({
     requireAdmin: vi.fn(),
     createClient: vi.fn(),
@@ -39,6 +40,7 @@ const {
     deleteUser: vi.fn(),
     inviteUserByEmail: vi.fn(),
     updateUserById: vi.fn(),
+    generateLink: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/require-admin", () => ({
@@ -57,6 +59,9 @@ vi.mock("@/services/admin/families", () => ({
 }));
 vi.mock("next/navigation", () => ({redirect}));
 vi.mock("@/lib/logging/server-log", () => ({serverLog: vi.fn()}));
+vi.mock("@/lib/admin/admin-audit", () => ({
+    recordAdminDirectoryAudit: vi.fn().mockResolvedValue(undefined),
+}));
 
 const familyId = "11111111-1111-4111-8111-111111111111";
 
@@ -71,9 +76,21 @@ describe("admin auth and family mutation actions", () => {
                     listUsers,
                     deleteUser,
                     updateUserById,
+                    generateLink,
                 },
             },
+            from: vi.fn(() => ({
+                select: vi.fn().mockReturnThis(),
+                order: vi.fn().mockReturnThis(),
+                limit: vi.fn().mockReturnThis(),
+                maybeSingle: vi.fn().mockResolvedValue({
+                    data: {id: "event-1"},
+                    error: null,
+                }),
+                insert: vi.fn().mockResolvedValue({error: null}),
+            })),
         }));
+        generateLink.mockResolvedValue({data: {properties: {}, user: null}, error: null});
         inviteUserByEmail.mockResolvedValue({
             data: {
                 user: {
@@ -117,7 +134,7 @@ describe("admin auth and family mutation actions", () => {
         );
     });
 
-    it("replaces an unaccepted invite before sending it again to the same email", async () => {
+    it("resends an unaccepted invite without deleting the Auth user", async () => {
         listUsers.mockResolvedValue({
             data: {
                 users: [
@@ -133,7 +150,6 @@ describe("admin auth and family mutation actions", () => {
             },
             error: null,
         });
-        deleteUser.mockResolvedValue({error: null});
 
         const formData = new FormData();
         formData.set("email", "nuevo-admin@example.com");
@@ -141,7 +157,41 @@ describe("admin auth and family mutation actions", () => {
         await expect(inviteAdminAction(formData)).resolves.toMatchObject({
             ok: true,
         });
-        expect(deleteUser).toHaveBeenCalledWith("u-pending");
+        expect(deleteUser).not.toHaveBeenCalled();
+        expect(inviteUserByEmail).not.toHaveBeenCalled();
+        expect(generateLink).toHaveBeenCalledWith(
+            expect.objectContaining({
+                type: "invite",
+                email: "nuevo-admin@example.com",
+            }),
+        );
+    });
+
+    it("rejects inviting an email that is already an active admin", async () => {
+        listUsers.mockResolvedValue({
+            data: {
+                users: [
+                    {
+                        id: "u-active",
+                        email: "activo@example.com",
+                        last_sign_in_at: "2026-09-05T11:00:00.000Z",
+                        user_metadata: {role: "admin"},
+                        app_metadata: {},
+                    },
+                ],
+            },
+            error: null,
+        });
+
+        const formData = new FormData();
+        formData.set("email", "activo@example.com");
+
+        await expect(inviteAdminAction(formData)).resolves.toMatchObject({
+            ok: false,
+            error: "Ese correo ya es administrador activo.",
+        });
+        expect(inviteUserByEmail).not.toHaveBeenCalled();
+        expect(generateLink).not.toHaveBeenCalled();
     });
 
     it("lists pending admin invites that were sent but not accepted", async () => {
@@ -178,12 +228,19 @@ describe("admin auth and family mutation actions", () => {
             {
                 id: "u-pending",
                 email: "pendiente@example.com",
+                invitedAt: "2026-09-05T10:00:00.000Z",
             },
         ]);
 
         await expect(listAdminDirectory()).resolves.toEqual({
             currentAdminId: "admin-1",
-            pending: [{id: "u-pending", email: "pendiente@example.com"}],
+            pending: [
+                {
+                    id: "u-pending",
+                    email: "pendiente@example.com",
+                    invitedAt: "2026-09-05T10:00:00.000Z",
+                },
+            ],
             active: [
                 {
                     id: "u-accepted",
@@ -194,10 +251,17 @@ describe("admin auth and family mutation actions", () => {
         });
     });
 
-    it("deletes another active admin but blocks deleting the signed-in account", async () => {
+    it("deletes another active admin but blocks self and requires email confirmation", async () => {
         listUsers.mockResolvedValue({
             data: {
                 users: [
+                    {
+                        id: "admin-1",
+                        email: "migueangel97@hotmail.com",
+                        user_metadata: {role: "admin"},
+                        app_metadata: {},
+                        last_sign_in_at: "2026-09-05T11:00:00.000Z",
+                    },
                     {
                         id: "u-other",
                         email: "otro@example.com",
@@ -214,18 +278,55 @@ describe("admin auth and family mutation actions", () => {
 
         const selfForm = new FormData();
         selfForm.set("userId", "admin-1");
+        selfForm.set("confirmEmail", "migueangel97@hotmail.com");
         await expect(deleteActiveAdminAction(selfForm)).resolves.toMatchObject({
             ok: false,
-            error: "No puedes eliminar tu propia cuenta mientras estás en sesión.",
+            error: expect.stringMatching(/propia cuenta|pareja/i),
+        });
+        expect(deleteUser).not.toHaveBeenCalled();
+
+        const missingConfirm = new FormData();
+        missingConfirm.set("userId", "u-other");
+        await expect(deleteActiveAdminAction(missingConfirm)).resolves.toMatchObject({
+            ok: false,
+            error: expect.stringMatching(/correo exacto/i),
         });
         expect(deleteUser).not.toHaveBeenCalled();
 
         const otherForm = new FormData();
         otherForm.set("userId", "u-other");
+        otherForm.set("confirmEmail", "otro@example.com");
         await expect(deleteActiveAdminAction(otherForm)).resolves.toMatchObject({
             ok: true,
         });
         expect(deleteUser).toHaveBeenCalledWith("u-other");
+    });
+
+    it("blocks deleting a protected owner account", async () => {
+        listUsers.mockResolvedValue({
+            data: {
+                users: [
+                    {
+                        id: "u-owner",
+                        email: "nycholpg@gmail.com",
+                        user_metadata: {role: "admin"},
+                        app_metadata: {},
+                        last_sign_in_at: "2026-09-05T11:00:00.000Z",
+                    },
+                ],
+            },
+            error: null,
+        });
+
+        const formData = new FormData();
+        formData.set("userId", "u-owner");
+        formData.set("confirmEmail", "nycholpg@gmail.com");
+
+        await expect(deleteActiveAdminAction(formData)).resolves.toMatchObject({
+            ok: false,
+            error: expect.stringMatching(/pareja/i),
+        });
+        expect(deleteUser).not.toHaveBeenCalled();
     });
 
     it("deletes a pending admin invite that was never accepted", async () => {

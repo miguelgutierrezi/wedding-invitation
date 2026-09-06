@@ -72,7 +72,12 @@ asks for the real name **only if that person will attend**. Each listed guest ca
 | `--cover-cta-bg`         | `#CFCFCF`          | Gray pill buttons (e.g. venue secondary pills)                                                   |
 | `--gallery-dot`          | `#4A5D2A`          | Carousel dots                                                                                    |
 | `--countdown-number`     | `#111827`          | Countdown figures                                                                                |
-| Cream text on photos     | `text-cream-figma` | Venue / footer type                                                                              |
+| `--olive-muted`              | `#7A783A`          | Admin directory secondary copy (Figma `85:40`)                                           |
+| `--olive-border`             | `#E5E4C6`          | Admin directory card/row borders + TÚ badge                                              |
+| `--olive-wash`               | `#FAF9E6`          | Admin invite input / Cancelar surface                                                    |
+| `--status-active-*`          | `#EBFEE6` / `#166500` | Activo badge                                                                          |
+| `--status-pending-*`         | `#FEF08A` / `#854D0E` | Pendiente badge                                                                       |
+
 
 ### Typography
 
@@ -82,13 +87,18 @@ asks for the real name **only if that person will attend**. Each listed guest ca
 | Cover subtitle                                 | Vollkorn (`--font-cover-serif`)                   | Multi-line cover invitation copy, **uppercase**         |
 | Cover / script accents                         | `--font-script` / cover fonts as loaded in layout | Cover greeting script line and specialized display      |
 | Admin UI                                       | same `--font-timer` + olive / cream tokens        | Entire `/admin` shell and forms via `admin-ui.ts`       |
+| Admin directory (`/admin/admins`)              | Figma `85:40` / tablet `85:133` / mobile `85:220` | Phone nested cards (TÚ wash); portrait clusters; `lg+` row; Times + olive tokens; chrome unchanged |
+
+
+
 
 Do not reintroduce generic marketing fonts (e.g. Inter-like default stacks) on invitation sections that already use
 Times.
 
 ### Admin invite email (Supabase Auth)
 
-`emails/admin-invite.html` follows Figma **email-admin-invite** (`80:40`) so the invite matches the invitation:
+`emails/admin-invite.html` follows Figma **email-admin-invite** (`80:40`) so the invite matches the invitation.
+`emails/admin-reset-password.html` uses the same brand for Auth **Reset password** (paste in Dashboard).
 
 | Role                         | Value                                      |
 |------------------------------|--------------------------------------------|

@@ -6,6 +6,7 @@ import {useState, useTransition} from "react";
 import {createFamilyAction} from "@/actions/admin/auth";
 import {admin} from "@/components/admin/admin-ui";
 import {CopyInvitationLink} from "@/components/admin/copy-invitation-link";
+import {readAdminFamiliesListReturnHref} from "@/lib/admin/admin-list-return";
 
 export function CreateFamilyForm() {
     const router = useRouter();
@@ -38,7 +39,7 @@ export function CreateFamilyForm() {
                     ) : null}
                     <button
                         type="button"
-                        onClick={() => router.push("/admin/families")}
+                        onClick={() => router.push(readAdminFamiliesListReturnHref())}
                         className={admin.btnSecondary}
                     >
                         Volver al listado

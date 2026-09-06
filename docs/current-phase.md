@@ -31,10 +31,11 @@ may proceed when the user requests it explicitly.
 | Admin operations                            | Action queue, close follow-ups, family activity, **batch actions** |
 | Admin invite flow                          | **Implemented**; accept → `/admin/aceptar-invitacion` (set password) → `/admin` |
 | Admin invite email HTML                    | Branded template in `emails/admin-invite.html` (paste into Supabase Auth) |
+| Admin password reset                       | Login link + `emails/admin-reset-password.html`; OTP 24 h                  |
 | Analytics example families                  | Names containing the word **ejemplo** omitted from stats           |
 | Guest media uploads                         | **Implemented**                                                                |
 | WhatsApp scheduled send                     | Not implemented                                                                |
-| Resend / settings UI                       | Not implemented (Supabase invite handles admin onboarding)         |
+| Resend transactional email product         | Not implemented (Auth invite/reset SMTP only)                      |
 
 ## Completed: analytics omit example families
 
@@ -70,15 +71,31 @@ Reusable row selection (`src/lib/admin/selection.ts`, max `ADMIN_BATCH_MAX_IDS`)
 ## Completed: admin invite flow
 
 Admins can now be invited from the dashboard by email. The app calls Supabase Auth `inviteUserByEmail` with
-`redirectTo` `/admin/aceptar-invitacion`. The invitee clicks the email link, lands on that page to create a password,
-then continues to `/admin`. Returning admins still use `/admin/login`. The admin gate is based on signed-in Supabase
-auth rather than a hardcoded email allowlist.
+`redirectTo` `/admin/aceptar-invitacion`. Re-sending a **pending** invite uses `auth.admin.generateLink({ type: "invite" })`
+without deleting the Auth user. Inviting an email that is already an **active** admin returns
+“Ese correo ya es administrador activo.” Pending rows show **Enviada hace …** (and **Caducada** when past the OTP
+window). Local + recommended hosted `otp_expiry` is **86400** (24 h).
 
-The **Admins** menu lists **active** admins (Auth users with at least one sign-in) and **pending** invitations. A pending invitation can be deleted, and submitting its email again replaces the previous unaccepted account before sending a fresh invite. Active admins can be removed with **Borrar admin**, except the signed-in account (shown as “(tú)”).
+The invitee clicks the email link, lands on `/admin/aceptar-invitacion` to create a password, then continues to
+`/admin`. Returning admins use `/admin/login`, which includes **¿Olvidaste tu contraseña?**
+(`resetPasswordForEmail` → same accept page; paste `emails/admin-reset-password.html` into Supabase **Reset password**).
 
-Pending detection uses `invited_at` + absence of `last_sign_in_at` (and admin role metadata), not only `email_confirmed_at === null`, so projects that auto-confirm invite emails still list pending admins. Active accounts are Auth users with `last_sign_in_at` (guests do not create Auth accounts). Listing pages through Auth Admin `listUsers` via `listAdminDirectory`. Helpers: `src/lib/auth/admin-invite.ts`, `src/lib/auth/list-pending-admin-invites.ts`, `src/lib/auth/admin-accept-invite.ts`. The accept-invite route is public in `src/proxy.ts` (like login) so the hash/session from Supabase can establish before a password exists.
+The **Admins** menu lists **active** admins and **pending** invitations. Cancel pending with **Cancelar**. Active
+admins can be removed with **Borrar admin** only after typing their email; the signed-in account and
+`ADMIN_ALLOWED_EMAILS` owners (couple) show **No disponible**. Invite / resend / cancel / delete / accept / password-reset
+requests are written to `audit_events` (`admin_*` actions, `family_id` null) via `recordAdminDirectoryAudit`.
 
-The invite email field + button stack until Tailwind `lg` (aligned with `btnSecondary` `w-full` → `lg:w-auto`), so phones and portrait tablets no longer crush the input into a near-invisible strip. Layout class: `src/lib/admin/admin-invite-form-layout.ts`.
+Pending detection uses `invited_at` + absence of `last_sign_in_at` (and admin role metadata). Listing pages through Auth
+Admin `listUsers` via `listAdminDirectory`. Helpers: `src/lib/auth/admin-invite.ts`,
+`src/lib/auth/list-pending-admin-invites.ts`, `src/lib/auth/admin-accept-invite.ts`. The accept-invite route is public in
+`src/proxy.ts` (like login).
+
+The invite email field + button stack until Tailwind `lg` (aligned with primary CTA `w-full` → `lg:w-auto`), so phones
+and portrait tablets no longer crush the input. Layout class: `src/lib/admin/admin-invite-form-layout.ts`. Directory row
+classes: `src/lib/admin/admin-directory-layout.ts`. Visual tokens from Figma (`--olive-border`, `--olive-wash`,
+`--olive-muted`, status active/pending) live in `globals.css`; email + **TÚ** sit in one identity group with `gap-2`
+(8px). Responsive content: phone nested cards (`85:220`, shorter invite lead, wash fill for TÚ) → tablet
+portrait left/right clusters (`85:133`) → `lg+` single row (`85:40`). Chrome/nav unchanged.
 
 The hosted **Invite user** email uses the branded HTML in `emails/admin-invite.html` (Figma node `80:40`: cream page, olive header, pill CTA **Aceptar invitación**, dark footer). Paste it into Supabase Dashboard → Authentication → Email Templates → Invite user. Keep `{{ .ConfirmationURL }}` on the button. Subject: `Invitación al panel · Nychol & Miguel`. This is not Resend.
 
@@ -115,7 +132,9 @@ A companion placeholder counts as “Nombre por confirmar” while the guest is 
 ## Completed: admin lists + guest contact
 
 - `/admin/families` and `/admin/guests`: chips for active filters, sortable columns, 25-row pagination, URL via
-  `replaceState`. Filter helpers live in `src/lib/validation/admin-filters.ts` (parse → match → chips → query string).
+  Next `router.replace` (so back/forward restores filters). Filter helpers live in `src/lib/validation/admin-filters.ts`
+  (parse → match → chips → query string). Hook: `useAdminListFilters`. The in-app back chevron on family detail/create
+  restores the last filtered Familias URL from `sessionStorage` (`admin-list-return.ts`), matching browser back.
   On mobile, changing page scrolls to the list top, the range is shown (e.g. 26–49), and pagination sits left of the
   FAB so **Siguiente** stays tappable.
 - Dashboard and analytics cards deep-link into those lists (`status=pending`, `transport=with_bus`,

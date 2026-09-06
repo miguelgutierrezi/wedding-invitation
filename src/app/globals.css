@@ -33,6 +33,14 @@
     /* Figma gallery carousel dots */
     --gallery-dot: #4a5d2a;
     --photo-placeholder: #2a332c;
+    /* Figma admins-redesign (85:40) content surfaces */
+    --olive-muted: #7a783a;
+    --olive-border: #e5e4c6;
+    --olive-wash: #faf9e6;
+    --status-active-bg: #ebfee6;
+    --status-active-fg: #166500;
+    --status-pending-bg: #fef08a;
+    --status-pending-fg: #854d0e;
 }
 
 @theme inline {
@@ -56,6 +64,13 @@
     --color-countdown-number: var(--countdown-number);
     --color-gallery-dot: var(--gallery-dot);
     --color-photo-placeholder: var(--photo-placeholder);
+    --color-olive-muted: var(--olive-muted);
+    --color-olive-border: var(--olive-border);
+    --color-olive-wash: var(--olive-wash);
+    --color-status-active-bg: var(--status-active-bg);
+    --color-status-active-fg: var(--status-active-fg);
+    --color-status-pending-bg: var(--status-pending-bg);
+    --color-status-pending-fg: var(--status-pending-fg);
     --font-sans: var(--font-body);
     --font-display: var(--font-display);
     --font-script: var(--font-script);

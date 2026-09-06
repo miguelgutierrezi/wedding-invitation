@@ -181,9 +181,10 @@ GUEST_MEDIA_STORAGE_QUOTA_BYTES=   # optional: soft Storage budget for /admin/ph
 ```
 
 Admin access: **any signed-in Supabase Auth account can reach `/admin`** (`src/lib/auth/require-admin.ts`
-`isEmailAllowed` only rejects empty strings). There is no email allowlist enforced today. `src/config/admin.ts`
-exports only `ADMIN_BATCH_MAX_IDS`; `ADMIN_EMAIL` / `ADMIN_EMAILS` are not read anywhere. To restrict access,
-add a check in `requireAdmin` / `getOptionalAdmin`.
+`isEmailAllowed` only rejects empty strings). There is no email allowlist for *login*. `src/config/admin.ts`
+exports `ADMIN_BATCH_MAX_IDS`, `ADMIN_INVITE_OTP_EXPIRY_SECONDS`, and `ADMIN_ALLOWED_EMAILS` (couple owner emails
+protected from deletion by other admins). `ADMIN_EMAIL` / `ADMIN_EMAILS` env vars are not read. To restrict who can
+sign in, add a check in `requireAdmin` / `getOptionalAdmin`.
 
 `RESEND_API_KEY` / `ADMIN_NOTIFICATION_EMAIL` are reserved for a future email phase and are **not wired** yet —
 admin onboarding uses Supabase Auth `inviteUserByEmail` (see `docs/current-phase.md`).

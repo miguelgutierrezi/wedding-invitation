@@ -14,6 +14,7 @@ import {FamilyStatusBadge} from "@/components/admin/admin-status-badge";
 import {AdminSelect} from "@/components/admin/admin-select";
 import {AdminSortHeader} from "@/components/admin/admin-sort-header";
 import {admin} from "@/components/admin/admin-ui";
+import {useAdminListFilters} from "@/hooks/use-admin-list-filters";
 import {useAdminSelection} from "@/hooks/use-admin-selection";
 import {useScrollOnPageChange} from "@/hooks/use-scroll-on-page-change";
 import {adminCopy, familyStatusLabel} from "@/lib/admin/admin-copy";
@@ -30,7 +31,6 @@ import {
     familiesFilterChips,
     familyMatchesFilters,
     hasActiveAdminFamiliesFilters,
-    replaceQueryString,
 } from "@/lib/validation/admin-filters";
 
 export type AdminFamilyBrowserItem = {
@@ -83,7 +83,11 @@ export function AdminFamiliesBrowser({
                                          families,
                                          initialFilters,
                                      }: AdminFamiliesBrowserProps) {
-    const [filters, setFilters] = useState(initialFilters);
+    const {filters, updateFilters} = useAdminListFilters({
+        pathname: "/admin/families",
+        initialFilters,
+        buildQuery: buildAdminFamiliesFilterQuery,
+    });
     const [notice, setNotice] = useState<string | null>(null);
     const [pending, startTransition] = useTransition();
     const selection = useAdminSelection();
@@ -113,11 +117,6 @@ export function AdminFamiliesBrowser({
             return;
         }
         setNotice(ok ? adminCopy.batch.copied : adminCopy.batch.copyEmpty);
-    }
-
-    function updateFilters(next: AdminFamiliesFilters) {
-        setFilters(next);
-        replaceQueryString("/admin/families", buildAdminFamiliesFilterQuery(next));
     }
 
     function changeFilters(patch: Partial<AdminFamiliesFilters>) {

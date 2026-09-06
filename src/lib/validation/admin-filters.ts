@@ -6,6 +6,7 @@
  * 2. *MatchesFilters — in-memory predicate
  * 3. *FilterChips — active-filter labels
  * 4. buildAdmin*FilterQuery — typed filters → query string
+ * 5. adminListHref + useAdminListFilters — URL sync for back/forward
  *
  * Named dashboard/analytics URLs: `src/lib/admin/admin-filter-links.ts`.
  * Sort + pagination: `src/lib/admin/list-view.ts`.
@@ -412,12 +413,21 @@ export function buildAdminGuestsFilterQuery(filters: AdminGuestsFilters): string
     return params.toString();
 }
 
+/** Href for an admin list with optional filter query (no leading `?` in `query`). */
+export function adminListHref(pathname: string, query: string): string {
+    return query ? `${pathname}?${query}` : pathname;
+}
+
+/**
+ * @deprecated Prefer `adminListHref` + Next `router.replace` so App Router
+ * history stays in sync for back/forward filter restore.
+ */
 export function replaceQueryString(pathname: string, query: string) {
     if (typeof window === "undefined") {
         return;
     }
 
-    const url = query ? `${pathname}?${query}` : pathname;
+    const url = adminListHref(pathname, query);
     window.history.replaceState(window.history.state, "", url);
 }
 

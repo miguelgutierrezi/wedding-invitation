@@ -6,6 +6,7 @@ import {useState, useTransition} from "react";
 import {inviteAdminAction} from "@/actions/admin/auth";
 import {admin} from "@/components/admin/admin-ui";
 import {adminInviteFieldsRowClass} from "@/lib/admin/admin-invite-form-layout";
+import {adminDirectoryInputClass} from "@/lib/admin/admin-directory-layout";
 
 export function AdminInviteForm() {
     const router = useRouter();
@@ -39,19 +40,19 @@ export function AdminInviteForm() {
         >
             <div className={adminInviteFieldsRowClass}>
                 <label className="grid min-w-0 flex-1 gap-2">
-                    <span className={admin.label}>Correo</span>
+                    <span className="sr-only">Correo</span>
                     <input
                         type="email"
                         name="email"
                         autoComplete="email"
                         placeholder="nuevo-admin@ejemplo.com"
-                        className={admin.input}
+                        className={adminDirectoryInputClass}
                         required
                     />
                 </label>
                 <button
                     type="submit"
-                    className={`${admin.btnSecondary} shrink-0 lg:self-end`}
+                    className={`${admin.btnPrimary} shrink-0`}
                     disabled={isPending}
                 >
                     {isPending ? "Enviando…" : "Invitar admin"}

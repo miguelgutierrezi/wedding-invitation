@@ -121,7 +121,10 @@ confirmar”). Outfit inspiration routes are implemented under `/inspiracion/*`.
   familia**. Closed drawer overlay does not capture taps. Cards below `lg`; tables from `lg`; inline nav from `xl`.
   Path rules live in `src/lib/admin/admin-chrome.ts`.
 - Admin family/guest lists filter in memory, show active-filter chips, sort by column, and paginate at 25 rows. Query
-  string (`q`, filters, `sort`, `dir`, `page`) is updated with `history.replaceState`. SQL push-down can wait until a
+  string (`q`, filters, `sort`, `dir`, `page`) is updated with Next `router.replace` (`useAdminListFilters`) so browser
+  back/forward restores the list filters. The chrome back chevron (and create-family “Volver al listado”) restores the
+  last Familias list URL from `sessionStorage` (`admin-list-return.ts`), because a bare `/admin/families` Link drops
+  query filters. SQL push-down can wait until a
   commercial install outgrows a few hundred guests.
 - **Admin filter convention:** `src/lib/validation/admin-filters.ts` owns parse (search params → typed filters), match
   (in-memory predicate), chips (active-filter labels), and `buildAdmin*FilterQuery` (typed filters → query string).
@@ -332,15 +335,20 @@ reach `/admin`. There is no email allowlist. `src/config/admin.ts` exports only 
 
 Admin onboarding uses `inviteUserByEmail` from Supabase Auth with `redirectTo` `/admin/aceptar-invitacion`. That page
 establishes the invite session (URL hash tokens or `token_hash` + `verifyOtp`), lets the invitee set a password via
-`updateUser`, then sends them to `/admin`. `/admin/login` remains for returning admins. `/admin/admins` lists **active**
-admins (signed-in Auth users) and **pending** invitations; pending ones can be deleted or re-sent. Active admins can
-be deleted except the currently signed-in account. Pending means
+`updateUser`, then sends them to `/admin`. Pending invite **resend** uses `auth.admin.generateLink({ type: "invite" })` (no
+`deleteUser`). Active-email re-invite is rejected with an explicit error. `/admin/login` offers password recovery via
+`resetPasswordForEmail` to the same accept page. `/admin/admins` lists **active**
+admins (signed-in Auth users) and **pending** invitations; pending ones can be cancelled or re-sent. Active admins can
+be deleted except the currently signed-in account and `ADMIN_ALLOWED_EMAILS` owners, and only after typing the target
+email. Lifecycle writes `audit_events` (`admin_invited`, `admin_invite_resent`, `admin_invite_cancelled`, `admin_deleted`,
+`admin_accepted`, `admin_password_reset_requested`). Pending means
 `invited_at` is set and `last_sign_in_at` is still null (admin role in metadata); this still works when the project
 auto-confirms email on invite. Auth users are loaded with paginated `listUsers` (`listAdminDirectory`). Public auth paths (`/admin/login`, `/admin/aceptar-invitacion`) are exempt from the session gate in `src/proxy.ts`.
 The accept-invite page passes Supabase URL + anon key from the server into the client form so invite acceptance does
 not depend on a stale `NEXT_PUBLIC_*` client bundle after `.env.local` edits.
 
-The invite email HTML lives in `emails/admin-invite.html` (markers in `src/lib/email/admin-invite-template.ts`). Paste that file into the hosted Supabase Auth **Invite user** template; the CTA must keep `{{ .ConfirmationURL }}`. This does not add Resend.
+The invite email HTML lives in `emails/admin-invite.html`; reset password HTML in `emails/admin-reset-password.html`
+(markers / paste into hosted Auth templates). OTP expiry: `86400` in `supabase/config.toml` (mirror on hosted). This does not add Resend.
 
 ## UI and delivery constraints
 

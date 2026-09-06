@@ -10,9 +10,10 @@ The application provides:
 - A public wedding invitation.
 - Personalized invitation links per family (`/i/[slug]`).
 - RSVP management (attendance, dietary restrictions, bus transport + boarding point).
-- Guest-level attendance confirmation.
-- A private administration panel (dashboard, analytics, families, guests).
-- CSV export for attendance data (roadmap; not yet implemented).
+- Guest-level attendance confirmation (partial attendance allowed).
+- Guest photo/video uploads (private Supabase Storage) with admin moderation.
+- A private administration panel (dashboard, analytics, families, guests, guest photos, admin invitations).
+- Excel (`.xlsx`) export of attendance / transport / dietary / contact lists (`/api/admin/export`).
 
 The application must be elegant, mobile-first, secure, inexpensive to operate, reusable, and easy to deploy.
 
@@ -66,37 +67,50 @@ Use the following structure as a guide:
 ```text
 src/
 ├── actions/
-│   ├── admin/
+│   ├── admin/          # admin auth (invite), family batch ops, guest media moderation
+│   ├── media/          # guest media upload actions
 │   └── rsvp/
 ├── app/
-│   ├── i/
-│   │   └── [slug]/
-│   ├── admin/
+│   ├── i/[slug]/       # invitation cover, /invitacion, /fotos
+│   ├── fotos/          # guest media upload via event QR (?code=)
+│   ├── inspiracion/[audience]/
+│   ├── admin/          # login, dashboard, analytics, families, guests, photos, admins
+│   ├── api/admin/export/   # Excel (.xlsx) export Route Handler
 │   └── page.tsx
 ├── components/
 │   ├── admin/
 │   ├── invitation/
-│   ├── rsvp/
-│   └── ui/
+│   ├── media/
+│   └── rsvp/
 ├── config/
 │   ├── wedding.ts
 │   ├── transport.ts
-│   └── admin.ts
+│   ├── guest-media.ts
+│   ├── rate-limit.ts
+│   └── admin.ts        # ADMIN_BATCH_MAX_IDS (no admin email allowlist here)
 ├── hooks/
 ├── lib/
-│   ├── auth/
-│   ├── security/
-│   ├── supabase/
-│   └── validation/
+│   ├── admin/          # list filters, compact chrome, family-ops, batch selection, whatsapp reminder…
+│   ├── auth/           # requireAdmin + admin invite helpers
+│   ├── datetime/       # event-timezone
+│   ├── invitation/     # cover-greeting, outfit-inspiration, placeholder names
+│   ├── logging/        # serverLog + fingerprint
+│   ├── media/          # object keys, upload queue, quotas, QR window / PNG
+│   ├── security/       # slugs, tokens, rate limit
+│   ├── supabase/       # client / server / admin
+│   └── validation/     # Zod schemas (rsvp, admin-family, admin-filters, guest-media)
 ├── services/
-├── styles/
+│   ├── admin/
+│   ├── invitations/
+│   ├── media/
+│   └── rsvp/
+├── test/
 ├── types/
-├── utils/
-└── proxy.ts            # Next.js 16 edge gate for /admin (not middleware.ts)
+└── proxy.ts            # Next.js 16 edge gate for /admin + /api/admin (not middleware.ts)
 
-public/
-│   └── invitation/    # invitation media (see docs/invitation-ui.md)
-supabase/
+public/invitation/         # invitation media (see docs/invitation-ui.md)
+emails/admin-invite.html   # Supabase Auth "Invite user" HTML (paste in dashboard)
+supabase/migrations/
 docs/
 ```
 
@@ -155,20 +169,24 @@ Rules:
 
 ## Environment variables
 
-Expected variables:
+Variables the app actually reads:
 
 ```env
 NEXT_PUBLIC_APP_URL=
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
-RESEND_API_KEY=
-ADMIN_NOTIFICATION_EMAIL=
-ADMIN_EMAIL=
-ADMIN_EMAILS=
+GUEST_MEDIA_STORAGE_QUOTA_BYTES=   # optional: soft Storage budget for /admin/photos alerts
+# TZ=America/Bogota                # optional: pin the Node process TZ (display helpers already force it)
 ```
 
-Fixed admin emails live in `src/config/admin.ts`. `ADMIN_EMAIL` / `ADMIN_EMAILS` only add extras.
+Admin access: **any signed-in Supabase Auth account can reach `/admin`** (`src/lib/auth/require-admin.ts`
+`isEmailAllowed` only rejects empty strings). There is no email allowlist enforced today. `src/config/admin.ts`
+exports only `ADMIN_BATCH_MAX_IDS`; `ADMIN_EMAIL` / `ADMIN_EMAILS` are not read anywhere. To restrict access,
+add a check in `requireAdmin` / `getOptionalAdmin`.
+
+`RESEND_API_KEY` / `ADMIN_NOTIFICATION_EMAIL` are reserved for a future email phase and are **not wired** yet —
+admin onboarding uses Supabase Auth `inviteUserByEmail` (see `docs/current-phase.md`).
 
 Rules:
 
@@ -256,10 +274,12 @@ The expected primary entities are:
 
 - `events`
 - `families`
-- `guests` (includes `needs_transport`, `transport_boarding_point`)
+- `guests` (includes `gender`, `needs_name_confirmation`, `email`, `phone`, `needs_transport`,
+  `transport_boarding_point`)
 - `rsvp_responses`
 - `rsvp_response_guests` (includes the same transport fields as the denormalized guest mirror)
 - `audit_events`
+- `guest_media_uploads`, `event_guest_media_access` (guest photo/video uploads — see `docs/guest-media-storage.md`)
 
 Do not finalize or heavily expand the data model without checking the current project phase and product specification.
 

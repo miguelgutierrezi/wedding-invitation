@@ -1,6 +1,8 @@
 import {createServerClient} from "@supabase/ssr";
 import {type NextRequest, NextResponse} from "next/server";
 
+import {isAdminPublicAuthPath} from "@/lib/auth/admin-accept-invite";
+
 /**
  * Edge proxy for admin auth gate + Supabase session cookie refresh.
  * (Next.js 16+: former `middleware` convention.)
@@ -43,8 +45,8 @@ export async function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
     const isAdminPage = pathname.startsWith("/admin");
     const isAdminApi = pathname.startsWith("/api/admin");
-    const isLoginRoute = pathname === "/admin/login";
-    const needsAdminSession = (isAdminPage && !isLoginRoute) || isAdminApi;
+    const isPublicAuthRoute = isAdminPublicAuthPath(pathname);
+    const needsAdminSession = (isAdminPage && !isPublicAuthRoute) || isAdminApi;
 
     if (needsAdminSession && !user) {
         const loginUrl = request.nextUrl.clone();
@@ -53,7 +55,8 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(loginUrl);
     }
 
-    if (isLoginRoute && user) {
+    // Login is only for returning admins; invitees stay on accept-invite to set a password.
+    if (pathname === "/admin/login" && user) {
         const appUrl = request.nextUrl.clone();
         appUrl.pathname = "/admin";
         appUrl.search = "";

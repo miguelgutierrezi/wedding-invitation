@@ -1,8 +1,8 @@
 # Architecture
 
-**Status:** Guest Media Uploads complete; invitation polish (cover greeting + guest gender) documented
+**Status:** Guest Media Uploads complete; invitation polish documented; branded admin invite email HTML
 
-**Last reviewed:** 2026-08-19
+**Last reviewed:** 2026-09-06
 
 This document describes the intended technical architecture and its boundaries. It does not authorize implementation
 beyond `current-phase.md`.
@@ -69,6 +69,7 @@ Use:
 /admin/families/new    create family + invitation link
 /admin/families/[id]   family detail / edit
 /admin/photos          guest media moderation + QR URL
+/admin/admins          invite admins (Supabase Auth) + pending invitations
 /api/admin/export      Excel export (`?kind=` attending|transport|dietary|contacts)
 /api/...               HTTP endpoints only when appropriate
 ```
@@ -177,7 +178,10 @@ Current coverage targets:
 - Placeholder companion names (`isPlaceholderGuestName`).
 - Event timezone helpers.
 - Outfit inspiration route helpers.
-- Guest media MIME/size policy, object keys, status transitions, queue retry helpers.
+- Guest media MIME/size policy, object keys, status transitions, queue retry helpers, QR window / PNG.
+- Admin invite flow: `inviteAdminAction` / pending-invite helpers, invite email template markers, invite-form
+  layout class.
+- RSVP close checklist and WhatsApp reminder template helpers.
 
 ## Guest media uploads
 
@@ -281,6 +285,7 @@ Relevant migrations include:
 …_update_family_guests_by_id.sql
 …_guest_contact_from_rsvp.sql
 …_delete_family.sql
+…_rsvp_partial_attendance.sql   # companion name required only when that guest attends
 ```
 
 ## Invitation token / slug boundary
@@ -319,9 +324,23 @@ Guests do not create accounts; their invitation link grants narrowly scoped acce
 Administrators authenticate through Supabase Auth.
 
 RLS remains deny-by-default for anon/authenticated on domain tables. Admin pages require server-side authorization after
-a signed-in Supabase Auth user. The current app uses the authenticated session as the access check; static allowlists are no longer the source of truth for admin access.
+a signed-in Supabase Auth user. The current app uses **the mere existence of an authenticated session** as the access
+check — `isEmailAllowed` (`src/lib/auth/require-admin.ts`) only rejects empty strings, so any Supabase Auth account can
+reach `/admin`. There is no email allowlist. `src/config/admin.ts` exports only `ADMIN_BATCH_MAX_IDS`; `ADMIN_EMAIL` /
+`ADMIN_EMAILS` are not read anywhere. To restrict access again, wire `ADMIN_ALLOWED_EMAILS` (or a DB role) into
+`requireAdmin` / `getOptionalAdmin`.
 
-Admin onboarding uses `inviteUserByEmail` from Supabase Auth and redirect back to `/admin/login` after the invite is accepted. Optional extras: `ADMIN_EMAIL` / `ADMIN_EMAILS` remain available as supplementary configuration but are not the primary access gate.
+Admin onboarding uses `inviteUserByEmail` from Supabase Auth with `redirectTo` `/admin/aceptar-invitacion`. That page
+establishes the invite session (URL hash tokens or `token_hash` + `verifyOtp`), lets the invitee set a password via
+`updateUser`, then sends them to `/admin`. `/admin/login` remains for returning admins. `/admin/admins` lists **active**
+admins (signed-in Auth users) and **pending** invitations; pending ones can be deleted or re-sent. Active admins can
+be deleted except the currently signed-in account. Pending means
+`invited_at` is set and `last_sign_in_at` is still null (admin role in metadata); this still works when the project
+auto-confirms email on invite. Auth users are loaded with paginated `listUsers` (`listAdminDirectory`). Public auth paths (`/admin/login`, `/admin/aceptar-invitacion`) are exempt from the session gate in `src/proxy.ts`.
+The accept-invite page passes Supabase URL + anon key from the server into the client form so invite acceptance does
+not depend on a stale `NEXT_PUBLIC_*` client bundle after `.env.local` edits.
+
+The invite email HTML lives in `emails/admin-invite.html` (markers in `src/lib/email/admin-invite-template.ts`). Paste that file into the hosted Supabase Auth **Invite user** template; the CTA must keep `{{ .ConfirmationURL }}`. This does not add Resend.
 
 ## UI and delivery constraints
 

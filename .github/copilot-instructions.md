@@ -22,5 +22,6 @@ not claim success until tests and docs for the change are updated and `pnpm lint
 `pnpm build` have been run (see `AGENTS.md` **Required checks**).
 
 Presentation copy and media paths for the invitation belong in `src/config/wedding.ts` (see `docs/invitation-ui.md`).
-Admin shared styles: `src/components/admin/admin-ui.ts`. Edge auth for `/admin`: `src/proxy.ts` (Next.js 16 proxy
-convention).
+Admin shared styles: `src/components/admin/admin-ui.ts`. Branded Supabase Auth invite HTML: `emails/admin-invite.html`.
+Edge auth for `/admin`: `src/proxy.ts` (Next.js 16 proxy convention). Admin access = any signed-in Supabase Auth
+account (`src/lib/auth/require-admin.ts`); there is no email allowlist and `ADMIN_EMAIL` / `ADMIN_EMAILS` are unused.

@@ -57,5 +57,5 @@ supabase/.temp/
 .idea/shelf/
 
 .ai/**
-.pnpm_store/**
-.vscode/**
+.pnpm-store/
+.vscode/

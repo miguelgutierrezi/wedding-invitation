@@ -5,6 +5,7 @@ import {useState, useTransition} from "react";
 
 import {inviteAdminAction} from "@/actions/admin/auth";
 import {admin} from "@/components/admin/admin-ui";
+import {adminInviteFieldsRowClass} from "@/lib/admin/admin-invite-form-layout";
 
 export function AdminInviteForm() {
     const router = useRouter();
@@ -14,7 +15,7 @@ export function AdminInviteForm() {
 
     return (
         <form
-            className="flex flex-col gap-2 sm:flex-row"
+            className="space-y-3"
             onSubmit={(event) => {
                 event.preventDefault();
                 setMessage(null);
@@ -36,27 +37,33 @@ export function AdminInviteForm() {
                 });
             }}
         >
-            <input
-                type="email"
-                name="email"
-                placeholder="nuevo-admin@ejemplo.com"
-                className={`${admin.input} min-w-0 flex-1`}
-                required
-            />
-            <button type="submit" className={admin.btnSecondary} disabled={isPending}>
-                {isPending ? "Enviando…" : "Invitar admin"}
-            </button>
+            <div className={adminInviteFieldsRowClass}>
+                <label className="grid min-w-0 flex-1 gap-2">
+                    <span className={admin.label}>Correo</span>
+                    <input
+                        type="email"
+                        name="email"
+                        autoComplete="email"
+                        placeholder="nuevo-admin@ejemplo.com"
+                        className={admin.input}
+                        required
+                    />
+                </label>
+                <button
+                    type="submit"
+                    className={`${admin.btnSecondary} shrink-0 lg:self-end`}
+                    disabled={isPending}
+                >
+                    {isPending ? "Enviando…" : "Invitar admin"}
+                </button>
+            </div>
 
             {error ? (
-                <p className={`${admin.error} sm:col-span-2`} role="alert">
+                <p className={admin.error} role="alert">
                     {error}
                 </p>
             ) : null}
-            {message ? (
-                <p className={`${admin.muted} sm:col-span-2`}>
-                    {message}
-                </p>
-            ) : null}
+            {message ? <p className={admin.muted}>{message}</p> : null}
         </form>
     );
 }

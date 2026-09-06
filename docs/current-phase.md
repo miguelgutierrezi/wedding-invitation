@@ -3,13 +3,14 @@
 **Status:** Admin operations (action queue, WhatsApp copy, RSVP close checklist, practical Excel exports) **complete**
 in repo (apply hosted migrations)
 
-**Last reviewed:** 2026-08-24
+**Last reviewed:** 2026-09-06
 
 **Authorized scope:** Guest media QR PNG download authorized by explicit request. Admin list pagination/chips/column
 sort, RSVP contact mirror onto `guests`, and admin operations (action queue, clipboard WhatsApp reminder, RSVP close
-checklist, practical Excel exports, status badges) authorized for product reuse. Do not implement Resend/email, public
-gallery, ZIP-on-Vercel, AWS/GCP/R2, or WhatsApp Cloud API unless newly authorized. Invitation copy/layout polish may
-proceed when the user requests it explicitly.
+checklist, practical Excel exports, status badges) authorized for product reuse. Branded **Supabase Auth invite HTML**
+(`emails/admin-invite.html`) is authorized so the admin invite email matches the invitation. Do not implement Resend,
+public gallery, ZIP-on-Vercel, AWS/GCP/R2, or WhatsApp Cloud API unless newly authorized. Invitation copy/layout polish
+may proceed when the user requests it explicitly.
 
 ## Snapshot of the repository
 
@@ -28,7 +29,8 @@ proceed when the user requests it explicitly.
 | Admin plain-language UI                     | Non-technical Spanish labels in admin panel                                    |
 | Delete family (admin)                       | RPC + confirm-by-name; works with unsaved edits                                |
 | Admin operations                            | Action queue, close follow-ups, family activity, **batch actions** |
-| Admin invite flow                          | **Implemented** via Supabase Auth invitation email                     |
+| Admin invite flow                          | **Implemented**; accept → `/admin/aceptar-invitacion` (set password) → `/admin` |
+| Admin invite email HTML                    | Branded template in `emails/admin-invite.html` (paste into Supabase Auth) |
 | Analytics example families                  | Names containing the word **ejemplo** omitted from stats           |
 | Guest media uploads                         | **Implemented**                                                                |
 | WhatsApp scheduled send                     | Not implemented                                                                |
@@ -67,9 +69,18 @@ Reusable row selection (`src/lib/admin/selection.ts`, max `ADMIN_BATCH_MAX_IDS`)
 
 ## Completed: admin invite flow
 
-Admins can now be invited from the dashboard by email. The app calls Supabase Auth `inviteUserByEmail`, sends the invitation, and the invited admin completes the signup flow by accepting the email and choosing a password. The admin gate is based on signed-in Supabase auth rather than a hardcoded email allowlist.
+Admins can now be invited from the dashboard by email. The app calls Supabase Auth `inviteUserByEmail` with
+`redirectTo` `/admin/aceptar-invitacion`. The invitee clicks the email link, lands on that page to create a password,
+then continues to `/admin`. Returning admins still use `/admin/login`. The admin gate is based on signed-in Supabase
+auth rather than a hardcoded email allowlist.
 
-The **Invitar admin** menu shows unaccepted invitations from Supabase Auth. A pending invitation can be deleted, and submitting its email again replaces the previous unaccepted account before sending a fresh invite.
+The **Admins** menu lists **active** admins (Auth users with at least one sign-in) and **pending** invitations. A pending invitation can be deleted, and submitting its email again replaces the previous unaccepted account before sending a fresh invite. Active admins can be removed with **Borrar admin**, except the signed-in account (shown as “(tú)”).
+
+Pending detection uses `invited_at` + absence of `last_sign_in_at` (and admin role metadata), not only `email_confirmed_at === null`, so projects that auto-confirm invite emails still list pending admins. Active accounts are Auth users with `last_sign_in_at` (guests do not create Auth accounts). Listing pages through Auth Admin `listUsers` via `listAdminDirectory`. Helpers: `src/lib/auth/admin-invite.ts`, `src/lib/auth/list-pending-admin-invites.ts`, `src/lib/auth/admin-accept-invite.ts`. The accept-invite route is public in `src/proxy.ts` (like login) so the hash/session from Supabase can establish before a password exists.
+
+The invite email field + button stack until Tailwind `lg` (aligned with `btnSecondary` `w-full` → `lg:w-auto`), so phones and portrait tablets no longer crush the input into a near-invisible strip. Layout class: `src/lib/admin/admin-invite-form-layout.ts`.
+
+The hosted **Invite user** email uses the branded HTML in `emails/admin-invite.html` (Figma node `80:40`: cream page, olive header, pill CTA **Aceptar invitación**, dark footer). Paste it into Supabase Dashboard → Authentication → Email Templates → Invite user. Keep `{{ .ConfirmationURL }}` on the button. Subject: `Invitación al panel · Nychol & Miguel`. This is not Resend.
 
 ## Completed: pending companion count by attendance state
 

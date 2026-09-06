@@ -3,10 +3,16 @@
 import {useRouter} from "next/navigation";
 import {useState, useTransition} from "react";
 
-import {deletePendingAdminInviteAction} from "@/actions/admin/auth";
+import {deleteActiveAdminAction} from "@/actions/admin/auth";
 import {admin} from "@/components/admin/admin-ui";
 
-export function PendingAdminInviteDeleteButton({inviteId}: {inviteId: string}) {
+export function ActiveAdminDeleteButton({
+    adminId,
+    adminEmail,
+}: {
+    adminId: string;
+    adminEmail: string;
+}) {
     const router = useRouter();
     const [error, setError] = useState<string | null>(null);
     const [isPending, startTransition] = useTransition();
@@ -19,7 +25,7 @@ export function PendingAdminInviteDeleteButton({inviteId}: {inviteId: string}) {
                 disabled={isPending}
                 onClick={() => {
                     const confirmed = window.confirm(
-                        "¿Quieres borrar esta invitación pendiente? El usuario ya no podrá aceptar la invitación.",
+                        `¿Eliminar a ${adminEmail}? Dejará de poder entrar al panel.`,
                     );
                     if (!confirmed) {
                         return;
@@ -27,10 +33,10 @@ export function PendingAdminInviteDeleteButton({inviteId}: {inviteId: string}) {
 
                     setError(null);
                     const formData = new FormData();
-                    formData.set("userId", inviteId);
+                    formData.set("userId", adminId);
 
                     startTransition(async () => {
-                        const result = await deletePendingAdminInviteAction(formData);
+                        const result = await deleteActiveAdminAction(formData);
                         if (!result.ok) {
                             setError(result.error);
                             return;
@@ -39,7 +45,7 @@ export function PendingAdminInviteDeleteButton({inviteId}: {inviteId: string}) {
                     });
                 }}
             >
-                {isPending ? "Borrando…" : "Borrar invitación"}
+                {isPending ? "Borrando…" : "Borrar admin"}
             </button>
             {error ? (
                 <p className={admin.error} role="alert">

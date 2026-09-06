@@ -3,7 +3,7 @@
 **Status:** product direction — invitation UI, admin, RSVP + boarding, hardening complete for authorized slices — see
 `current-phase.md`
 
-**Last reviewed:** 2026-08-12
+**Last reviewed:** 2026-09-06
 
 Este documento define qué producto se quiere construir. No autoriza por sí mismo la implementación de todas sus
 secciones. El alcance actualmente permitido está únicamente en `docs/current-phase.md`, y las decisiones técnicas
@@ -1230,7 +1230,8 @@ Tabla de familias:
 - Editar.
 - Deshabilitar.
 
-Exportación CSV:
+Exportación de datos (implementada como Excel `.xlsx`, no CSV — `/api/admin/export`, `?kind=`
+attending|transport|dietary|contacts):
 
 - Familia.
 - Invitado.

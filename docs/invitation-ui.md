@@ -3,7 +3,7 @@
 **Status:** implemented against Figma “Invitación boda” + post-Figma polish (maps, music, cover crop, gifts, outfit
 inspiration, personalized cover greeting)
 
-**Last reviewed:** 2026-08-19
+**Last reviewed:** 2026-09-06
 
 This document describes the **public invitation presentation layer** and shared brand rules used by the admin UI. It
 does not authorize product features outside `docs/current-phase.md`.
@@ -85,6 +85,23 @@ asks for the real name **only if that person will attend**. Each listed guest ca
 
 Do not reintroduce generic marketing fonts (e.g. Inter-like default stacks) on invitation sections that already use
 Times.
+
+### Admin invite email (Supabase Auth)
+
+`emails/admin-invite.html` follows Figma **email-admin-invite** (`80:40`) so the invite matches the invitation:
+
+| Role                         | Value                                      |
+|------------------------------|--------------------------------------------|
+| Page / “Con cariño” cream    | `#F5F4EB`                                  |
+| Header / CTA / divider       | `#B1B363`                                  |
+| Olive kicker, CTA text, footer | `#454411`                                |
+| Headline                     | `#2E2D17`                                  |
+| Body / disclaimer            | `#7A7969`                                  |
+| Serif (names, headline)      | Vollkorn, Georgia / Times fallback         |
+| Sans (kicker, body, CTA)     | Sora, Arial / Helvetica fallback           |
+
+Table layout, inline CSS, pill CTA. Paste into Supabase Auth **Invite user**; keep `{{ .ConfirmationURL }}`.
+`inviteUserByEmail` redirects to `/admin/aceptar-invitacion` so the invitee can set a password before `/admin`.
 
 ### Layout principles
 

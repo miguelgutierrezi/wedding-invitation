@@ -7,7 +7,7 @@ export const adminCopy = {
         guests: "Invitados",
         families: "Familias",
         photos: "Fotos",
-        admins: "Invitar admin",
+        admins: "Admins",
         newFamily: "Nueva familia",
         exportList: "Descargar lista",
         signOut: "Salir",

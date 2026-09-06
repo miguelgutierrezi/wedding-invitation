@@ -2,8 +2,18 @@
 
 import {redirect} from "next/navigation";
 
+import {ADMIN_ACCEPT_INVITE_PATH} from "@/lib/auth/admin-accept-invite";
+import {
+    canDeleteActiveAdmin,
+    isActiveAdminAccount,
+    isPendingAdminInvite,
+} from "@/lib/auth/admin-invite";
+import {
+    listAllAuthUsers,
+    partitionAdminDirectory,
+    toAdminInviteUser,
+} from "@/lib/auth/list-pending-admin-invites";
 import {requireAdmin} from "@/lib/auth/require-admin";
-import {isPendingAdminInvite} from "@/lib/auth/admin-invite";
 import {fingerprintPublicId} from "@/lib/logging/fingerprint";
 import {serverLog} from "@/lib/logging/server-log";
 import {buildInvitationUrl, slugFromDisplayName,} from "@/lib/security/generate-invitation-slug";
@@ -27,35 +37,48 @@ export type PendingAdminInvite = {
     email: string;
 };
 
-export async function listPendingAdminInvites(): Promise<PendingAdminInvite[]> {
-    await requireAdmin();
+export type ActiveAdminAccount = {
+    id: string;
+    email: string;
+    lastSignInAt: string | null;
+};
 
-    const supabase = createAdminClient();
-    const {data, error} = await supabase.auth.admin.listUsers();
+export type AdminDirectory = {
+    currentAdminId: string;
+    active: ActiveAdminAccount[];
+    pending: PendingAdminInvite[];
+};
+
+export async function listAdminDirectory(): Promise<AdminDirectory> {
+    const currentAdmin = await requireAdmin();
+
+    const {users, error} = await listAllAuthUsers();
 
     if (error) {
         serverLog({
             level: "error",
-            event: "admin_invites_list_failed",
+            event: "admin_directory_list_failed",
             errorCode: error.message,
         });
-        throw new Error("No se pudieron cargar las invitaciones pendientes.");
+        throw new Error("No se pudieron cargar los administradores.");
     }
 
-    return (data?.users ?? [])
-        .filter((user) =>
-            isPendingAdminInvite({
-                email: user.email,
-                emailConfirmedAt: user.email_confirmed_at,
-                invitedAt: user.invited_at,
-                userMetadata: user.user_metadata,
-            }),
-        )
-        .map((user) => ({
-            id: user.id,
-            email: user.email!,
-        }))
-        .sort((a, b) => a.email.localeCompare(b.email));
+    const {active, pending} = partitionAdminDirectory(users);
+    return {
+        currentAdminId: currentAdmin.id,
+        active: active.map((entry) => ({
+            id: entry.id,
+            email: entry.email,
+            lastSignInAt: entry.lastSignInAt ?? null,
+        })),
+        pending,
+    };
+}
+
+/** @deprecated Prefer `listAdminDirectory().pending` — kept for existing callers/tests. */
+export async function listPendingAdminInvites(): Promise<PendingAdminInvite[]> {
+    const directory = await listAdminDirectory();
+    return directory.pending;
 }
 
 export async function signInAdminAction(
@@ -138,7 +161,7 @@ export async function inviteAdminAction(
 
     const appUrl = rawAppUrl.replace(/\/$/, "");
     const supabase = createAdminClient();
-    const {data: usersData, error: usersError} = await supabase.auth.admin.listUsers();
+    const {users, error: usersError} = await listAllAuthUsers(supabase);
 
     if (usersError) {
         serverLog({
@@ -150,15 +173,10 @@ export async function inviteAdminAction(
     }
 
     const normalizedEmail = email.toLocaleLowerCase();
-    const previousInvite = (usersData?.users ?? []).find(
+    const previousInvite = users.find(
         (user) =>
             user.email?.toLocaleLowerCase() === normalizedEmail &&
-            isPendingAdminInvite({
-                email: user.email,
-                emailConfirmedAt: user.email_confirmed_at,
-                invitedAt: user.invited_at,
-                userMetadata: user.user_metadata,
-            }),
+            isPendingAdminInvite(toAdminInviteUser(user)),
     );
 
     if (previousInvite) {
@@ -175,10 +193,13 @@ export async function inviteAdminAction(
         }
     }
 
-    const {error} = await supabase.auth.admin.inviteUserByEmail(email, {
-        redirectTo: `${appUrl}/admin/login`,
-        data: {role: "admin"},
-    });
+    const {data: invited, error} = await supabase.auth.admin.inviteUserByEmail(
+        email,
+        {
+            redirectTo: `${appUrl}${ADMIN_ACCEPT_INVITE_PATH}`,
+            data: {role: "admin"},
+        },
+    );
 
     if (error) {
         serverLog({
@@ -192,6 +213,29 @@ export async function inviteAdminAction(
         };
     }
 
+    if (invited.user?.id) {
+        const {error: roleError} = await supabase.auth.admin.updateUserById(
+            invited.user.id,
+            {
+                app_metadata: {
+                    ...invited.user.app_metadata,
+                    role: "admin",
+                },
+                user_metadata: {
+                    ...invited.user.user_metadata,
+                    role: "admin",
+                },
+            },
+        );
+        if (roleError) {
+            serverLog({
+                level: "warn",
+                event: "admin_invite_role_metadata_failed",
+                errorCode: roleError.message,
+            });
+        }
+    }
+
     serverLog({
         level: "info",
         event: "admin_invite_sent",
@@ -199,7 +243,7 @@ export async function inviteAdminAction(
 
     return {
         ok: true,
-        message: `Invitación enviada a ${email}. Revisa tu correo para aceptar y crear la contraseña.`,
+        message: `Invitación enviada a ${email}. Al aceptar el correo podrá crear su contraseña y entrar al panel.`,
     };
 }
 
@@ -214,7 +258,7 @@ export async function deletePendingAdminInviteAction(
     }
 
     const supabase = createAdminClient();
-    const {data, error: listError} = await supabase.auth.admin.listUsers();
+    const {users, error: listError} = await listAllAuthUsers(supabase);
 
     if (listError) {
         serverLog({
@@ -225,15 +269,9 @@ export async function deletePendingAdminInviteAction(
         return {ok: false, error: "No se pudo validar la invitación pendiente."};
     }
 
-    const invite = (data?.users ?? []).find(
+    const invite = users.find(
         (user) =>
-            user.id === userId &&
-            isPendingAdminInvite({
-                email: user.email,
-                emailConfirmedAt: user.email_confirmed_at,
-                invitedAt: user.invited_at,
-                userMetadata: user.user_metadata,
-            }),
+            user.id === userId && isPendingAdminInvite(toAdminInviteUser(user)),
     );
 
     if (!invite) {
@@ -273,6 +311,86 @@ export async function deletePendingAdminInviteAction(
                 error instanceof Error
                     ? error.message
                     : "No se pudo borrar la invitación pendiente.",
+        };
+    }
+}
+
+export async function deleteActiveAdminAction(
+    formData: FormData,
+): Promise<AdminActionResult> {
+    const currentAdmin = await requireAdmin();
+
+    const userId = String(formData.get("userId") ?? "").trim();
+    if (!userId) {
+        return {ok: false, error: "No se indicó el administrador a eliminar."};
+    }
+
+    if (!canDeleteActiveAdmin(userId, currentAdmin.id)) {
+        return {
+            ok: false,
+            error: "No puedes eliminar tu propia cuenta mientras estás en sesión.",
+        };
+    }
+
+    const supabase = createAdminClient();
+    const {users, error: listError} = await listAllAuthUsers(supabase);
+
+    if (listError) {
+        serverLog({
+            level: "error",
+            event: "admin_active_delete_lookup_failed",
+            errorCode: listError.message,
+        });
+        return {ok: false, error: "No se pudo validar el administrador."};
+    }
+
+    const account = users.find(
+        (user) =>
+            user.id === userId && isActiveAdminAccount(toAdminInviteUser(user)),
+    );
+
+    if (!account) {
+        return {
+            ok: false,
+            error: "Solo se pueden eliminar administradores activos.",
+        };
+    }
+
+    try {
+        const {error} = await supabase.auth.admin.deleteUser(userId);
+        if (error) {
+            serverLog({
+                level: "error",
+                event: "admin_active_delete_failed",
+                errorCode: error.message,
+            });
+            return {
+                ok: false,
+                error: "No se pudo borrar el administrador.",
+            };
+        }
+
+        serverLog({
+            level: "info",
+            event: "admin_active_deleted",
+        });
+
+        return {
+            ok: true,
+            message: `Administrador eliminado: ${account.email}.`,
+        };
+    } catch (error) {
+        serverLog({
+            level: "error",
+            event: "admin_active_delete_failed",
+            errorName: error instanceof Error ? error.name : "UnknownError",
+        });
+        return {
+            ok: false,
+            error:
+                error instanceof Error
+                    ? error.message
+                    : "No se pudo borrar el administrador.",
         };
     }
 }

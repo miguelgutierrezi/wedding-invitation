@@ -22,11 +22,11 @@ la invitación.
 | Admin `/admin`             | Login, resumen (cierre + actividad de operación), estadísticas, invitados, familias (detalle con historial), fotos, Excel. En móvil/tablet vertical: menú hamburguesa, flecha atrás en ficha/alta, **+** nueva familia, listados en tarjetas |
 | Visual admin               | Misma paleta/tipografía que la invitación (`admin-ui.ts`)                                                                                              |
 | Auth edge                  | Next.js 16 `src/proxy.ts` (gate `/admin` + `/api/admin`)                                                                                               |
-| Automated tests            | Vitest (`pnpm test`): RSVP, transport, slugs, cover greeting, TZ, guest media                                                                          |
+| Automated tests            | Vitest (`pnpm test`): RSVP, transport, slugs, cover greeting, TZ, guest media, admin (filtros, chrome, batch, invite, cierre RSVP, WhatsApp, export)   |
 | Admin family create/update | Transactional RPCs (+ géneros) + structured admin logs                                                                                                 |
 | Rate limit / logs          | RSVP + invitation lookup + media authorize; JSON logs without PII                                                                                      |
 | Guest media uploads        | `/i/[slug]/fotos`, `/fotos?code=`, Storage privado, `/admin/photos`                                                                                    |
-| Admin invitation emails    | Implementado con Supabase Auth (`inviteUserByEmail`)                                                                                                    |
+| Admin invitation emails    | Implementado con Supabase Auth (`inviteUserByEmail`) + HTML en [`emails/admin-invite.html`](emails/admin-invite.html) |
 
 El alcance autorizado se define solo en [`docs/current-phase.md`](docs/current-phase.md). Checklist operativo: [
 `docs/go-live-checklist.md`](docs/go-live-checklist.md). Storage de invitados: [
@@ -39,11 +39,15 @@ El alcance autorizado se define solo en [`docs/current-phase.md`](docs/current-p
 
 ### Usuario administrador (local o cloud)
 
-1. En el panel de admin, usa **Invitar admin** e ingresa el correo del nuevo administrador.
+1. En el panel de admin, usa **Admins** e ingresa el correo del nuevo administrador.
 2. Supabase Auth envía la invitación por correo; la persona acepta y crea su contraseña.
 3. Luego puede iniciar sesión en `/admin/login` en local o en tu dominio.
 
-Los emails extra con `ADMIN_EMAIL` / `ADMIN_EMAILS` siguen siendo opcionales, pero no son el mecanismo de acceso primario; la autorización real está en la sesión autenticada de Supabase.
+El acceso a `/admin` hoy es **cualquier cuenta autenticada de Supabase Auth** (`src/lib/auth/require-admin.ts`);
+no hay allowlist de correos activa y `ADMIN_EMAIL` / `ADMIN_EMAILS` no se leen en ningún sitio. Para restringir,
+añade un chequeo en `requireAdmin`.
+
+La plantilla HTML del correo de invitación está en [`emails/admin-invite.html`](emails/admin-invite.html) (Figma, misma paleta que la invitación). Pégala en el proyecto de Supabase: **Authentication → Email Templates → Invite user**. Asunto sugerido: `Invitación al panel · Nychol & Miguel`. No cambies `{{ .ConfirmationURL }}` en el botón.
 
 ### Assets de invitación
 
@@ -165,16 +169,16 @@ NEXT_PUBLIC_APP_URL=
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
-GUEST_MEDIA_STORAGE_QUOTA_BYTES=
-RESEND_API_KEY=
-ADMIN_NOTIFICATION_EMAIL=
-ADMIN_EMAIL=
-ADMIN_EMAILS=
+GUEST_MEDIA_STORAGE_QUOTA_BYTES=   # opcional
+# TZ=America/Bogota                # opcional
 ```
 
 `SUPABASE_SERVICE_ROLE_KEY` es exclusivamente para código de servidor. `GUEST_MEDIA_STORAGE_QUOTA_BYTES` es el
-presupuesto blando para alertas del panel de fotos (no el límite duro de Supabase). Resend está previsto para una fase
-futura; la aplicación debe funcionar sin correo en desarrollo.
+presupuesto blando para alertas del panel de fotos (no el límite duro de Supabase).
+
+`RESEND_API_KEY` / `ADMIN_NOTIFICATION_EMAIL` están reservadas para una fase futura de correo y **no están
+cableadas** todavía (el onboarding de admins usa `inviteUserByEmail` de Supabase Auth). `ADMIN_EMAIL` /
+`ADMIN_EMAILS` ya no se usan: el acceso a `/admin` es cualquier cuenta autenticada de Supabase.
 
 ## Comandos
 

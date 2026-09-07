@@ -23,8 +23,11 @@ import {
     familiesSubmittedColumnLabel,
     familiesSummaryLine,
     familiesUpdatedColumnLabel,
+    familyCardBadge,
     familyCardBusLabel,
+    familyCardConfirmedCount,
     familyCardConfirmedLabel,
+    familyCardMobileMeta,
     familyCardStatusDetail,
     familyInvitationPath,
     formatFamiliesDeadlineChip,
@@ -83,6 +86,7 @@ describe("admin families Figma helpers", () => {
         expect(adminGuests.tableRowSelected).toContain("bg-accent/10");
         expect(adminGuests.pageNext).toContain("bg-admin-olive");
         expect(adminGuests.batchBar).toContain("bg-admin-olive");
+        expect(adminGuests.batchAnchor).toContain("5.5rem");
         expect(adminGuests.familyLink).toContain("underline");
         expect(adminGuests.checkbox).toContain("checked:bg-admin-olive");
         expect(adminFamilies.tag).toContain("bg-admin-wash");
@@ -90,7 +94,7 @@ describe("admin families Figma helpers", () => {
         expect(adminCopy.familiesList.bannerTitle).toBe("Gestión de Familias");
         expect(adminCopy.familiesList.viewFamily).toBe("Ver");
         expect(adminCopy.familiesList.viewFamilyCard).toBe("Ver familia");
-        expect(adminCopy.familiesList.selectVisible(53)).toBe("Seleccionar los 53");
+        expect(adminCopy.familiesList.selectVisible(53)).toBe("Seleccionar las 53");
         expect(adminCopy.familiesList.selectVisibleCompact(53)).toBe(
             "Seleccionar 53",
         );
@@ -174,7 +178,7 @@ describe("admin families Figma helpers", () => {
             "Ordenar por: Familia ↑",
         );
         expect(adminCopy.familiesList.selectVisible(53)).toBe(
-            "Seleccionar los 53",
+            "Seleccionar las 53",
         );
         expect(adminCopy.batch.copyLinks).toBe("Copiar enlaces");
         expect(adminCopy.batch.copyLinks).not.toBe("Crear selección");
@@ -226,5 +230,69 @@ describe("admin families Figma helpers", () => {
             sort: "guestCount",
             dir: "desc",
         });
+    });
+
+    it("maps phone Figma 126:29 badges and meta without guest roles or Bus", () => {
+        expect(
+            familyCardBadge({
+                status: "responded",
+                isEnabled: true,
+                willAttend: true,
+            }),
+        ).toEqual({label: "Confirmó", tone: "confirmed"});
+        expect(
+            familyCardBadge({
+                status: "responded",
+                isEnabled: true,
+                willAttend: false,
+            }),
+        ).toEqual({label: "No asiste", tone: "declined"});
+        expect(
+            familyCardBadge({
+                status: "pending",
+                isEnabled: true,
+                willAttend: null,
+            }),
+        ).toEqual({label: "Sin abrir", tone: "unopened"});
+        expect(
+            familyCardBadge({
+                status: "disabled",
+                isEnabled: false,
+                willAttend: null,
+            }),
+        ).toEqual({label: "Desactivada", tone: "disabled"});
+        expect(familyCardConfirmedCount(null)).toBe("0");
+        expect(familyCardConfirmedCount(4)).toBe("4");
+        expect(
+            familyCardMobileMeta({
+                status: "responded",
+                isEnabled: true,
+                lastOpenedAt: "2026-09-06T15:49:00.000Z",
+                hasPendingName: false,
+                usesBus: true,
+                hasDietary: true,
+                maximumGuests: 4,
+                confirmedGuestCount: 4,
+            }).map((row) => row.label),
+        ).toEqual(["Cupos:", "Confirmados:"]);
+        expect(
+            familyCardMobileMeta({
+                status: "pending",
+                isEnabled: true,
+                lastOpenedAt: "2026-09-06T15:49:00.000Z",
+                hasPendingName: true,
+                usesBus: false,
+                hasDietary: false,
+                maximumGuests: 1,
+                confirmedGuestCount: null,
+            }),
+        ).toEqual([
+            {label: "Estado:", value: "Abrió, Nombre pendiente"},
+            {label: "Cupos:", value: "1"},
+            {label: "Confirmados:", value: "0"},
+        ]);
+        expect(adminFamilies.cardBadgeUnopened).toContain("bg-[#e4e3da]");
+        expect(adminCopy.guest.primaryContact).toBe("contacto principal");
+        expect(adminCopy.familiesList.cardDeclined).toBe("No asiste");
     });
 });

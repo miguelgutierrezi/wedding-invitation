@@ -3,19 +3,27 @@
 import {useEffect, useState} from "react";
 import QRCode from "qrcode";
 
-import {admin} from "@/components/admin/admin-ui";
+import {admin, adminPhotos} from "@/components/admin/admin-ui";
+import {adminCopy} from "@/lib/admin/admin-copy";
 
 type AdminMediaQrDownloadProps = {
     url: string;
+    layout?: "legacy" | "desktop" | "phone";
 };
 
 /**
  * Renders a print-ready QR from the event fotos URL and offers PNG download.
  * Client-only — the plaintext URL exists only after admin rotates the token.
  */
-export function AdminMediaQrDownload({url}: AdminMediaQrDownloadProps) {
+export function AdminMediaQrDownload({
+    url,
+    layout = "legacy",
+}: AdminMediaQrDownloadProps) {
     const [dataUrl, setDataUrl] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const desktop = layout === "desktop";
+    const phone = layout === "phone";
+    const copy = adminCopy.media;
 
     useEffect(() => {
         let cancelled = false;
@@ -59,12 +67,70 @@ export function AdminMediaQrDownload({url}: AdminMediaQrDownloadProps) {
     }
 
     if (error) {
-        return <p className={`mt-4 ${admin.error}`}>{error}</p>;
+        return (
+            <p className={desktop || phone ? adminPhotos.qrBody : `mt-4 ${admin.error}`}>
+                {error}
+            </p>
+        );
     }
 
     if (!dataUrl) {
         return (
-            <p className={`mt-4 ${admin.muted}`}>Generando código QR…</p>
+            <p className={desktop || phone ? adminPhotos.qrBody : `mt-4 ${admin.muted}`}>
+                {copy.qrGenerating}
+            </p>
+        );
+    }
+
+    if (phone) {
+        return (
+            <div className={adminPhotos.mobileQrSection}>
+                <div className={adminPhotos.mobileQrFrame}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                        src={dataUrl}
+                        alt="Código QR para compartir fotos del evento"
+                        width={160}
+                        height={160}
+                        className={adminPhotos.qrImage}
+                    />
+                </div>
+                <p className={adminPhotos.mobileQrHint}>{copy.qrDownloadHint}</p>
+                <button
+                    type="button"
+                    className={`${adminPhotos.btnPrimary} w-full`}
+                    onClick={downloadPng}
+                >
+                    {copy.qrDownload}
+                </button>
+            </div>
+        );
+    }
+
+    if (desktop) {
+        return (
+            <div className={adminPhotos.qrRow}>
+                <div className={adminPhotos.qrFrame}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                        src={dataUrl}
+                        alt="Código QR para compartir fotos del evento"
+                        width={180}
+                        height={180}
+                        className={adminPhotos.qrImage}
+                    />
+                </div>
+                <div className="flex min-w-0 flex-1 flex-col gap-3">
+                    <p className={adminPhotos.qrBody}>{copy.qrDownloadHint}</p>
+                    <button
+                        type="button"
+                        className={`${adminPhotos.btnPrimary} self-start`}
+                        onClick={downloadPng}
+                    >
+                        {copy.qrDownload}
+                    </button>
+                </div>
+            </div>
         );
     }
 
@@ -79,11 +145,9 @@ export function AdminMediaQrDownload({url}: AdminMediaQrDownloadProps) {
                 className="rounded-2xl border-2 border-cover-cta-fg/15 bg-cream-figma"
             />
             <div className="flex flex-col gap-3">
-                <p className={admin.muted}>
-                    Escaneable e imprimible. Descarga el PNG a alta resolución (512×512).
-                </p>
+                <p className={admin.muted}>{copy.qrDownloadHint}</p>
                 <button type="button" className={admin.btnPrimary} onClick={downloadPng}>
-                    Descargar QR (PNG)
+                    {copy.qrDownload}
                 </button>
             </div>
         </div>

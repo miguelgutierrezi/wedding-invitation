@@ -7,6 +7,7 @@
  * 3. *FilterChips — active-filter labels
  * 4. buildAdmin*FilterQuery — typed filters → query string
  * 5. adminListHref + useAdminListFilters — URL sync for back/forward
+ *    (`router.replace` is debounced; see `ADMIN_LIST_FILTER_URL_DEBOUNCE_MS`)
  *
  * Named dashboard/analytics URLs: `src/lib/admin/admin-filter-links.ts`.
  * Sort + pagination: `src/lib/admin/list-view.ts`.
@@ -416,6 +417,22 @@ export function buildAdminGuestsFilterQuery(filters: AdminGuestsFilters): string
 /** Href for an admin list with optional filter query (no leading `?` in `query`). */
 export function adminListHref(pathname: string, query: string): string {
     return query ? `${pathname}?${query}` : pathname;
+}
+
+/**
+ * Delay before writing list filters to the URL. Typing updates React state
+ * immediately so the in-memory list stays snappy; `router.replace` is deferred
+ * so each keystroke does not refetch the Server Component page.
+ */
+export const ADMIN_LIST_FILTER_URL_DEBOUNCE_MS = 300;
+
+/**
+ * After a debounced `router.replace`, the Server Component re-renders with the
+ * URL we just wrote. That echo must not overwrite in-memory filters (the user
+ * may have typed further). Back/forward still applies the URL.
+ */
+export function shouldApplyAdminListUrlFilters(skipNextUrlSync: boolean): boolean {
+    return !skipNextUrlSync;
 }
 
 /**

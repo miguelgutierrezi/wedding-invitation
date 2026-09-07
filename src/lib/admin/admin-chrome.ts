@@ -4,15 +4,13 @@
  * - Shared Figma navbar on every admin page that has chrome: white header,
  *   hamburger until `lg` (left cream drawer `94:591`), inline pills from
  *   tablet landscape.
- * - Floating “+” is phone-only (hidden from iPad 11" / 834px up).
+ * - Floating “+” (nueva familia) is shown on every AdminShell viewport.
+ *   Hidden only on `/admin/families/new`.
  * Layout itself is Tailwind in `AdminChrome`; these helpers keep path
  * behavior testable.
  */
 
 import {adminCopy} from "@/lib/admin/admin-copy";
-
-/** iPad 11" portrait CSS width. Hide the new-family FAB from this width up. */
-export const ADMIN_FAB_HIDE_MIN_PX = 834;
 
 /** Inline olive nav pills from tablet landscape (`lg`) on all chrome pages. */
 export const ADMIN_DESKTOP_NAV_MIN_PX = 1024;
@@ -29,6 +27,10 @@ export function isAdminNavActive(pathname: string, href: string): boolean {
     }
     return pathname === href || pathname.startsWith(`${href}/`);
 }
+
+/** Extra main padding so list content and pagination clear the shared + FAB. */
+export const ADMIN_SHELL_FAB_PADDING =
+    "pb-[max(6.5rem,calc(env(safe-area-inset-bottom)+5.5rem))]";
 
 export function showAdminNewFamilyFab(pathname: string): boolean {
     return pathname !== "/admin/families/new";

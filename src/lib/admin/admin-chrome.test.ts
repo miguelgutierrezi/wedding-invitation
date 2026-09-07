@@ -1,7 +1,10 @@
+import {readFileSync} from "node:fs";
+import {resolve} from "node:path";
+
 import {describe, expect, it} from "vitest";
 
 import {adminResumen} from "@/components/admin/admin-ui";
-import {isAdminNavActive, ADMIN_DESKTOP_NAV_MIN_PX, ADMIN_FAB_HIDE_MIN_PX, ADMIN_RESUMEN_LANDSCAPE_MIN_PX, ADMIN_RESUMEN_WIDE_MIN_PX, RESUMEN_DRAWER_NAV, adminDrawerDisplayName, resumenDrawerBadgeCount, showAdminBackToFamilies, showAdminNewFamilyFab,} from "@/lib/admin/admin-chrome";
+import {isAdminNavActive, ADMIN_DESKTOP_NAV_MIN_PX, ADMIN_RESUMEN_LANDSCAPE_MIN_PX, ADMIN_RESUMEN_WIDE_MIN_PX, ADMIN_SHELL_FAB_PADDING, RESUMEN_DRAWER_NAV, adminDrawerDisplayName, resumenDrawerBadgeCount, showAdminBackToFamilies, showAdminNewFamilyFab,} from "@/lib/admin/admin-chrome";
 
 describe("isAdminNavActive", () => {
     it("marks only the dashboard for /admin", () => {
@@ -27,10 +30,31 @@ describe("isAdminNavActive", () => {
 });
 
 describe("shared Figma admin chrome", () => {
-    it("keeps the FAB as a phone-only control (iPad 11\" and up hide it)", () => {
-        expect(ADMIN_FAB_HIDE_MIN_PX).toBe(834);
+    it("shows the new-family FAB on every viewport except the create page", () => {
+        expect(showAdminNewFamilyFab("/admin")).toBe(true);
         expect(showAdminNewFamilyFab("/admin/families")).toBe(true);
+        expect(showAdminNewFamilyFab("/admin/guests")).toBe(true);
+        expect(showAdminNewFamilyFab("/admin/photos")).toBe(true);
         expect(showAdminNewFamilyFab("/admin/families/new")).toBe(false);
+        expect(adminResumen.newFamilyFab).toContain("admin-new-family-fab");
+        expect(adminResumen.newFamilyFabLayer).toContain("admin-new-family-fab-layer");
+        expect(adminResumen.newFamilyFab).not.toContain("hidden");
+        expect(adminResumen.newFamilyFabLayer).not.toContain("hidden");
+        expect(ADMIN_SHELL_FAB_PADDING).toContain("6.5rem");
+        expect(ADMIN_SHELL_FAB_PADDING).not.toContain("min-[834px]");
+    });
+
+    it("pins the new-family FAB to the viewport, not the end of a flex body", () => {
+        const css = readFileSync(resolve(process.cwd(), "src/app/globals.css"), "utf8");
+        expect(css).toContain(".admin-new-family-fab-layer");
+        expect(css).toMatch(/\.admin-new-family-fab-layer\s*\{[^}]*inset:\s*0/);
+        const buttonBlock = css.slice(
+            css.indexOf(".admin-new-family-fab {"),
+            css.indexOf(".torn-edge {"),
+        );
+        expect(buttonBlock).not.toContain("top: auto");
+        expect(buttonBlock).not.toContain("left: auto");
+        expect(buttonBlock).toContain("position: absolute");
     });
 
     it("uses the Figma white chrome as the standard admin navbar from lg", () => {
@@ -45,7 +69,7 @@ describe("shared Figma admin chrome", () => {
 
     it("uses Figma Resumen portrait density from iPad 11\" (834); mobile is below that", () => {
         expect(ADMIN_RESUMEN_WIDE_MIN_PX).toBe(834);
-        expect(ADMIN_RESUMEN_WIDE_MIN_PX).toBe(ADMIN_FAB_HIDE_MIN_PX);
+        expect(ADMIN_RESUMEN_WIDE_MIN_PX).toBe(834);
     });
 
     it("uses inline nav from tablet landscape (lg / 1024) on every chrome page", () => {

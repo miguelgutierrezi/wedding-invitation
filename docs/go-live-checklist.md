@@ -29,8 +29,8 @@ Operational checklist before sharing invitation links widely. Does not authorize
 - [ ] Dashboard metric cards deep-link to pre-filtered lists (pending families, guests with bus, etc.).
 - [ ] Dashboard shows action queue + RSVP close checklist; **Descargar lista** from Resumen.
 - [ ] Family detail: copy invitation URL and WhatsApp reminder; confirm before disable / regenerate.
-- [ ] Phone: hamburger + floating **+**. iPad 11" portrait: hamburger, **no** floating + (use drawer **Nueva
-  familia**). From `lg` (1024px): inline olive nav on every admin page with chrome. Lists are cards below `lg`.
+- [ ] Phone and iPad 11" portrait: hamburger + floating **+**. From `lg` (1024px): inline olive nav on every admin page
+  with chrome; the **+** FAB stays. Lists are cards below `lg`. Drawer still has **Nueva familia**.
 - [ ] Nueva familia **and family detail**: back arrow returns to `/admin/families`; no floating **+** on the create page.
 - [ ] Family detail shows actividad reciente after opening the invitation / submitting RSVP.
 - [ ] Batch: select families → copy links / download Excel / disable with confirm; guests copy phones; photos approve selected.

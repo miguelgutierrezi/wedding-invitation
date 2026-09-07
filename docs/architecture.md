@@ -68,15 +68,15 @@ Use:
 /admin/families        Figma Familias `126:29` mobile + `123:268` from 834px + `117:29` from `lg` + `109:645` from `xl`
 /admin/families/new    create family + invitation link
 /admin/families/[id]   family detail / edit
-/admin/photos          guest media moderation + QR URL
+/admin/photos          Figma Fotos `128:528` mobile + `128:364` portrait from 834px + `128:201` from `lg` + `128:34` from `xl` (QR rotate + moderation)
 /admin/admins          invite admins (Supabase Auth) + pending invitations
 /api/admin/export      Excel export (`?kind=` attending|transport|dietary|contacts)
 /api/...               HTTP endpoints only when appropriate
 ```
 
 Public invitation presentation details live in `docs/invitation-ui.md`. Admin presentation tokens live in
-`src/components/admin/admin-ui.ts` (`admin` + `adminResumen` for `/admin`). Do not treat product roadmap sections
-as authorization to implement unfinished work.
+`src/components/admin/admin-ui.ts` (`admin` + `adminResumen` + list tokens including `adminPhotos` for `/admin/photos`).
+Do not treat product roadmap sections as authorization to implement unfinished work.
 
 ## Configuration
 
@@ -119,15 +119,18 @@ confirmar”). Outfit inspiration routes are implemented under `/inspiracion/*`.
 - Admin chrome uses the Figma white navbar on every `AdminShell` page (`adminResumen` in `admin-ui.ts`): couple names +
   Admin badge, olive hamburger until `lg` (left cream drawer `94:591`), inline olive pills + Salir from tablet
   landscape. Login and accept-invite have no chrome. Page titles and the families back chevron live in the main column.
-  Floating **+** is phone-only (hidden from 834px / iPad 11" up; olive); the drawer has **Nueva familia**. Closed
+  Floating **+** (nueva familia) is shown on every `AdminShell` viewport (olive; hidden only on `/admin/families/new`); it is portaled in a full-viewport overlay (`.admin-new-family-fab-layer`) so a flex `body` cannot park it below a long desktop table. The drawer also has **Nueva familia**. Closed
   drawer overlay does not capture taps. Cards below `lg`; tables from `lg`. Path rules live in
   `src/lib/admin/admin-chrome.ts`.
 - Admin family/guest lists filter in memory, show active-filter chips, sort by column, and paginate at 25 rows. Query
-  string (`q`, filters, `sort`, `dir`, `page`) is updated with Next `router.replace` (`useAdminListFilters`) so browser
-  back/forward restores the list filters. The page-heading back chevron (and create-family “Volver al listado”) restores the
-  last Familias list URL from `sessionStorage` (`admin-list-return.ts`), because a bare `/admin/families` Link drops
-  query filters. SQL push-down can wait until a
-  commercial install outgrows a few hundred guests.
+  string (`q`, filters, `sort`, `dir`, `page`) is updated with Next `router.replace` (`useAdminListFilters`, debounced
+  300 ms so typing does not refetch the Server Component on every key) so browser back/forward restores the list
+  filters. Local filter state is the source of truth while typing; the URL echo of our own `replace` must not overwrite
+  that draft. Search inputs reserve left padding for the magnifying glass (`adminGuests.searchBox` / `searchIcon`; do not
+  use `xl:px-*` on the input or the placeholder sits under the icon). The page-heading back chevron (and create-family
+  “Volver al listado”) restores the last Familias list URL from `sessionStorage` (`admin-list-return.ts`), because a
+  bare `/admin/families` Link drops query filters. SQL push-down can wait until a commercial install outgrows a few
+  hundred guests.
 - **Admin filter convention:** `src/lib/validation/admin-filters.ts` owns parse (search params → typed filters), match
   (in-memory predicate), chips (active-filter labels), and `buildAdmin*FilterQuery` (typed filters → query string).
   Presets for dashboard/analytics live in `src/lib/admin/admin-filter-links.ts`. Sort/pagination helpers live in
@@ -185,6 +188,7 @@ Current coverage targets:
 - Event timezone helpers.
 - Outfit inspiration route helpers.
 - Guest media MIME/size policy, object keys, status transitions, queue retry helpers, QR window / PNG.
+- Admin photos Figma helpers (KPI cards, byte labels, origin line, status badge tones, landscape density).
 - Admin invite flow: `inviteAdminAction` / pending-invite helpers, invite email template markers, invite-form
   layout class.
 - RSVP close checklist and WhatsApp reminder template helpers.

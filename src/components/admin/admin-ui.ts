@@ -109,6 +109,9 @@ export const adminResumen = {
         "hidden min-w-0 flex-1 items-center justify-center gap-0.5 overflow-x-auto lg:flex xl:gap-1",
     menuButton:
         "inline-flex size-11 shrink-0 items-center justify-center rounded-full text-admin-olive hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none lg:hidden",
+    newFamilyFabLayer: "admin-new-family-fab-layer",
+    newFamilyFab:
+        "admin-new-family-fab pointer-events-auto inline-flex size-14 items-center justify-center rounded-full bg-admin-olive font-[family-name:var(--font-timer)] text-3xl leading-none text-white shadow-[0_4px_16px_rgba(0,0,0,0.25)] transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:outline-none active:scale-[0.98]",
     banner:
         "flex flex-col gap-4 bg-[linear-gradient(34deg,var(--admin-olive)_25%,var(--admin-olive-end)_75%)] px-[18px] py-[18px] min-[834px]:gap-5 min-[834px]:bg-[linear-gradient(13.5deg,var(--admin-olive)_25%,var(--admin-olive-end)_75%)] min-[834px]:px-8 min-[834px]:py-7 lg:flex-row lg:items-center lg:justify-between lg:bg-[linear-gradient(8.5deg,var(--admin-olive)_25%,var(--admin-olive-end)_75%)] xl:gap-6 xl:bg-[linear-gradient(6.7deg,var(--admin-olive)_25%,var(--admin-olive-end)_75%)] xl:py-10 2xl:px-12",
     overline:
@@ -238,8 +241,15 @@ export const adminGuests = {
         "font-[family-name:var(--font-body)] text-[11px] font-semibold tracking-wide text-admin-muted uppercase xl:text-xs",
     filterTrigger:
         "inline-flex min-h-11 w-full items-center justify-between gap-3 rounded-lg border border-admin-border bg-white px-3 py-2 font-[family-name:var(--font-body)] text-[13px] text-admin-ink outline-none transition-colors hover:border-admin-olive/40 focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 xl:rounded-[10px] xl:px-3.5 xl:py-2.5",
+    /**
+     * Search input with a leading magnifying glass. Do not use `px-*` here:
+     * Tailwind `xl:px-*` would override `pl-9` and the icon would sit on the
+     * placeholder (landscape + desktop).
+     */
     searchBox:
-        "flex min-h-11 w-full items-center gap-2 rounded-lg border border-admin-border bg-white px-3 py-2 font-[family-name:var(--font-body)] text-[13px] text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 xl:rounded-[10px] xl:px-3.5 xl:py-2.5",
+        "min-h-11 w-full min-w-0 appearance-none rounded-lg border border-admin-border bg-white py-2 pr-3 pl-9 font-[family-name:var(--font-body)] text-[13px] text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 xl:rounded-[10px] xl:py-2.5 xl:pr-3.5 xl:pl-10 [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none",
+    searchIcon:
+        "pointer-events-none absolute top-1/2 left-3 size-3.5 max-w-none -translate-y-1/2 text-admin-muted xl:left-3.5",
     subTab:
         "inline-flex min-h-11 items-center rounded-full border border-admin-border bg-white px-[18px] py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-ink transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none xl:px-5",
     subTabActive:
@@ -339,7 +349,8 @@ export const adminGuests = {
         "inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-white/20 px-3 py-2.5 font-[family-name:var(--font-body)] text-xs font-medium text-white transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:outline-none disabled:opacity-45",
     mobileBatchClear:
         "inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-white px-3 py-2.5 font-[family-name:var(--font-body)] text-xs font-semibold text-admin-olive transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:outline-none",
-    mobileBatchAnchor:
+    /** Sticky batch bar sits above the shared + FAB on every viewport. */
+    batchAnchor:
         "pointer-events-none sticky bottom-[max(5.5rem,calc(env(safe-area-inset-bottom)+4.5rem))] z-[45]",
 } as const;
 
@@ -355,5 +366,162 @@ export const adminFamilies = {
     slug: "truncate font-[family-name:var(--font-body)] text-xs text-admin-muted",
     statusDisabled:
         "inline-flex items-center rounded-md bg-admin-wash px-2 py-1 font-[family-name:var(--font-body)] text-xs font-semibold text-admin-olive xl:px-2.5",
+    /** Figma `126:29` pending badge — gray, not the red Sin confirmar table chip. */
+    cardBadge:
+        "inline-flex shrink-0 items-center rounded-md px-2.5 py-1 font-[family-name:var(--font-body)] text-[11px] font-semibold",
+    cardBadgeConfirmed: "bg-[#eaf6ef] text-[#2e7d32]",
+    cardBadgeDeclined: "bg-[#fee2e2] text-[#b91c1c]",
+    cardBadgeUnopened: "bg-[#e4e3da] text-admin-muted",
+    cardBadgeDisabled: "bg-admin-wash text-admin-olive",
+} as const;
+
+/**
+ * Admin Fotos: mobile Figma `128:528` below 834px, portrait `128:364` from 834px,
+ * landscape `128:201` from `lg`, desktop `128:34` from `xl`.
+ * Reuses Invitados batch/checkbox tokens. Do not use on the public invitation.
+ */
+export const adminPhotos = {
+    bannerTitle:
+        "font-[family-name:var(--font-timer)] text-[32px] leading-tight font-bold text-white xl:text-[clamp(1.75rem,2.4vw,2.25rem)]",
+    kpiGrid: "grid w-full grid-cols-4 gap-3 xl:gap-4",
+    kpiCard:
+        "flex min-w-0 flex-col gap-1.5 rounded-xl border border-admin-border bg-white p-4 xl:gap-2 xl:rounded-2xl xl:p-5",
+    kpiLabel:
+        "font-[family-name:var(--font-body)] text-[11px] font-semibold tracking-[0.5px] text-admin-olive uppercase",
+    kpiValue:
+        "font-[family-name:var(--font-timer)] text-[28px] leading-none font-bold tabular-nums text-admin-ink xl:text-[32px]",
+    kpiHint:
+        "truncate font-[family-name:var(--font-body)] text-xs text-admin-muted",
+    sources:
+        "font-[family-name:var(--font-body)] text-[13px] font-medium text-admin-muted xl:pl-2",
+    sourcesValue: "font-bold text-admin-ink",
+    qrCard:
+        "flex w-full flex-col gap-5 rounded-[20px] border border-admin-border bg-white p-6 xl:gap-6 xl:rounded-[24px] xl:p-8",
+    qrTitle:
+        "font-[family-name:var(--font-timer)] text-2xl leading-tight font-bold text-admin-ink xl:text-[28px] xl:leading-normal",
+    qrBody:
+        "font-[family-name:var(--font-body)] text-[13px] leading-[18px] text-admin-muted xl:text-sm xl:leading-5",
+    qrMeta:
+        "flex flex-row flex-wrap items-center gap-x-6 gap-y-1.5 font-[family-name:var(--font-body)] text-[13px] text-admin-ink xl:flex-col xl:items-start xl:gap-1.5 xl:text-sm",
+    qrMetaValue: "font-bold text-admin-olive",
+    qrPreview:
+        "font-[family-name:var(--font-timer)] font-bold text-admin-ink",
+    dateLabel:
+        "font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-ink xl:text-xs",
+    dateInput:
+        "min-h-11 w-full rounded-lg border border-admin-border bg-white px-2.5 py-2.5 font-[family-name:var(--font-body)] text-[13px] text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 xl:rounded-[10px] xl:px-3 xl:py-3 xl:text-sm",
+    btnSoft:
+        "inline-flex min-h-11 items-center justify-center rounded-lg border border-admin-olive bg-admin-wash px-4 py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-olive transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45 xl:rounded-[10px] xl:px-5 xl:py-2.5 xl:text-sm",
+    btnOutline:
+        "inline-flex min-h-11 items-center justify-center rounded-lg border border-admin-olive bg-transparent px-4 py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-olive transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45 xl:rounded-[10px] xl:px-5 xl:py-2.5 xl:text-sm",
+    btnPrimary:
+        "inline-flex min-h-11 items-center justify-center rounded-lg bg-admin-olive px-4 py-2.5 font-[family-name:var(--font-body)] text-[13px] font-semibold text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45 xl:rounded-[10px] xl:px-5 xl:py-3 xl:text-sm",
+    urlBox:
+        "w-full overflow-hidden rounded-lg bg-admin-wash p-3 font-[family-name:var(--font-body)] text-xs text-ellipsis whitespace-nowrap text-admin-olive xl:rounded-[10px] xl:p-3.5 xl:text-[13px]",
+    qrRow: "flex w-full items-center gap-4 xl:gap-6",
+    qrFrame:
+        "size-[110px] shrink-0 overflow-hidden rounded-lg border border-admin-border bg-white xl:size-[180px] xl:rounded-xl",
+    qrImage: "size-full object-cover",
+    toast:
+        "rounded-md border border-admin-alert-border bg-admin-alert p-2.5 font-[family-name:var(--font-body)] text-xs text-admin-alert-cta xl:rounded-lg xl:px-3 xl:py-3 xl:text-[13px]",
+    tableCard:
+        "flex w-full flex-col overflow-hidden rounded-[20px] border border-admin-border bg-white xl:rounded-[24px]",
+    tableHead:
+        "bg-admin-canvas font-[family-name:var(--font-body)] text-xs font-bold tracking-wide text-admin-olive uppercase",
+    tableRow: "border-b border-admin-border last:border-0 even:bg-[#fafbf9]",
+    colCheck: "w-[30px] p-3.5 xl:w-10 xl:p-4",
+    colPreview: "w-[100px] p-3.5 xl:w-[120px] xl:p-4",
+    colFile: "p-3.5 xl:p-4",
+    colSource: "w-[180px] p-3.5 xl:w-[220px] xl:p-4",
+    colStatus: "w-[100px] p-3.5 xl:w-[120px] xl:p-4",
+    colSize: "w-[80px] p-3.5 xl:w-[100px] xl:p-4",
+    colActions: "w-[220px] p-3.5 text-right xl:w-[300px] xl:p-4",
+    cellPad: "p-3.5 xl:p-4",
+    thumb: "h-[52px] w-[70px] rounded-md object-cover xl:h-[60px] xl:w-[80px] xl:rounded-lg",
+    fileName:
+        "truncate font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-ink xl:text-sm",
+    fileMime: "font-[family-name:var(--font-body)] text-[11px] text-admin-muted",
+    cell: "font-[family-name:var(--font-body)] text-[13px] text-admin-ink xl:text-sm",
+    statusBadge: "uppercase xl:normal-case",
+    statusUploaded:
+        "inline-flex items-center rounded-md bg-admin-wash px-2 py-1 font-[family-name:var(--font-body)] text-[11px] font-semibold text-admin-olive uppercase xl:text-xs xl:normal-case",
+    rowApprove:
+        "inline-flex min-h-11 items-center justify-center rounded-md bg-admin-olive px-2.5 py-1.5 font-[family-name:var(--font-body)] text-[11px] font-semibold text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45 xl:rounded-lg xl:px-3.5 xl:py-2 xl:text-xs",
+    rowReject:
+        "inline-flex min-h-11 items-center justify-center rounded-md border border-admin-olive px-2.5 py-1.5 font-[family-name:var(--font-body)] text-[11px] font-semibold text-admin-olive transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45 xl:rounded-lg xl:px-3.5 xl:py-2 xl:text-xs",
+    rowDelete:
+        "inline-flex min-h-11 items-center justify-center rounded-md border border-[#d92d20] px-2.5 py-1.5 font-[family-name:var(--font-body)] text-[11px] font-semibold text-[#d92d20] transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-[#d92d20]/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45 xl:rounded-lg xl:px-3.5 xl:py-2 xl:text-xs",
+    emptyFooter:
+        "p-3 text-center font-[family-name:var(--font-body)] text-[13px] text-admin-muted italic xl:p-5 xl:text-sm",
+    actionsRow: "flex justify-end gap-1 xl:gap-2",
+    portraitBannerTitle:
+        "font-[family-name:var(--font-timer)] text-[36px] leading-tight font-bold text-white",
+    portraitKpiGrid: "grid w-full grid-cols-4 gap-3",
+    portraitKpiCard:
+        "flex min-w-0 flex-col gap-1.5 rounded-xl border border-admin-border bg-white p-3.5",
+    portraitKpiLabel:
+        "font-[family-name:var(--font-body)] text-[10px] font-bold tracking-[0.5px] text-admin-olive uppercase",
+    portraitKpiValue:
+        "font-[family-name:var(--font-timer)] text-2xl leading-none font-bold tabular-nums text-admin-ink",
+    portraitKpiHint:
+        "truncate font-[family-name:var(--font-body)] text-[11px] text-admin-muted",
+    portraitSectionTitle:
+        "font-[family-name:var(--font-timer)] text-[22px] leading-tight font-bold text-admin-ink",
+    portraitCardGrid: "grid grid-cols-2 gap-4",
+    portraitCard:
+        "flex flex-col gap-4 rounded-2xl border border-admin-border bg-white p-4",
+    portraitCardSelected: "bg-accent/10",
+    portraitThumb: "h-[180px] w-full rounded-lg object-cover",
+    portraitFileName:
+        "min-w-0 truncate font-[family-name:var(--font-body)] text-[15px] font-bold text-admin-ink",
+    portraitMeta:
+        "font-[family-name:var(--font-body)] text-[11px] text-admin-muted",
+    portraitSource:
+        "flex min-w-0 flex-wrap items-baseline gap-1 font-[family-name:var(--font-body)] text-xs",
+    portraitSourceLabel: "shrink-0 font-semibold text-admin-muted",
+    portraitSourceValue: "min-w-0 text-admin-ink",
+    portraitActionRow: "flex w-full gap-2",
+    portraitApprove:
+        "inline-flex min-h-11 flex-1 items-center justify-center rounded-md bg-admin-olive px-3 py-2 font-[family-name:var(--font-body)] text-xs font-semibold text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
+    portraitReject:
+        "inline-flex min-h-11 flex-1 items-center justify-center rounded-md border border-admin-olive px-3 py-2 font-[family-name:var(--font-body)] text-xs font-semibold text-admin-olive transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
+    portraitDelete:
+        "inline-flex min-h-11 w-full items-center justify-center rounded-md border border-[#d92d20] px-3 py-2 font-[family-name:var(--font-body)] text-xs font-semibold text-[#d92d20] transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-[#d92d20]/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
+    mobileBannerTitle:
+        "font-[family-name:var(--font-timer)] text-[28px] leading-tight font-bold text-white",
+    mobileKpiGrid: "grid w-full grid-cols-2 gap-2",
+    mobileKpiCard:
+        "flex min-w-0 flex-col gap-1 rounded-xl border border-admin-border bg-white p-3",
+    mobileKpiLabel:
+        "font-[family-name:var(--font-body)] text-[10px] font-bold tracking-[0.5px] text-admin-olive uppercase",
+    mobileKpiValue:
+        "font-[family-name:var(--font-timer)] text-[22px] leading-none font-bold tabular-nums text-admin-ink",
+    mobileKpiHint:
+        "truncate font-[family-name:var(--font-body)] text-[11px] text-admin-muted",
+    mobileSources:
+        "font-[family-name:var(--font-body)] text-xs font-medium text-admin-muted",
+    mobileQrCard:
+        "flex w-full flex-col gap-5 rounded-[20px] border border-admin-border bg-white p-5",
+    mobileQrTitle:
+        "font-[family-name:var(--font-timer)] text-[20px] leading-tight font-bold text-admin-ink",
+    mobileQrSection: "flex w-full flex-col items-center gap-3",
+    mobileQrFrame:
+        "size-[160px] shrink-0 overflow-hidden rounded-lg border border-admin-border bg-white",
+    mobileQrHint:
+        "text-center font-[family-name:var(--font-body)] text-xs leading-4 text-admin-muted",
+    mobileSectionTitle:
+        "font-[family-name:var(--font-timer)] text-[20px] leading-tight font-bold text-admin-ink",
+    mobileCardGrid: "grid grid-cols-1 gap-4",
+    mobileCard:
+        "flex flex-col gap-3 rounded-2xl border border-admin-border bg-white p-3",
+    mobileThumb: "h-[200px] w-full rounded-lg object-cover",
+    mobileFileName:
+        "min-w-0 truncate font-[family-name:var(--font-body)] text-sm font-bold text-admin-ink",
+    mobileApprove:
+        "inline-flex min-h-11 flex-1 items-center justify-center rounded-md bg-admin-olive px-3 py-2.5 font-[family-name:var(--font-body)] text-[13px] font-semibold text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
+    mobileReject:
+        "inline-flex min-h-11 flex-1 items-center justify-center rounded-md border border-admin-olive px-3 py-2.5 font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-olive transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
+    mobileDelete:
+        "inline-flex min-h-11 w-full items-center justify-center rounded-md border border-[#d92d20] px-3 py-2.5 font-[family-name:var(--font-body)] text-[13px] font-semibold text-[#d92d20] transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-[#d92d20]/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
 } as const;
 

@@ -97,6 +97,7 @@ asks for the real name **only if that person will attend**. Each listed guest ca
 | Admin Estadísticas (`/admin/analytics`)        | `--font-body` + Times metrics                     | Figma `96:39` desktop + `99:229` landscape + `99:419` portrait + `99:607` mobile; 1-col phone; 2-col from 834px; 3-col from `lg` |
 | Admin Invitados (`/admin/guests`)              | `--font-body` table + Times banner                | Figma `109:372` mobile (1-col cards) + `109:36` from 834px (2-col) + `103:33` from `lg` + `100:38` from `xl` |
 | Admin Familias (`/admin/families`)             | `--font-body` table + Times banner                | Figma `126:29` mobile (1-col family cards) + `123:268` from 834px (2-col) + `117:29` from `lg` (compact date columns) + `109:645` from `xl` |
+| Admin Fotos (`/admin/photos`)                  | `--font-body` + Times banner                      | Figma `128:528` mobile (1-col cards) + `128:364` from 834px (2-col) + `128:201` from `lg` + `128:34` from `xl` |
 | Admin directory (`/admin/admins`)              | Figma `85:40` / tablet `85:133` / mobile `85:220` | Phone nested cards (TÚ wash); portrait clusters; `lg+` row; Times + olive tokens; shared Figma navbar |
 
 
@@ -315,7 +316,9 @@ the bar uses `bg-admin-canvas`.
 **Navbar (all `AdminShell` pages):** white header (couple names + Admin badge + session email). Phone and tablet
 portrait use an olive hamburger that opens the Figma left drawer (`94:591`: cream 290px panel, olive active row, live
 Familias/Invitados badges, Acciones rápidas, Salir). Landscape/desktop add olive route pills (Resumen, Estadísticas,
-Invitados, Familias, Fotos, Admins) and Salir in the header.
+Invitados, Familias, Fotos, Admins) and Salir in the header. The olive **+** FAB (nueva familia) is shown on every
+viewport except `/admin/families/new`. It is portaled in a full-viewport overlay so a flex `body` cannot park it below a
+long desktop table.
 Login and accept-invite have no navbar. Page titles (and the families back chevron) sit in the main column.
 
 **Estadísticas** (`/admin/analytics`: desktop Figma `96:39`; landscape `99:229` from `lg`; portrait `99:419` from
@@ -323,14 +326,14 @@ Login and accept-invite have no navbar. Page titles (and the families back chevr
 change the shared navbar**). Phone stacks the overline, compact title/body, and full-width CTAs; rate percents sit
 under the labels. Portrait uses two equal CTAs; landscape/desktop put CTAs on the right. White “Métricas de Avance”
 panel with olive rate bars, two canvas boarding cards, then a 12-card grid (`statsGrid`: 1 / 2 from 834px / 3 from
-`lg`). Cards deep-link to filtered lists. Do not add a Mensajes route. Phone FAB stays the shared olive **+**. Classes
+`lg`). Cards deep-link to filtered lists. Do not add a Mensajes route. The shared olive **+** FAB stays on every viewport. Classes
 live in `adminResumen`; card builders in `admin-analytics.ts`.
 
 **Invitados** (`/admin/guests`: mobile Figma `109:372` below 834px; portrait `109:36` from 834px; landscape `103:33`
 from `lg`; desktop `100:38` from `xl`): olive banner (Administración · Invitados, remaining-days chip
 `⏳ Quedan N días para confirmar` on every width — do not use Figma’s “RSVP Límite” / date chip; Excel download; **do
 not change the shared navbar**). Phone stacks banner CTAs, 2×2 KPI pills, sort/**Mostrar filtros**, equal tabs, then a
-1-column card list; the shared **+** FAB stays. Portrait uses a 2-column card grid. Landscape/desktop use the table (6
+1-column card list; the shared **+** FAB stays on every viewport. Portrait uses a 2-column card grid. Landscape/desktop use the table (6
 filters, then 7 from `xl`). List checkboxes: 18px, fill `--admin-olive` when checked (not accent yellow), radius 6px
 (rounder than the 4px Figma mock), white check from `public/admin/checkbox-check.svg`. Helpers in
 `admin-guests-layout.ts`; classes in `adminGuests`.
@@ -338,14 +341,31 @@ filters, then 7 from `xl`). List checkboxes: 18px, fill `--admin-olive` when che
 **Familias** (`/admin/families`: mobile Figma `126:29` below 834px; portrait `123:268` from 834px; landscape `117:29`
 from `lg`; desktop `109:645` from `xl`): olive banner (Administración · Familias, remaining-days chip `⏳ Quedan N días
 para confirmar` — do not use a Figma date chip; Excel download; **do not change the shared navbar**; no extra “Descargar
-lista” or “Nueva familia” nav item — **Nueva familia** stays in the drawer + phone FAB). Phone stacks the banner CTAs,
+lista” or “Nueva familia” nav item — **Nueva familia** stays in the drawer + shared **+** FAB). Phone stacks the banner CTAs,
 2×2 KPI pills, always-visible search, **Ordenar por** + **Mostrar filtros**, equal tabs, then a 1-column **family** card
-list (name + slug, not guest roles; Estado / Bus / Cupos / Confirmados). Portrait uses a 2-column card grid. Landscape/
+list (name, not guest roles; Confirmó / No asiste / Sin abrir; Estado extras when pending; Cupos / Confirmados — no slug or Bus on phone). Portrait uses a 2-column card grid. Landscape/
 desktop use the table: five filters in one row, in-page tabs (Estadísticas / Familias / Lista completa de Invitados).
 Landscape shortens date headers to **Abrió** / **Confirmó** / **Últ. cambio** and drops year/a.m./p.m. from cell times.
 Inter table (slug + olive chips; Sin abrir is red), **Ver**, olive batch bar (Copiar enlaces / Descargar / Desactivar /
 Activar — keep Activar even if a mock omits it; phone batch ignores Figma’s “Crear selección”). Helpers in
 `admin-families-layout.ts`; classes in `adminFamilies` (cards/table/batch reuse `adminGuests`).
+
+**Fotos** (`/admin/photos`: mobile Figma `128:528` below 834px; portrait `128:364` from 834px; landscape `128:201` from
+`lg`; desktop `128:34` from `xl`): olive banner (Administración · Fotos, title **Fotos y videos**, moderation body;
+**do not change the shared navbar**; the shared **+** FAB stays). Phone and portrait show the remaining-days chip
+`⏳ Quedan N días para confirmar` and **Descargar Lista** (stacked full-width on phone); landscape/desktop omit both
+(those mocks have neither). Eight live KPI cards (Archivos / Espacio Usado / Fotos / Videos, then Completados / En
+Revisión / Fallidos / Cuota Storage) plus the origin line (invitación / código / aprobados / rechazados). Phone uses a
+2-column KPI grid and compact hints; portrait is 4×2; landscape shortens hints and uses a 110px QR with status +
+reference on one row; desktop uses full hints and a 180px QR. Phone QR is stacked (160px, centered; **Referencia**
+short label; generate / disable / review full-width). QR card restyles the existing rotate / window / enable /
+reconcile actions; the full URL and PNG QR appear only after generating a new code (the mock’s stored URL is a
+placeholder). Phone lists files as a 1-column card stack (200px thumb); portrait as a 2-column grid (180px thumb).
+Cards show filename + uppercase status, `mime • size`, Origen — not the Figma typo “Orígen”, Aprobar / Rechazar side by
+side, Eliminar full-width, plus olive batch approve/reject (the mock omits checkboxes; keep them; phone batch sits
+above the FAB). Landscape/desktop use the moderation table: checkbox, Vista, Archivo, Origen, Estado badge (uppercase
+on landscape), Tamaño, Acciones (Aprobar olive fill, Rechazar outline, Eliminar red outline). Helpers in
+`admin-photos-layout.ts`; classes in `adminPhotos`.
 
 **Resumen** (`/admin` workspace: Figma `admin-resumen-mobile` `94:414`; portrait `94:232` from 834px; landscape
 `94:34` from `lg`; desktop `91:40` from `xl`): olive banner (stacked full-width CTAs on phone, two equal-width CTAs on
@@ -354,10 +374,11 @@ attention until `lg` (`w-full` so portrait cards are not content-width), then a 
 Classes live in `adminResumen`. Icons use Lucide (same glyphs as Figma: menu, download, clock, check, chevron, alert,
 plus, log-out, layout-grid, users) with explicit leaf sizes. Do not add Figma-only routes (Transporte / Mensajes /
 Configuración) or a “Notificar” WhatsApp send; attention CTAs stay **Ver lista** / **Asignar**. Do not invent a drinks
-list: follow-ups stay transporte / fotos from live data. Phone **+** FAB is olive; hide it from 834px up and keep
-**Nueva familia** in the drawer.
+list: follow-ups stay transporte / fotos from live data. The shared olive **+** FAB stays on every viewport;
+**Nueva familia** remains in the drawer too.
 
-New-family **+** is phone-only (hidden from 834px / iPad 11" up); the drawer includes **Nueva familia**. Closed overlay
+New-family **+** is shown on every `AdminShell` viewport (hidden only on `/admin/families/new`); it is portaled in a
+full-viewport overlay so a flex `body` cannot hide it on desktop. The drawer includes **Nueva familia**. Closed overlay
 cannot intercept hamburger taps. Back chevron on nueva familia **and** family detail. Family list chips (sin abrir /
 bus / dieta). Family detail: actividad reciente; eliminar familia no exige guardar el formulario. Family/guest/photo
 **cards** replace tables until `lg`.

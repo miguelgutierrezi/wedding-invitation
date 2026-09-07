@@ -4,6 +4,7 @@ import Link from "next/link";
 import {useSyncExternalStore} from "react";
 import {createPortal} from "react-dom";
 
+import {adminResumen} from "@/components/admin/admin-ui";
 import {adminCopy} from "@/lib/admin/admin-copy";
 
 const subscribe = () => () => {};
@@ -29,16 +30,18 @@ export function AdminNewFamilyFab() {
     }
 
     return createPortal(
-        <Link
-            href="/admin/families/new"
-            prefetch={false}
-            className="admin-new-family-fab min-[834px]:hidden inline-flex size-14 items-center justify-center rounded-full bg-admin-olive font-[family-name:var(--font-timer)] text-3xl leading-none text-white shadow-[0_4px_16px_rgba(0,0,0,0.25)] transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:outline-none active:scale-[0.98]"
-            aria-label={adminCopy.nav.newFamily}
-        >
-            <span aria-hidden="true" className="translate-y-[-1px]">
-                +
-            </span>
-        </Link>,
+        <div className={adminResumen.newFamilyFabLayer}>
+            <Link
+                href="/admin/families/new"
+                prefetch={false}
+                className={adminResumen.newFamilyFab}
+                aria-label={adminCopy.nav.newFamily}
+            >
+                <span aria-hidden="true" className="translate-y-[-1px]">
+                    +
+                </span>
+            </Link>
+        </div>,
         body,
     );
 }

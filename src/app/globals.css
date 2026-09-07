@@ -151,29 +151,24 @@ img[data-nimg="fill"] {
 }
 
 /*
- * Admin “+” FAB: pin with `bottom` in this file (not Tailwind `max()` with a
- * comma). `flex:none` + explicit inset so body `display:flex` cannot center it
- * on iPad Safari/Chrome.
+ * Admin “+” FAB: a full-viewport overlay (`inset: 0`) so a flex `body` cannot
+ * park the button at its static position (end of a long desktop table). Pin
+ * the control with `right` / `bottom` only — never `top: auto` / `left: auto`.
  */
-.admin-new-family-fab {
+.admin-new-family-fab-layer {
     position: fixed;
+    inset: 0;
     z-index: 40;
-    flex: none;
-    align-self: auto;
+    pointer-events: none;
+}
+
+.admin-new-family-fab {
+    position: absolute;
     right: max(1rem, env(safe-area-inset-right, 0px));
-    left: auto;
-    top: auto;
     bottom: calc(
         1.25rem + env(safe-area-inset-bottom, 0px) + var(--admin-vv-bottom, 0px)
     );
     margin: 0;
-    transform: none;
-}
-
-@media (min-width: 834px) {
-    .admin-new-family-fab {
-        display: none;
-    }
 }
 
 /* Decorative torn-paper edge at section boundaries */

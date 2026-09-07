@@ -1,6 +1,7 @@
 import {describe, expect, it} from "vitest";
 
 import {
+    ADMIN_LIST_FILTER_URL_DEBOUNCE_MS,
     DEFAULT_ADMIN_FAMILIES_FILTERS,
     DEFAULT_ADMIN_GUESTS_FILTERS,
     familiesFilterChips,
@@ -9,6 +10,7 @@ import {
     guestsFilterChips,
     parseAdminFamiliesFilters,
     parseAdminGuestsFilters,
+    shouldApplyAdminListUrlFilters,
 } from "@/lib/validation/admin-filters";
 
 describe("parseAdminFamiliesFilters", () => {
@@ -286,6 +288,20 @@ describe("filter chips", () => {
             {id: "primary", label: "contacto principal"},
             {id: "name", label: "Nombre por confirmar"},
         ]);
+    });
+});
+
+describe("admin list URL debounce", () => {
+    it("waits before writing filters so typing does not refetch each key", () => {
+        expect(ADMIN_LIST_FILTER_URL_DEBOUNCE_MS).toBe(300);
+    });
+
+    it("keeps local filters when the URL echo of our own replace arrives", () => {
+        expect(shouldApplyAdminListUrlFilters(true)).toBe(false);
+    });
+
+    it("applies URL filters on back/forward", () => {
+        expect(shouldApplyAdminListUrlFilters(false)).toBe(true);
     });
 });
 

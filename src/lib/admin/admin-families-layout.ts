@@ -175,6 +175,91 @@ export function familiesMobileCardStack(viewportPx: number): boolean {
     return viewportPx < ADMIN_FAMILIES_PORTRAIT_MIN_PX;
 }
 
+export type FamilyCardBadgeTone =
+    | "confirmed"
+    | "declined"
+    | "unopened"
+    | "disabled";
+
+export type FamilyCardBadge = {
+    label: string;
+    tone: FamilyCardBadgeTone;
+};
+
+/**
+ * Phone Figma `126:29`: Confirmó / No asiste / Sin abrir.
+ * Do not copy guest “contacto principal” chips. Disabled stays Desactivada.
+ */
+export function familyCardBadge(
+    family: Pick<
+        AdminFamilyBrowserItem,
+        "status" | "isEnabled" | "willAttend"
+    >,
+): FamilyCardBadge {
+    if (!family.isEnabled || family.status === "disabled") {
+        return {
+            label: adminCopy.family.status.disabled,
+            tone: "disabled",
+        };
+    }
+    if (family.status === "responded") {
+        if (family.willAttend === false) {
+            return {
+                label: adminCopy.familiesList.cardDeclined,
+                tone: "declined",
+            };
+        }
+        return {
+            label: adminCopy.family.status.responded,
+            tone: "confirmed",
+        };
+    }
+    return {
+        label: adminCopy.familiesList.cardUnopened,
+        tone: "unopened",
+    };
+}
+
+export type FamilyCardMetaRow = {
+    label: string;
+    value: string;
+};
+
+/**
+ * Phone Figma `126:29` body: Estado (pending extras) / Cupos / Confirmados.
+ * No slug, Bus, guest roles, or dummy “Familia: Materna” leftover.
+ */
+export function familyCardMobileMeta(
+    family: Pick<
+        AdminFamilyBrowserItem,
+        | "status"
+        | "isEnabled"
+        | "lastOpenedAt"
+        | "hasPendingName"
+        | "usesBus"
+        | "hasDietary"
+        | "maximumGuests"
+        | "confirmedGuestCount"
+    >,
+): FamilyCardMetaRow[] {
+    const copy = adminCopy.familiesList;
+    const rows: FamilyCardMetaRow[] = [];
+    const statusDetail = familyCardStatusDetail(family);
+    if (statusDetail) {
+        rows.push({label: copy.metaStatus, value: statusDetail});
+    }
+    rows.push({label: copy.metaSeats, value: String(family.maximumGuests)});
+    rows.push({
+        label: copy.metaConfirmed,
+        value: familyCardConfirmedCount(family.confirmedGuestCount),
+    });
+    return rows;
+}
+
+export function familyCardConfirmedCount(count: number | null): string {
+    return count == null ? "0" : String(count);
+}
+
 /**
  * Figma `123:268` puts diet on the Bus row (“Sí, Dieta: Sí”).
  * Do not copy guest role labels onto family cards.

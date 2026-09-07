@@ -23,8 +23,9 @@ may proceed when the user requests it explicitly.
 | Outfit inspiration pages                    | Implemented (`/inspiracion/ellos\|ellas`)                                      |
 | Event TZ display (`America/Bogota`)         | Implemented (`event-timezone.ts`)                                              |
 | Admin Excel export                          | Full workbook + `kind=attending\|transport\|dietary\|contacts`                 |
-| Admin families/guests lists                 | Filters, chips, column sort, page size 25; guests Figma `109:372` mobile, `109:36` from 834px, `103:33` from `lg`, `100:38` from `xl`; families Figma `126:29` mobile, `123:268` from 834px, `117:29` from `lg`, `109:645` from `xl` |
-| Admin compact chrome                        | Figma white navbar on all `AdminShell` pages; hamburger until `lg`; FAB phone-only |
+| Admin families/guests lists                 | Filters, chips, column sort, page size 25; URL debounce 300 ms; search icon padding; guests Figma `109:372` mobile, `109:36` from 834px, `103:33` from `lg`, `100:38` from `xl`; families Figma `126:29` mobile, `123:268` from 834px, `117:29` from `lg`, `109:645` from `xl` |
+| Admin photos                                | Mobile Figma `128:528` below 834px, portrait `128:364` from 834px, landscape `128:201` from `lg`, desktop `128:34` from `xl`; QR rotate + PNG still after generate |
+| Admin compact chrome                        | Figma white navbar on all `AdminShell` pages; hamburger until `lg`; FAB on every viewport (hidden on `/admin/families/new`) |
 | Admin Resumen                               | Figma `94:414` + drawer `94:591`; `94:232` from 834px; `94:34` from `lg`; `91:40` from `xl` |
 | Admin Estadísticas                          | Figma `96:39` + `99:229` landscape + `99:419` portrait + `99:607` mobile |
 | Guest phone/email                           | Mirrored from family RSVP onto `guests`                                        |
@@ -39,6 +40,42 @@ may proceed when the user requests it explicitly.
 | WhatsApp scheduled send                     | Not implemented                                                                |
 | Resend transactional email product         | Not implemented (Auth invite/reset SMTP only)                      |
 
+## Completed: admin Fotos mobile (Figma `128:528`)
+
+`/admin/photos` below 834px uses the Figma workspace with the shared hamburger chrome and the phone **+** FAB
+(untouched; do not add a second FAB). Stacked olive banner (28px title, remaining-days chip
+`⏳ Quedan N días para confirmar`, full-width **Descargar Lista**), 2×4 compact KPI cards, origin line, QR card stacked
+(dates full-width, 160px QR centered, generate / disable / review full-width; URL + PNG only after generating a new
+code), then **Archivos cargados** as a **single-column** card stack (200px thumb, filename + uppercase status, mime •
+size, Origen, Aprobar / Rechazar / Eliminar). Checkboxes and the olive batch bar stay even though the mock omits them;
+the batch bar sits above the FAB. The shared **+** FAB stays on every viewport. Helpers: `photosMobileWorkspace`, `photosMobileCardStack`.
+
+## Completed: admin Fotos tablet portrait (Figma `128:364`)
+
+`/admin/photos` from 834px (iPad 11" portrait) until `lg` uses the Figma workspace: stacked olive banner
+(Administración · Fotos, **Fotos y videos**, remaining-days chip `⏳ Quedan N días para confirmar`, **Descargar Lista**),
+eight compact KPI cards in 4×2, origin line, QR card at landscape density (110px; full URL + PNG only after generating
+a new code), then **Archivos cargados** as a **2-column** card grid (180px thumb, filename + uppercase status, mime •
+size, Origen, Aprobar / Rechazar / Eliminar). Checkboxes and the olive batch bar stay even though the mock omits them.
+Shared navbar is untouched (no olive hamburger). The shared **+** FAB stays. Helpers: `ADMIN_PHOTOS_PORTRAIT_MIN_PX`,
+`photosPortraitCardGrid`, `photosFileMetaLine`.
+
+## Completed: admin Fotos tablet landscape (Figma `128:201`)
+
+`/admin/photos` from `lg` (1024px) uses the same Figma workspace as desktop, at landscape density: remaining-days chip
+and Excel stay off the banner, KPI hints shorten (Total de elementos / Almacenamiento total / Procesados ok / Carga
+corrupta / Límite gratuito), QR is 110px with status + reference on one row, and the table uses narrower columns plus
+70×52 thumbs. **Aprobar / Rechazar / Eliminar** stay. Shared navbar is untouched. Helper:
+`ADMIN_PHOTOS_LANDSCAPE_MIN_PX`.
+
+## Completed: admin Fotos desktop (Figma `128:34`)
+
+`/admin/photos` from `xl` uses the Figma workspace: olive banner (Administración · Fotos, **Fotos y videos**,
+moderation body — no RSVP deadline chip and no Excel CTA), eight live KPI cards with full hints, origin counts, restyled
+QR card (rotate / window / enable / reconcile; full URL + PNG QR only after generating a new code), and an Inter
+moderation table (Vista / Archivo / Origen / Estado / Tamaño / Acciones) with olive batch approve/reject. Shared navbar
+is unchanged. Helpers: `src/lib/admin/admin-photos-layout.ts`.
+
 ## Completed: admin Invitados mobile (Figma `109:372`)
 
 `/admin/guests` below 834px uses the Figma workspace with the shared hamburger chrome and the phone **+** FAB
@@ -51,8 +88,8 @@ is stacked full-width with long labels including **Descargar lista**, sitting ab
 
 ## Completed: admin Invitados tablet portrait (Figma `109:36`)
 
-`/admin/guests` from 834px (iPad 11" portrait) uses the Figma workspace with the shared hamburger chrome (untouched; no
-tablet FAB). Stacked olive banner with live remaining-days chip (`⏳ Quedan N días para confirmar`) and **Descargar lista**, four KPI
+`/admin/guests` from 834px (iPad 11" portrait) uses the Figma workspace with the shared hamburger chrome (untouched).
+The shared **+** FAB stays. Stacked olive banner with live remaining-days chip (`⏳ Quedan N días para confirmar`) and **Descargar lista**, four KPI
 pills, search + sort + **Mostrar filtros**, in-page tabs, then a **2-column** card grid (role badge, Asiste/Pendiente/No
 asiste, Familia/Bus/Telf/Correo, **Ver familia**). Batch bar stays compact (no Descargar in the bar — the banner CTA
 covers export). Helper: `ADMIN_GUESTS_PORTRAIT_MIN_PX`.
@@ -84,16 +121,16 @@ enable). Shared navbar is unchanged. Helpers:
 
 `/admin/families` from `lg` (1024px) uses the same Figma workspace as desktop, at landscape density: remaining-days
 chip (`⏳ Quedan N días para confirmar`), five filters in one row, shorter date columns (**Abrió** / **Confirmó** /
-**Últ. cambio**), narrow datetimes without year or a.m./p.m., and the full batch labels (Seleccionar los N). **Activar**
+**Últ. cambio**), narrow datetimes without year or a.m./p.m., and the full batch labels (Seleccionar las N). **Activar**
 stays even though the landscape mock omits it. Shared navbar is untouched. Helper: `ADMIN_FAMILIES_LANDSCAPE_MIN_PX`.
 
 ## Completed: admin Familias tablet portrait (Figma `123:268`)
 
-`/admin/families` from 834px (iPad 11" portrait) until `lg` uses the Figma workspace: stacked olive banner (Administración · Familias, remaining-days chip `⏳ Quedan N días para confirmar`, **Descargar Lista**), 4 KPI pills on the filtered view (Familias / Confirmaron / Pendientes / Con bus), search + sort + **Mostrar filtros**, compact tabs (Estadísticas / Familias / Lista completa), and a **2-column** card grid. Cards show the family name, invitation slug, Confirmó/Sin confirmar badge, Bus/Cupos (diet on the Bus row when present), pending Estado text, and **Ver familia**. Do not copy guest role badges from the mock. Batch keeps Activar/Desactivar even if the portrait mock omits them. No tablet FAB — **Nueva familia** stays in the drawer. Phone below 834px uses Figma `126:29`. Helpers: `ADMIN_FAMILIES_PORTRAIT_MIN_PX`, `summarizeFamiliesView`.
+`/admin/families` from 834px (iPad 11" portrait) until `lg` uses the Figma workspace: stacked olive banner (Administración · Familias, remaining-days chip `⏳ Quedan N días para confirmar`, **Descargar Lista**), 4 KPI pills on the filtered view (Familias / Confirmaron / Pendientes / Con bus), search + sort + **Mostrar filtros**, compact tabs (Estadísticas / Familias / Lista completa), and a **2-column** card grid. Cards show the family name, invitation slug, Confirmó/Sin confirmar badge, Bus/Cupos (diet on the Bus row when present), pending Estado text, and **Ver familia**. Do not copy guest role badges from the mock. Batch keeps Activar/Desactivar even if the portrait mock omits them. The shared **+** FAB stays; **Nueva familia** remains in the drawer too. Phone below 834px uses Figma `126:29`. Helpers: `ADMIN_FAMILIES_PORTRAIT_MIN_PX`, `summarizeFamiliesView`.
 
 ## Completed: admin Familias mobile (Figma `126:29`)
 
-`/admin/families` below 834px uses the Figma workspace with the shared hamburger chrome and the phone **+** FAB (untouched — do not add a second FAB). Banner is stacked (24px title, remaining-days chip `⏳ Quedan N días para confirmar`, full-width **Descargar Lista**). KPI pills are **2×2** in mock order (Confirmaron / Pendientes / Con bus / Total familias). Search stays visible, then **Ordenar por: Familia ↑** and **Mostrar filtros**. Equal tabs (Estadísticas / Familias / Lista completa). **1-column** family cards: name + slug (not guest roles), Confirmó/Sin confirmar, pending Estado, Bus, Cupos `n/max`, Confirmados, **Ver familia**. Pagination is stacked. Batch sits above the FAB with Copiar enlaces / Descargar / Desactivar / Activar (ignore Figma’s “Crear selección”). Helpers: `familiesMobileCardStack`, `familyCardConfirmedLabel`.
+`/admin/families` below 834px uses the Figma workspace with the shared hamburger chrome and the shared **+** FAB (untouched — do not add a second FAB). Banner is stacked (24px title, remaining-days chip `⏳ Quedan N días para confirmar`, full-width **Descargar Lista**). KPI pills are **2×2** in mock order (Confirmaron / Pendientes / Con bus / Total familias). Search stays visible, then **Ordenar por: Familia ↑** and **Mostrar filtros**. Equal tabs (Estadísticas / Familias / Lista completa). **1-column** family cards: name (no slug, no guest roles), attendance badge **Confirmó** / **No asiste** / **Sin abrir** (gray, not the red table chip), pending Estado extras when present, **Cupos** as assigned seats, **Confirmados**. No Bus row. Pagination is stacked. Batch sits above the FAB with Seleccionar las N / Copiar enlaces / Descargar / Desactivar / Activar (ignore Figma’s “Crear selección”). Helpers: `familiesMobileCardStack`, `familyCardBadge`, `familyCardMobileMeta`.
 
 ## Completed: admin Estadísticas mobile (Figma `99:607`)
 
@@ -106,8 +143,8 @@ column. Gauge type is `22px`. Do not add a second FAB.
 
 `/admin/analytics` from 834px (iPad 11" portrait) keeps the hamburger chrome (untouched). Banner is stacked: two-line
 overline, then title, then two equal-width CTAs. Rate bars stay full width; boarding cards and the 12 metrics sit in
-**2 columns**. Type density matches landscape numbers (`36px` values, `24px` gauges). No tablet FAB — **Nueva familia**
-stays in the drawer. Helper breakpoint: `ADMIN_RESUMEN_WIDE_MIN_PX`.
+**2 columns**. Type density matches landscape numbers (`36px` values, `24px` gauges). The shared **+** FAB stays;
+**Nueva familia** remains in the drawer too. Helper breakpoint: `ADMIN_RESUMEN_WIDE_MIN_PX`.
 
 ## Completed: admin Estadísticas tablet landscape (Figma `99:229`)
 
@@ -138,11 +175,12 @@ server still checks the name stored in the database.
 
 Shared Figma navbar on every `AdminShell` page (not login / accept-invite): white header, olive hamburger until
 `lg` (left cream drawer), inline pills from tablet landscape. Page titles live under the bar; back chevron on create
-and family detail. Floating **+** is **phone-only** (hidden from 834px / iPad 11" up; olive). Tablets use **Nueva
-familia** in the drawer (and the families page button). Still hidden on `/admin/families/new`.
+and family detail. Floating **+** (olive) is shown on every viewport; still hidden on `/admin/families/new`.
+It is portaled in `.admin-new-family-fab-layer` (`position: fixed; inset: 0`) so a flex `body` cannot hide it at the
+end of a long desktop page. **Nueva familia** also stays in the drawer.
 - Lists: cards below `lg`; tables from `lg`.
-- Path helpers + tests: `src/lib/admin/admin-chrome.ts` (`ADMIN_FAB_HIDE_MIN_PX`, `ADMIN_DESKTOP_NAV_MIN_PX` = 1024,
-  `ADMIN_RESUMEN_WIDE_MIN_PX`, `ADMIN_RESUMEN_LANDSCAPE_MIN_PX`).
+- Path helpers + tests: `src/lib/admin/admin-chrome.ts` (`ADMIN_DESKTOP_NAV_MIN_PX` = 1024,
+  `ADMIN_RESUMEN_WIDE_MIN_PX`, `ADMIN_RESUMEN_LANDSCAPE_MIN_PX`, `ADMIN_SHELL_FAB_PADDING`).
 - Drawer respects `prefers-reduced-motion`.
 
 ## Completed: admin Figma navbar as chrome standard
@@ -171,7 +209,7 @@ same drawer is the standard menu on every `AdminShell` page. Helpers: `RESUMEN_D
 
 `/admin` below 834px uses the same Figma system: white header (olive hamburger + couple names + Admin badge + truncated
 email), stacked overline (`⏰ Límite`), full-width banner CTAs, single-column KPIs, stacked close / follow-ups /
-attention, compact badges. Phone FAB stays (`ADMIN_FAB_HIDE_MIN_PX`); it is olive to match Figma. No drinks
+attention, compact badges. The shared olive **+** FAB stays on every viewport. No drinks
 list, no “Notificar”. Compact yellow dashboard on `/admin` is gone. Helper: `formatResumenDeadlineOverline`.
 
 ## Completed: admin Resumen tablet portrait (Figma `94:232`)
@@ -179,7 +217,7 @@ list, no “Notificar”. Compact yellow dashboard on `/admin` is gone. Helper: 
 `/admin` from 834px (iPad 11" portrait) uses the Figma system in one column: white header with olive hamburger (opens
 the Figma left drawer; no nav pills; Salir stays in the drawer), stacked banner with two equal-width CTAs, 2×2 KPIs,
 full-width close + follow-ups + attention (no 340px rail). Stacked panels use `w-full` so they are not content-sized.
-Compact title for follow-ups (`followUpsTitleCompact`). No tablet FAB — **Nueva familia** stays in the drawer. Helpers:
+Compact title for follow-ups (`followUpsTitleCompact`). The shared **+** FAB stays; **Nueva familia** remains in the drawer too. Helpers:
 `ADMIN_RESUMEN_WIDE_MIN_PX` (834) and `ADMIN_RESUMEN_LANDSCAPE_MIN_PX` (1024). The same header/drawer apply to other
 admin pages; only the workspace below is Resumen-specific.
 
@@ -270,11 +308,13 @@ A companion placeholder counts as “Nombre por confirmar” while the guest is 
 ## Completed: admin lists + guest contact
 
 - `/admin/families` and `/admin/guests`: chips for active filters, sortable columns, 25-row pagination, URL via
-  Next `router.replace` (so back/forward restores filters). Filter helpers live in `src/lib/validation/admin-filters.ts`
-  (parse → match → chips → query string). Hook: `useAdminListFilters`. The in-app back chevron on family detail/create
-  restores the last filtered Familias URL from `sessionStorage` (`admin-list-return.ts`), matching browser back.
-  On mobile, changing page scrolls to the list top, the range is shown (e.g. 26–49), and pagination sits left of the
-  FAB so **Siguiente** stays tappable.
+  Next `router.replace` (debounced 300 ms so typing does not refetch the page; in-memory filter stays instant and is
+  not overwritten by the URL echo of that replace). Filter helpers live in `src/lib/validation/admin-filters.ts`
+  (parse → match → chips → query string). Hook: `useAdminListFilters`. Search boxes use `adminGuests.searchBox` left
+  padding (`pl-9` / `xl:pl-10`) so the magnifying glass does not overlap the placeholder. The in-app back chevron on
+  family detail/create restores the last filtered Familias URL from `sessionStorage` (`admin-list-return.ts`), matching
+  browser back. On mobile, changing page scrolls to the list top, the range is shown (e.g. 26–49), and pagination sits
+  left of the FAB so **Siguiente** stays tappable.
 - Dashboard and analytics cards deep-link into those lists (`status=pending`, `transport=with_bus`,
   `opened=not_opened`, …).
 - RSVP still has one family phone (required) + optional email. `submit_family_rsvp` copies that contact onto every

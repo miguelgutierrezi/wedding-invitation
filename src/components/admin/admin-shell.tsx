@@ -3,6 +3,7 @@ import type {ReactNode} from "react";
 import {AdminChrome} from "@/components/admin/admin-chrome";
 import {AdminPageHeading} from "@/components/admin/admin-page-heading";
 import {admin} from "@/components/admin/admin-ui";
+import {ADMIN_SHELL_FAB_PADDING} from "@/lib/admin/admin-chrome";
 import {requireAdmin} from "@/lib/auth/require-admin";
 import {getAnalyticsSnapshot} from "@/services/admin/analytics";
 
@@ -50,8 +51,8 @@ export async function AdminShell({
             <main
                 className={
                     flush
-                        ? "w-full min-w-0 flex-1 px-0 py-0 pb-[max(6.5rem,calc(env(safe-area-inset-bottom)+5.5rem))] min-[834px]:pb-[max(2.5rem,env(safe-area-inset-bottom))]"
-                        : "mx-auto w-full min-w-0 max-w-6xl flex-1 px-4 py-6 pb-[max(6.5rem,calc(env(safe-area-inset-bottom)+5.5rem))] min-[834px]:pb-[max(2.5rem,env(safe-area-inset-bottom))] lg:px-8 lg:py-10"
+                        ? `w-full min-w-0 flex-1 px-0 pt-0 ${ADMIN_SHELL_FAB_PADDING}`
+                        : `mx-auto w-full min-w-0 max-w-6xl flex-1 px-4 pt-6 ${ADMIN_SHELL_FAB_PADDING} lg:px-8 lg:pt-10`
                 }
             >
                 {title ? <AdminPageHeading title={title} /> : null}

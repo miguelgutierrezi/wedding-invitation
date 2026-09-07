@@ -207,7 +207,7 @@ function AdminGuestsCards({
                             <span className="sr-only">Buscar</span>
                             <Search
                                 strokeWidth={2}
-                                className="pointer-events-none absolute top-1/2 left-3 size-3.5 max-w-none -translate-y-1/2 text-admin-muted"
+                                className={adminGuests.searchIcon}
                                 aria-hidden="true"
                             />
                             <input
@@ -217,7 +217,7 @@ function AdminGuestsCards({
                                     onChangeFilters({query: event.target.value})
                                 }
                                 placeholder={copy.searchPlaceholderPortrait}
-                                className={`${adminGuests.searchBox} pl-9`}
+                                className={adminGuests.searchBox}
                             />
                         </label>
                         )}
@@ -269,7 +269,7 @@ function AdminGuestsCards({
                                     <span className="relative">
                                         <Search
                                             strokeWidth={2}
-                                            className="pointer-events-none absolute top-1/2 left-3 size-3.5 max-w-none -translate-y-1/2 text-admin-muted"
+                                            className={adminGuests.searchIcon}
                                             aria-hidden="true"
                                         />
                                         <input
@@ -283,7 +283,7 @@ function AdminGuestsCards({
                                             placeholder={
                                                 copy.searchPlaceholderPortrait
                                             }
-                                            className={`${adminGuests.searchBox} pl-9`}
+                                            className={adminGuests.searchBox}
                                         />
                                     </span>
                                 </label>
@@ -618,13 +618,7 @@ function AdminGuestsCards({
                 )}
 
                 {selected.size > 0 ? (
-                    <div
-                        className={
-                            isPhone
-                                ? adminGuests.mobileBatchAnchor
-                                : "pointer-events-none sticky bottom-4 z-[45]"
-                        }
-                    >
+                    <div className={adminGuests.batchAnchor}>
                         <div className={adminGuests.batchBar}>
                             <p className="flex items-center gap-2 font-[family-name:var(--font-body)] text-sm font-semibold">
                                 <span

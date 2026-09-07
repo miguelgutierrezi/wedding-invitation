@@ -86,11 +86,21 @@ describe("admin guests Figma helpers", () => {
         expect(adminGuests.pageNext).toContain("bg-admin-olive");
         expect(adminGuests.batchBar).toContain("bg-admin-olive");
         expect(adminGuests.batchBar).toContain("lg:flex-row");
+        expect(adminGuests.batchAnchor).toContain("5.5rem");
+        expect(adminGuests.batchAnchor).not.toContain("bottom-4");
         expect(adminGuests.familyLink).toContain("underline");
         expect(adminGuests.checkbox).toContain("checked:bg-admin-olive");
         expect(adminGuests.checkbox).toContain("rounded-md");
         expect(adminGuests.checkbox).toContain("appearance-none");
         expect(adminGuests.checkbox).not.toContain("accent-accent");
+        expect(adminGuests.searchBox).toContain("pl-9");
+        expect(adminGuests.searchBox).toContain("xl:pl-10");
+        expect(adminGuests.searchBox).toContain("pr-3");
+        expect(adminGuests.searchBox).toContain("xl:pr-3.5");
+        expect(adminGuests.searchBox).not.toContain("xl:px-");
+        expect(adminGuests.searchBox).not.toMatch(/(?:^|\s)px-/);
+        expect(adminGuests.searchIcon).toContain("left-3");
+        expect(adminGuests.searchIcon).toContain("xl:left-3.5");
     });
 
     it("keeps compact batch copy for landscape", () => {

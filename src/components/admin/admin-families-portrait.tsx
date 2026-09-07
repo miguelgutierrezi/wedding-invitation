@@ -5,15 +5,17 @@ import {ChevronDown, Search} from "lucide-react";
 import {type ReactNode, useState} from "react";
 
 import {ResumenDownloadIcon} from "@/components/admin/admin-resumen-icons";
-import {adminGuests, adminResumen} from "@/components/admin/admin-ui";
+import {adminFamilies, adminGuests, adminResumen} from "@/components/admin/admin-ui";
 import {AdminRowCheckbox} from "@/components/admin/admin-row-checkbox";
 import {AdminSelect} from "@/components/admin/admin-select";
 import {FamilyStatusBadge} from "@/components/admin/admin-status-badge";
 import {adminCopy} from "@/lib/admin/admin-copy";
 import {
     type AdminFamilyBrowserItem,
+    type FamilyCardBadge,
+    familyCardBadge,
     familyCardBusLabel,
-    familyCardConfirmedLabel,
+    familyCardMobileMeta,
     familyCardStatusDetail,
     familyInvitationPath,
     familiesListSubnav,
@@ -235,7 +237,7 @@ function AdminFamiliesCards({
                             <span className="sr-only">Buscar</span>
                             <Search
                                 strokeWidth={2}
-                                className="pointer-events-none absolute top-1/2 left-3 size-3.5 max-w-none -translate-y-1/2 text-admin-muted"
+                                className={adminGuests.searchIcon}
                                 aria-hidden="true"
                             />
                             <input
@@ -245,7 +247,7 @@ function AdminFamiliesCards({
                                     onChangeFilters({query: event.target.value})
                                 }
                                 placeholder={copy.searchPlaceholderPortrait}
-                                className={`${adminGuests.searchBox} pl-9`}
+                                className={adminGuests.searchBox}
                             />
                         </label>
                         <AdminSelect
@@ -414,6 +416,8 @@ function AdminFamiliesCards({
                                 const isSelected = selected.has(family.id);
                                 const statusDetail =
                                     familyCardStatusDetail(family);
+                                const phoneBadge = familyCardBadge(family);
+                                const phoneMeta = familyCardMobileMeta(family);
                                 return (
                                     <article
                                         key={family.id}
@@ -440,113 +444,60 @@ function AdminFamiliesCards({
                                                     >
                                                         {family.displayName}
                                                     </p>
-                                                    <p className="mt-1 truncate font-[family-name:var(--font-body)] text-[11px] text-admin-muted">
-                                                        {familyInvitationPath(
-                                                            family.invitationSlug,
-                                                        )}
-                                                    </p>
+                                                    {isPhone ? null : (
+                                                        <p className="mt-1 truncate font-[family-name:var(--font-body)] text-[11px] text-admin-muted">
+                                                            {familyInvitationPath(
+                                                                family.invitationSlug,
+                                                            )}
+                                                        </p>
+                                                    )}
                                                 </div>
                                             </div>
-                                            <FamilyStatusBadge
-                                                status={family.status}
-                                                tone="figma"
-                                            />
+                                            {isPhone ? (
+                                                <FamilyCardPhoneBadge
+                                                    badge={phoneBadge}
+                                                />
+                                            ) : (
+                                                <FamilyStatusBadge
+                                                    status={family.status}
+                                                    tone="figma"
+                                                />
+                                            )}
                                         </div>
                                         <div
                                             className="h-px w-full bg-admin-border"
                                             aria-hidden="true"
                                         />
-                                        <div className="flex flex-col gap-2">
-                                            {statusDetail ? (
-                                                <p
-                                                    className={
-                                                        adminGuests.portraitMeta
-                                                    }
-                                                >
-                                                    <span
-                                                        className={
-                                                            adminGuests.portraitMetaLabel
-                                                        }
-                                                    >
-                                                        {copy.metaStatus}
-                                                    </span>
-                                                    <span
-                                                        className={
-                                                            adminGuests.portraitMetaValue
-                                                        }
-                                                    >
-                                                        {statusDetail}
-                                                    </span>
-                                                </p>
-                                            ) : null}
-                                            <p
-                                                className={
-                                                    adminGuests.portraitMeta
-                                                }
-                                            >
-                                                <span
-                                                    className={
-                                                        adminGuests.portraitMetaLabel
-                                                    }
-                                                >
-                                                    {copy.metaBus}
-                                                </span>
-                                                <span
-                                                    className={
-                                                        adminGuests.portraitMetaValue
-                                                    }
-                                                >
-                                                    {familyCardBusLabel(
-                                                        family.usesBus,
-                                                        family.hasDietary,
-                                                    )}
-                                                </span>
-                                            </p>
-                                            <p
-                                                className={
-                                                    adminGuests.portraitMeta
-                                                }
-                                            >
-                                                <span
-                                                    className={
-                                                        adminGuests.portraitMetaLabel
-                                                    }
-                                                >
-                                                    {copy.metaSeats}
-                                                </span>
-                                                <span
-                                                    className={
-                                                        adminGuests.portraitMetaValue
-                                                    }
-                                                >
-                                                    {family.guestCount}/
-                                                    {family.maximumGuests}
-                                                </span>
-                                            </p>
+                                        <div className="flex flex-col gap-1.5">
                                             {isPhone ? (
-                                                <p
-                                                    className={
-                                                        adminGuests.portraitMeta
-                                                    }
-                                                >
-                                                    <span
-                                                        className={
-                                                            adminGuests.portraitMetaLabel
-                                                        }
-                                                    >
-                                                        {copy.metaConfirmed}
-                                                    </span>
-                                                    <span
-                                                        className={
-                                                            adminGuests.portraitMetaValue
-                                                        }
-                                                    >
-                                                        {familyCardConfirmedLabel(
-                                                            family.confirmedGuestCount,
+                                                phoneMeta.map((row) => (
+                                                    <FamilyCardMetaRow
+                                                        key={row.label}
+                                                        label={row.label}
+                                                        value={row.value}
+                                                    />
+                                                ))
+                                            ) : (
+                                                <>
+                                                    {statusDetail ? (
+                                                        <FamilyCardMetaRow
+                                                            label={copy.metaStatus}
+                                                            value={statusDetail}
+                                                        />
+                                                    ) : null}
+                                                    <FamilyCardMetaRow
+                                                        label={copy.metaBus}
+                                                        value={familyCardBusLabel(
+                                                            family.usesBus,
+                                                            family.hasDietary,
                                                         )}
-                                                    </span>
-                                                </p>
-                                            ) : null}
+                                                    />
+                                                    <FamilyCardMetaRow
+                                                        label={copy.metaSeats}
+                                                        value={`${family.guestCount}/${family.maximumGuests}`}
+                                                    />
+                                                </>
+                                            )}
                                         </div>
                                         <Link
                                             href={`/admin/families/${family.id}`}
@@ -623,13 +574,7 @@ function AdminFamiliesCards({
                 )}
 
                 {selected.size > 0 ? (
-                    <div
-                        className={
-                            isPhone
-                                ? adminGuests.mobileBatchAnchor
-                                : "pointer-events-none sticky bottom-4 z-[45]"
-                        }
-                    >
+                    <div className={adminGuests.batchAnchor}>
                         <div className={adminGuests.batchBar}>
                             <p className="flex items-center gap-2 font-[family-name:var(--font-body)] text-sm font-semibold">
                                 <span
@@ -785,5 +730,31 @@ function PortraitSelect<T extends string>({
             labelClassName={adminGuests.filterLabel}
             triggerClassName={adminGuests.filterTrigger}
         />
+    );
+}
+
+function FamilyCardPhoneBadge({badge}: {badge: FamilyCardBadge}) {
+    const toneClass =
+        badge.tone === "confirmed"
+            ? adminFamilies.cardBadgeConfirmed
+            : badge.tone === "declined"
+              ? adminFamilies.cardBadgeDeclined
+              : badge.tone === "unopened"
+                ? adminFamilies.cardBadgeUnopened
+                : adminFamilies.cardBadgeDisabled;
+
+    return (
+        <span className={`${adminFamilies.cardBadge} ${toneClass}`}>
+            {badge.label}
+        </span>
+    );
+}
+
+function FamilyCardMetaRow({label, value}: {label: string; value: string}) {
+    return (
+        <p className={adminGuests.portraitMeta}>
+            <span className={adminGuests.portraitMetaLabel}>{label}</span>
+            <span className={adminGuests.portraitMetaValue}>{value}</span>
+        </p>
     );
 }

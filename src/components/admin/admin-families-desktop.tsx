@@ -125,7 +125,7 @@ export function AdminFamiliesDesktop({
                             <span className="relative">
                                 <Search
                                     strokeWidth={2}
-                                    className="pointer-events-none absolute top-1/2 left-3 size-3.5 max-w-none -translate-y-1/2 text-admin-muted xl:left-3.5"
+                                    className={adminGuests.searchIcon}
                                     aria-hidden="true"
                                 />
                                 <input
@@ -136,7 +136,7 @@ export function AdminFamiliesDesktop({
                                     }
                                     placeholder={copy.searchPlaceholder}
                                     aria-label={copy.searchPlaceholder}
-                                    className={`${adminGuests.searchBox} pl-9`}
+                                    className={adminGuests.searchBox}
                                 />
                             </span>
                         </label>
@@ -434,7 +434,7 @@ export function AdminFamiliesDesktop({
                 )}
 
                 {selected.size > 0 ? (
-                    <div className="pointer-events-none sticky bottom-4 z-[45]">
+                    <div className={adminGuests.batchAnchor}>
                         <div className={adminGuests.batchBar}>
                             <p className="flex items-center gap-2 font-[family-name:var(--font-body)] text-[15px] font-semibold">
                                 <span

@@ -1,6 +1,28 @@
 /** User-facing labels for the admin panel (non-technical Spanish). */
 
 export const adminCopy = {
+    login: {
+        eyebrow: "Panel privado",
+        title: "Iniciar sesión",
+        lead: "Solo cuentas de administración pueden acceder.",
+        emailLabel: "Correo",
+        emailLabelDesktop: "Correo electrónico",
+        emailPlaceholder: "ejemplo@correo.com",
+        passwordLabel: "Contraseña",
+        submit: "Iniciar sesión",
+        submitting: "Entrando…",
+        forgot: "¿Olvidaste tu contraseña?",
+        forbidden: "Esta cuenta no está autorizada para administrar.",
+        resetLead:
+            "Te enviaremos un enlace para crear una contraseña nueva. Usa el mismo correo con el que te invitaron al panel.",
+        resetSubmit: "Enviar enlace",
+        resetting: "Enviando…",
+        resetBack: "Volver a iniciar sesión",
+        resetSent: "Revisa tu correo.",
+        showPassword: "Mostrar contraseña",
+        hidePassword: "Ocultar contraseña",
+        brandBadge: "• Admin Panel",
+    },
     nav: {
         summary: "Resumen",
         statistics: "Estadísticas",

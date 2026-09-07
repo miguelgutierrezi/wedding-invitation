@@ -1,5 +1,6 @@
-import {AdminLoginForm} from "@/components/admin/admin-login-form";
-import {admin} from "@/components/admin/admin-ui";
+import {AdminLoginDesktop} from "@/components/admin/admin-login-desktop";
+import {AdminLoginMobile} from "@/components/admin/admin-login-mobile";
+import {AdminLoginPortrait} from "@/components/admin/admin-login-portrait";
 
 type AdminLoginPageProps = {
     searchParams: Promise<{
@@ -9,28 +10,29 @@ type AdminLoginPageProps = {
 };
 
 export default async function AdminLoginPage({
-                                                 searchParams,
-                                             }: AdminLoginPageProps) {
+    searchParams,
+}: AdminLoginPageProps) {
     const params = await searchParams;
     const nextPath =
         params.next && params.next.startsWith("/admin")
             ? params.next
             : "/admin";
+    const errorFromQuery = params.error ?? null;
 
     return (
-        <main
-            className="mx-auto flex w-full min-w-0 flex-1 flex-col justify-center px-4 py-12 pt-[max(3rem,env(safe-area-inset-top))] pb-[max(2rem,env(safe-area-inset-bottom))] sm:max-w-md sm:px-6 sm:py-16">
-            <p className={admin.eyebrow}>Panel privado</p>
-            <h1 className={`mt-3 ${admin.title}`}>Iniciar sesión</h1>
-            <p className={`mt-2 ${admin.muted}`}>
-                Solo cuentas de administración pueden acceder.
-            </p>
-            <div className={`mt-8 ${admin.card} p-6 sm:p-8`}>
-                <AdminLoginForm
-                    nextPath={nextPath}
-                    errorFromQuery={params.error ?? null}
-                />
-            </div>
-        </main>
+        <>
+            <AdminLoginDesktop
+                nextPath={nextPath}
+                errorFromQuery={errorFromQuery}
+            />
+            <AdminLoginPortrait
+                nextPath={nextPath}
+                errorFromQuery={errorFromQuery}
+            />
+            <AdminLoginMobile
+                nextPath={nextPath}
+                errorFromQuery={errorFromQuery}
+            />
+        </>
     );
 }

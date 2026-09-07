@@ -18,7 +18,8 @@ Operational checklist before sharing invitation links widely. Does not authorize
 ## Smoke — admin
 
 - [ ] Invite link opens `/admin/aceptar-invitacion`, password can be set, then `/admin` loads.
-- [ ] `/admin/login` works with the invited admin account.
+- [ ] `/admin/login` works with the invited admin account. Below 834px it matches Figma `152:29` (mobile); from 834px,
+  `151:30`; from `lg`, `149:29`; from `xl`, `145:364`. **¿Olvidaste tu contraseña?** still sends the reset mail.
 - [ ] Create a test family with 2 guests (**nombre + género** each) and copy `/i/[slug]` (atomic create — no orphan
   family without guests).
 - [ ] Create or edit a **single-guest** family and confirm cover shows Querido/Querida correctly.

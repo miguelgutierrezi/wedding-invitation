@@ -33,6 +33,7 @@ may proceed when the user requests it explicitly.
 | Admin plain-language UI                     | Non-technical Spanish labels in admin panel                                    |
 | Delete family (admin)                       | RPC + confirm-by-name; works with unsaved edits                                |
 | Admin operations                            | Action queue, close follow-ups, family activity, **batch actions** |
+| Admin login                                 | Mobile Figma `152:29` below 834px; portrait `151:30` from 834px; landscape `149:29` from `lg`; desktop `145:364` from `xl`; password recovery stays in the same card |
 | Admin invite flow                          | **Implemented**; accept → `/admin/aceptar-invitacion` (set password) → `/admin` |
 | Admin invite email HTML                    | Figma `80:40` olive-gradient template in `emails/admin-invite.html` (paste into Supabase Auth) |
 | Admin password reset                       | Same Figma `80:40` layout as invite (`emails/admin-reset-password.html`); OTP 24 h |
@@ -40,6 +41,36 @@ may proceed when the user requests it explicitly.
 | Guest media uploads                         | **Implemented**                                                                |
 | WhatsApp scheduled send                     | Not implemented                                                                |
 | Resend transactional email product         | Not implemented (Auth invite/reset SMTP only)                      |
+
+## Completed: admin login mobile (Figma `152:29`)
+
+`/admin/login` below 834px uses the Figma canvas with stacked centered brand (24px couple names, 14px **• Admin Panel**),
+full-width 24px-radius card (24×36 padding, 28px gap, 11px overline, 28px title, 13px lead, 12px labels, 44px inputs,
+46px olive CTA), and 11px footer. Safe-area padding stays. Portrait `151:30` still starts at 834px. Recovery still lives
+in the same card. Helpers: `src/lib/admin/admin-login-layout.ts`.
+
+## Completed: admin login tablet portrait (Figma `151:30`)
+
+`/admin/login` from 834px until `lg` uses the Figma canvas with brand and footer **in the page flow** (not absolute):
+64×48×40 padding, couple names 22px + **• Admin Panel** 14px, flex-1 centered 460px card (same density as desktop:
+24px radius, 48×56 padding, 36px title, tracking overline), 13px footer. Landscape `149:29` still starts at `lg`. Mobile
+`152:29` covers below 834px. Recovery still lives in the same card. Helpers: `src/lib/admin/admin-login-layout.ts`.
+
+## Completed: admin login tablet landscape (Figma `149:29`)
+
+`/admin/login` from `lg` (1024px) until `xl` uses the Figma canvas at landscape density: cream board, couple names
+18px + **• Admin Panel** 14px at 48×40, centered 420px white card (20px radius, 36×48 padding, 28px gap, 32px title,
+13px lead, 16px field gap), same Inter fields / password eye / olive CTA as desktop, footer 13px at 32px. Desktop
+`145:364` density still starts at `xl`. Portrait `151:30` covers 834px until `lg`. Mobile `152:29` covers below 834px.
+Recovery still lives in the same card. Helpers: `src/lib/admin/admin-login-layout.ts`.
+
+## Completed: admin login desktop (Figma `145:364`)
+
+`/admin/login` from `xl` uses the Figma canvas: cream board, **Nychol & Miguel • Admin Panel** top-left, centered 460px
+white card (24px radius, olive shadow), Inter fields with **Correo electrónico** placeholder, password eye
+(inline SVG from Figma `145:390`, pupil added so the 16px glyph is legible), olive **Iniciar sesión**, underlined recovery link, and footer copyright. Landscape
+`149:29` covers `lg` until `xl`. Portrait `151:30` covers 834px until `lg`. Mobile `152:29` covers below 834px.
+Recovery still lives in the same card. Helpers: `src/lib/admin/admin-login-layout.ts`.
 
 ## Completed: admin Fotos mobile (Figma `128:528`)
 

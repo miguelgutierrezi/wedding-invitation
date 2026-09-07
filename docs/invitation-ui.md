@@ -99,6 +99,7 @@ asks for the real name **only if that person will attend**. Each listed guest ca
 | Admin Familias (`/admin/families`)             | `--font-body` table + Times banner                | Figma `126:29` mobile (1-col family cards) + `123:268` from 834px (2-col) + `117:29` from `lg` (compact date columns) + `109:645` from `xl` |
 | Admin Fotos (`/admin/photos`)                  | `--font-body` + Times banner                      | Figma `128:528` mobile (1-col cards) + `128:364` from 834px (2-col) + `128:201` from `lg` + `128:34` from `xl` |
 | Admin directory (`/admin/admins`)              | `--font-body` + Times banner on all sizes | Figma `136:29` mobile (nested cards) + `134:207` portrait from 834px + `134:121` landscape from `lg` + `134:35` desktop from `xl`; shared Figma navbar |
+| Admin login (`/admin/login`)                   | `--font-body` + Times title on all sizes  | Figma `152:29` mobile + `151:30` from 834px + `149:29` from `lg` + `145:364` from `xl`; no navbar |
 
 
 
@@ -320,6 +321,16 @@ Invitados, Familias, Fotos, Admins) and Salir in the header. The olive **+** FAB
 viewport except `/admin/families/new`. It is portaled in a full-viewport overlay so a flex `body` cannot park it below a
 long desktop table.
 Login and accept-invite have no navbar. Page titles (and the families back chevron) sit in the main column.
+
+**Login** (`/admin/login`: mobile Figma `152:29` below 834px; portrait `151:30` from 834px; landscape `149:29` from
+`lg`; desktop `145:364` from `xl`): cream canvas (`--admin-canvas`), couple names + **• Admin Panel**, centered white
+card, Inter overline / fields / CTA, Times title, password eye (Figma outline + pupil, inline SVG so `currentColor`
+paints it; asset `public/admin/login/eye.svg`) in a 44px control, olive full-width **Iniciar sesión**, underlined **¿Olvidaste tu contraseña?**, footer copyright. Phone stacks
+centered brand (24px names) and a full-width card (24×36 padding, 28px title, 44px inputs, 46px CTA, 11px footer) with
+safe-area padding. Portrait puts brand and footer in the page flow (64×48×40 padding, 22px brand, 460px card like
+desktop). Landscape is tighter with absolute chrome (420px card, 20px radius, 36×48 padding, 32px title, 18px brand).
+Desktop is 460px / 24px radius / 48×56 padding / 36px title. Password recovery stays in the same card (the mock is
+sign-in only). Helpers in `admin-login-layout.ts`; classes in `adminLogin`. Accept-invite is unchanged.
 
 **Estadísticas** (`/admin/analytics`: desktop Figma `96:39`; landscape `99:229` from `lg`; portrait `99:419` from
 834px; mobile `99:607` below 834px): same olive banner pattern as Resumen (live deadline + Excel download; **do not

@@ -61,7 +61,7 @@ Use:
 /fotos?code=…          guest media upload (event QR)
 /inspiracion/ellos     outfit inspiration (men)
 /inspiracion/ellas     outfit inspiration (women)
-/admin/login           administrator sign-in
+/admin/login           administrator sign-in (Figma `152:29` mobile + `151:30` from 834px + `149:29` from `lg` + `145:364` from `xl`)
 /admin                 dashboard (Figma Resumen workspace; shared Figma navbar)
 /admin/analytics       Figma Estadísticas `96:39` + `99:229` landscape + `99:419` portrait + `99:607` mobile
 /admin/guests          Figma Invitados `109:372` mobile + `109:36` portrait from 834px + `103:33` from `lg` + `100:38` from `xl`
@@ -76,7 +76,7 @@ Use:
 
 Public invitation presentation details live in `docs/invitation-ui.md`. Admin presentation tokens live in
 `src/components/admin/admin-ui.ts` (`admin` + `adminResumen` + list tokens including `adminPhotos`, `adminAdmins`,
-`adminFamilyDetail`, and `adminNewFamily`).
+`adminFamilyDetail`, `adminNewFamily`, and `adminLogin`).
 Do not treat product roadmap sections as authorization to implement unfinished work.
 
 ## Configuration
@@ -119,7 +119,8 @@ confirmar”). Outfit inspiration routes are implemented under `/inspiracion/*`.
 - Cap multi-column invitation layouts on ultra-wide viewports so copy and CTAs stay visually grouped.
 - Admin chrome uses the Figma white navbar on every `AdminShell` page (`adminResumen` in `admin-ui.ts`): couple names +
   Admin badge, olive hamburger until `lg` (left cream drawer `94:591`), inline olive pills + Salir from tablet
-  landscape. Login and accept-invite have no chrome. Page titles and the families back chevron live in the main column
+  landscape. Login has no chrome (mobile Figma `152:29` below 834px; portrait `151:30` from 834px; landscape `149:29` from `lg`; desktop `145:364` from `xl`). Accept-invite has no chrome.
+  Page titles and the families back chevron live in the main column
   (family detail puts the back arrow in the olive banner from phone up, Figma `144:245` mobile / `144:29` portrait / `143:29` landscape / `137:34` desktop; nueva familia puts the back arrow in the olive banner from phone up, Figma `145:298` mobile / `145:228` portrait / `145:151` landscape / `145:68` desktop). Floating **+** (nueva familia) is shown on every `AdminShell` viewport (olive; hidden only on `/admin/families/new`); it is portaled in a full-viewport overlay (`.admin-new-family-fab-layer`) so a flex `body` cannot park it below a long desktop table. The drawer also has **Nueva familia**. Closed
   drawer overlay does not capture taps. Cards below `lg`; tables from `lg`. Path rules live in
   `src/lib/admin/admin-chrome.ts`.
@@ -183,6 +184,7 @@ Current coverage targets:
 - Family activity labels + open-event collapsing; family operational chips.
 - Admin batch id validation, row selection helpers, export scope.
 - Admin chrome path helpers (shared Figma navbar).
+- Admin login Figma helpers (mobile / portrait 834 / landscape `lg` / desktop `xl` workspace, copyright, password visibility). The password eye is an inline SVG (`currentColor`), not `next/image`.
 - Admin analytics Figma helpers (rate rows, 12 stat cards, boarding points).
 - Example-family name helper (`ejemplo` word, analytics exclusion).
 - Cover greeting helper (`formatCoverGreeting`).

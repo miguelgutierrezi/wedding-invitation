@@ -857,3 +857,81 @@ export const adminNewFamily = {
     success: adminFamilyDetail.success,
 } as const;
 
+/**
+ * Admin login: mobile Figma `152:29` below 834px, portrait `151:30` from 834px,
+ * landscape `149:29` from `lg`, desktop `145:364` from `xl`.
+ * Do not use on the public invitation.
+ */
+export const adminLogin = {
+    desktopRoot:
+        `relative hidden min-h-full w-full flex-1 flex-col items-center justify-center bg-admin-canvas px-10 py-10 lg:flex ${adminResumen.sans} text-admin-ink`,
+    portraitRoot:
+        `hidden min-h-full w-full flex-1 flex-col justify-between bg-admin-canvas px-16 pt-12 pb-10 min-[834px]:flex lg:hidden ${adminResumen.sans} text-admin-ink`,
+    mobileRoot:
+        `flex min-h-full w-full min-w-0 flex-1 flex-col items-center justify-between bg-admin-canvas px-4 pt-[max(3rem,env(safe-area-inset-top))] pb-[max(2rem,env(safe-area-inset-bottom))] min-[834px]:hidden ${adminResumen.sans} text-admin-ink`,
+    brand: "absolute top-10 left-12 flex items-center gap-2 xl:top-12 xl:left-16",
+    portraitBrand: "flex w-full items-center gap-2",
+    mobileBrand: "flex w-full flex-col items-center gap-1 text-center",
+    brandNames:
+        "font-[family-name:var(--font-timer)] text-[18px] font-bold whitespace-nowrap text-admin-olive xl:text-[20px]",
+    portraitBrandNames:
+        "font-[family-name:var(--font-timer)] text-[22px] font-bold whitespace-nowrap text-admin-olive",
+    mobileBrandNames:
+        "font-[family-name:var(--font-timer)] w-full text-[24px] font-bold text-admin-olive",
+    brandBadge:
+        "font-[family-name:var(--font-body)] text-[14px] font-medium whitespace-nowrap text-admin-muted xl:text-xs",
+    mobileBrandBadge:
+        "font-[family-name:var(--font-body)] w-full text-[14px] font-medium text-admin-muted",
+    portraitCardWrap:
+        "flex min-h-0 w-full flex-1 flex-col items-center justify-center",
+    card: "flex w-[460px] max-w-full flex-col gap-8 rounded-[24px] bg-white px-12 py-14 shadow-[0_16px_16px_rgba(95,100,70,0.08)] lg:w-[420px] lg:gap-7 lg:rounded-[20px] lg:px-9 lg:py-12 xl:w-[460px] xl:gap-8 xl:rounded-[24px] xl:px-12 xl:py-14",
+    mobileCard:
+        "flex w-full flex-col gap-7 rounded-[24px] bg-white px-6 py-9 shadow-[0_16px_16px_rgba(95,100,70,0.08)]",
+    header: "flex w-full flex-col gap-3 lg:gap-2.5 xl:gap-3",
+    mobileHeader: "flex w-full flex-col gap-2",
+    eyebrow:
+        "font-[family-name:var(--font-body)] text-xs font-bold tracking-[1.5px] text-admin-muted uppercase lg:tracking-normal xl:tracking-[1.5px]",
+    mobileEyebrow:
+        "font-[family-name:var(--font-body)] text-[11px] font-bold text-admin-muted uppercase",
+    title: "font-[family-name:var(--font-timer)] text-[36px] leading-[1.2] font-bold text-admin-ink lg:text-[32px] xl:text-[36px]",
+    mobileTitle:
+        "font-[family-name:var(--font-timer)] text-[28px] leading-[1.2] font-bold text-admin-ink",
+    lead: "font-[family-name:var(--font-body)] text-sm leading-[1.5] text-admin-muted lg:text-[13px] xl:text-sm",
+    mobileLead:
+        "font-[family-name:var(--font-body)] text-[13px] leading-[1.4] text-admin-muted",
+    form: "flex w-full flex-col gap-5 lg:gap-4 xl:gap-5",
+    fields: "flex w-full flex-col gap-5 lg:gap-4 xl:gap-5",
+    mobileFields: "flex w-full flex-col gap-4",
+    field: "flex w-full flex-col gap-2",
+    mobileField: "flex w-full flex-col gap-1.5",
+    label: "font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-ink",
+    mobileLabel:
+        "font-[family-name:var(--font-body)] text-xs font-semibold text-admin-ink",
+    input: "h-[46px] min-h-11 w-full rounded-[12px] border border-[#d1cfc7] bg-white px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40",
+    mobileInput:
+        "h-11 min-h-11 w-full rounded-[12px] border border-[#d1cfc7] bg-white px-3.5 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40",
+    passwordWrap: "relative w-full overflow-visible",
+    passwordInput:
+        "h-[46px] min-h-11 w-full rounded-[12px] border border-[#d1cfc7] bg-white py-3 pr-12 pl-4 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 [&::-ms-reveal]:hidden",
+    mobilePasswordInput:
+        "h-11 min-h-11 w-full rounded-[12px] border border-[#d1cfc7] bg-white py-3 pr-12 pl-3.5 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 [&::-ms-reveal]:hidden",
+    eyeButton:
+        "absolute top-1/2 right-1 z-10 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full text-admin-muted transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
+    eyeIcon: "pointer-events-none size-4 max-w-none overflow-visible",
+    eyeImage: "size-full max-w-none overflow-visible",
+    actions: "flex w-full flex-col items-center gap-4",
+    submit:
+        "inline-flex h-12 min-h-11 w-full items-center justify-center rounded-[12px] bg-admin-olive py-3.5 font-[family-name:var(--font-body)] text-[15px] font-semibold text-white shadow-[0_4px_6px_rgba(95,100,70,0.14)] transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
+    mobileSubmit:
+        "inline-flex h-[46px] min-h-11 w-full items-center justify-center rounded-[12px] bg-admin-olive py-3 font-[family-name:var(--font-body)] text-[15px] font-semibold text-white shadow-[0_4px_6px_rgba(95,100,70,0.14)] transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
+    forgot:
+        "font-[family-name:var(--font-body)] text-[13px] font-medium text-admin-muted underline decoration-solid underline-offset-2 hover:opacity-80 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
+    footer:
+        "absolute bottom-8 left-0 right-0 text-center font-[family-name:var(--font-body)] text-[13px] text-admin-muted xl:bottom-10 xl:text-xs",
+    portraitFooter:
+        "w-full text-center font-[family-name:var(--font-body)] text-[13px] text-admin-muted",
+    mobileFooter:
+        "w-full text-center font-[family-name:var(--font-body)] text-[11px] text-admin-muted",
+    error: "font-[family-name:var(--font-body)] text-sm text-red-800",
+} as const;
+

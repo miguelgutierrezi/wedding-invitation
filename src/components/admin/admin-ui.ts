@@ -634,3 +634,161 @@ export const adminAdmins = {
     mobileEmpty: "py-2 font-[family-name:var(--font-body)] text-[13px] text-admin-muted",
 } as const;
 
+/**
+ * Admin family detail: mobile Figma `144:245` below 834px, portrait `144:29`
+ * from 834px, landscape `143:29` from `lg`, desktop `137:34` from `xl`.
+ * Reuses Resumen banner. Do not use on the public invitation.
+ */
+export const adminFamilyDetail = {
+    mobileRoot: "min-[834px]:hidden",
+    mobileWorkspace: "flex w-full flex-col gap-4 px-4 pb-4 pt-4",
+    mobileBannerTitle:
+        "min-w-0 font-[family-name:var(--font-timer)] text-[22px] leading-tight font-bold text-white",
+    mobileBackBtn:
+        "inline-flex size-7 shrink-0 items-center justify-center rounded-[14px] bg-white/15 text-white transition-colors hover:bg-white/25 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:outline-none",
+    mobileOverline:
+        "font-[family-name:var(--font-body)] text-[9px] font-semibold tracking-[0.08em] text-accent uppercase",
+    mobileCard:
+        "flex w-full flex-col gap-4 rounded-[12px] bg-white p-5 shadow-[0_2px_4px_rgba(0,0,0,0.06)]",
+    mobileCardCompact:
+        "flex w-full flex-col gap-3.5 rounded-[12px] bg-white p-5 shadow-[0_2px_4px_rgba(0,0,0,0.06)]",
+    mobileCardDanger:
+        "flex w-full flex-col gap-4 rounded-[12px] bg-[#fdede6] p-5",
+    mobileStatusGrid: "flex w-full flex-col gap-3",
+    mobileStatusPair: "flex w-full items-start gap-3",
+    mobileStatusCell: "flex min-w-0 flex-1 flex-col gap-1",
+    mobileStatusLabel:
+        "font-[family-name:var(--font-body)] text-[10px] font-semibold tracking-wide text-admin-muted uppercase",
+    mobileStatusValue:
+        "font-[family-name:var(--font-body)] text-[13px] font-medium text-admin-ink",
+    mobileLinkActions: "flex w-full flex-col gap-2",
+    mobileBtn: "rounded-lg text-[13px]",
+    mobileFieldLabel:
+        "font-[family-name:var(--font-body)] text-xs font-semibold text-admin-ink",
+    mobileGuestFieldLabel:
+        "font-[family-name:var(--font-body)] text-[11px] font-semibold text-admin-ink",
+    mobileGuestContact:
+        "flex w-full min-w-0 items-start gap-2",
+    mobileRegenerateTitle:
+        "font-[family-name:var(--font-timer)] text-base font-bold text-admin-ink",
+    mobileDangerTitle:
+        "font-[family-name:var(--font-timer)] text-base font-bold text-[#9f3804]",
+    portraitRoot: "hidden min-[834px]:block lg:hidden",
+    portraitWorkspace:
+        "flex w-full flex-col gap-6 px-6 pb-12 pt-6",
+    portraitBannerTitle:
+        "min-w-0 font-[family-name:var(--font-timer)] text-[30px] leading-tight font-bold text-white",
+    portraitBackBtn:
+        "inline-flex size-9 shrink-0 items-center justify-center rounded-[18px] bg-white/15 text-white transition-colors hover:bg-white/25 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:outline-none",
+    portraitBannerBottom:
+        "flex w-full flex-wrap items-center justify-between gap-3",
+    portraitCard:
+        "flex w-full flex-col gap-5 rounded-[12px] bg-white p-6 shadow-[0_2px_4px_rgba(0,0,0,0.06)]",
+    portraitCardCompact:
+        "flex w-full flex-col gap-4 rounded-[12px] bg-white p-6 shadow-[0_2px_4px_rgba(0,0,0,0.06)]",
+    portraitCardDanger:
+        "flex w-full flex-col gap-5 rounded-[12px] bg-[#fdede6] p-6 shadow-[0_2px_4px_rgba(0,0,0,0.06)]",
+    portraitStatusRow: "flex w-full flex-wrap items-start gap-4",
+    portraitStatusCell:
+        "flex min-w-[140px] flex-1 flex-col gap-1.5",
+    portraitStatusCellWide:
+        "flex min-w-[180px] flex-1 flex-col gap-1.5",
+    portraitStatusDivider: "h-px w-full bg-admin-border",
+    portraitLinkActions: "flex w-full flex-wrap items-start gap-3",
+    portraitLinkBtn: "min-w-[12rem] flex-1 rounded-lg",
+    portraitGuestFormRow:
+        "flex w-full items-start gap-3",
+    portraitGenderCol: "grid w-[150px] shrink-0 gap-2",
+    portraitGuestContact: "flex w-full min-w-0 flex-wrap items-start gap-4",
+    portraitTimelineDetail:
+        "font-[family-name:var(--font-body)] text-[13px] text-admin-muted",
+    portraitDangerTitle:
+        "font-[family-name:var(--font-timer)] text-xl font-bold text-[#9f3804]",
+    bannerTitle:
+        "min-w-0 font-[family-name:var(--font-timer)] text-[28px] leading-tight font-bold text-white xl:text-[36px]",
+    backBtn:
+        "inline-flex size-8 shrink-0 items-center justify-center rounded-2xl bg-white/15 text-white transition-colors hover:bg-white/25 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:outline-none xl:size-9 xl:rounded-[18px]",
+    deadlinePill:
+        "inline-flex min-h-11 items-center gap-1.5 rounded-full border border-white px-3.5 py-2 font-[family-name:var(--font-body)] text-xs font-semibold text-white xl:gap-2 xl:px-4 xl:py-2.5 xl:text-[13px]",
+    deadlineWrap:
+        "flex w-[16.25rem] shrink-0 items-center justify-end xl:w-[20rem]",
+    columns:
+        "flex w-full flex-col gap-6 lg:flex-row lg:items-start xl:gap-8",
+    leftCol: "flex min-w-0 w-full flex-col gap-6 lg:flex-1",
+    rightCol: "flex w-full flex-col gap-6 lg:w-[22.25rem] lg:shrink-0 xl:w-[28rem]",
+    card:
+        "flex w-full flex-col gap-5 rounded-[20px] bg-white p-6 shadow-[0_2px_4px_rgba(0,0,0,0.06)] xl:gap-6 xl:rounded-[24px] xl:p-8",
+    cardCompact:
+        "flex w-full flex-col gap-3 rounded-[20px] bg-white p-5 shadow-[0_2px_4px_rgba(0,0,0,0.06)] xl:gap-4 xl:rounded-[24px] xl:p-6",
+    cardDanger:
+        "flex w-full flex-col gap-4 rounded-[20px] bg-[#fdede6] p-6 shadow-[0_2px_4px_rgba(0,0,0,0.06)] xl:gap-5 xl:rounded-[24px] xl:p-8",
+    sectionLabel:
+        "font-[family-name:var(--font-body)] text-[11px] font-bold tracking-wide text-admin-olive uppercase",
+    guestsSectionLabel:
+        "font-[family-name:var(--font-body)] text-[11px] font-bold tracking-wide text-admin-olive uppercase xl:text-xs",
+    statusGrid: "grid w-full grid-cols-3 gap-4",
+    statusLabel:
+        "font-[family-name:var(--font-body)] text-[11px] font-semibold tracking-wide text-admin-muted uppercase",
+    statusValue:
+        "font-[family-name:var(--font-body)] text-sm font-medium text-admin-ink",
+    fieldLabel:
+        "font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-ink",
+    input:
+        "min-h-11 w-full min-w-0 rounded-lg border border-[#d1cfc7] bg-[#fdfdf8] px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40",
+    textarea:
+        "h-20 w-full min-w-0 resize-none rounded-lg border border-[#d1cfc7] bg-[#fdfdf8] px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40",
+    select:
+        "min-h-11 w-full appearance-none rounded-lg border border-[#d1cfc7] bg-[#fdfdf8] bg-[url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 20 20%27 fill=%27none%27%3E%3Cpath d=%27M5 7.5 10 12.5 15 7.5%27 stroke=%27%235f6446%27 stroke-width=%271.6%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E')] bg-[length:1rem] bg-[position:right_0.9rem_center] bg-no-repeat py-3 pl-4 pr-10 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40",
+    hint: "font-[family-name:var(--font-body)] text-xs leading-[1.4] text-admin-muted",
+    checkbox:
+        "size-5 shrink-0 cursor-pointer appearance-none rounded-[6px] border border-admin-border bg-white bg-center bg-no-repeat checked:border-admin-olive checked:bg-admin-olive checked:[background-image:url('/admin/checkbox-check.svg')] checked:bg-[length:10px_10px] focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
+    checkboxLabel:
+        "font-[family-name:var(--font-body)] text-sm font-medium text-admin-ink",
+    guestRow: "grid w-full grid-cols-2 gap-3",
+    btnPrimary:
+        "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-admin-olive px-4 py-3 font-[family-name:var(--font-body)] text-sm font-semibold text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45 xl:px-6 xl:py-3.5",
+    btnSecondary:
+        "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#d1cfc7] bg-white px-4 py-3 font-[family-name:var(--font-body)] text-sm font-semibold text-admin-olive transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45 xl:px-5",
+    urlBox:
+        "w-full overflow-hidden rounded-lg border border-[#d1cfc7] bg-admin-canvas p-3 font-[family-name:var(--font-body)] text-xs text-ellipsis whitespace-nowrap text-admin-ink xl:text-[13px]",
+    regenerateTitle:
+        "font-[family-name:var(--font-timer)] text-lg font-bold text-admin-ink",
+    pill:
+        "inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 font-[family-name:var(--font-body)] text-xs font-semibold xl:gap-1.5",
+    guestPill:
+        "inline-flex shrink-0 items-center rounded-full border px-2 py-0.5 font-[family-name:var(--font-body)] text-[10px] font-semibold xl:gap-1.5 xl:px-2.5 xl:py-1 xl:text-xs",
+    pillConfirmed: "border-[#166500] bg-[#ebfee6] text-[#166500]",
+    pillDeclined: "border-[#b91c1c] bg-[#fee2e2] text-[#b91c1c]",
+    pillPending: "border-admin-border bg-admin-wash text-admin-muted",
+    pillDisabled: "border-admin-olive/30 bg-admin-wash text-admin-olive",
+    pillBus: "border-admin-olive bg-admin-wash text-admin-olive",
+    guestName:
+        "font-[family-name:var(--font-timer)] text-[15px] font-bold text-admin-ink xl:text-base",
+    guestMeta: "font-[family-name:var(--font-body)] text-xs text-admin-muted xl:text-[13px]",
+    guestContact:
+        "hidden w-full max-w-[15rem] flex-col items-end gap-1 text-right xl:flex sm:w-[15rem]",
+    guestPhone:
+        "font-[family-name:var(--font-body)] text-[13px] font-medium text-admin-ink",
+    guestEmail:
+        "truncate font-[family-name:var(--font-body)] text-[13px] text-admin-muted",
+    timelineTitle:
+        "font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-ink xl:text-sm",
+    timelineDetail:
+        "hidden font-[family-name:var(--font-body)] text-[13px] text-admin-muted xl:block",
+    timelineDate:
+        "font-[family-name:var(--font-body)] text-[11px] text-admin-muted xl:w-[9.5rem] xl:shrink-0 xl:text-right xl:text-xs",
+    dangerTitle:
+        "font-[family-name:var(--font-timer)] text-lg font-bold text-[#9f3804] xl:text-xl",
+    dangerBody:
+        "font-[family-name:var(--font-body)] text-xs leading-[1.4] text-[#9f3804]/80 xl:text-[13px] xl:leading-[1.45]",
+    dangerLabel:
+        "font-[family-name:var(--font-body)] text-xs font-semibold text-[#9f3804]",
+    dangerInput:
+        "min-h-11 w-full min-w-0 rounded-lg border border-[#d1cfc7] bg-[#fdfdf8] px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-[#9f3804] focus-visible:ring-2 focus-visible:ring-[#9f3804]/30 xl:bg-white",
+    dangerBtn:
+        "inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[#9f3804] px-4 py-3 font-[family-name:var(--font-body)] text-sm font-semibold text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#9f3804]/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45 xl:px-5",
+    error: "font-[family-name:var(--font-body)] text-sm text-red-800",
+    success:
+        "rounded-lg border border-accent/40 bg-accent/20 px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink",
+} as const;
+

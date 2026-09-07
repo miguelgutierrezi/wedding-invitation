@@ -23,7 +23,7 @@ may proceed when the user requests it explicitly.
 | Outfit inspiration pages                    | Implemented (`/inspiracion/ellos\|ellas`)                                      |
 | Event TZ display (`America/Bogota`)         | Implemented (`event-timezone.ts`)                                              |
 | Admin Excel export                          | Full workbook + `kind=attending\|transport\|dietary\|contacts`                 |
-| Admin families/guests lists                 | Filters, chips, column sort, page size 25; URL debounce 300 ms; search icon padding; guests Figma `109:372` mobile, `109:36` from 834px, `103:33` from `lg`, `100:38` from `xl`; families Figma `126:29` mobile, `123:268` from 834px, `117:29` from `lg`, `109:645` from `xl` |
+| Admin families/guests lists                 | Filters, chips, column sort, page size 25; URL debounce 300 ms; search icon padding; guests Figma `109:372` mobile, `109:36` from 834px, `103:33` from `lg`, `100:38` from `xl`; families Figma `126:29` mobile, `123:268` from 834px, `117:29` from `lg`, `109:645` from `xl`; family detail Figma `144:245` mobile, `144:29` from 834px, `143:29` from `lg`, `137:34` from `xl` |
 | Admin photos                                | Mobile Figma `128:528` below 834px, portrait `128:364` from 834px, landscape `128:201` from `lg`, desktop `128:34` from `xl`; QR rotate + PNG still after generate |
 | Admin Admins                                | Mobile Figma `136:29` below 834px, portrait `134:207` from 834px, landscape `134:121` from `lg`, desktop `134:35` from `xl` |
 | Admin compact chrome                        | Figma white navbar on all `AdminShell` pages; hamburger until `lg`; FAB on every viewport (hidden on `/admin/families/new`) |
@@ -149,6 +149,40 @@ list checkboxes (18px, 6px radius, `--admin-olive` when checked), and an olive b
 table with full date-column labels, slug + ops chips and **Ver**, olive batch bar (copy links / export / disable /
 enable). Shared navbar is unchanged. Helpers:
 `src/lib/admin/admin-families-layout.ts`.
+
+## Completed: admin family detail desktop (Figma `137:34`)
+
+`/admin/families/[id]` from `xl` uses the Figma workspace: olive banner (Administración > Familias > Detalle, family
+name with back arrow, remaining-days chip with clock icon — no list hourglass), two columns (status + edit + regenerate
+on the left; invitation link, guest cards, activity timeline, delete on the right). Delete still confirms by family
+name (not Figma “ELIMINAR”). Shared navbar is unchanged. Helpers:
+`src/lib/admin/admin-family-detail-layout.ts`.
+
+## Completed: admin family detail tablet landscape (Figma `143:29`)
+
+`/admin/families/[id]` from `lg` (1024px) uses the same Figma workspace as desktop, at landscape density: 28px title,
+32px back control, shortened status labels (Teléfono / Correo / Transporte), 356px rail, compact guest rows (Asiste
+badge without icons, **Dirección:** pickup, no phone/email), stacked activity timestamps without detail, and
+**Eliminar permanentemente**. Delete still confirms by family name. Shared navbar is untouched. Helper:
+`ADMIN_FAMILY_DETAIL_LANDSCAPE_MIN_PX`.
+
+## Completed: admin family detail tablet portrait (Figma `144:29`)
+
+`/admin/families/[id]` from 834px (iPad 11" portrait) until `lg` uses a single-column Figma workspace: stacked olive
+banner (30px title, 36px back, remaining-days chip on the same row as the body), then status (full labels + row
+divider), invitation link with Copiar / WhatsApp side by side, edit (gender column 150px), guest cards (Asiste + Bus
+with icons, full pickup line, phone/email under the name), activity with detail + date on the right, regenerate, and
+delete. Delete still confirms by family name. Shared navbar is untouched (hamburger until `lg`). Helper:
+`ADMIN_FAMILY_DETAIL_PORTRAIT_MIN_PX`.
+
+## Completed: admin family detail mobile (Figma `144:245`)
+
+`/admin/families/[id]` below 834px uses a single-column Figma workspace: stacked olive banner (22px title, 28px back,
+remaining-days chip under the body), then status (2-column pairs + full-width correo/transporte), invitation link with
+Copiar / WhatsApp stacked, edit (guest name and gender stacked), guest cards (Asiste + Bus with icons, **Recogida:**
+pickup, phone/email under the name), activity with timestamp under the title and no detail, regenerate, and delete.
+Delete still confirms by family name. Shared navbar is untouched (hamburger). Helper:
+`ADMIN_FAMILY_DETAIL_MOBILE_MAX_PX`.
 
 ## Completed: admin Familias tablet landscape (Figma `117:29`)
 

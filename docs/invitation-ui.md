@@ -379,7 +379,8 @@ list: follow-ups stay transporte / fotos from live data. The shared olive **+** 
 
 New-family **+** is shown on every `AdminShell` viewport (hidden only on `/admin/families/new`); it is portaled in a
 full-viewport overlay so a flex `body` cannot hide it on desktop. The drawer includes **Nueva familia**. Closed overlay
-cannot intercept hamburger taps. Back chevron on nueva familia **and** family detail. Family list chips (sin abrir /
+cannot intercept hamburger taps. Back chevron on nueva familia **and** family detail (the family-detail back arrow sits
+in the olive banner from phone up, Figma `144:245` / `144:29` / `143:29` / `137:34`). Family list chips (sin abrir /
 bus / dieta). Family detail: actividad reciente; eliminar familia no exige guardar el formulario. Family/guest/photo
 **cards** replace tables until `lg`.
 

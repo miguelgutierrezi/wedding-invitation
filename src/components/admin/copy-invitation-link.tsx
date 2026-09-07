@@ -2,19 +2,24 @@
 
 import {useState} from "react";
 
-import {admin} from "@/components/admin/admin-ui";
+import {FamilyDetailCopyIcon} from "@/components/admin/admin-family-detail-icons";
+import {admin, adminFamilyDetail} from "@/components/admin/admin-ui";
+import {adminCopy} from "@/lib/admin/admin-copy";
 import {cn} from "@/lib/utils";
 
 type CopyInvitationLinkProps = {
     url: string;
     className?: string;
+    tone?: "legacy" | "figma";
 };
 
 export function CopyInvitationLink({
-                                       url,
-                                       className,
-                                   }: CopyInvitationLinkProps) {
+    url,
+    className,
+    tone = "legacy",
+}: CopyInvitationLinkProps) {
     const [copied, setCopied] = useState(false);
+    const copy = adminCopy.familyDetail;
 
     async function handleCopy() {
         try {
@@ -24,6 +29,19 @@ export function CopyInvitationLink({
         } catch {
             setCopied(false);
         }
+    }
+
+    if (tone === "figma") {
+        return (
+            <button
+                type="button"
+                onClick={handleCopy}
+                className={cn(adminFamilyDetail.btnPrimary, className)}
+            >
+                <FamilyDetailCopyIcon />
+                {copied ? copy.copied : copy.copyLink}
+            </button>
+        );
     }
 
     return (
@@ -37,7 +55,7 @@ export function CopyInvitationLink({
                 {url}
             </code>
             <button type="button" onClick={handleCopy} className={admin.btnPrimary}>
-                {copied ? "Copiado" : "Copiar enlace"}
+                {copied ? copy.copied : copy.copyLink}
             </button>
         </div>
     );

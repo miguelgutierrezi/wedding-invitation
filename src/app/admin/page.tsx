@@ -76,8 +76,7 @@ export default async function AdminDashboardPage() {
 
     return (
         <AdminShell
-            title="Resumen"
-            variant="resumen"
+            flush
             familyCount={metrics.familyCount}
             guestCount={metrics.totalGuests}
         >

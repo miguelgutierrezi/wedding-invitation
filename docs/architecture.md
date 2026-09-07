@@ -62,8 +62,8 @@ Use:
 /inspiracion/ellos     outfit inspiration (men)
 /inspiracion/ellas     outfit inspiration (women)
 /admin/login           administrator sign-in
-/admin                 dashboard (Figma Resumen on all viewports; compact chrome on other admin pages)
-/admin/analytics       rates + transport boarding breakdown
+/admin                 dashboard (Figma Resumen workspace; shared Figma navbar)
+/admin/analytics       Figma Estadísticas `96:39` + `99:229` landscape + `99:419` portrait + `99:607` mobile
 /admin/guests          per-guest listing
 /admin/families        family list
 /admin/families/new    create family + invitation link
@@ -116,15 +116,15 @@ confirmar”). Outfit inspiration routes are implemented under `/inspiracion/*`.
   the invitation body. Controlled by `features.music` + `assets.music`.
 - RSVP form is embedded in the invitation (cream band); it is not a separate navigation-only CTA page.
 - Cap multi-column invitation layouts on ultra-wide viewports so copy and CTAs stay visually grouped.
-- Admin chrome reuses invitation brand (accent header, cream page, Times/olive type). Hamburger / drawer until `xl`
-  (1280px) so iPad 11" keeps it on list/detail pages (yellow right drawer). Resumen (`/admin`) uses the Figma white
-  chrome on all viewports (hamburger until `lg`, inline pills from tablet landscape) and a left cream drawer (`94:591`).
-  Floating **+** is phone-only (hidden from 834px / iPad 11" up; olive on Resumen, accent elsewhere); the drawer has
-  **Nueva familia**. Closed drawer overlay does not capture taps. Cards below `lg`; tables from `lg`; inline nav from
-  `xl` on non-Resumen pages. Path rules live in `src/lib/admin/admin-chrome.ts`.
+- Admin chrome uses the Figma white navbar on every `AdminShell` page (`adminResumen` in `admin-ui.ts`): couple names +
+  Admin badge, olive hamburger until `lg` (left cream drawer `94:591`), inline olive pills + Salir from tablet
+  landscape. Login and accept-invite have no chrome. Page titles and the families back chevron live in the main column.
+  Floating **+** is phone-only (hidden from 834px / iPad 11" up; olive); the drawer has **Nueva familia**. Closed
+  drawer overlay does not capture taps. Cards below `lg`; tables from `lg`. Path rules live in
+  `src/lib/admin/admin-chrome.ts`.
 - Admin family/guest lists filter in memory, show active-filter chips, sort by column, and paginate at 25 rows. Query
   string (`q`, filters, `sort`, `dir`, `page`) is updated with Next `router.replace` (`useAdminListFilters`) so browser
-  back/forward restores the list filters. The chrome back chevron (and create-family “Volver al listado”) restores the
+  back/forward restores the list filters. The page-heading back chevron (and create-family “Volver al listado”) restores the
   last Familias list URL from `sessionStorage` (`admin-list-return.ts`), because a bare `/admin/families` Link drops
   query filters. SQL push-down can wait until a
   commercial install outgrows a few hundred guests.
@@ -134,7 +134,7 @@ confirmar”). Outfit inspiration routes are implemented under `/inspiracion/*`.
   `src/lib/admin/list-view.ts`.
 - **Admin family delete:** `delete_family` RPC (service-role) removes the family row; guests and RSVP rows cascade.
   Guest media `family_id` is set null. The UI requires typing the family display name.
-- **Admin operations:** dashboard action queue (photos awaiting review, disabled-pending families) and RSVP close checklist (`src/lib/admin/rsvp-close-checklist.ts`, 95% family/guest rates and zero pending companion names) plus follow-ups for transport, boarding, catering, names, and photos. Resumen shows days until the RSVP deadline. Family list/detail chips: `family-ops.ts`. Family detail activity: `audit_events` + guest media (`family-activity.ts`). Compact chrome back chevron on create and family detail. WhatsApp reminders are clipboard-only
+- **Admin operations:** dashboard action queue (photos awaiting review, disabled-pending families) and RSVP close checklist (`src/lib/admin/rsvp-close-checklist.ts`, 95% family/guest rates and zero pending companion names) plus follow-ups for transport, boarding, catering, names, and photos. Resumen shows days until the RSVP deadline. Family list/detail chips: `family-ops.ts`. Family detail activity: `audit_events` + guest media (`family-activity.ts`). Page-heading back chevron on create and family detail. WhatsApp reminders are clipboard-only
   (`src/lib/admin/whatsapp-reminder.ts` + `weddingConfig.admin.whatsappReminderTemplate`). Resumen offers a single Excel
   download; optional `?kind=` slices remain on `/api/admin/export`. Disable/regenerate invitation confirm in the family
   form. **Batch actions:** checkbox selection on families/guests/photos (`src/lib/admin/selection.ts`, cap `ADMIN_BATCH_MAX_IDS`); copy links/contacts; POST `/api/admin/export` with selected ids; enable/disable families; approve/reject media.
@@ -177,7 +177,8 @@ Current coverage targets:
 - Admin list filter parse/match/chips/query + list-view sort/pagination.
 - Family activity labels + open-event collapsing; family operational chips.
 - Admin batch id validation, row selection helpers, export scope.
-- Admin compact chrome path helpers.
+- Admin chrome path helpers (shared Figma navbar).
+- Admin analytics Figma helpers (rate rows, 12 stat cards, boarding points).
 - Example-family name helper (`ejemplo` word, analytics exclusion).
 - Cover greeting helper (`formatCoverGreeting`).
 - Placeholder companion names (`isPlaceholderGuestName`).

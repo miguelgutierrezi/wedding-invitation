@@ -1,12 +1,12 @@
 /**
- * Compact vs desktop admin chrome.
+ * Admin chrome path helpers.
  *
- * - Hamburger until Tailwind `xl` (1280px) on most admin pages, so iPad 11"
- *   (834×1194) keeps the drawer in portrait and landscape.
- * - Resumen (`/admin`) uses the Figma layout on all viewports: mobile stacked
- *   cards, hamburger until `lg` (Figma left drawer `94:591`), inline nav from tablet landscape.
+ * - Shared Figma navbar on every admin page that has chrome: white header,
+ *   hamburger until `lg` (left cream drawer `94:591`), inline pills from
+ *   tablet landscape.
  * - Floating “+” is phone-only (hidden from iPad 11" / 834px up).
- * Layout itself is Tailwind in `AdminChrome`; these helpers keep path behavior testable.
+ * Layout itself is Tailwind in `AdminChrome`; these helpers keep path
+ * behavior testable.
  */
 
 import {adminCopy} from "@/lib/admin/admin-copy";
@@ -14,14 +14,14 @@ import {adminCopy} from "@/lib/admin/admin-copy";
 /** iPad 11" portrait CSS width. Hide the new-family FAB from this width up. */
 export const ADMIN_FAB_HIDE_MIN_PX = 834;
 
-/** Inline desktop nav on non-Resumen admin pages (`xl`). iPad 11" landscape is 1194px. */
-export const ADMIN_DESKTOP_NAV_MIN_PX = 1280;
+/** Inline olive nav pills from tablet landscape (`lg`) on all chrome pages. */
+export const ADMIN_DESKTOP_NAV_MIN_PX = 1024;
 
 /** Figma Resumen portrait density (2×2 KPIs, side-by-side banner CTAs). */
 export const ADMIN_RESUMEN_WIDE_MIN_PX = 834;
 
-/** Figma Resumen tablet landscape: inline nav + two-column workspace (`lg`). */
-export const ADMIN_RESUMEN_LANDSCAPE_MIN_PX = 1024;
+/** Figma Resumen tablet landscape: two-column workspace (`lg`). Same as inline nav. */
+export const ADMIN_RESUMEN_LANDSCAPE_MIN_PX = ADMIN_DESKTOP_NAV_MIN_PX;
 
 export function isAdminNavActive(pathname: string, href: string): boolean {
     if (href === "/admin") {
@@ -66,9 +66,9 @@ export type ResumenDrawerNavItem = {
 /** Existing admin routes only — no Figma-only Transporte / Mensajes / Configuración. */
 export const RESUMEN_DRAWER_NAV: readonly ResumenDrawerNavItem[] = [
     {href: "/admin", label: adminCopy.nav.summary, icon: "grid"},
-    {href: "/admin/families", label: adminCopy.nav.families, icon: "users", badge: "families"},
-    {href: "/admin/guests", label: adminCopy.nav.guests, icon: "user", badge: "guests"},
     {href: "/admin/analytics", label: adminCopy.nav.statistics, icon: "chart"},
+    {href: "/admin/guests", label: adminCopy.nav.guests, icon: "user", badge: "guests"},
+    {href: "/admin/families", label: adminCopy.nav.families, icon: "users", badge: "families"},
     {href: "/admin/photos", label: adminCopy.nav.photos, icon: "camera"},
     {href: "/admin/admins", label: adminCopy.nav.admins, icon: "shield"},
 ];

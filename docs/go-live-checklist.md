@@ -25,12 +25,12 @@ Operational checklist before sharing invitation links widely. Does not authorize
 - [ ] Edit an existing family (rename guest, change gender/seats, toggle enabled) and confirm no partial state.
 - [ ] Regenerate slug if needed; old slug should stop resolving.
 - [ ] Dashboard / analytics / guests / photos pages load without errors. Analytics omit families whose name includes
-  **ejemplo**.
+  **ejemplo**. Estadísticas shows live rates, bus points, and the 12 metric cards.
 - [ ] Dashboard metric cards deep-link to pre-filtered lists (pending families, guests with bus, etc.).
 - [ ] Dashboard shows action queue + RSVP close checklist; **Descargar lista** from Resumen.
 - [ ] Family detail: copy invitation URL and WhatsApp reminder; confirm before disable / regenerate.
-- [ ] Phone: hamburger + floating **+**. iPad 11"+ : hamburger, **no** floating + (use drawer **Nueva familia**). From
-  `xl` (1280px): inline desktop nav + tables. Lists are cards below `lg`.
+- [ ] Phone: hamburger + floating **+**. iPad 11" portrait: hamburger, **no** floating + (use drawer **Nueva
+  familia**). From `lg` (1024px): inline olive nav on every admin page with chrome. Lists are cards below `lg`.
 - [ ] Nueva familia **and family detail**: back arrow returns to `/admin/families`; no floating **+** on the create page.
 - [ ] Family detail shows actividad reciente after opening the invitation / submitting RSVP.
 - [ ] Batch: select families → copy links / download Excel / disable with confirm; guests copy phones; photos approve selected.

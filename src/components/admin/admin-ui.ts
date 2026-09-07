@@ -85,9 +85,10 @@ export const admin = {
 } as const;
 
 /**
- * Resumen Figma: mobile `94:414`, portrait `94:232` from 834px, landscape `94:34`
- * from `lg`, desktop `91:40` from `xl`. Sans UI + Times metrics.
- * Do not use these on the public invitation.
+ * Admin Figma chrome + Resumen workspace: mobile `94:414`, portrait `94:232`
+ * from 834px, landscape `94:34` from `lg`, desktop `91:40` from `xl`.
+ * The white header / left drawer tokens are the standard admin navbar.
+ * Sans UI + Times metrics. Do not use these on the public invitation.
  */
 export const adminResumen = {
     sans: "font-[family-name:var(--font-body)]",
@@ -104,6 +105,8 @@ export const adminResumen = {
     user: "max-w-[7.5rem] truncate font-[family-name:var(--font-body)] text-xs font-semibold text-admin-ink min-[834px]:max-w-36 min-[834px]:text-[13px] min-[834px]:font-medium xl:max-w-48 xl:text-sm",
     signOut:
         "hidden min-h-11 shrink-0 items-center rounded-full px-3 font-[family-name:var(--font-body)] text-[13px] font-medium text-admin-muted transition-colors hover:text-admin-ink focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none lg:inline-flex xl:text-sm",
+    headerNav:
+        "hidden min-w-0 flex-1 items-center justify-center gap-0.5 overflow-x-auto lg:flex xl:gap-1",
     menuButton:
         "inline-flex size-11 shrink-0 items-center justify-center rounded-full text-admin-olive hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none lg:hidden",
     banner:
@@ -127,6 +130,35 @@ export const adminResumen = {
     actionMain:
         "flex min-w-0 w-full flex-1 flex-col gap-5 xl:gap-6",
     kpiGrid: "grid grid-cols-1 gap-4 min-[834px]:grid-cols-2 xl:grid-cols-4 xl:gap-6",
+    statsGrid:
+        "grid w-full grid-cols-1 gap-3 min-[834px]:grid-cols-2 min-[834px]:gap-4 lg:grid-cols-3 xl:gap-6",
+    busGrid: "grid w-full grid-cols-1 gap-3 min-[834px]:grid-cols-2 min-[834px]:gap-4 xl:gap-6",
+    busCard:
+        "flex min-w-0 w-full flex-col gap-2.5 rounded-xl border border-admin-border bg-admin-canvas p-4 transition-opacity hover:opacity-90 min-[834px]:gap-3 min-[834px]:rounded-2xl min-[834px]:p-6 xl:rounded-[16px]",
+    busValue:
+        "font-[family-name:var(--font-timer)] text-[32px] leading-none font-bold tabular-nums text-admin-ink min-[834px]:text-[36px] xl:text-[48px]",
+    statsValue:
+        "font-[family-name:var(--font-timer)] text-[32px] leading-none font-bold tabular-nums text-admin-ink min-[834px]:text-[36px] xl:text-[40px]",
+    statsGaugeValue:
+        "font-[family-name:var(--font-timer)] text-[22px] leading-none font-bold tabular-nums text-admin-olive min-[834px]:text-[24px] xl:text-[28px]",
+    analyticsOverlineStacked: "flex flex-col gap-1 lg:hidden",
+    analyticsOverlineInline: "hidden flex-wrap items-center gap-2 lg:flex",
+    analyticsBannerLead: "flex min-w-0 flex-col gap-2.5 min-[834px]:gap-2",
+    analyticsBannerTitle:
+        "font-[family-name:var(--font-timer)] text-[26px] leading-tight font-bold text-white min-[834px]:text-[28px] xl:text-[clamp(1.75rem,2.4vw,2.25rem)]",
+    analyticsBannerBody:
+        "font-[family-name:var(--font-body)] text-[13px] leading-[1.4] text-admin-wash xl:text-sm",
+    analyticsRateStack:
+        "flex w-full flex-col gap-4 min-[834px]:gap-5 xl:gap-6",
+    analyticsRateRow: "flex min-w-0 flex-col gap-2 min-[834px]:gap-3",
+    analyticsRateHead:
+        "flex min-w-0 flex-col gap-1 min-[834px]:flex-row min-[834px]:items-baseline min-[834px]:justify-between min-[834px]:gap-4",
+    analyticsRateTitle:
+        "font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-ink min-[834px]:text-[14px] xl:text-[15px]",
+    analyticsRateHint:
+        "font-[family-name:var(--font-body)] text-[11px] text-admin-muted min-[834px]:text-xs xl:text-[13px]",
+    analyticsCardLabel:
+        "font-[family-name:var(--font-body)] text-[11px] font-semibold tracking-[0.06em] text-admin-muted uppercase lg:text-xs",
     kpiCard:
         "flex min-w-0 flex-1 flex-col gap-2 rounded-[14px] border border-admin-border bg-white p-4 shadow-[0_4px_6px_rgba(95,100,70,0.02)] transition-opacity hover:opacity-90 min-[834px]:gap-2.5 min-[834px]:rounded-2xl min-[834px]:p-5 xl:gap-3 xl:rounded-[20px] xl:p-6",
     kpiLabel:

@@ -24,8 +24,9 @@ may proceed when the user requests it explicitly.
 | Event TZ display (`America/Bogota`)         | Implemented (`event-timezone.ts`)                                              |
 | Admin Excel export                          | Full workbook + `kind=attending\|transport\|dietary\|contacts`                 |
 | Admin families/guests lists                 | Filters, chips, column sort, page size 25; cards below `lg`                    |
-| Admin compact chrome                        | Hamburger until `xl`; FAB phone-only (hidden iPad 11"+)        |
+| Admin compact chrome                        | Figma white navbar on all `AdminShell` pages; hamburger until `lg`; FAB phone-only |
 | Admin Resumen                               | Figma `94:414` + drawer `94:591`; `94:232` from 834px; `94:34` from `lg`; `91:40` from `xl` |
+| Admin Estadísticas                          | Figma `96:39` + `99:229` landscape + `99:419` portrait + `99:607` mobile |
 | Guest phone/email                           | Mirrored from family RSVP onto `guests`                                        |
 | Admin plain-language UI                     | Non-technical Spanish labels in admin panel                                    |
 | Delete family (admin)                       | RPC + confirm-by-name; works with unsaved edits                                |
@@ -37,6 +38,34 @@ may proceed when the user requests it explicitly.
 | Guest media uploads                         | **Implemented**                                                                |
 | WhatsApp scheduled send                     | Not implemented                                                                |
 | Resend transactional email product         | Not implemented (Auth invite/reset SMTP only)                      |
+
+## Completed: admin Estadísticas mobile (Figma `99:607`)
+
+`/admin/analytics` below 834px keeps the shared hamburger chrome and the phone **+** FAB (untouched). Banner stays
+stacked: two-line overline, compact title (“Panel de Estadísticas”), compact body, then full-width CTAs one under the
+other. Rate percents sit **under** the labels (beside them from 834px). Boarding cards and the 12 metrics are a single
+column. Gauge type is `22px`. Do not add a second FAB.
+
+## Completed: admin Estadísticas tablet portrait (Figma `99:419`)
+
+`/admin/analytics` from 834px (iPad 11" portrait) keeps the hamburger chrome (untouched). Banner is stacked: two-line
+overline, then title, then two equal-width CTAs. Rate bars stay full width; boarding cards and the 12 metrics sit in
+**2 columns**. Type density matches landscape numbers (`36px` values, `24px` gauges). No tablet FAB — **Nueva familia**
+stays in the drawer. Helper breakpoint: `ADMIN_RESUMEN_WIDE_MIN_PX`.
+
+## Completed: admin Estadísticas tablet landscape (Figma `99:229`)
+
+`/admin/analytics` from `lg` (1024px) uses the landscape workspace: banner CTAs on the right (shared banner token; chrome
+untouched), two boarding cards, and a **3-column** metric grid (not waiting for `xl`). Type density steps up
+(`statsValue` / `statsGaugeValue` / `busValue` at `lg`). Chrome/nav unchanged.
+
+## Completed: admin Estadísticas desktop (Figma `96:39`)
+
+`/admin/analytics` uses the shared Figma navbar and a full-bleed workspace: olive banner (couple overline, live RSVP
+deadline, **Descargar lista**), confirmation rate bars, two boarding-point cards from `weddingConfig.transport`, and a
+12-card metric grid (1 column on phone, 2 from 834px, 3 from `lg`). Numbers and list deep-links stay live
+(`getAnalyticsSnapshot`). No Figma-only Mensajes tab. The “ejemplo” exclusion note stays under the grid. Helpers:
+`src/lib/admin/admin-analytics.ts`.
 
 ## Completed: analytics omit example families
 
@@ -51,14 +80,20 @@ server still checks the name stored in the database.
 
 ## Completed: admin compact chrome (phone + tablet)
 
-- Hamburger / drawer until Tailwind `xl` (1280px), so iPad 11" (834×1194) keeps it in portrait and landscape. Closed
-  drawer overlay uses `pointer-events-none` so it cannot swallow the hamburger tap (iPad Chrome).
-- Floating **+** is **phone-only** (hidden from 834px / iPad 11" up). Tablets use **Nueva familia** in the drawer (and
-  the families page button). Still hidden on `/admin/families/new`.
-- Lists: cards below `lg`; tables from `lg`. Desktop inline nav from `xl`.
-- Path helpers + tests: `src/lib/admin/admin-chrome.ts` (`ADMIN_FAB_HIDE_MIN_PX`, `ADMIN_DESKTOP_NAV_MIN_PX`,
+Shared Figma navbar on every `AdminShell` page (not login / accept-invite): white header, olive hamburger until
+`lg` (left cream drawer), inline pills from tablet landscape. Page titles live under the bar; back chevron on create
+and family detail. Floating **+** is **phone-only** (hidden from 834px / iPad 11" up; olive). Tablets use **Nueva
+familia** in the drawer (and the families page button). Still hidden on `/admin/families/new`.
+- Lists: cards below `lg`; tables from `lg`.
+- Path helpers + tests: `src/lib/admin/admin-chrome.ts` (`ADMIN_FAB_HIDE_MIN_PX`, `ADMIN_DESKTOP_NAV_MIN_PX` = 1024,
   `ADMIN_RESUMEN_WIDE_MIN_PX`, `ADMIN_RESUMEN_LANDSCAPE_MIN_PX`).
-- Drawer respects `prefers-reduced-motion`. Back chevron on create and family detail.
+- Drawer respects `prefers-reduced-motion`.
+
+## Completed: admin Figma navbar as chrome standard
+
+List, detail, analytics, photos, and admins pages no longer use the yellow accent header or right drawer. They share
+the Resumen header + `AdminResumenDrawer`. Resumen itself stays full-bleed (`flush`); other pages keep `max-w-6xl`
+padding and an in-page `h1`. Drawer Familias/Invitados badges use the same active-planning counts as Resumen.
 
 ## Completed: admin Resumen desktop (Figma `91:40`)
 
@@ -73,14 +108,14 @@ Lucide (`admin-resumen-icons.tsx`), the same set as Figma (`menu`, `download`, `
 The Resumen hamburger opens a **left** cream drawer (290px, scrim `admin-ink/65`): couple names + Admin badge, close
 control, existing admin routes with Lucide icons (Resumen active in olive), live Familias/Invitados counts, **Acciones
 rápidas** (Nueva familia, Descargar lista), and a footer with a name derived from the email local-part plus **Salir**.
-No Transporte / Mensajes / Configuración. Other admin pages keep the yellow right drawer until `xl`. Helpers:
-`RESUMEN_DRAWER_NAV`, `adminDrawerDisplayName`.
+No Transporte / Mensajes / Configuración. Nav order: Resumen, Estadísticas, Invitados, Familias, Fotos, Admins. The
+same drawer is the standard menu on every `AdminShell` page. Helpers: `RESUMEN_DRAWER_NAV`, `adminDrawerDisplayName`.
 
 ## Completed: admin Resumen mobile (Figma `94:414`)
 
 `/admin` below 834px uses the same Figma system: white header (olive hamburger + couple names + Admin badge + truncated
 email), stacked overline (`⏰ Límite`), full-width banner CTAs, single-column KPIs, stacked close / follow-ups /
-attention, compact badges. Phone FAB stays (`ADMIN_FAB_HIDE_MIN_PX`); on Resumen it is olive to match Figma. No drinks
+attention, compact badges. Phone FAB stays (`ADMIN_FAB_HIDE_MIN_PX`); it is olive to match Figma. No drinks
 list, no “Notificar”. Compact yellow dashboard on `/admin` is gone. Helper: `formatResumenDeadlineOverline`.
 
 ## Completed: admin Resumen tablet portrait (Figma `94:232`)
@@ -89,13 +124,14 @@ list, no “Notificar”. Compact yellow dashboard on `/admin` is gone. Helper: 
 the Figma left drawer; no nav pills; Salir stays in the drawer), stacked banner with two equal-width CTAs, 2×2 KPIs,
 full-width close + follow-ups + attention (no 340px rail). Stacked panels use `w-full` so they are not content-sized.
 Compact title for follow-ups (`followUpsTitleCompact`). No tablet FAB — **Nueva familia** stays in the drawer. Helpers:
-`ADMIN_RESUMEN_WIDE_MIN_PX` (834) and `ADMIN_RESUMEN_LANDSCAPE_MIN_PX` (1024).
+`ADMIN_RESUMEN_WIDE_MIN_PX` (834) and `ADMIN_RESUMEN_LANDSCAPE_MIN_PX` (1024). The same header/drawer apply to other
+admin pages; only the workspace below is Resumen-specific.
 
 ## Completed: admin Resumen tablet landscape (Figma `94:34`)
 
 `/admin` from `lg` (1024px, iPad mini/11 landscape) uses the same Figma system with inline nav pills, 2×2 KPIs, stacked
-progress gauges, 340px attention rail, shorter badges (`7 restantes`, `7 fam. • 14 inv.`). Breakpoint helper:
-`ADMIN_RESUMEN_LANDSCAPE_MIN_PX`.
+progress gauges, 340px attention rail, shorter badges (`7 restantes`, `7 fam. • 14 inv.`). That inline-nav breakpoint
+is now the chrome standard on every `AdminShell` page. Helper: `ADMIN_RESUMEN_LANDSCAPE_MIN_PX`.
 
 ## Completed: RSVP partial attendance
 

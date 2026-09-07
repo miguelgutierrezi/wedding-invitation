@@ -90,7 +90,7 @@ src/
 │   └── admin.ts        # ADMIN_BATCH_MAX_IDS (no admin email allowlist here)
 ├── hooks/
 ├── lib/
-│   ├── admin/          # list filters, compact chrome, family-ops, batch selection, whatsapp reminder…
+│   ├── admin/          # list filters, Figma chrome, family-ops, batch selection, whatsapp reminder…
 │   ├── auth/           # requireAdmin + admin invite helpers
 │   ├── datetime/       # event-timezone
 │   ├── invitation/     # cover-greeting, outfit-inspiration, placeholder names

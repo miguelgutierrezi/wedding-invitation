@@ -2,7 +2,7 @@
  * Admin directory (`/admin/admins`) — Figma desktop `85:40`, tablet `85:133`,
  * mobile `85:220`.
  *
- * Breakpoints (content only; chrome unchanged):
+ * Breakpoints (content only; chrome is the shared Figma navbar):
  * - `< md` phone: nested entry cards (current admin wash fill)
  * - `md`–`lg` tablet portrait: left (email+meta) / right (badge+actions)
  * - `lg+` tablet landscape + desktop: single horizontal row (via `lg:contents`)

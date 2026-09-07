@@ -73,7 +73,10 @@ describe("partitionAdminDirectory", () => {
                 email_confirmed_at: "2026-09-05T10:00:00.000Z",
                 invited_at: "2026-09-04T10:00:00.000Z",
                 last_sign_in_at: "2026-09-05T11:00:00.000Z",
-                user_metadata: {role: "admin"},
+                user_metadata: {
+                    role: "admin",
+                    admin_onboarded_at: "2026-09-05T11:00:05.000Z",
+                },
                 app_metadata: {},
                 aud: "authenticated",
                 created_at: "2026-09-04T00:00:00.000Z",

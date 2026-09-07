@@ -19,7 +19,10 @@ import {
     loginPasswordInputType,
     loginPasswordToggleLabel,
 } from "@/lib/admin/admin-login-layout";
-import {validateNewAdminPassword} from "@/lib/auth/admin-accept-invite";
+import {
+    ADMIN_ONBOARDED_METADATA_KEY,
+    validateNewAdminPassword,
+} from "@/lib/auth/admin-accept-invite";
 import {createClient} from "@/lib/supabase/client";
 
 export type AdminAcceptInviteFormVariant = "desktop" | "portrait" | "mobile";
@@ -199,6 +202,10 @@ export function AdminAcceptInviteForm({
             });
             const {error: updateError} = await supabase.auth.updateUser({
                 password,
+                // Stamped only here, so the admin directory can tell a real
+                // "crear contraseña" completion from a bare invite-link open
+                // (e.g. an Outlook/Defender SafeLinks pre-scan).
+                data: {[ADMIN_ONBOARDED_METADATA_KEY]: new Date().toISOString()},
             });
 
             if (updateError) {

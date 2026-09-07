@@ -1,6 +1,15 @@
 /** Path where invitees land after clicking the Supabase invite email link. */
 export const ADMIN_ACCEPT_INVITE_PATH = "/admin/aceptar-invitacion";
 
+/**
+ * `user_metadata` key stamped (ISO timestamp) when an invitee finishes the
+ * "crear contraseña" step. Merely opening the invite link — including an
+ * Outlook / Microsoft Defender SafeLinks pre-scan — establishes a session and
+ * sets `last_sign_in_at` without ever reaching that step, so the admin
+ * directory keys "active" off this stamp instead of `last_sign_in_at`.
+ */
+export const ADMIN_ONBOARDED_METADATA_KEY = "admin_onboarded_at";
+
 export const ADMIN_PUBLIC_AUTH_PATHS = [
     "/admin/login",
     ADMIN_ACCEPT_INVITE_PATH,

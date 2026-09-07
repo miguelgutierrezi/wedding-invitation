@@ -1,4 +1,5 @@
 import {ADMIN_ALLOWED_EMAILS, ADMIN_INVITE_OTP_EXPIRY_SECONDS} from "@/config/admin";
+import {ADMIN_ONBOARDED_METADATA_KEY} from "@/lib/auth/admin-accept-invite";
 
 export type AdminInviteUser = {
     appMetadata?: Record<string, unknown> | null;
@@ -26,31 +27,59 @@ export function hasAdminRole(user: AdminInviteUser): boolean {
 }
 
 /**
- * Pending = invited admin who has never completed a sign-in.
+ * True once the invitee has completed the "crear contraseña" step, which stamps
+ * `ADMIN_ONBOARDED_METADATA_KEY`. Opening the invite link alone (or a mailbox
+ * security scanner opening it) never sets this, so it — not `last_sign_in_at` —
+ * is what promotes an invite to an active account.
+ */
+export function hasCompletedAdminOnboarding(user: AdminInviteUser): boolean {
+    const stamp =
+        user.userMetadata?.[ADMIN_ONBOARDED_METADATA_KEY] ??
+        user.appMetadata?.[ADMIN_ONBOARDED_METADATA_KEY];
+    return typeof stamp === "string" && stamp.trim().length > 0;
+}
+
+/**
+ * Pending = invited admin who has not finished choosing a password.
  *
- * Do not rely only on `email_confirmed_at === null`: some Supabase projects
- * auto-confirm invitees, which would empty the pending list while the person
- * still has not accepted / signed in.
+ * Do not rely on `last_sign_in_at`: opening the invite link — or an Outlook /
+ * Defender SafeLinks scanner opening it — establishes a session without ever
+ * setting a password. Completion is tracked explicitly via
+ * `hasCompletedAdminOnboarding`.
+ *
+ * Do not rely only on `email_confirmed_at === null` either: some Supabase
+ * projects auto-confirm invitees, which would empty the pending list while the
+ * person still has not accepted.
  */
 export function isPendingAdminInvite(user: AdminInviteUser): boolean {
-    if (!user.email || user.lastSignInAt) {
+    if (!user.email || hasCompletedAdminOnboarding(user)) {
         return false;
     }
 
     if (user.invitedAt) {
-        return hasAdminRole(user) || !user.emailConfirmedAt;
+        return true;
     }
 
-    return hasAdminRole(user) && !user.emailConfirmedAt;
+    // Older invites that never recorded a native `invited_at` marker.
+    return hasAdminRole(user) && !user.lastSignInAt && !user.emailConfirmedAt;
 }
 
 /**
- * Active admin account = Auth user who has signed in at least once.
- * Guests do not create Auth accounts, so every signed-in user is an admin
- * for this app (see `requireAdmin`).
+ * Active admin account = invitee who completed onboarding, or an account
+ * created directly (no invite, e.g. from the Supabase dashboard) that has
+ * signed in at least once. Guests do not create Auth accounts, so every such
+ * user is an admin for this app (see `requireAdmin`).
  */
 export function isActiveAdminAccount(user: AdminInviteUser): boolean {
-    return Boolean(user.email && user.lastSignInAt);
+    if (!user.email) {
+        return false;
+    }
+
+    if (hasCompletedAdminOnboarding(user)) {
+        return true;
+    }
+
+    return !user.invitedAt && Boolean(user.lastSignInAt);
 }
 
 /** Couple owner emails cannot be removed by other admins. */

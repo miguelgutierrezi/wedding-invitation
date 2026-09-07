@@ -44,16 +44,31 @@ describe("isPendingAdminInvite", () => {
         ).toBe(true);
     });
 
-    it("excludes an accepted invite once the admin has signed in", () => {
+    it("excludes an invite once the password step is complete", () => {
         expect(
             isPendingAdminInvite({
                 email: "aceptada@example.com",
                 emailConfirmedAt: "2026-09-05T10:00:00.000Z",
                 invitedAt: "2026-09-04T10:00:00.000Z",
                 lastSignInAt: "2026-09-05T11:00:00.000Z",
-                userMetadata: {role: "admin"},
+                userMetadata: {
+                    role: "admin",
+                    admin_onboarded_at: "2026-09-05T11:00:05.000Z",
+                },
             }),
         ).toBe(false);
+    });
+
+    it("stays pending after a bare invite-link open with no password set", () => {
+        expect(
+            isPendingAdminInvite({
+                email: "escaneada@example.com",
+                emailConfirmedAt: "2026-09-05T10:00:00.000Z",
+                invitedAt: "2026-09-05T10:00:00.000Z",
+                lastSignInAt: "2026-09-05T10:00:03.000Z",
+                userMetadata: {role: "admin"},
+            }),
+        ).toBe(true);
     });
 
     it("excludes a non-admin account without an invitation marker", () => {
@@ -68,13 +83,38 @@ describe("isPendingAdminInvite", () => {
 });
 
 describe("isActiveAdminAccount", () => {
-    it("recognizes a signed-in Auth user as an active admin", () => {
+    it("recognizes a directly-created signed-in account as an active admin", () => {
         expect(
             isActiveAdminAccount({
                 email: "activo@example.com",
                 lastSignInAt: "2026-09-05T11:00:00.000Z",
             }),
         ).toBe(true);
+    });
+
+    it("recognizes an invitee who completed the password step", () => {
+        expect(
+            isActiveAdminAccount({
+                email: "aceptada@example.com",
+                invitedAt: "2026-09-04T10:00:00.000Z",
+                lastSignInAt: "2026-09-05T11:00:00.000Z",
+                userMetadata: {
+                    role: "admin",
+                    admin_onboarded_at: "2026-09-05T11:00:05.000Z",
+                },
+            }),
+        ).toBe(true);
+    });
+
+    it("excludes an invitee who only opened the link without setting a password", () => {
+        expect(
+            isActiveAdminAccount({
+                email: "escaneada@example.com",
+                invitedAt: "2026-09-05T10:00:00.000Z",
+                lastSignInAt: "2026-09-05T10:00:03.000Z",
+                userMetadata: {role: "admin"},
+            }),
+        ).toBe(false);
     });
 
     it("excludes pending invites that have never signed in", () => {

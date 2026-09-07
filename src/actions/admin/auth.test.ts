@@ -209,7 +209,10 @@ describe("admin auth and family mutation actions", () => {
                     {
                         id: "u-accepted",
                         email: "aceptada@example.com",
-                        user_metadata: {role: "admin"},
+                        user_metadata: {
+                            role: "admin",
+                            admin_onboarded_at: "2026-09-05T11:00:05.000Z",
+                        },
                         app_metadata: {},
                         email_confirmed_at: "2026-09-05T10:00:00.000Z",
                         invited_at: "2026-09-04T10:00:00.000Z",

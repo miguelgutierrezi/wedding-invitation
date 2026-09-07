@@ -1,10 +1,10 @@
 import Image from "next/image";
-import {notFound} from "next/navigation";
 import type {Metadata} from "next";
 
 import {InspirationBackButton} from "@/components/invitation/inspiration-back-button";
 import {InvitationMusicControl} from "@/components/invitation/invitation-music-control";
 import {getOutfitInspirationPage, isInspirationAudience,} from "@/lib/invitation/outfit-inspiration";
+import {redirectUnknownRoute} from "@/lib/public/root-not-found-layout";
 import {weddingConfig} from "@/config/wedding";
 
 type InspirationPageProps = {
@@ -46,7 +46,7 @@ export default async function OutfitInspirationPage({
     const page = getOutfitInspirationPage(audience);
 
     if (!page) {
-        notFound();
+        redirectUnknownRoute();
     }
 
     return (

@@ -39,8 +39,41 @@ may proceed when the user requests it explicitly.
 | Admin password reset                       | Same Figma `80:40` layout as invite (`emails/admin-reset-password.html`); OTP 24 h |
 | Analytics example families                  | Names containing the word **ejemplo** omitted from stats           |
 | Guest media uploads                         | **Implemented**; public `/fotos` + `/i/[slug]/fotos` mobile Figma `157:165` below 834px, portrait `157:97` from 834px, landscape `157:29` from `lg`, desktop `155:34` from `xl` |
+| Public root `/`                             | Figma `158:213` below 834px + `158:198` from 834px + `158:183` from `lg` + `158:168` from `xl`; unmatched routes redirect here |
 | WhatsApp scheduled send                     | Not implemented                                                                |
 | Resend transactional email product         | Not implemented (Auth invite/reset SMTP only)                      |
+
+## Completed: public root mobile (Figma `158:213`)
+
+`/` below 834px uses the Figma canvas at 390×844 density: cream board with safe-area padding (16×48×32), **inline**
+centered brand (20px couple names + 13px **• Admin Panel**), full-width 20px-radius card (24×40 padding, 80px
+olive **404**, 26px Times title, 13px lead), 12px footer. No home CTA (`/` is already this page). Portrait `158:198` still
+starts at 834px. Helpers: `rootNotFoundMobileWorkspace`.
+
+## Completed: public root tablet portrait (Figma `158:198`)
+
+`/` from 834px until `lg` uses the Figma canvas at 768×1024 density: stacked centered brand (24px couple names + 14px
+**• Admin Panel**), 40×64×48 padding, the same 480px card as landscape/desktop (24px radius, 48×56 padding, 96px olive
+**404**, Times **Página no encontrada**), 14px footer. No home CTA. Landscape `158:183` still starts at
+`lg`. Mobile `158:213` covers below 834px. Helpers: `rootNotFoundPortraitWorkspace`.
+
+## Completed: public root tablet landscape (Figma `158:183`)
+
+`/` from `lg` until `xl` uses the Figma canvas at 1024×768 density: the same 480px create-style card as desktop (24px
+radius, 48×56 padding, 96px olive **404**, Times **Página no encontrada**), with landscape
+chrome in the page flow — 20px couple names + 14px **• Admin Panel** at 64×48, 14px footer at 40px. No home CTA.
+Desktop `158:168` still starts at `xl`. Portrait `158:198` covers 834px until `lg`. Mobile `158:213` covers below 834px.
+Helpers: `rootNotFoundLandscapeWorkspace`.
+
+## Completed: public root desktop (Figma `158:168`)
+
+`/` from `xl` uses the Figma not-found canvas: cream board, **Nychol & Miguel • Admin Panel** in the page flow at
+64×48, centered 480px white card (24px radius, 48×56 padding, 96px olive **404**, Times **Página no encontrada**, 14px
+lead), 14px footer copyright. No home CTA (`/` is already this page). Landscape `158:183` covers `lg` until `xl`. Portrait
+`158:198` covers 834px until `lg`. Mobile `158:213` covers below 834px. Unknown public paths (`app/[...slug]`), unknown
+admin paths (`app/admin/[...slug]`), invalid invitation slugs, and missing family ids **redirect to `/`**.
+`app/not-found.tsx` renders the same screens as a fallback. Helpers: `src/lib/public/root-not-found-layout.ts`.
+Layout convention: `docs/invitation-ui.md` **Public root 404**.
 
 ## Completed: admin login mobile (Figma `152:29`)
 

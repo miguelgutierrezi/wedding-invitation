@@ -54,7 +54,7 @@ Use:
 ## Route direction
 
 ```text
-/                      public landing (as implemented)
+/                      public 404 landing (Figma `158:213` below 834px + `158:198` from 834px + `158:183` from `lg` + `158:168` from `xl`); unmatched routes redirect here
 /i/[slug]              personalized invitation cover (greeting by guest count / gender)
 /i/[slug]/invitacion   full invitation + embedded RSVP
 /i/[slug]/fotos        guest media upload (family-bound); mobile Figma `157:165` below 834px + portrait `157:97` from 834px + landscape `157:29` from `lg` + desktop `155:34` from `xl`
@@ -76,7 +76,9 @@ Use:
 
 Public invitation presentation details live in `docs/invitation-ui.md`. Admin presentation tokens live in
 `src/components/admin/admin-ui.ts` (`admin` + `adminResumen` + list tokens including `adminPhotos`, `adminAdmins`,
-`adminFamilyDetail`, `adminNewFamily`, and `adminLogin`).
+`adminFamilyDetail`, `adminNewFamily`, and `adminLogin`). Public `/` 404 tokens live in
+`src/components/public/root-not-found-ui.ts`.
+
 Do not treat product roadmap sections as authorization to implement unfinished work.
 
 ## Configuration
@@ -117,6 +119,12 @@ confirmar”). Outfit inspiration routes are implemented under `/inspiracion/*`.
   the invitation body. Controlled by `features.music` + `assets.music`.
 - RSVP form is embedded in the invitation (cream band); it is not a separate navigation-only CTA page.
 - Cap multi-column invitation layouts on ultra-wide viewports so copy and CTAs stay visually grouped.
+- Public `/` is a branded 404 (cream canvas, **Nychol & Miguel • Admin Panel**, white card; no home CTA — `/` is
+  already this page).
+  Screens: `src/components/public/root-not-found-screens.tsx`. Unknown public/admin paths, invalid invitation slugs, and
+  missing family ids call `redirectUnknownRoute()` → `/` (307). Do not combine that with `notFound()`. Catch-alls:
+  `app/[...slug]` and `app/admin/[...slug]`. `app/not-found.tsx` renders the same UI as a fallback. `/admin/login` stays
+  200.
 - Admin chrome uses the Figma white navbar on every `AdminShell` page (`adminResumen` in `admin-ui.ts`): couple names +
   Admin badge, olive hamburger until `lg` (left cream drawer `94:591`), inline olive pills + Salir from tablet
   landscape. Login has no chrome (mobile Figma `152:29` below 834px; portrait `151:30` from 834px; landscape `149:29` from `lg`; desktop `145:364` from `xl`). Accept-invite has no navbar (mobile Figma `158:136` below 834px; portrait `158:103` from 834px; landscape `158:72` from `lg`; desktop `158:34` from `xl`).
@@ -310,7 +318,8 @@ identifiers and hashed secrets where tokens are used. Behavior should:
 1. Generate sufficient random entropy on the server when regenerating tokens if the product still mints them.
 2. Prefer slug URLs for sharing (`/i/familia-ejemplo`).
 3. Store a one-way hash and a short non-sensitive preview when tokens are generated.
-4. Return indistinguishable not-found behavior for invalid, disabled, and unknown invitations where appropriate.
+4. Return indistinguishable not-found behavior for invalid, disabled, and unknown invitations where appropriate
+   (`redirectUnknownRoute()` → `/`, the same public 404 landing).
 
 Do not place internal family or guest IDs in public URLs. Guest UUIDs may appear only in authenticated/mutation payloads
 already tied to a validated invitation server-side.

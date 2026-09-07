@@ -16,8 +16,9 @@ does not authorize product features outside `docs/current-phase.md`.
 4. `src/config/transport.ts` for boarding point id helpers (keep in sync with meeting point ids).
 5. CSS variables and utilities in `src/app/globals.css`.
 6. Admin shared classes: `src/components/admin/admin-ui.ts`.
-7. Event display timezone: `src/lib/datetime/event-timezone.ts` (`America/Bogota`).
-8. This file for layout/component conventions.
+7. Public root 404: `src/components/public/root-not-found-ui.ts` + `src/lib/public/root-not-found-layout.ts`.
+8. Event display timezone: `src/lib/datetime/event-timezone.ts` (`America/Bogota`).
+9. This file for layout/component conventions.
 
 ## Couple names
 
@@ -33,6 +34,7 @@ Do not reintroduce “Nombre 1 / Nombre 2” placeholders for this couple.
 ## Routes
 
 ```text
+/                      public 404 landing (Figma `158:213` below 834px + `158:198` from 834px + `158:183` from `lg` + `158:168` from `xl`); unmatched routes redirect here
 /i/[slug]              invitation cover (personalized greeting by guest count / gender)
 /i/[slug]/invitacion   full invitation page (hero → footer + RSVP + share memories CTA)
 /i/[slug]/fotos        guest photo/video uploader (family-bound); mobile Figma `157:165` below 834px + portrait `157:97` from 834px + landscape `157:29` from `lg` + desktop `155:34` from `xl`
@@ -45,6 +47,26 @@ Slug lookup goes through invitation services; presentation must never surface in
 
 Cover CTA “Ver Invitación” navigates to `/invitacion` and, when music is enabled, starts the soundtrack on that user
 gesture.
+
+### Public root 404 (`/`)
+
+`/` is the public not-found landing (not the invitation). Unknown public paths, unknown admin paths, invalid or disabled
+invitation slugs, and missing family ids **redirect here** via `redirectUnknownRoute()` (a 307 to `/`). Do not call
+`notFound()` when a real redirect is required: inside `not-found.tsx` that yields an RSC 404 digest, not a 307.
+`app/not-found.tsx` still renders the same screens as a fallback.
+
+| Viewport | Tailwind | Figma | Density |
+|----------|----------|-------|---------|
+| Mobile | `< 834px` (`min-[834px]:hidden`) | `158:213` (390×844) | Inline centered brand (20px names + 13px **• Admin Panel**), 16×48×32 pad + safe area, full-width `rounded-[20px]` card (`px-6 py-10`), 80px olive **404**, 26px Times title, 13px/1.5 lead, 12px footer |
+| Portrait | `min-[834px]:flex lg:hidden` | `158:198` (768×1024) | Stacked centered brand (24px + 14px), 40×64×48 pad (`px-10 pt-16 pb-12`), 480px card (same as landscape/desktop) |
+| Landscape | `lg:flex xl:hidden` | `158:183` (1024×768) | Row brand (20px + 14px), 64×48×40 pad (`px-16 pt-12 pb-10`), 480px `rounded-[24px]` card (`px-12 py-14`), 96px **404**, 32px title, 14px/1.6 lead, 14px footer |
+| Desktop | `xl:flex` | `158:168` (1440×900) | Same card and type as landscape |
+
+Copy lives in `rootNotFoundCopy` (`src/lib/public/root-not-found-layout.ts`): **404**, **Página no encontrada**, and
+the expired-link body. There is **no** home CTA: `/` is already this landing, so **Volver al inicio** would loop.
+Brand and copyright reuse login helpers (`loginCoupleBrand`, `loginCopyright`). Classes:
+`src/components/public/root-not-found-ui.ts`. Screens: `root-not-found-screens.tsx`.
+`weddingConfig.copy.underConstruction` is unused.
 
 ### Cover greeting
 
@@ -77,7 +99,7 @@ asks for the real name **only if that person will attend**. Each listed guest ca
 | `--olive-wash`               | `#FAF9E6`          | Admin invite input / Cancelar surface                                                    |
 | `--status-active-*`          | `#EBFEE6` / `#166500` | Activo badge                                                                          |
 | `--status-pending-*`         | `#FEF08A` / `#854D0E` | Pendiente badge                                                                       |
-| `--admin-canvas`             | `#F5F4EB`          | Admin Resumen page (all viewports, Figma `94:414` / `94:232` / `94:34` / `91:40`)       |
+| `--admin-canvas`             | `#F5F4EB`          | Admin pages + public `/` 404 (Figma `158:213` / `158:198` / `158:183` / `158:168`) |
 | `--admin-olive` / `--admin-olive-end` | `#5F6446` / `#888F68` | Resumen header pills, banner gradient, progress fill                          |
 | `--admin-ink` / `--admin-muted` | `#303026` / `#727263` | Resumen body / secondary copy                                                   |
 | `--admin-border` / `--admin-wash` | `#E4E3DA` / `#F0F2EA` | Resumen cards, pills, gauges                                                    |
@@ -101,6 +123,7 @@ asks for the real name **only if that person will attend**. Each listed guest ca
 | Admin directory (`/admin/admins`)              | `--font-body` + Times banner on all sizes | Figma `136:29` mobile (nested cards) + `134:207` portrait from 834px + `134:121` landscape from `lg` + `134:35` desktop from `xl`; shared Figma navbar |
 | Admin login (`/admin/login`)                   | `--font-body` + Times title on all sizes  | Figma `152:29` mobile + `151:30` from 834px + `149:29` from `lg` + `145:364` from `xl`; recovery `153:103` below 834px + `153:80` from 834px + `153:57` from `lg` + `153:34` from `xl`; no navbar |
 | Guest fotos (`/i/[slug]/fotos`, `/fotos`)      | `--font-display` + `--font-body` on all sizes | Figma `157:165` mobile below 834px (20px pad, 36px title) + `157:97` portrait from 834px (48px pad, 42px title) + `157:29` landscape from `lg` (64px pad, 48px title) + `155:34` desktop from `xl` (120px pad, 56px title) |
+| Public root `/`                                | `--font-body` + Times 404 / title     | Figma `158:213` mobile below 834px (inline brand, full-width 20px-radius card, 80px **404**) + `158:198` from 834px + `158:183` from `lg` + `158:168` from `xl`; Inter maps to `--font-body` |
 
 
 
@@ -175,6 +198,7 @@ Asset: `weddingConfig.assets.coverBackground` → `Portada.jpg`.
 | RSVP form          | `rsvp-form.tsx`                 | Attendance, bus, **boarding point**, diet, contact (phone required)                         |
 | Share memories CTA | `invitation-share-memories.tsx` | Accent band + cream CTA → `/i/[slug]/fotos`                                                 |
 | Guest fotos page   | `guest-fotos-chrome.tsx` + `guest-media-uploader.tsx` | Mobile Figma `157:165` below 834px + portrait `157:97` from 834px + landscape `157:29` from `lg` + desktop `155:34` from `xl`; QR name field optional |
+| Public root 404    | `root-not-found-screens.tsx`    | `/` + `not-found.tsx`; Figma `158:213` / `158:198` / `158:183` / `158:168`; unmatched routes redirect here |
 | Footer             | `invitation-footer.tsx`         | Closing message + date on photo                                                             |
 
 Orchestration: `invitation-page-view.tsx`.

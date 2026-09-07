@@ -75,12 +75,15 @@ src/
 │   ├── fotos/          # guest media upload via event QR (?code=)
 │   ├── inspiracion/[audience]/
 │   ├── admin/          # login, dashboard, analytics, families, guests, photos, admins
+│   ├── [...slug]/          # unknown public paths redirect to `/`
 │   ├── api/admin/export/   # Excel (.xlsx) export Route Handler
-│   └── page.tsx
+│   ├── not-found.tsx       # fallback 404 UI (same Figma as `/`)
+│   └── page.tsx            # public 404 landing (Figma `158:213` / `158:198` / `158:183` / `158:168`)
 ├── components/
 │   ├── admin/
 │   ├── invitation/
 │   ├── media/
+│   ├── public/             # root 404 landing chrome
 │   └── rsvp/
 ├── config/
 │   ├── wedding.ts
@@ -96,6 +99,7 @@ src/
 │   ├── invitation/     # cover-greeting, outfit-inspiration, placeholder names
 │   ├── logging/        # serverLog + fingerprint
 │   ├── media/          # object keys, upload queue, quotas, QR window / PNG
+│   ├── public/         # root 404 landing helpers
 │   ├── security/       # slugs, tokens, rate limit
 │   ├── supabase/       # client / server / admin
 │   └── validation/     # Zod schemas (rsvp, admin-family, admin-filters, guest-media)

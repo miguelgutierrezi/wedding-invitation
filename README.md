@@ -12,6 +12,7 @@ la invitación.
 | Área                       | Estado                                                                                                                                                 |
 |----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Invitación pública         | Implementada y alineada con Figma + polish ([`docs/invitation-ui.md`](docs/invitation-ui.md))                                                          |
+| Raíz `/`                   | Figma `158:213` mobile + `158:198` portrait + `158:183` landscape + `158:168` desktop; rutas inexistentes redirigen aquí               |
 | Portada personalizada      | 1 → Querido/Querida; 2 → Queridos A y B; 3+ → Querida Familia…                                                                                         |
 | Nombres                    | Nychol & Miguel (`weddingConfig` + `events` vía migración)                                                                                             |
 | Zona horaria               | Etiquetas en `America/Bogota` (`event-timezone.ts`)                                                                                                    |
@@ -34,6 +35,7 @@ El alcance autorizado se define solo en [`docs/current-phase.md`](docs/current-p
 
 ### Enlaces locales útiles
 
+- 404 pública: [http://localhost:3000](http://localhost:3000) (rutas inexistentes redirigen aquí)
 - Invitación (slugs de seed): ver abajo
 - Admin: [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
 
@@ -147,7 +149,8 @@ supabase start
 pnpm dev
 ```
 
-La aplicación estará disponible en [http://localhost:3000](http://localhost:3000). Los valores locales de Supabase se
+La aplicación estará disponible en [http://localhost:3000](http://localhost:3000) (pantalla 404 pública; las invitaciones
+viven en `/i/[slug]`). Los valores locales de Supabase se
 obtienen con:
 
 ```bash

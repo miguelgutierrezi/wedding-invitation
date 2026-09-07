@@ -38,10 +38,14 @@ Operational checklist before sharing invitation links widely. Does not authorize
 - [ ] Batch: select families → copy links / download Excel / disable with confirm; guests copy phones; photos approve selected.
 - [ ] Resumen shows days until RSVP deadline and close follow-up rows (bus, dietas, fotos).
 - [ ] Delete a test family from family detail without saving pending edits (type the saved or on-screen name); it
-  disappears from lists and the invitation link 404s.
+  disappears from lists and the invitation link redirects to `/`.
 
 ## Smoke — public invitation
 
+- [ ] `/` shows the branded 404 (Figma `158:213` below 834px, `158:198` from 834px, `158:183` from `lg`, `158:168` from
+      `xl`): **Página no encontrada**, no home CTA. A bogus path such as `/no-existe` redirects to `/`.
+- [ ] An invalid or disabled invitation slug (`/i/slug-falso`) redirects to the same `/` 404 (indistinguishable from an
+      unknown URL). `/admin/login` still loads.
 - [ ] Cover greeting matches guest count (1 / 2 / 3+).
 - [ ] Cover shows `Portada.jpg`; CTA opens `/invitacion`.
 - [ ] Music starts only after CTA (if `soundtrack.mp3` present and `features.music`).

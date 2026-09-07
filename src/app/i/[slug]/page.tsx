@@ -1,7 +1,6 @@
-import {notFound} from "next/navigation";
-
 import {InvitationCover} from "@/components/invitation/invitation-cover";
 import {formatCoverGreeting} from "@/lib/invitation/cover-greeting";
+import {redirectUnknownRoute} from "@/lib/public/root-not-found-layout";
 import {getInvitationBySlug, markInvitationOpened,} from "@/services/invitations/get-invitation-by-token";
 
 type CoverPageProps = {
@@ -19,7 +18,7 @@ export default async function InvitationCoverPage({params}: CoverPageProps) {
     const invitation = await getInvitationBySlug(slug);
 
     if (!invitation) {
-        notFound();
+        redirectUnknownRoute();
     }
 
     try {

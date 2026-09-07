@@ -1,6 +1,5 @@
-import {notFound} from "next/navigation";
-
 import {InvitationPageView} from "@/components/invitation/invitation-page-view";
+import {redirectUnknownRoute} from "@/lib/public/root-not-found-layout";
 import {getInvitationBySlug} from "@/services/invitations/get-invitation-by-token";
 
 type InvitationBodyPageProps = {
@@ -20,7 +19,7 @@ export default async function InvitationBodyPage({
     const invitation = await getInvitationBySlug(slug);
 
     if (!invitation) {
-        notFound();
+        redirectUnknownRoute();
     }
 
     return (

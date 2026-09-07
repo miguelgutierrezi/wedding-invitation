@@ -3,7 +3,7 @@
 **Status:** product direction — invitation UI, admin, RSVP + boarding, hardening complete for authorized slices — see
 `current-phase.md`
 
-**Last reviewed:** 2026-09-06
+**Last reviewed:** 2026-09-07
 
 Este documento define qué producto se quiere construir. No autoriza por sí mismo la implementación de todas sus
 secciones. El alcance actualmente permitido está únicamente en `docs/current-phase.md`, y las decisiones técnicas
@@ -14,6 +14,7 @@ aprobadas están en `docs/architecture.md`.
 | Capacidad                           | Estado                                                                                 |
 |-------------------------------------|----------------------------------------------------------------------------------------|
 | Invitación pública (Figma + polish) | Implementada — ver **`docs/invitation-ui.md`**                                         |
+| Página 404 pública (`/`)            | Implementada — Figma `158:213` / `158:198` / `158:183` / `158:168`; rutas inexistentes redirigen aquí |
 | Saludo de portada                   | 1 / 2 / 3+ invitados; Querido/Querida según género                                     |
 | Inspiración de vestimenta           | `/inspiracion/ellos` · `/inspiracion/ellas`                                            |
 | Zona horaria de etiquetas           | `America/Bogota` (`event-timezone.ts`)                                                 |

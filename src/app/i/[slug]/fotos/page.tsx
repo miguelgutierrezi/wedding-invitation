@@ -1,8 +1,8 @@
 import type {Metadata} from "next";
-import {notFound} from "next/navigation";
 
 import {GuestFotosChrome} from "@/components/media/guest-fotos-chrome";
 import {GuestMediaUploader} from "@/components/media/guest-media-uploader";
+import {redirectUnknownRoute} from "@/lib/public/root-not-found-layout";
 import {getInvitationBySlug} from "@/services/invitations/get-invitation-by-token";
 
 type FamilyFotosPageProps = {
@@ -19,7 +19,7 @@ export default async function FamilyFotosPage({params}: FamilyFotosPageProps) {
     const invitation = await getInvitationBySlug(slug);
 
     if (!invitation) {
-        notFound();
+        redirectUnknownRoute();
     }
 
     return (

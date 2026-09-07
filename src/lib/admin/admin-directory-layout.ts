@@ -1,11 +1,10 @@
 /**
- * Admin directory (`/admin/admins`) — Figma desktop `85:40`, tablet `85:133`,
- * mobile `85:220`.
+ * Fallback tokens for invite/delete `tone="legacy"` (no longer the `/admin/admins`
+ * phone UI). Phone Figma `136:29` lives in `adminAdmins` mobile tokens +
+ * `AdminAdminsMobile`. From 834px: `134:207` / `134:121` / `134:35`.
  *
- * Breakpoints (content only; chrome is the shared Figma navbar):
+ * Breakpoints kept for the unused legacy fallback:
  * - `< md` phone: nested entry cards (current admin wash fill)
- * - `md`–`lg` tablet portrait: left (email+meta) / right (badge+actions)
- * - `lg+` tablet landscape + desktop: single horizontal row (via `lg:contents`)
  */
 
 export const adminDirectoryPageClass = "flex flex-col gap-5 md:gap-6 lg:gap-8";
@@ -20,7 +19,7 @@ export const adminDirectoryListClass =
 const adminDirectoryRowBaseClass =
     "flex flex-col gap-2.5 rounded-xl border border-olive-border p-3 md:flex-row md:items-center md:justify-between md:gap-4 md:rounded-none md:border-0 md:border-b md:border-olive-border md:bg-transparent md:px-2 md:py-4 md:last:border-b-0";
 
-/** Other admins / pending — white nested card on phone (Figma `85:220`). */
+/** Other admins / pending — white nested card on the unused legacy fallback. */
 export const adminDirectoryRowClass = `${adminDirectoryRowBaseClass} bg-white`;
 
 /** Signed-in admin — olive-wash fill on phone only. */
@@ -85,5 +84,5 @@ export const adminDirectoryStatusActiveClass =
 export const adminDirectoryStatusPendingClass =
     "inline-flex min-h-7 shrink-0 items-center whitespace-nowrap rounded-full bg-status-pending-bg px-2.5 py-1 text-[11px] font-semibold text-status-pending-fg md:px-3 md:text-xs";
 
-/** Invite form stacks with 8px gap on phone (Figma `85:243`). */
+/** Invite form stacks with 8px gap on the unused legacy fallback. */
 export const adminDirectoryInviteFormGapClass = "gap-2 md:gap-3";

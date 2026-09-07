@@ -98,7 +98,7 @@ asks for the real name **only if that person will attend**. Each listed guest ca
 | Admin Invitados (`/admin/guests`)              | `--font-body` table + Times banner                | Figma `109:372` mobile (1-col cards) + `109:36` from 834px (2-col) + `103:33` from `lg` + `100:38` from `xl` |
 | Admin Familias (`/admin/families`)             | `--font-body` table + Times banner                | Figma `126:29` mobile (1-col family cards) + `123:268` from 834px (2-col) + `117:29` from `lg` (compact date columns) + `109:645` from `xl` |
 | Admin Fotos (`/admin/photos`)                  | `--font-body` + Times banner                      | Figma `128:528` mobile (1-col cards) + `128:364` from 834px (2-col) + `128:201` from `lg` + `128:34` from `xl` |
-| Admin directory (`/admin/admins`)              | Figma `85:40` / tablet `85:133` / mobile `85:220` | Phone nested cards (TÚ wash); portrait clusters; `lg+` row; Times + olive tokens; shared Figma navbar |
+| Admin directory (`/admin/admins`)              | `--font-body` + Times banner on all sizes | Figma `136:29` mobile (nested cards) + `134:207` portrait from 834px + `134:121` landscape from `lg` + `134:35` desktop from `xl`; shared Figma navbar |
 
 
 

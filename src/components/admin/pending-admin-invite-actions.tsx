@@ -7,7 +7,8 @@ import {
     deletePendingAdminInviteAction,
     inviteAdminAction,
 } from "@/actions/admin/auth";
-import {admin} from "@/components/admin/admin-ui";
+import {admin, adminAdmins} from "@/components/admin/admin-ui";
+import {adminCopy} from "@/lib/admin/admin-copy";
 import {
     adminDirectoryBtnPrimaryClass,
     adminDirectoryBtnSecondaryClass,
@@ -16,21 +17,43 @@ import {
 export function PendingAdminInviteActions({
     inviteId,
     inviteEmail,
+    tone = "legacy",
+    block = false,
 }: {
     inviteId: string;
     inviteEmail: string;
+    tone?: "legacy" | "figma";
+    block?: boolean;
 }) {
     const router = useRouter();
+    const copy = adminCopy.adminsList;
     const [error, setError] = useState<string | null>(null);
     const [message, setMessage] = useState<string | null>(null);
     const [busyAction, setBusyAction] = useState<"resend" | "cancel" | null>(null);
     const [isPending, startTransition] = useTransition();
+    const figma = tone === "figma";
+    const resendClass = figma
+        ? block
+            ? adminAdmins.portraitResendBtn
+            : adminAdmins.resendBtn
+        : adminDirectoryBtnPrimaryClass;
+    const cancelClass = figma
+        ? block
+            ? adminAdmins.portraitCancelBtn
+            : adminAdmins.cancelBtn
+        : adminDirectoryBtnSecondaryClass;
 
     return (
-        <div className="flex flex-row flex-wrap items-center justify-end gap-2">
+        <div
+            className={
+                block
+                    ? adminAdmins.portraitPendingActions
+                    : "flex flex-row flex-wrap items-center justify-end gap-2"
+            }
+        >
             <button
                 type="button"
-                className={adminDirectoryBtnPrimaryClass}
+                className={resendClass}
                 disabled={isPending}
                 onClick={() => {
                     setError(null);
@@ -51,11 +74,13 @@ export function PendingAdminInviteActions({
                     });
                 }}
             >
-                {busyAction === "resend" && isPending ? "Enviando…" : "Reenviar"}
+                {busyAction === "resend" && isPending
+                    ? copy.inviteSending
+                    : copy.resend}
             </button>
             <button
                 type="button"
-                className={adminDirectoryBtnSecondaryClass}
+                className={cancelClass}
                 disabled={isPending}
                 onClick={() => {
                     const confirmed = window.confirm(
@@ -82,15 +107,24 @@ export function PendingAdminInviteActions({
                     });
                 }}
             >
-                {busyAction === "cancel" && isPending ? "Cancelando…" : "Cancelar"}
+                {busyAction === "cancel" && isPending
+                    ? copy.cancelling
+                    : copy.cancel}
             </button>
             {error ? (
-                <p className={`${admin.error} w-full text-right`} role="alert">
+                <p
+                    className={`${figma ? adminAdmins.error : admin.error} w-full text-right`}
+                    role="alert"
+                >
                     {error}
                 </p>
             ) : null}
             {message ? (
-                <p className={`${admin.muted} w-full text-right`}>{message}</p>
+                <p
+                    className={`${figma ? adminAdmins.notice : admin.muted} w-full text-right`}
+                >
+                    {message}
+                </p>
             ) : null}
         </div>
     );

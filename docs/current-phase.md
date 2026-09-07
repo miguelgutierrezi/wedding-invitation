@@ -25,6 +25,7 @@ may proceed when the user requests it explicitly.
 | Admin Excel export                          | Full workbook + `kind=attending\|transport\|dietary\|contacts`                 |
 | Admin families/guests lists                 | Filters, chips, column sort, page size 25; URL debounce 300 ms; search icon padding; guests Figma `109:372` mobile, `109:36` from 834px, `103:33` from `lg`, `100:38` from `xl`; families Figma `126:29` mobile, `123:268` from 834px, `117:29` from `lg`, `109:645` from `xl` |
 | Admin photos                                | Mobile Figma `128:528` below 834px, portrait `128:364` from 834px, landscape `128:201` from `lg`, desktop `128:34` from `xl`; QR rotate + PNG still after generate |
+| Admin Admins                                | Mobile Figma `136:29` below 834px, portrait `134:207` from 834px, landscape `134:121` from `lg`, desktop `134:35` from `xl` |
 | Admin compact chrome                        | Figma white navbar on all `AdminShell` pages; hamburger until `lg`; FAB on every viewport (hidden on `/admin/families/new`) |
 | Admin Resumen                               | Figma `94:414` + drawer `94:591`; `94:232` from 834px; `94:34` from `lg`; `91:40` from `xl` |
 | Admin Estadísticas                          | Figma `96:39` + `99:229` landscape + `99:419` portrait + `99:607` mobile |
@@ -75,6 +76,38 @@ moderation body — no RSVP deadline chip and no Excel CTA), eight live KPI card
 QR card (rotate / window / enable / reconcile; full URL + PNG QR only after generating a new code), and an Inter
 moderation table (Vista / Archivo / Origen / Estado / Tamaño / Acciones) with olive batch approve/reject. Shared navbar
 is unchanged. Helpers: `src/lib/admin/admin-photos-layout.ts`.
+
+## Completed: admin Admins mobile (Figma `136:29`)
+
+`/admin/admins` below 834px uses the Figma workspace with the shared hamburger chrome and the phone **+** FAB
+(untouched; do not add a second FAB). Stacked olive banner (28px title, access-role body), invite card with
+full-width email + olive **+ Invitar admin** (`rounded-[10px]`, 10px plus), then **Admins activos** as nested
+cards (email + **TÚ** / **Activo**, last access, full-width **Borrar admin** / **No disponible**). Pending
+invites use the same card stack when present. Helpers: `adminsMobileWorkspace`, `adminsMobileCardStack`,
+`adminsInviteStacked`.
+
+## Completed: admin Admins tablet portrait (Figma `134:207`)
+
+`/admin/admins` from 834px (iPad 11" portrait) until `lg` uses the Figma workspace: stacked olive banner
+(Administración · Admins, **Admins**), invite card with full-width email + olive **+ Invitar admin**, then
+**Admins activos** as nested cards (email + **TÚ** / **Activo**, last access, full-width **Borrar admin** /
+**No disponible**). Pending invites use the same card stack when present. Shared navbar is untouched (hamburger, no
+olive pills). The shared **+** FAB stays. Helpers: `ADMIN_ADMINS_PORTRAIT_MIN_PX`, `adminsPortraitCardStack`,
+`adminsInviteStacked`.
+
+## Completed: admin Admins tablet landscape (Figma `134:121`)
+
+`/admin/admins` from `lg` (1024px) uses the same Figma workspace as desktop, at landscape density: 32px banner
+title, 20px cards (`rounded-[20px]` / `p-6`), 22px invite title, 240px last-access column, truncated emails, and
+ink-weight dates. **Invitar admin** / **Borrar admin** / **No disponible** stay. Shared navbar is untouched. Helper:
+`ADMIN_ADMINS_LANDSCAPE_MIN_PX`.
+
+## Completed: admin Admins desktop (Figma `134:35`)
+
+`/admin/admins` from `xl` uses the Figma workspace: olive banner (Administración · Admins, **Admins**, access-role
+body), Inter invite card (rounded-12 email + olive **Invitar admin**), active-admin rows (email + **TÚ**, last access,
+**Activo**, **Borrar admin** / **No disponible**), and pending invites (empty copy or Reenviar / Cancelar). Shared
+navbar is unchanged. Helpers: `src/lib/admin/admin-admins-layout.ts`.
 
 ## Completed: admin Invitados mobile (Figma `109:372`)
 
@@ -261,12 +294,11 @@ Admin `listUsers` via `listAdminDirectory`. Helpers: `src/lib/auth/admin-invite.
 `src/lib/auth/list-pending-admin-invites.ts`, `src/lib/auth/admin-accept-invite.ts`. The accept-invite route is public in
 `src/proxy.ts` (like login).
 
-The invite email field + button stack until Tailwind `lg` (aligned with primary CTA `w-full` → `lg:w-auto`), so phones
-and portrait tablets no longer crush the input. Layout class: `src/lib/admin/admin-invite-form-layout.ts`. Directory row
-classes: `src/lib/admin/admin-directory-layout.ts`. Visual tokens from Figma (`--olive-border`, `--olive-wash`,
-`--olive-muted`, status active/pending) live in `globals.css`; email + **TÚ** sit in one identity group with `gap-2`
-(8px). Responsive content: phone nested cards (`85:220`, shorter invite lead, wash fill for TÚ) → tablet
-portrait left/right clusters (`85:133`) → `lg+` single row (`85:40`). Chrome/nav unchanged.
+The invite email field + button stack below `lg` (phone `136:29` + portrait `134:207`); landscape and desktop sit in
+one row. Layout helpers: `src/lib/admin/admin-admins-layout.ts` (`adminsInviteStacked`). Fallback row classes for
+`tone="legacy"` remain in `src/lib/admin/admin-invite-form-layout.ts` and `src/lib/admin/admin-directory-layout.ts`.
+Email + **TÚ** sit in one identity group. Responsive content: phone nested cards (`136:29`), portrait nested cards
+(`134:207`), then `134:121` landscape and `134:35` desktop (Inter, olive banner, table rows). Chrome/nav unchanged.
 
 The hosted **Invite user** email uses the branded HTML in `emails/admin-invite.html` (Figma node `80:40`: cream page,
 olive gradient header/footer `#5F6446`→`#888F68`, gold kicker `#BEB950`, cream body `#F5F3EB`, olive pill CTA with

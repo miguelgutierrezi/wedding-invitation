@@ -19,7 +19,7 @@ la invitación.
 | Música                     | Tras “Ver Invitación”; mute flotante; archivo en `public/invitation/soundtrack.mp3`                                                                    |
 | Inspiración outfit         | `/inspiracion/ellos` · `/inspiracion/ellas` (boards móvil + desktop)                                                                                   |
 | RSVP                       | Formulario embebido: asistencia, bus, **punto de encuentro**, dietas, contacto                                                                         |
-| Admin `/admin`             | Login, resumen (cierre + actividad de operación), estadísticas, invitados, familias (detalle con historial), fotos, Excel. Hamburguesa hasta `lg`; **+** nueva familia en todos los anchos; listados en tarjetas hasta `lg` |
+| Admin `/admin`             | Login, resumen (cierre + actividad de operación), estadísticas, invitados, familias (detalle con historial), fotos, **admins** (Figma `136:29` mobile + `134:207` from 834px + `134:121` from `lg` + `134:35` from `xl`), Excel. Hamburguesa hasta `lg`; **+** nueva familia en todos los anchos; listados en tarjetas hasta `lg` |
 | Visual admin               | Misma paleta/tipografía que la invitación (`admin-ui.ts`)                                                                                              |
 | Auth edge                  | Next.js 16 `src/proxy.ts` (gate `/admin` + `/api/admin`)                                                                                               |
 | Automated tests            | Vitest (`pnpm test`): RSVP, transport, slugs, cover greeting, TZ, guest media, admin (filtros, chrome, batch, invite, cierre RSVP, WhatsApp, export)   |

@@ -525,3 +525,112 @@ export const adminPhotos = {
         "inline-flex min-h-11 w-full items-center justify-center rounded-md border border-[#d92d20] px-3 py-2.5 font-[family-name:var(--font-body)] text-[13px] font-semibold text-[#d92d20] transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-[#d92d20]/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
 } as const;
 
+const adminAdminsCard =
+    "flex w-full flex-col rounded-[20px] border border-admin-border bg-white p-6 shadow-[0_4px_6px_rgba(95,100,70,0.06)] xl:rounded-3xl xl:p-8 xl:shadow-[0_4px_6px_rgba(95,100,70,0.02)]";
+
+/**
+ * Admin Admins: mobile Figma `136:29` below 834px, portrait `134:207` from 834px,
+ * landscape `134:121` from `lg`, desktop `134:35` from `xl`.
+ * Reuses Resumen banner/workspace. Do not use on the public invitation.
+ */
+export const adminAdmins = {
+    bannerTitle:
+        "font-[family-name:var(--font-timer)] text-[32px] leading-tight font-bold text-white xl:text-[36px]",
+    card: `${adminAdminsCard} gap-5`,
+    listCard: `${adminAdminsCard} gap-5 xl:gap-6`,
+    pendingCard: `${adminAdminsCard} gap-4 xl:gap-5`,
+    sectionLabel:
+        "font-[family-name:var(--font-body)] text-[11px] font-bold tracking-wide text-admin-olive uppercase",
+    inviteTitle:
+        "font-[family-name:var(--font-timer)] text-[22px] leading-tight font-bold text-admin-ink xl:text-2xl",
+    inviteLead:
+        "font-[family-name:var(--font-body)] text-[13px] leading-normal text-admin-muted xl:text-sm",
+    inviteRow: "flex w-full items-center gap-4",
+    input:
+        "min-h-11 w-full min-w-0 rounded-xl border border-admin-border bg-[#fdfdf8] px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40",
+    inviteBtn:
+        "inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-admin-olive px-6 py-3 font-[family-name:var(--font-body)] text-sm font-semibold text-white shadow-[0_2px_2px_rgba(95,100,70,0.08)] transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
+    empty: "py-2 font-[family-name:var(--font-body)] text-sm text-admin-muted xl:py-4",
+    row: "flex w-full items-center border-b border-admin-border p-4 last:border-0",
+    emailCol: "flex min-w-0 flex-1 items-center gap-2",
+    email:
+        "min-w-0 truncate font-[family-name:var(--font-body)] text-sm font-semibold text-admin-ink xl:overflow-visible xl:text-clip xl:whitespace-normal xl:break-all",
+    youBadge:
+        "inline-flex shrink-0 items-center rounded px-1.5 py-0.5 font-[family-name:var(--font-body)] text-[10px] font-bold text-admin-olive uppercase bg-admin-wash",
+    accessCol: "flex w-[240px] shrink-0 items-center xl:w-[320px]",
+    access:
+        "font-[family-name:var(--font-body)] text-[13px] leading-normal text-admin-muted",
+    accessValue: "font-medium text-admin-ink xl:text-admin-muted",
+    statusCol: "flex w-[100px] shrink-0 items-center",
+    statusActive:
+        "inline-flex items-center rounded-full bg-status-active-bg px-2.5 py-1 font-[family-name:var(--font-body)] text-xs font-semibold text-status-active-fg",
+    statusPending:
+        "inline-flex items-center rounded-full bg-status-pending-bg px-2.5 py-1 font-[family-name:var(--font-body)] text-xs font-semibold text-status-pending-fg",
+    statusExpired:
+        "inline-flex items-center rounded-full bg-admin-tag px-2.5 py-1 font-[family-name:var(--font-body)] text-xs font-semibold text-admin-tag-fg",
+    actionCol: "flex w-[140px] shrink-0 items-center justify-end",
+    pendingActionCol:
+        "flex min-w-[140px] shrink-0 items-center justify-end gap-2",
+    deleteBtn:
+        "inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg border border-[#f1bfa8] bg-[#fdede6] px-3.5 py-2 font-[family-name:var(--font-body)] text-xs font-semibold text-[#9f3804] transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#9f3804]/30 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60",
+    disabledBtn:
+        "inline-flex min-h-11 shrink-0 cursor-not-allowed items-center justify-center rounded-lg bg-[#efefe9] px-3.5 py-2 font-[family-name:var(--font-body)] text-xs font-medium text-[#9c9c8f]",
+    resendBtn:
+        "inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg bg-admin-olive px-3.5 py-2 font-[family-name:var(--font-body)] text-xs font-semibold text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
+    cancelBtn:
+        "inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg border border-admin-border bg-admin-wash px-3.5 py-2 font-[family-name:var(--font-body)] text-xs font-semibold text-admin-muted transition-colors hover:bg-admin-canvas focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
+    notice: "font-[family-name:var(--font-body)] text-sm text-admin-muted",
+    error: "font-[family-name:var(--font-body)] text-sm text-red-800",
+    portraitInviteRow: "flex w-full flex-col gap-3",
+    portraitInviteBtn:
+        "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-admin-olive px-6 py-3 font-[family-name:var(--font-body)] text-sm font-semibold text-white shadow-[0_2px_2px_rgba(95,100,70,0.08)] transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
+    portraitList: "flex w-full flex-col gap-4",
+    portraitRow:
+        "flex w-full flex-col gap-3 rounded-xl border border-admin-border p-4",
+    portraitRowHeader: "flex w-full min-w-0 items-center justify-between gap-3",
+    portraitEmailGroup: "flex min-w-0 flex-1 items-center gap-2",
+    portraitDeleteBtn:
+        "inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-[#f1bfa8] bg-[#fdede6] px-3.5 py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-[#9f3804] transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#9f3804]/30 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60",
+    portraitDisabledBtn:
+        "inline-flex min-h-11 w-full cursor-not-allowed items-center justify-center rounded-lg bg-[#efefe9] px-3.5 py-2 font-[family-name:var(--font-body)] text-[13px] font-medium text-[#9c9c8f]",
+    portraitPendingActions: "flex w-full flex-col gap-2",
+    portraitResendBtn:
+        "inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-admin-olive px-3.5 py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
+    portraitCancelBtn:
+        "inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-admin-border bg-admin-wash px-3.5 py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-muted transition-colors hover:bg-admin-canvas focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
+    mobileBannerTitle:
+        "font-[family-name:var(--font-timer)] text-[28px] leading-tight font-bold text-white",
+    mobileCard:
+        "flex w-full flex-col gap-4 rounded-2xl border border-admin-border bg-white p-5 shadow-[0_4px_6px_rgba(95,100,70,0.06)]",
+    mobilePendingCard:
+        "flex w-full flex-col gap-3 rounded-2xl border border-admin-border bg-white p-5 shadow-[0_4px_6px_rgba(95,100,70,0.06)]",
+    mobileInviteTitle:
+        "font-[family-name:var(--font-timer)] text-[20px] leading-tight font-bold text-admin-ink",
+    mobileInput:
+        "min-h-11 w-full min-w-0 rounded-[10px] border border-admin-border bg-[#fdfdf8] px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40",
+    mobileInviteBtn:
+        "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[10px] bg-admin-olive py-3 font-[family-name:var(--font-body)] text-sm font-semibold text-white shadow-[0_2px_2px_rgba(95,100,70,0.08)] transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
+    mobileList: "flex w-full flex-col gap-3",
+    mobileRow:
+        "flex w-full flex-col gap-3 rounded-xl border border-admin-border bg-white p-3.5",
+    mobileEmailGroup:
+        "flex min-w-0 max-w-[220px] flex-1 items-center gap-2",
+    mobileEmail:
+        "min-w-0 truncate font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-ink",
+    mobileYouBadge:
+        "inline-flex shrink-0 items-center rounded px-1.5 py-0.5 font-[family-name:var(--font-body)] text-[9px] font-bold text-admin-olive uppercase bg-admin-wash",
+    mobileAccess:
+        "font-[family-name:var(--font-body)] text-xs leading-normal text-admin-muted",
+    mobileStatusActive:
+        "inline-flex items-center rounded-full bg-status-active-bg px-2.5 py-1 font-[family-name:var(--font-body)] text-[11px] font-semibold text-status-active-fg",
+    mobileStatusPending:
+        "inline-flex items-center rounded-full bg-status-pending-bg px-2.5 py-1 font-[family-name:var(--font-body)] text-[11px] font-semibold text-status-pending-fg",
+    mobileStatusExpired:
+        "inline-flex items-center rounded-full bg-admin-tag px-2.5 py-1 font-[family-name:var(--font-body)] text-[11px] font-semibold text-admin-tag-fg",
+    mobileDisabledBtn:
+        "inline-flex min-h-11 w-full cursor-not-allowed items-center justify-center rounded-lg bg-[#efefe9] py-2.5 font-[family-name:var(--font-body)] text-[13px] font-semibold text-[#9c9c8f]",
+    mobileDeleteBtn:
+        "inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-[#f1bfa8] bg-[#fdede6] py-2.5 font-[family-name:var(--font-body)] text-[13px] font-semibold text-[#9f3804] transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#9f3804]/30 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60",
+    mobileEmpty: "py-2 font-[family-name:var(--font-body)] text-[13px] text-admin-muted",
+} as const;
+

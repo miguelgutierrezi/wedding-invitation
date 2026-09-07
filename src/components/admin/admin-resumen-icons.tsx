@@ -104,6 +104,21 @@ export function ResumenDrawerPlusIcon() {
     );
 }
 
+/** Plus on the stacked Admins invite CTA (Figma `134:207` / `136:29`). */
+export function AdminsInvitePlusIcon({
+    compact = false,
+}: {
+    compact?: boolean;
+}) {
+    return (
+        <Plus
+            strokeWidth={2.5}
+            className={`${iconBox} ${compact ? "size-2.5" : "size-3"} text-white`}
+            aria-hidden="true"
+        />
+    );
+}
+
 export function ResumenDrawerDownloadIcon() {
     return (
         <Download

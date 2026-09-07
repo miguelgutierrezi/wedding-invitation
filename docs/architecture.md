@@ -69,13 +69,13 @@ Use:
 /admin/families/new    create family + invitation link
 /admin/families/[id]   family detail / edit
 /admin/photos          Figma Fotos `128:528` mobile + `128:364` portrait from 834px + `128:201` from `lg` + `128:34` from `xl` (QR rotate + moderation)
-/admin/admins          invite admins (Supabase Auth) + pending invitations
+/admin/admins          Figma Admins `136:29` mobile + `134:207` from 834px + `134:121` from `lg` + `134:35` from `xl`
 /api/admin/export      Excel export (`?kind=` attending|transport|dietary|contacts)
 /api/...               HTTP endpoints only when appropriate
 ```
 
 Public invitation presentation details live in `docs/invitation-ui.md`. Admin presentation tokens live in
-`src/components/admin/admin-ui.ts` (`admin` + `adminResumen` + list tokens including `adminPhotos` for `/admin/photos`).
+`src/components/admin/admin-ui.ts` (`admin` + `adminResumen` + list tokens including `adminPhotos` and `adminAdmins`).
 Do not treat product roadmap sections as authorization to implement unfinished work.
 
 ## Configuration

@@ -4,15 +4,44 @@ import {useRouter} from "next/navigation";
 import {useState, useTransition} from "react";
 
 import {inviteAdminAction} from "@/actions/admin/auth";
-import {admin} from "@/components/admin/admin-ui";
+import {admin, adminAdmins} from "@/components/admin/admin-ui";
+import {AdminsInvitePlusIcon} from "@/components/admin/admin-resumen-icons";
+import {adminCopy} from "@/lib/admin/admin-copy";
 import {adminInviteFieldsRowClass} from "@/lib/admin/admin-invite-form-layout";
 import {adminDirectoryInputClass} from "@/lib/admin/admin-directory-layout";
 
-export function AdminInviteForm() {
+export function AdminInviteForm({
+    tone = "legacy",
+    stacked = false,
+    compact = false,
+}: {
+    tone?: "legacy" | "figma";
+    stacked?: boolean;
+    compact?: boolean;
+}) {
     const router = useRouter();
+    const copy = adminCopy.adminsList;
     const [message, setMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isPending, startTransition] = useTransition();
+    const figma = tone === "figma";
+    const rowClass = figma
+        ? stacked
+            ? adminAdmins.portraitInviteRow
+            : adminAdmins.inviteRow
+        : adminInviteFieldsRowClass;
+    const buttonClass = figma
+        ? stacked
+            ? compact
+                ? adminAdmins.mobileInviteBtn
+                : adminAdmins.portraitInviteBtn
+            : adminAdmins.inviteBtn
+        : `${admin.btnPrimary} shrink-0`;
+    const inputClass = figma
+        ? compact
+            ? adminAdmins.mobileInput
+            : adminAdmins.input
+        : adminDirectoryInputClass;
 
     return (
         <form
@@ -32,39 +61,44 @@ export function AdminInviteForm() {
                         return;
                     }
 
-                    setMessage(result.message ?? "Invitación enviada.");
+                    setMessage(result.message ?? copy.inviteSent);
                     form.reset();
                     router.refresh();
                 });
             }}
         >
-            <div className={adminInviteFieldsRowClass}>
+            <div className={rowClass}>
                 <label className="grid min-w-0 flex-1 gap-2">
                     <span className="sr-only">Correo</span>
                     <input
                         type="email"
                         name="email"
                         autoComplete="email"
-                        placeholder="nuevo-admin@ejemplo.com"
-                        className={adminDirectoryInputClass}
+                        placeholder={copy.invitePlaceholder}
+                        className={inputClass}
                         required
                     />
                 </label>
                 <button
                     type="submit"
-                    className={`${admin.btnPrimary} shrink-0`}
+                    className={buttonClass}
                     disabled={isPending}
                 >
-                    {isPending ? "Enviando…" : "Invitar admin"}
+                    {figma && stacked && !isPending ? (
+                        <AdminsInvitePlusIcon compact={compact} />
+                    ) : null}
+                    {isPending ? copy.inviteSending : copy.inviteSubmit}
                 </button>
             </div>
 
             {error ? (
-                <p className={admin.error} role="alert">
+                <p className={figma ? adminAdmins.error : admin.error} role="alert">
                     {error}
                 </p>
             ) : null}
-            {message ? <p className={admin.muted}>{message}</p> : null}
+            {message ? (
+                <p className={figma ? adminAdmins.notice : admin.muted}>{message}</p>
+            ) : null}
         </form>
     );
 }

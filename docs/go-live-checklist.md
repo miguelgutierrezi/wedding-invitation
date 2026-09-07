@@ -24,7 +24,7 @@ Operational checklist before sharing invitation links widely. Does not authorize
 - [ ] Create or edit a **single-guest** family and confirm cover shows Querido/Querida correctly.
 - [ ] Edit an existing family (rename guest, change gender/seats, toggle enabled) and confirm no partial state.
 - [ ] Regenerate slug if needed; old slug should stop resolving.
-- [ ] Dashboard / analytics / guests / photos pages load without errors. Analytics omit families whose name includes
+- [ ] Dashboard / analytics / guests / photos / admins pages load without errors. Analytics omit families whose name includes
   **ejemplo**. Estadísticas shows live rates, bus points, and the 12 metric cards.
 - [ ] Dashboard metric cards deep-link to pre-filtered lists (pending families, guests with bus, etc.).
 - [ ] Dashboard shows action queue + RSVP close checklist; **Descargar lista** from Resumen.

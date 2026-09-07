@@ -431,6 +431,38 @@ export const adminCopy = {
         showing: (from: number, to: number, total: number) =>
             `Mostrando ${from}–${to} de ${total}`,
     },
+    adminsList: {
+        overlineAdmin: "Administración",
+        overlineSection: "Admins",
+        bannerTitle: "Admins",
+        bannerBody:
+            "Administra los roles de acceso y credenciales de los coordinadores y planificadores autorizados.",
+        inviteEyebrow: "Administradores",
+        inviteTitle: "Invitar nuevo admin",
+        inviteLead:
+            "Envía la invitación por correo para que pueda acceder al panel con su cuenta de Supabase.",
+        inviteLeadCompact: "Envía la invitación por correo electrónico.",
+        invitePlaceholder: "nuevo-admin@ejemplo.com",
+        inviteSubmit: "Invitar admin",
+        inviteSending: "Enviando…",
+        inviteSent: "Invitación enviada.",
+        activeTitle: "Admins activos",
+        activeEmpty: "Todavía no hay administradores que hayan iniciado sesión.",
+        pendingTitle: "Invitaciones pendientes",
+        pendingEmpty: "No hay invitaciones pendientes por aceptar.",
+        lastAccessPrefix: "Último acceso:",
+        neverSignedIn: "Sin registro",
+        youBadge: "TÚ",
+        statusActive: "Activo",
+        statusPending: "Pendiente",
+        statusExpired: "Caducada",
+        delete: "Borrar admin",
+        deleting: "Borrando…",
+        unavailable: "No disponible",
+        resend: "Reenviar",
+        cancel: "Cancelar",
+        cancelling: "Cancelando…",
+    },
 } as const;
 
 export function familyStatusLabel(

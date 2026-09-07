@@ -223,3 +223,123 @@ export const adminResumen = {
         "inline-flex min-h-11 shrink-0 items-center gap-1 px-1 font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-logout hover:opacity-80 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
 } as const;
 
+/**
+ * Admin Invitados: mobile Figma `109:372` below 834px, portrait `109:36` from 834px,
+ * landscape `103:33` from `lg`, desktop `100:38` from `xl`. Do not use on the public invitation.
+ */
+export const adminGuests = {
+    summaryStrip:
+        "flex w-full items-center rounded-xl border border-admin-border bg-white p-3.5 font-[family-name:var(--font-body)] text-[13px] text-admin-muted xl:rounded-[14px] xl:p-4 xl:text-sm",
+    filterCard:
+        "flex w-full flex-col gap-4 rounded-2xl border border-admin-border bg-white p-5 xl:rounded-[20px] xl:p-6",
+    filterGrid: "grid gap-4 lg:grid-cols-3 xl:grid-cols-4",
+    nameFilter: "hidden xl:contents",
+    filterLabel:
+        "font-[family-name:var(--font-body)] text-[11px] font-semibold tracking-wide text-admin-muted uppercase xl:text-xs",
+    filterTrigger:
+        "inline-flex min-h-11 w-full items-center justify-between gap-3 rounded-lg border border-admin-border bg-white px-3 py-2 font-[family-name:var(--font-body)] text-[13px] text-admin-ink outline-none transition-colors hover:border-admin-olive/40 focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 xl:rounded-[10px] xl:px-3.5 xl:py-2.5",
+    searchBox:
+        "flex min-h-11 w-full items-center gap-2 rounded-lg border border-admin-border bg-white px-3 py-2 font-[family-name:var(--font-body)] text-[13px] text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 xl:rounded-[10px] xl:px-3.5 xl:py-2.5",
+    subTab:
+        "inline-flex min-h-11 items-center rounded-full border border-admin-border bg-white px-[18px] py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-ink transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none xl:px-5",
+    subTabActive:
+        "inline-flex min-h-11 items-center rounded-full border border-admin-olive bg-admin-olive px-[18px] py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-white xl:px-5",
+    tableCard:
+        "flex w-full flex-col overflow-hidden rounded-2xl border border-admin-border bg-white xl:rounded-[20px]",
+    tableHead:
+        "border-b border-admin-border bg-admin-canvas font-[family-name:var(--font-body)] text-xs font-bold tracking-wide text-admin-olive uppercase",
+    sortButton:
+        "inline-flex min-h-11 w-full items-center gap-1.5 px-0 py-3 text-left font-[family-name:var(--font-body)] text-xs font-bold tracking-wide text-admin-olive uppercase transition-colors hover:text-admin-ink",
+    tableRow: "border-b border-admin-border last:border-0",
+    tableRowSelected: "bg-accent/10",
+    /**
+     * List checkbox (Figma `100:38`): olive fill + white check, 18px.
+     * Radius is 6px — a bit rounder than the 4px mock. Do not use accent yellow.
+     */
+    checkbox:
+        "size-[18px] shrink-0 cursor-pointer appearance-none rounded-md border border-admin-checkbox-border bg-white bg-center bg-no-repeat checked:border-admin-olive checked:bg-admin-olive checked:[background-image:url('/admin/checkbox-check.svg')] checked:bg-[length:10px_10px] indeterminate:border-admin-olive indeterminate:bg-white indeterminate:[background-image:linear-gradient(var(--admin-olive),var(--admin-olive))] indeterminate:bg-[length:10px_2px] focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
+    roleBadge:
+        "rounded bg-admin-canvas px-1.5 py-0.5 font-[family-name:var(--font-body)] text-[9px] font-medium text-admin-olive uppercase xl:text-[10px]",
+    cellName:
+        "truncate font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-ink xl:text-sm",
+    cellMuted:
+        "truncate font-[family-name:var(--font-body)] text-[13px] text-admin-muted",
+    cellBus:
+        "font-[family-name:var(--font-body)] text-[13px] font-medium text-admin-olive",
+    cellBusEmpty: "font-[family-name:var(--font-body)] text-[13px] text-admin-muted",
+    familyLink:
+        "font-[family-name:var(--font-body)] text-xs font-semibold text-admin-olive underline underline-offset-2 hover:opacity-80 xl:text-[13px]",
+    tableFooter:
+        "flex flex-wrap items-center justify-between gap-3 bg-white p-4 xl:p-5",
+    pagePrev:
+        "inline-flex min-h-11 items-center rounded-lg border border-admin-border bg-white px-4 py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-muted transition-colors hover:text-admin-ink focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:opacity-45",
+    pageNext:
+        "inline-flex min-h-11 items-center rounded-lg bg-admin-olive px-4 py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:opacity-45",
+    statusAttend:
+        "inline-flex items-center rounded-md bg-[#eaf6ef] px-2 py-1 font-[family-name:var(--font-body)] text-xs font-semibold text-[#2e7d32] xl:px-2.5",
+    statusPending:
+        "inline-flex items-center rounded-md bg-[#fef3c7] px-2 py-1 font-[family-name:var(--font-body)] text-xs font-semibold text-[#d97706] xl:px-2.5",
+    statusDecline:
+        "inline-flex items-center rounded-md bg-[#fee2e2] px-2 py-1 font-[family-name:var(--font-body)] text-xs font-semibold text-[#b91c1c] xl:px-2.5",
+    batchBar:
+        "pointer-events-auto flex flex-col gap-3 rounded-2xl bg-admin-olive p-4 text-white shadow-[0_8px_12px_rgba(95,100,70,0.2)] lg:flex-row lg:items-center lg:justify-between xl:p-5",
+    batchGhost:
+        "inline-flex min-h-11 items-center rounded-lg border border-white/20 px-3 py-2 font-[family-name:var(--font-body)] text-[13px] font-medium text-white transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:outline-none disabled:opacity-45 xl:px-3.5",
+    batchClear:
+        "inline-flex min-h-11 items-center rounded-lg bg-white px-3 py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-olive transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:outline-none xl:px-3.5",
+    portraitBannerTitle:
+        "font-[family-name:var(--font-timer)] text-[36px] leading-tight font-bold text-white",
+    portraitStatGrid: "grid w-full grid-cols-4 gap-2.5",
+    portraitStatCard:
+        "flex min-w-0 flex-col gap-1 rounded-xl border border-admin-border bg-white p-3",
+    portraitStatLabel:
+        "font-[family-name:var(--font-body)] text-[10px] font-bold tracking-wide text-admin-muted uppercase",
+    portraitStatValue:
+        "font-[family-name:var(--font-timer)] text-2xl leading-none font-bold tabular-nums",
+    portraitToolbar: "flex w-full items-center gap-3",
+    portraitSort:
+        "w-[11.25rem] shrink-0 gap-0",
+    portraitFilterToggle:
+        "inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg border border-admin-olive bg-white px-4 py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-olive transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
+    portraitFilterGrid: "grid gap-4 sm:grid-cols-2",
+    portraitCardGrid: "grid grid-cols-2 gap-4",
+    portraitCard:
+        "flex flex-col gap-3 rounded-2xl border border-admin-border bg-white p-4",
+    portraitCardSelected: "bg-accent/10",
+    portraitName:
+        "truncate font-[family-name:var(--font-body)] text-[15px] font-bold text-admin-ink",
+    portraitMeta:
+        "flex min-w-0 items-baseline gap-1.5 font-[family-name:var(--font-body)] text-xs",
+    portraitMetaLabel: "shrink-0 font-semibold text-admin-muted",
+    portraitMetaValue: "min-w-0 truncate text-admin-ink",
+    portraitFamilyBtn:
+        "inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-admin-wash py-2 font-[family-name:var(--font-body)] text-xs font-semibold text-admin-olive transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
+    portraitFooter:
+        "flex flex-wrap items-center justify-between gap-3 py-4",
+    mobileStatGrid: "grid w-full grid-cols-2 gap-2",
+    mobileStatCard:
+        "flex min-w-0 flex-col gap-0.5 rounded-[10px] border border-admin-border bg-white p-2.5",
+    mobileStatLabel:
+        "font-[family-name:var(--font-body)] text-[9px] font-bold tracking-wide text-admin-muted uppercase",
+    mobileStatValue:
+        "font-[family-name:var(--font-timer)] text-xl leading-none font-bold tabular-nums",
+    mobileToolbar: "flex w-full flex-col gap-3",
+    mobileFilterToggle:
+        "inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg border border-admin-olive bg-white px-4 py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-olive transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
+    mobileSubTab:
+        "inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-admin-border bg-white px-3 py-2 font-[family-name:var(--font-body)] text-[11px] font-semibold text-admin-muted transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
+    mobileSubTabActive:
+        "inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-admin-olive bg-admin-olive px-3 py-2 font-[family-name:var(--font-body)] text-[11px] font-semibold text-white",
+    mobileCardGrid: "grid grid-cols-1 gap-4",
+    mobileFamilyBtn:
+        "inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-admin-wash py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-olive transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
+    mobileFooter: "flex flex-col items-center gap-3",
+    mobilePageRow: "flex w-full gap-2",
+    mobileBatchGhost:
+        "inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-white/20 px-3 py-2.5 font-[family-name:var(--font-body)] text-xs font-medium text-white transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:outline-none disabled:opacity-45",
+    mobileBatchClear:
+        "inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-white px-3 py-2.5 font-[family-name:var(--font-body)] text-xs font-semibold text-admin-olive transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:outline-none",
+    mobileBatchAnchor:
+        "pointer-events-none sticky bottom-[max(5.5rem,calc(env(safe-area-inset-bottom)+4.5rem))] z-[45]",
+} as const;
+

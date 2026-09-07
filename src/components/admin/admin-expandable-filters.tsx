@@ -12,8 +12,8 @@ type AdminExpandableFiltersProps = {
 };
 
 /**
- * Filter panel: collapsed by default on viewports below `lg` (phones + tablet portrait).
- * Always expanded from `lg` up (tablet landscape / desktop).
+ * Filter panel: collapsed by default on phones (below 834px).
+ * Portrait Invitados has its own toolbar toggle; landscape/desktop lists stay expanded.
  */
 export function AdminExpandableFilters({
                                            activeFilterCount,

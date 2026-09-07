@@ -8,7 +8,11 @@ import {useFieldArray, useForm, useWatch} from "react-hook-form";
 import {submitRsvpAction} from "@/actions/rsvp/submit-rsvp";
 import {isTransportBoardingPointId, type TransportBoardingPointId,} from "@/config/transport";
 import {weddingConfig} from "@/config/wedding";
-import {defaultGuestWillAttend} from "@/lib/rsvp/guest-attendance";
+import {
+    defaultGuestWillAttend,
+    rsvpAttendingCountLead,
+    rsvpInvitationSeatsLead,
+} from "@/lib/rsvp/guest-attendance";
 import {cn} from "@/lib/utils";
 import {type SubmitRsvpInput, submitRsvpSchema,} from "@/lib/validation/rsvp";
 import type {InvitationGuest, InvitationRsvp,} from "@/services/invitations/get-invitation-by-token";
@@ -200,8 +204,7 @@ export function RsvpForm({
             noValidate
         >
             <p className={`${labelClass} text-center text-cover-cta-fg/85`}>
-                Cupos de esta invitación: {maximumGuests}. Marca quién asiste: puedes
-                dejar al acompañante o a cualquier persona de la lista sin ir.
+                {rsvpInvitationSeatsLead(maximumGuests)}
             </p>
 
             {closedMessage ? (
@@ -248,8 +251,7 @@ export function RsvpForm({
                 <legend className={sectionLegendClass}>Invitados</legend>
                 {willAttend ? (
                     <p className={`${labelClass} text-cover-cta-fg/85`}>
-                        Asisten: {attendingCount} / {maximumGuests}. Elige Asistirá o No
-                        asistirá en cada persona.
+                        {rsvpAttendingCountLead(attendingCount, maximumGuests)}
                     </p>
                 ) : null}
                 <div className="space-y-4">

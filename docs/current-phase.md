@@ -23,7 +23,7 @@ may proceed when the user requests it explicitly.
 | Outfit inspiration pages                    | Implemented (`/inspiracion/ellos\|ellas`)                                      |
 | Event TZ display (`America/Bogota`)         | Implemented (`event-timezone.ts`)                                              |
 | Admin Excel export                          | Full workbook + `kind=attending\|transport\|dietary\|contacts`                 |
-| Admin families/guests lists                 | Filters, chips, column sort, page size 25; cards below `lg`                    |
+| Admin families/guests lists                 | Filters, chips, column sort, page size 25; guests Figma `109:372` mobile, `109:36` from 834px, `103:33` from `lg`, `100:38` from `xl` |
 | Admin compact chrome                        | Figma white navbar on all `AdminShell` pages; hamburger until `lg`; FAB phone-only |
 | Admin Resumen                               | Figma `94:414` + drawer `94:591`; `94:232` from 834px; `94:34` from `lg`; `91:40` from `xl` |
 | Admin Estadísticas                          | Figma `96:39` + `99:229` landscape + `99:419` portrait + `99:607` mobile |
@@ -32,12 +32,45 @@ may proceed when the user requests it explicitly.
 | Delete family (admin)                       | RPC + confirm-by-name; works with unsaved edits                                |
 | Admin operations                            | Action queue, close follow-ups, family activity, **batch actions** |
 | Admin invite flow                          | **Implemented**; accept → `/admin/aceptar-invitacion` (set password) → `/admin` |
-| Admin invite email HTML                    | Branded template in `emails/admin-invite.html` (paste into Supabase Auth) |
-| Admin password reset                       | Login link + `emails/admin-reset-password.html`; OTP 24 h                  |
+| Admin invite email HTML                    | Figma `80:40` olive-gradient template in `emails/admin-invite.html` (paste into Supabase Auth) |
+| Admin password reset                       | Same Figma `80:40` layout as invite (`emails/admin-reset-password.html`); OTP 24 h |
 | Analytics example families                  | Names containing the word **ejemplo** omitted from stats           |
 | Guest media uploads                         | **Implemented**                                                                |
 | WhatsApp scheduled send                     | Not implemented                                                                |
 | Resend transactional email product         | Not implemented (Auth invite/reset SMTP only)                      |
+
+## Completed: admin Invitados mobile (Figma `109:372`)
+
+`/admin/guests` below 834px uses the Figma workspace with the shared hamburger chrome and the phone **+** FAB
+(untouched; do not add a second FAB). Stacked olive banner (24px title, remaining-days chip
+`⏳ Quedan N días para confirmar`, full-width **Descargar
+lista**), 2×2 KPI pills, full-width **Ordenar por** + **Mostrar filtros** (search lives inside the expanded filters),
+equal-width tabs, then a **single-column** card list (role badge, Familia/Bus/Telf/Correo, **Ver familia**). Batch bar
+is stacked full-width with long labels including **Descargar lista**, sitting above the FAB. Helper:
+`guestsMobileCardStack`.
+
+## Completed: admin Invitados tablet portrait (Figma `109:36`)
+
+`/admin/guests` from 834px (iPad 11" portrait) uses the Figma workspace with the shared hamburger chrome (untouched; no
+tablet FAB). Stacked olive banner with live remaining-days chip (`⏳ Quedan N días para confirmar`) and **Descargar lista**, four KPI
+pills, search + sort + **Mostrar filtros**, in-page tabs, then a **2-column** card grid (role badge, Asiste/Pendiente/No
+asiste, Familia/Bus/Telf/Correo, **Ver familia**). Batch bar stays compact (no Descargar in the bar — the banner CTA
+covers export). Helper: `ADMIN_GUESTS_PORTRAIT_MIN_PX`.
+
+## Completed: admin Invitados tablet landscape (Figma `103:33`)
+
+`/admin/guests` from `lg` (1024px) uses the same Figma workspace as desktop, at landscape density: remaining-days
+chip (`⏳ Quedan N días para confirmar`; not Figma’s “RSVP Límite” date), 6 filters in 2×3 (no **Nombre del acompañante** until `xl`), tighter type, and compact batch
+labels (Seleccionar N / Copiar tels / Descargar). Table action stays **Ver familia** (no kebab). Shared navbar is
+untouched. Helpers: `ADMIN_GUESTS_LANDSCAPE_MIN_PX`.
+
+## Completed: admin Invitados desktop (Figma `100:38`)
+
+`/admin/guests` from `xl` uses the Figma workspace: olive banner (Administración · Invitados, remaining-days chip
+`⏳ Quedan N días para confirmar`, **Descargar lista**), colored summary strip, two-row filter card (7 fields including **Nombre del acompañante**),
+in-page tabs (Estadísticas / Familias / Lista completa), Inter table with role badges and **Ver familia**, olive
+list checkboxes (18px, 6px radius, `--admin-olive` when checked), and an olive batch bar. Shared navbar is unchanged
+(no extra “Descargar lista” nav item). Helpers: `src/lib/admin/admin-guests-layout.ts`.
 
 ## Completed: admin Estadísticas mobile (Figma `99:607`)
 
@@ -136,7 +169,9 @@ is now the chrome standard on every `AdminShell` page. Helper: `ADMIN_RESUMEN_LA
 ## Completed: RSVP partial attendance
 
 A family can confirm some guests and decline others (including a plus-one named “Acompañante”). The companion name is
-required only if that person will attend. Per-guest radios Asistirá / No asistirá. Migration
+required only if that person will attend. Per-guest radios Asistirá / No asistirá. The form lead says the invitation is
+for N people, that everyone is expected, and that a name can be marked if someone cannot come
+(`rsvpInvitationSeatsLead`). Migration
 `…_rsvp_partial_attendance.sql` updates `submit_family_rsvp`. Apply it on hosted Supabase.
 
 ## Completed: admin batch actions
@@ -172,7 +207,12 @@ classes: `src/lib/admin/admin-directory-layout.ts`. Visual tokens from Figma (`-
 (8px). Responsive content: phone nested cards (`85:220`, shorter invite lead, wash fill for TÚ) → tablet
 portrait left/right clusters (`85:133`) → `lg+` single row (`85:40`). Chrome/nav unchanged.
 
-The hosted **Invite user** email uses the branded HTML in `emails/admin-invite.html` (Figma node `80:40`: cream page, olive header, pill CTA **Aceptar invitación**, dark footer). Paste it into Supabase Dashboard → Authentication → Email Templates → Invite user. Keep `{{ .ConfirmationURL }}` on the button. Subject: `Invitación al panel · Nychol & Miguel`. This is not Resend.
+The hosted **Invite user** email uses the branded HTML in `emails/admin-invite.html` (Figma node `80:40`: cream page,
+olive gradient header/footer `#5F6446`→`#888F68`, gold kicker `#BEB950`, cream body `#F5F3EB`, olive pill CTA with
+white text **Aceptar invitación**). Paste it into Supabase Dashboard → Authentication → Email Templates → Invite user.
+**Reset password** uses the same chrome and two-paragraph body in `emails/admin-reset-password.html` (CTA **Crear
+contraseña nueva**). Keep `{{ .ConfirmationURL }}` on the button. Invite subject: `Invitación al panel · Nychol & Miguel`.
+Reset subject: `Restablecer contraseña · Nychol & Miguel`. This is not Resend. Re-paste after HTML changes.
 
 ## Completed: pending companion count by attendance state
 

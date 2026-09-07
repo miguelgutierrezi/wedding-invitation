@@ -1,4 +1,4 @@
-import {admin} from "@/components/admin/admin-ui";
+import {admin, adminGuests} from "@/components/admin/admin-ui";
 import {familyStatusLabel} from "@/lib/admin/admin-copy";
 
 export function familyStatusBadgeClass(
@@ -25,7 +25,22 @@ export function FamilyStatusBadge({
     );
 }
 
-export function GuestAttendanceBadge({status}: { status: string }) {
+export function GuestAttendanceBadge({
+    status,
+    tone = "legacy",
+}: {
+    status: string;
+    tone?: "legacy" | "figma";
+}) {
+    if (tone === "figma") {
+        if (status === "attending") {
+            return <span className={adminGuests.statusAttend}>Asiste</span>;
+        }
+        if (status === "not_attending") {
+            return <span className={adminGuests.statusDecline}>No asiste</span>;
+        }
+        return <span className={adminGuests.statusPending}>Pendiente</span>;
+    }
     if (status === "attending") {
         return <span className={admin.badgeResponded}>Asiste</span>;
     }

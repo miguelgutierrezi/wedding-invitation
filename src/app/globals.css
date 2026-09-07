@@ -57,6 +57,8 @@
     --admin-tag: #fef3c7;
     --admin-tag-fg: #d97706;
     --admin-logout: #a84343;
+    /* Figma Invitados 100:38 unchecked checkbox border */
+    --admin-checkbox-border: #a8a89a;
 }
 
 @theme inline {
@@ -102,6 +104,7 @@
     --color-admin-tag: var(--admin-tag);
     --color-admin-tag-fg: var(--admin-tag-fg);
     --color-admin-logout: var(--admin-logout);
+    --color-admin-checkbox-border: var(--admin-checkbox-border);
     --font-sans: var(--font-body);
     --font-display: var(--font-display);
     --font-script: var(--font-script);

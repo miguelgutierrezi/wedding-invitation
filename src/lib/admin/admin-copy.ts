@@ -56,8 +56,45 @@ export const adminCopy = {
     },
     guest: {
         primaryContact: "contacto principal",
+        companion: "acompañante",
         placeholderNameHint:
             "Al confirmar, pediremos el nombre real de esta persona.",
+    },
+    guestsList: {
+        overlineAdmin: "Administración",
+        overlineSection: "Invitados",
+        bannerTitle: "Control de Asistencia General",
+        bannerBody:
+            "Gestión detallada de invitaciones individuales, requerimientos y asignación de transporte.",
+        searchPlaceholder: "Nombre, familia, email, teléfono",
+        searchPlaceholderCompact: "Nombre, familia, email...",
+        searchPlaceholderPortrait: "Buscar...",
+        showFilters: "Mostrar filtros",
+        hideFilters: "Ocultar filtros",
+        sortLabel: "Ordenar",
+        sortByPrefix: "Ordenar por:",
+        summaryTotal: (total: number) =>
+            `Resumen total. En esta vista: ${total} invitados`,
+        statAttend: "Asisten",
+        statDecline: "No asisten",
+        statPending: "Pendientes",
+        statBus: "Bus",
+        metaFamily: "Familia:",
+        metaBus: "Bus:",
+        metaPhone: "Telf:",
+        metaEmail: "Correo:",
+        fullListTab: "Lista completa",
+        viewFamily: "Ver familia",
+        showing: (from: number, to: number, total: number) =>
+            `Mostrando ${from}–${to} de ${total} invitados`,
+        selected: (count: number) =>
+            count === 1
+                ? "1 invitado seleccionado"
+                : `${count} invitados seleccionados`,
+        selectVisible: (count: number) => `Seleccionar los ${count}`,
+        selectVisibleCompact: (count: number) => `Seleccionar ${count}`,
+        copyPhonesCompact: "Copiar tels",
+        exportCompact: "Descargar",
     },
     media: {
         qrTitle: "Código para subir fotos del evento",

@@ -16,6 +16,8 @@ type AdminSelectProps<T extends string> = {
     options: readonly AdminSelectOption<T>[];
     onChange: (value: T) => void;
     className?: string;
+    labelClassName?: string;
+    triggerClassName?: string;
 };
 
 export function AdminSelect<T extends string>({
@@ -24,6 +26,8 @@ export function AdminSelect<T extends string>({
                                                   options,
                                                   onChange,
                                                   className,
+                                                  labelClassName,
+                                                  triggerClassName,
                                               }: AdminSelectProps<T>) {
     const [open, setOpen] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
@@ -81,12 +85,15 @@ export function AdminSelect<T extends string>({
 
     return (
         <div ref={rootRef} className={cn("relative grid gap-2", className)}>
-      <span id={labelId} className={admin.label}>
+      <span id={labelId} className={labelClassName ?? admin.label}>
         {label}
       </span>
             <button
                 type="button"
-                className={cn(admin.selectTrigger, open && "border-cover-cta-fg")}
+                className={cn(
+                    triggerClassName ?? admin.selectTrigger,
+                    open && "border-cover-cta-fg",
+                )}
                 aria-haspopup="listbox"
                 aria-expanded={open}
                 aria-labelledby={labelId}

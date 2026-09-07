@@ -2,6 +2,8 @@
 
 import {useEffect, useRef} from "react";
 
+import {adminGuests} from "@/components/admin/admin-ui";
+
 type AdminRowCheckboxProps = {
     checked: boolean;
     indeterminate?: boolean;
@@ -35,7 +37,7 @@ export function AdminRowCheckbox({
                 type="checkbox"
                 checked={checked}
                 onChange={(event) => onChange(event.target.checked)}
-                className="size-5 accent-accent"
+                className={adminGuests.checkbox}
             />
         </label>
     );

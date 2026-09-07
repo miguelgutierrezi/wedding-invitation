@@ -82,6 +82,7 @@ asks for the real name **only if that person will attend**. Each listed guest ca
 | `--admin-ink` / `--admin-muted` | `#303026` / `#727263` | Resumen body / secondary copy                                                   |
 | `--admin-border` / `--admin-wash` | `#E4E3DA` / `#F0F2EA` | Resumen cards, pills, gauges                                                    |
 | `--admin-logout`                 | `#A84343`          | Resumen drawer **Salir**                                                        |
+| `--admin-checkbox-border`        | `#A8A89A`          | Unchecked list checkbox (Figma `100:38`)                                        |
 
 
 ### Typography
@@ -94,6 +95,7 @@ asks for the real name **only if that person will attend**. Each listed guest ca
 | Admin UI                                       | same `--font-timer` + olive / cream tokens        | `/admin` forms and lists via `admin-ui.ts` (navbar + Resumen workspace use `adminResumen`) |
 | Admin Resumen (`/admin`)                       | `--font-body` (Source Sans 3) + Times metrics     | Shared Figma navbar; workspace `94:414` / `94:232` / `94:34` / `91:40`; Inter maps to `--font-body` |
 | Admin Estadísticas (`/admin/analytics`)        | `--font-body` + Times metrics                     | Figma `96:39` desktop + `99:229` landscape + `99:419` portrait + `99:607` mobile; 1-col phone; 2-col from 834px; 3-col from `lg` |
+| Admin Invitados (`/admin/guests`)              | `--font-body` table + Times banner                | Figma `109:372` mobile (1-col cards) + `109:36` from 834px (2-col) + `103:33` from `lg` + `100:38` from `xl` |
 | Admin directory (`/admin/admins`)              | Figma `85:40` / tablet `85:133` / mobile `85:220` | Phone nested cards (TÚ wash); portrait clusters; `lg+` row; Times + olive tokens; shared Figma navbar |
 
 
@@ -104,21 +106,29 @@ Times.
 
 ### Admin invite email (Supabase Auth)
 
-`emails/admin-invite.html` follows Figma **email-admin-invite** (`80:40`) so the invite matches the invitation.
-`emails/admin-reset-password.html` uses the same brand for Auth **Reset password** (paste in Dashboard).
+`emails/admin-invite.html` follows Figma **email-admin-invite** (`80:40`) so the invite matches the admin chrome
+(olive gradient, cream body, gold kicker). `emails/admin-reset-password.html` uses the **same layout** (header, two
+body paragraphs, olive pill CTA, disclaimer, footer) with reset copy; paste it into Auth **Reset password**. Inter in
+Figma maps to **Sora**; Times maps to **Vollkorn** (email-safe stacks — do not switch the HTML to Inter).
 
-| Role                         | Value                                      |
-|------------------------------|--------------------------------------------|
-| Page / “Con cariño” cream    | `#F5F4EB`                                  |
-| Header / CTA / divider       | `#B1B363`                                  |
-| Olive kicker, CTA text, footer | `#454411`                                |
-| Headline                     | `#2E2D17`                                  |
-| Body / disclaimer            | `#7A7969`                                  |
-| Serif (names, headline)      | Vollkorn, Georgia / Times fallback         |
-| Sans (kicker, body, CTA)     | Sora, Arial / Helvetica fallback           |
+| Role                                      | Value                                                         |
+|-------------------------------------------|---------------------------------------------------------------|
+| Page                                      | `#F5F4EB`                                                     |
+| Card body                                 | `#F5F3EB`                                                     |
+| Header / footer (fallback)                | `#5F6446`                                                     |
+| Header / footer gradient                  | `#5F6446` → `#888F68` (~10.5deg)                              |
+| Kicker **ADMINISTRACIÓN**                 | `#BEB950`                                                     |
+| Headline / ink                            | `#303026`                                                     |
+| Body / disclaimer                         | `#727263`                                                     |
+| CTA pill                                  | fill `#5F6446`, text `#FFFFFF`, no gold border                |
+| Divider                                   | `#5F6446` at 70% opacity                                      |
+| “Con cariño”                              | `#F0F2EA` italic serif                                        |
+| Serif (names, headline, sign-off)         | Vollkorn, Georgia / Times fallback                            |
+| Sans (kicker, body, CTA)                  | Sora, Arial / Helvetica fallback                              |
 
-Table layout, inline CSS, pill CTA. Paste into Supabase Auth **Invite user**; keep `{{ .ConfirmationURL }}`.
-`inviteUserByEmail` redirects to `/admin/aceptar-invitacion` so the invitee can set a password before `/admin`.
+Table layout, inline CSS, pill CTA. Paste into Supabase Auth **Invite user** and **Reset password**; keep
+`{{ .ConfirmationURL }}`. `inviteUserByEmail` and `resetPasswordForEmail` redirect to `/admin/aceptar-invitacion`.
+Outlook falls back to solid `#5F6446` when `background-image` is stripped.
 
 ### Layout principles
 
@@ -211,7 +221,9 @@ name contains the word **ejemplo**.
 Guests with `needs_name_confirmation` (typically labeled “Acompañante”) show **nombre completo** only when that person
 will attend. Placeholder labels are rejected server-side. A family can leave the plus-one (or any other listed person)
 as **No asistirá** without inventing a name. Those guest rows still count in invitation totals (`Nombres por confirmar`
-is an extra metric, not an exclusion).
+is an extra metric, not an exclusion). Guest-facing lead (`rsvpInvitationSeatsLead`): “Esta invitación es para N
+personas. Esperamos a todos; si alguien no puede asistir, indícalo en su nombre.” (1 seat uses the singular). Do not
+revive “Cupos… dejar sin ir” or “no hace falta que vayan todos.”
 
 ### Dress code layout
 
@@ -312,6 +324,15 @@ under the labels. Portrait uses two equal CTAs; landscape/desktop put CTAs on th
 panel with olive rate bars, two canvas boarding cards, then a 12-card grid (`statsGrid`: 1 / 2 from 834px / 3 from
 `lg`). Cards deep-link to filtered lists. Do not add a Mensajes route. Phone FAB stays the shared olive **+**. Classes
 live in `adminResumen`; card builders in `admin-analytics.ts`.
+
+**Invitados** (`/admin/guests`: mobile Figma `109:372` below 834px; portrait `109:36` from 834px; landscape `103:33`
+from `lg`; desktop `100:38` from `xl`): olive banner (Administración · Invitados, remaining-days chip
+`⏳ Quedan N días para confirmar` on every width — do not use Figma’s “RSVP Límite” / date chip; Excel download; **do
+not change the shared navbar**). Phone stacks banner CTAs, 2×2 KPI pills, sort/**Mostrar filtros**, equal tabs, then a
+1-column card list; the shared **+** FAB stays. Portrait uses a 2-column card grid. Landscape/desktop use the table (6
+filters, then 7 from `xl`). List checkboxes: 18px, fill `--admin-olive` when checked (not accent yellow), radius 6px
+(rounder than the 4px Figma mock), white check from `public/admin/checkbox-check.svg`. Helpers in
+`admin-guests-layout.ts`; classes in `adminGuests`.
 
 **Resumen** (`/admin` workspace: Figma `admin-resumen-mobile` `94:414`; portrait `94:232` from 834px; landscape
 `94:34` from `lg`; desktop `91:40` from `xl`): olive banner (stacked full-width CTAs on phone, two equal-width CTAs on

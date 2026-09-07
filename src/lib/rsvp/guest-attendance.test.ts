@@ -1,6 +1,11 @@
 import {describe, expect, it} from "vitest";
 
-import {defaultGuestWillAttend, isCompanionNameRequired,} from "@/lib/rsvp/guest-attendance";
+import {
+    defaultGuestWillAttend,
+    isCompanionNameRequired,
+    rsvpAttendingCountLead,
+    rsvpInvitationSeatsLead,
+} from "@/lib/rsvp/guest-attendance";
 
 describe("defaultGuestWillAttend", () => {
     it("prefers a saved RSVP answer", () => {
@@ -44,5 +49,19 @@ describe("isCompanionNameRequired", () => {
                 needsNameConfirmation: true,
             }),
         ).toBe(true);
+    });
+});
+
+describe("rsvp invitation seats lead", () => {
+    it("states the seat count, hopes everyone comes, and allows a partial decline", () => {
+        expect(rsvpInvitationSeatsLead(2)).toBe(
+            "Esta invitación es para 2 personas. Esperamos a todos; si alguien no puede asistir, indícalo en su nombre.",
+        );
+        expect(rsvpInvitationSeatsLead(1)).toBe(
+            "Esta invitación es para 1 persona. Confirma si podrá asistir.",
+        );
+        expect(rsvpAttendingCountLead(1, 2)).toBe(
+            "Asisten 1 de 2. Elige Asistirá o No asistirá en cada persona.",
+        );
     });
 });

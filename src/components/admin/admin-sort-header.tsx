@@ -10,6 +10,7 @@ type AdminSortHeaderProps = {
     sort: string;
     dir: AdminSortDir;
     onSort: (column: string) => void;
+    className?: string;
 };
 
 export function AdminSortHeader({
@@ -18,6 +19,7 @@ export function AdminSortHeader({
                                     sort,
                                     dir,
                                     onSort,
+                                    className,
                                 }: AdminSortHeaderProps) {
     const active = sort === column;
 
@@ -25,7 +27,7 @@ export function AdminSortHeader({
         <th className="p-0 font-medium">
             <button
                 type="button"
-                className={cn(admin.sortButton, "w-full")}
+                className={cn(className ?? admin.sortButton, "w-full")}
                 onClick={() => onSort(column)}
                 aria-pressed={active}
             >

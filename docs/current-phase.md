@@ -23,7 +23,7 @@ may proceed when the user requests it explicitly.
 | Outfit inspiration pages                    | Implemented (`/inspiracion/ellos\|ellas`)                                      |
 | Event TZ display (`America/Bogota`)         | Implemented (`event-timezone.ts`)                                              |
 | Admin Excel export                          | Full workbook + `kind=attending\|transport\|dietary\|contacts`                 |
-| Admin families/guests lists                 | Filters, chips, column sort, page size 25; URL debounce 300 ms; search icon padding; guests Figma `109:372` mobile, `109:36` from 834px, `103:33` from `lg`, `100:38` from `xl`; families Figma `126:29` mobile, `123:268` from 834px, `117:29` from `lg`, `109:645` from `xl`; family detail Figma `144:245` mobile, `144:29` from 834px, `143:29` from `lg`, `137:34` from `xl` |
+| Admin families/guests lists                 | Filters, chips, column sort, page size 25; URL debounce 300 ms; search icon padding; guests Figma `109:372` mobile, `109:36` from 834px, `103:33` from `lg`, `100:38` from `xl`; families Figma `126:29` mobile, `123:268` from 834px, `117:29` from `lg`, `109:645` from `xl`; family detail Figma `144:245` mobile, `144:29` from 834px, `143:29` from `lg`, `137:34` from `xl`; new family Figma `145:298` mobile, `145:228` from 834px, `145:151` from `lg`, `145:68` from `xl` |
 | Admin photos                                | Mobile Figma `128:528` below 834px, portrait `128:364` from 834px, landscape `128:201` from `lg`, desktop `128:34` from `xl`; QR rotate + PNG still after generate |
 | Admin Admins                                | Mobile Figma `136:29` below 834px, portrait `134:207` from 834px, landscape `134:121` from `lg`, desktop `134:35` from `xl` |
 | Admin compact chrome                        | Figma white navbar on all `AdminShell` pages; hamburger until `lg`; FAB on every viewport (hidden on `/admin/families/new`) |
@@ -149,6 +149,33 @@ list checkboxes (18px, 6px radius, `--admin-olive` when checked), and an olive b
 table with full date-column labels, slug + ops chips and **Ver**, olive batch bar (copy links / export / disable /
 enable). Shared navbar is unchanged. Helpers:
 `src/lib/admin/admin-families-layout.ts`.
+
+## Completed: admin nueva familia desktop (Figma `145:68`)
+
+`/admin/families/new` from `xl` uses the Figma workspace: olive banner (Administración > Familias > Nueva familia,
+**Nueva Familia** with back arrow, create-link body), then a centered 640px white card (nombre, cupos, mensaje
+opcional, Invitados with name + 160px gender rows, **Crear familia y generar enlace**). Shared navbar is unchanged.
+Helpers: `src/lib/admin/admin-new-family-layout.ts`.
+
+## Completed: admin nueva familia tablet landscape (Figma `145:151`)
+
+`/admin/families/new` from `lg` (1024px) uses the same Figma workspace as desktop, at landscape density: 32px title,
+36px back control, 32px card padding, 24px field gap, 80px message field, and 13px guest hint. Shared navbar is
+untouched. Helper: `ADMIN_NEW_FAMILY_LANDSCAPE_MIN_PX`.
+
+## Completed: admin nueva familia tablet portrait (Figma `145:228`)
+
+`/admin/families/new` from 834px (iPad 11" portrait) until `lg` uses a single-column Figma workspace: stacked olive
+banner (32px title, 36px back), then a **full-width** white card (32px padding, 24px field gap, 100px message field,
+Invitados with name + 160px gender). Shared navbar is untouched (hamburger until `lg`). Helper:
+`ADMIN_NEW_FAMILY_PORTRAIT_MIN_PX`.
+
+## Completed: admin nueva familia mobile (Figma `145:298`)
+
+`/admin/families/new` below 834px uses a single-column Figma workspace: stacked olive banner (28px title, 32px back,
+overline **Administración > Familias > Nueva**), then a full-width white card (20px padding, 24px field gap, 90px
+message field with italic *(opcional)*, Times **Invitados**, stacked guest name + gender). Shared navbar is untouched
+(hamburger). Helper: `ADMIN_NEW_FAMILY_MOBILE_MAX_PX`.
 
 ## Completed: admin family detail desktop (Figma `137:34`)
 

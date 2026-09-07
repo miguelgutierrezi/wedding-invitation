@@ -792,3 +792,68 @@ export const adminFamilyDetail = {
         "rounded-lg border border-accent/40 bg-accent/20 px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink",
 } as const;
 
+/**
+ * Admin nueva familia: mobile Figma `145:298` below 834px, portrait `145:228`
+ * from 834px, landscape `145:151` from `lg`, desktop `145:68` from `xl`.
+ * Reuses Resumen banner. Do not use on the public invitation.
+ */
+export const adminNewFamily = {
+    desktopRoot: `hidden lg:block ${adminResumen.sans} text-admin-ink`,
+    portraitRoot: `hidden min-[834px]:block lg:hidden ${adminResumen.sans} text-admin-ink`,
+    mobileRoot: `min-[834px]:hidden ${adminResumen.sans} text-admin-ink`,
+    bannerTitle:
+        "min-w-0 font-[family-name:var(--font-timer)] text-[32px] leading-tight font-bold text-white xl:text-[36px]",
+    mobileBannerTitle:
+        "min-w-0 font-[family-name:var(--font-timer)] text-[28px] leading-tight font-bold text-white",
+    backBtn:
+        "inline-flex size-9 shrink-0 items-center justify-center rounded-[18px] bg-white/15 text-white transition-colors hover:bg-white/25 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:outline-none [&_svg]:size-[18px]",
+    mobileBackBtn:
+        "inline-flex size-8 shrink-0 items-center justify-center rounded-2xl bg-white/15 text-white transition-colors hover:bg-white/25 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:outline-none",
+    mobileBannerBody:
+        "font-[family-name:var(--font-body)] text-[13px] leading-[1.4] text-white/85",
+    workspace:
+        "flex w-full flex-col items-center px-8 pb-12 pt-8 xl:pb-16 xl:pt-12 2xl:px-12",
+    portraitWorkspace:
+        "flex w-full flex-col items-center px-8 pb-16 pt-8",
+    mobileWorkspace: "flex w-full flex-col items-start px-4 pb-12 pt-6",
+    card: "flex w-full max-w-[640px] flex-col gap-6 rounded-[12px] bg-white p-8 shadow-[0_8px_12px_rgba(0,0,0,0.06)] xl:gap-7 xl:p-10",
+    portraitCard:
+        "flex w-full flex-col gap-6 rounded-[12px] bg-white p-8 shadow-[0_8px_12px_rgba(0,0,0,0.06)]",
+    mobileCard:
+        "flex w-full flex-col gap-6 rounded-[12px] bg-white p-5 shadow-[0_8px_8px_rgba(48,48,38,0.08)]",
+    fieldLabel:
+        "font-[family-name:var(--font-body)] text-sm font-semibold text-admin-ink",
+    guestLabel:
+        "font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-ink",
+    input: adminFamilyDetail.input,
+    textarea:
+        "h-20 w-full min-w-0 resize-none rounded-lg border border-[#d1cfc7] bg-[#fdfdf8] px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 xl:h-[100px]",
+    portraitTextarea:
+        "h-[100px] w-full min-w-0 resize-none rounded-lg border border-[#d1cfc7] bg-[#fdfdf8] px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40",
+    mobileTextarea:
+        "h-[90px] w-full min-w-0 resize-none rounded-lg border border-[#d1cfc7] bg-[#fdfdf8] px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40",
+    select: adminFamilyDetail.select,
+    guestRow: "flex w-full items-start gap-4",
+    guestNameCol: "grid min-w-0 flex-1 gap-2",
+    guestGenderCol: "grid w-40 shrink-0 gap-2",
+    mobileGuestRow: "flex w-full flex-col gap-3",
+    mobileGuestGenderCol: "grid w-full gap-2",
+    guestsDivider: "h-px w-full bg-admin-border",
+    guestsTitle:
+        "font-[family-name:var(--font-body)] text-base font-bold text-admin-olive",
+    mobileGuestsTitle:
+        "font-[family-name:var(--font-timer)] text-[20px] font-bold text-admin-olive",
+    guestsHint:
+        "font-[family-name:var(--font-body)] text-[13px] leading-[1.4] text-admin-muted xl:text-xs",
+    mobileGuestsHint:
+        "font-[family-name:var(--font-body)] text-xs leading-[1.4] text-admin-muted",
+    messageOptional:
+        "font-[family-name:var(--font-body)] text-sm font-normal italic text-admin-muted",
+    btnPrimary:
+        "inline-flex h-12 min-h-11 w-full items-center justify-center rounded-[12px] bg-admin-olive px-6 py-3.5 font-[family-name:var(--font-body)] text-sm font-semibold text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
+    btnSecondary:
+        "inline-flex h-12 min-h-11 w-full items-center justify-center rounded-[12px] border border-[#d1cfc7] bg-white px-6 py-3.5 font-[family-name:var(--font-body)] text-sm font-semibold text-admin-olive transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
+    error: adminFamilyDetail.error,
+    success: adminFamilyDetail.success,
+} as const;
+

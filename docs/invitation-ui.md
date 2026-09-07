@@ -350,6 +350,15 @@ Inter table (slug + olive chips; Sin abrir is red), **Ver**, olive batch bar (Co
 Activar — keep Activar even if a mock omits it; phone batch ignores Figma’s “Crear selección”). Helpers in
 `admin-families-layout.ts`; classes in `adminFamilies` (cards/table/batch reuse `adminGuests`).
 
+**Nueva familia** (`/admin/families/new`: mobile Figma `145:298` below 834px; portrait `145:228` from 834px;
+landscape `145:151` from `lg`; desktop `145:68` from `xl`): olive banner (back arrow + **Nueva Familia**, create-link
+body). Phone overline is **Administración > Familias > Nueva**; wider frames keep **… > Nueva familia**. Phone uses a
+**full-width** white card (20px padding, 24px field gap, 90px message field with italic *(opcional)*, Times **Invitados**,
+stacked guest name + gender). Portrait uses a full-width card (32px padding, 24px field gap, 100px message field) with
+name + 160px gender. Landscape/desktop center a 640px card (landscape 80px message field; desktop 36px title, 40px
+padding, 28px gap, 100px message field) with name + 160px gender. Shared navbar is unchanged (hamburger until `lg`).
+Helpers in `admin-new-family-layout.ts`; classes in `adminNewFamily`.
+
 **Fotos** (`/admin/photos`: mobile Figma `128:528` below 834px; portrait `128:364` from 834px; landscape `128:201` from
 `lg`; desktop `128:34` from `xl`): olive banner (Administración · Fotos, title **Fotos y videos**, moderation body;
 **do not change the shared navbar**; the shared **+** FAB stays). Phone and portrait show the remaining-days chip
@@ -379,8 +388,9 @@ list: follow-ups stay transporte / fotos from live data. The shared olive **+** 
 
 New-family **+** is shown on every `AdminShell` viewport (hidden only on `/admin/families/new`); it is portaled in a
 full-viewport overlay so a flex `body` cannot hide it on desktop. The drawer includes **Nueva familia**. Closed overlay
-cannot intercept hamburger taps. Back chevron on nueva familia **and** family detail (the family-detail back arrow sits
-in the olive banner from phone up, Figma `144:245` / `144:29` / `143:29` / `137:34`). Family list chips (sin abrir /
+cannot intercept hamburger taps. Back chevron on nueva familia **and** family detail (family-detail banner arrow from
+phone up, Figma `144:245` / `144:29` / `143:29` / `137:34`; nueva familia banner arrow from phone up, Figma `145:298` /
+`145:228` / `145:151` / `145:68`). Family list chips (sin abrir /
 bus / dieta). Family detail: actividad reciente; eliminar familia no exige guardar el formulario. Family/guest/photo
 **cards** replace tables until `lg`.
 

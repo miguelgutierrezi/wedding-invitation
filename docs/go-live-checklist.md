@@ -31,8 +31,8 @@ Operational checklist before sharing invitation links widely. Does not authorize
 - [ ] Family detail: copy invitation URL and WhatsApp reminder; confirm before disable / regenerate.
 - [ ] Phone and iPad 11" portrait: hamburger + floating **+**. From `lg` (1024px): inline olive nav on every admin page
   with chrome; the **+** FAB stays. Lists are cards below `lg`. Drawer still has **Nueva familia**.
-- [ ] Nueva familia **and family detail**: back arrow returns to `/admin/families` (banner arrow on detail from phone up);
-  no floating **+** on the create page.
+- [ ] Nueva familia **and family detail**: back arrow returns to `/admin/families` (banner arrow from phone up on both:
+  detail `144:245` / `144:29` / `143:29` / `137:34`; create `145:298` / `145:228` / `145:151` / `145:68`); no floating **+** on the create page.
 - [ ] Family detail shows actividad reciente after opening the invitation / submitting RSVP.
 - [ ] Batch: select families → copy links / download Excel / disable with confirm; guests copy phones; photos approve selected.
 - [ ] Resumen shows days until RSVP deadline and close follow-up rows (bus, dietas, fotos).

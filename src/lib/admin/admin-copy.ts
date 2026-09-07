@@ -81,6 +81,36 @@ export const adminCopy = {
         copyLink: "Copiar enlace",
         copied: "Copiado",
     },
+    newFamily: {
+        overline: "Administración > Familias > Nueva familia",
+        overlineCompact: "Administración > Familias > Nueva",
+        title: "Nueva Familia",
+        bannerBody:
+            "Crea un nuevo grupo familiar para generar automáticamente su enlace de confirmación personalizado.",
+        lead: "Se generará un enlace personalizado. Guárdalo o envíalo de inmediato; después solo podrás regenerarlo (el enlace anterior dejará de servir).",
+        nameLabel: "Nombre de la familia",
+        namePlaceholder: "Familia García",
+        seatsLabel: "Cupos máximos",
+        messageLabel: "Mensaje personalizado (opcional)",
+        messageLabelLead: "Mensaje personalizado",
+        messageOptional: "(opcional)",
+        messagePlaceholder:
+            "Escribe un mensaje de bienvenida personalizado para esta familia al abrir su invitación...",
+        guestsTitle: "Invitados",
+        guestsHint:
+            "El primero se marca como contacto principal. Indica nombre y género (para el saludo si es una sola persona). No superes los cupos.",
+        guestLabel: "Invitado",
+        guestNamePlaceholder: "Nombre completo",
+        genderLabel: "Género",
+        genderPlaceholder: "Elegir",
+        submit: "Crear familia y generar enlace",
+        submitting: "Creando…",
+        successTitle: "Familia creada correctamente",
+        successBody:
+            "Copia el enlace para enviarlo por WhatsApp. Puedes verlo de nuevo en el detalle de la familia.",
+        viewFamily: "Ver familia",
+        backToList: "Volver al listado",
+    },
     family: {
         status: {
             pending: "Sin confirmar",

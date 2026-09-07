@@ -20,6 +20,10 @@ import {
     loginPasswordInputType,
     loginPasswordToggleLabel,
     loginPortraitWorkspace,
+    loginResetCardWidthPx,
+    loginScreenLead,
+    loginScreenTitle,
+    loginShowsResetExplanation,
 } from "@/lib/admin/admin-login-layout";
 
 describe("admin login Figma helpers", () => {
@@ -68,7 +72,24 @@ describe("admin login Figma helpers", () => {
         expect(adminLogin.mobileInput).toContain("px-3.5");
         expect(adminLogin.mobileSubmit).toContain("h-[46px]");
         expect(adminLogin.mobileFooter).toContain("text-[11px]");
+        expect(adminLogin.mobileResetBrand).toContain("justify-center");
+        expect(adminLogin.mobileResetBrand).not.toContain("flex-col");
+        expect(adminLogin.mobileResetBrandNames).toContain("text-[20px]");
+        expect(adminLogin.resetBrandBadge).not.toContain("w-full");
+        expect(adminLogin.mobileResetCard).toContain("py-10");
+        expect(adminLogin.mobileResetHeader).toContain("gap-2.5");
+        expect(adminLogin.mobileResetLead).toContain("text-sm");
+        expect(adminLogin.mobileResetFields).toContain("gap-5");
+        expect(adminLogin.mobileResetFooter).toContain("text-xs");
+        expect(adminLogin.mobileResetFooter).toContain("pt-8");
         expect(adminLogin.portraitBrandNames).toContain("text-[22px]");
+        expect(adminLogin.portraitResetRoot).toContain("min-[834px]:flex");
+        expect(adminLogin.portraitResetRoot).toContain("lg:hidden");
+        expect(adminLogin.portraitResetRoot).toContain("items-center");
+        expect(adminLogin.portraitResetBrand).toContain("top-12");
+        expect(adminLogin.portraitResetBrand).toContain("left-12");
+        expect(adminLogin.portraitResetBrandNames).toContain("text-[20px]");
+        expect(adminLogin.portraitResetFooter).toContain("bottom-12");
         expect(adminLogin.card).toContain("w-[460px]");
         expect(adminLogin.card).toContain("lg:w-[420px]");
         expect(adminLogin.card).toContain("xl:w-[460px]");
@@ -80,6 +101,30 @@ describe("admin login Figma helpers", () => {
         expect(adminLogin.eyeImage).toContain("overflow-visible");
         expect(adminLogin.passwordInput).toContain("::-ms-reveal");
         expect(adminLogin.forgot).toContain("underline");
+        expect(adminLogin.resetFields).toContain("gap-6");
+        expect(adminLogin.resetFields).toContain("lg:gap-5");
+        expect(adminLogin.resetFields).toContain("xl:gap-6");
+        expect(adminLogin.resetExplanation).toContain("leading-[1.6]");
+        expect(adminLogin.resetExplanation).not.toContain("lg:text-[13px]");
+        expect(adminLogin.resetActions).toContain("gap-5");
+        expect(adminLogin.resetActions).not.toContain("lg:gap-4");
+        expect(adminLogin.resetCard).toContain("lg:w-[440px]");
+        expect(adminLogin.resetCard).toContain("lg:rounded-[24px]");
+        expect(adminLogin.resetCard).toContain("lg:px-10");
+        expect(adminLogin.resetCard).toContain("lg:py-[52px]");
+        expect(adminLogin.resetCard).toContain("xl:w-[460px]");
+        expect(adminLogin.resetHeader).toContain("gap-3");
+        expect(adminLogin.resetEyebrow).toContain("lg:tracking-[1.5px]");
+        expect(adminLogin.resetLead).toContain("text-sm");
+        expect(adminLogin.resetBrand).toContain("top-9");
+        expect(adminLogin.resetBrandNames).toContain("text-[20px]");
+        expect(adminLogin.resetBrandBadge).toContain("text-[14px]");
+        expect(adminLogin.resetFooter).toContain("bottom-9");
+        expect(loginResetCardWidthPx(390)).toBe("full");
+        expect(loginResetCardWidthPx(834)).toBe(460);
+        expect(loginResetCardWidthPx(1024)).toBe(440);
+        expect(loginResetCardWidthPx(1279)).toBe(440);
+        expect(loginResetCardWidthPx(1280)).toBe(460);
     });
 
     it("formats brand, copyright, and password visibility from couple names", () => {
@@ -106,5 +151,16 @@ describe("admin login Figma helpers", () => {
         expect(adminCopy.login.brandBadge).toBe("• Admin Panel");
         expect(adminCopy.login.forgot).toBe("¿Olvidaste tu contraseña?");
         expect(adminCopy.login.title).toBe("Iniciar sesión");
+        expect(adminCopy.login.resetTitle).toBe("Recuperar contraseña");
+        expect(loginScreenTitle("login")).toBe("Iniciar sesión");
+        expect(loginScreenTitle("reset")).toBe("Recuperar contraseña");
+        expect(loginScreenLead()).toBe(
+            "Solo cuentas de administración pueden acceder.",
+        );
+        expect(loginShowsResetExplanation("login")).toBe(false);
+        expect(loginShowsResetExplanation("reset")).toBe(true);
+        expect(adminCopy.login.resetLead).toContain("enlace para crear");
+        expect(adminCopy.login.resetSubmit).toBe("Enviar enlace");
+        expect(adminCopy.login.resetBack).toBe("Volver a iniciar sesión");
     });
 });

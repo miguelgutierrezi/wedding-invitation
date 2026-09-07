@@ -9,8 +9,10 @@ import {AdminNewFamilyFab} from "@/components/admin/admin-new-family-fab";
 import {AdminResumenDrawer} from "@/components/admin/admin-resumen-drawer";
 import {ResumenMenuIcon} from "@/components/admin/admin-resumen-icons";
 import {adminResumen} from "@/components/admin/admin-ui";
+import {useLockBodyScroll} from "@/hooks/use-lock-body-scroll";
 import {useVisualViewportBottom} from "@/hooks/use-visual-viewport-bottom";
 import {
+    ADMIN_DESKTOP_NAV_MIN_PX,
     RESUMEN_DRAWER_NAV,
     isAdminNavActive,
     showAdminNewFamilyFab,
@@ -34,10 +36,24 @@ export function AdminChrome({
     const menuId = useId();
     const showFab = showAdminNewFamilyFab(pathname);
     useVisualViewportBottom();
+    useLockBodyScroll(open, menuId);
 
     function closeMenu() {
         setOpen(false);
     }
+
+    useEffect(() => {
+        const media = window.matchMedia(
+            `(min-width: ${ADMIN_DESKTOP_NAV_MIN_PX}px)`,
+        );
+        const onChange = () => {
+            if (media.matches) {
+                setOpen(false);
+            }
+        };
+        media.addEventListener("change", onChange);
+        return () => media.removeEventListener("change", onChange);
+    }, []);
 
     useEffect(() => {
         if (!open) {
@@ -50,14 +66,8 @@ export function AdminChrome({
             }
         };
 
-        const previousOverflow = document.body.style.overflow;
-        document.body.style.overflow = "hidden";
         document.addEventListener("keydown", onKeyDown);
-
-        return () => {
-            document.body.style.overflow = previousOverflow;
-            document.removeEventListener("keydown", onKeyDown);
-        };
+        return () => document.removeEventListener("keydown", onKeyDown);
     }, [open]);
 
     return (

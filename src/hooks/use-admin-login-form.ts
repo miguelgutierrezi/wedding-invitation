@@ -5,9 +5,10 @@ import {
     signInAdminAction,
 } from "@/actions/admin/auth";
 import {adminCopy} from "@/lib/admin/admin-copy";
+import type {AdminLoginMode} from "@/lib/admin/admin-login-layout";
 
 export function useAdminLoginForm(errorFromQuery: string | null) {
-    const [mode, setMode] = useState<"login" | "reset">("login");
+    const [mode, setMode] = useState<AdminLoginMode>("login");
     const [error, setError] = useState<string | null>(
         errorFromQuery === "forbidden" ? adminCopy.login.forbidden : null,
     );
@@ -72,3 +73,5 @@ export function useAdminLoginForm(errorFromQuery: string | null) {
         togglePasswordVisible,
     };
 }
+
+export type AdminLoginFormController = ReturnType<typeof useAdminLoginForm>;

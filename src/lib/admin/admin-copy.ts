@@ -13,6 +13,7 @@ export const adminCopy = {
         submitting: "Entrando…",
         forgot: "¿Olvidaste tu contraseña?",
         forbidden: "Esta cuenta no está autorizada para administrar.",
+        resetTitle: "Recuperar contraseña",
         resetLead:
             "Te enviaremos un enlace para crear una contraseña nueva. Usa el mismo correo con el que te invitaron al panel.",
         resetSubmit: "Enviar enlace",

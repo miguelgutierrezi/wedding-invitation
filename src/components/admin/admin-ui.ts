@@ -197,7 +197,7 @@ export const adminResumen = {
     summaryBox:
         "flex flex-col gap-1.5 rounded-[10px] bg-admin-wash p-3 min-[834px]:gap-2 min-[834px]:rounded-xl min-[834px]:p-4 xl:gap-3 xl:rounded-2xl xl:p-5",
     drawerScrim:
-        "absolute inset-0 bg-admin-ink/65 transition-opacity duration-300 ease-out motion-reduce:transition-none",
+        "absolute inset-0 touch-none bg-admin-ink/65 transition-opacity duration-300 ease-out motion-reduce:transition-none",
     drawerPanel:
         "absolute inset-y-0 left-0 flex w-[290px] max-w-[85vw] flex-col justify-between border-r border-admin-border bg-admin-canvas px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-[4px_0_12px_rgba(48,48,38,0.15)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
     drawerBrand:
@@ -860,6 +860,8 @@ export const adminNewFamily = {
 /**
  * Admin login: mobile Figma `152:29` below 834px, portrait `151:30` from 834px,
  * landscape `149:29` from `lg`, desktop `145:364` from `xl`.
+ * Desktop recovery uses Figma `153:34` from `xl`; landscape recovery uses `153:57` from `lg`;
+ * portrait recovery uses `153:80` from 834px; mobile recovery uses `153:103` below 834px.
  * Do not use on the public invitation.
  */
 export const adminLogin = {
@@ -867,41 +869,72 @@ export const adminLogin = {
         `relative hidden min-h-full w-full flex-1 flex-col items-center justify-center bg-admin-canvas px-10 py-10 lg:flex ${adminResumen.sans} text-admin-ink`,
     portraitRoot:
         `hidden min-h-full w-full flex-1 flex-col justify-between bg-admin-canvas px-16 pt-12 pb-10 min-[834px]:flex lg:hidden ${adminResumen.sans} text-admin-ink`,
+    portraitResetRoot:
+        `relative hidden min-h-full w-full flex-1 flex-col items-center justify-center bg-admin-canvas min-[834px]:flex lg:hidden ${adminResumen.sans} text-admin-ink`,
     mobileRoot:
         `flex min-h-full w-full min-w-0 flex-1 flex-col items-center justify-between bg-admin-canvas px-4 pt-[max(3rem,env(safe-area-inset-top))] pb-[max(2rem,env(safe-area-inset-bottom))] min-[834px]:hidden ${adminResumen.sans} text-admin-ink`,
     brand: "absolute top-10 left-12 flex items-center gap-2 xl:top-12 xl:left-16",
+    resetBrand:
+        "absolute top-9 left-12 flex items-center gap-2 xl:top-12 xl:left-16",
     portraitBrand: "flex w-full items-center gap-2",
+    portraitResetBrand: "absolute top-12 left-12 flex items-center gap-2",
     mobileBrand: "flex w-full flex-col items-center gap-1 text-center",
+    mobileResetBrand:
+        "flex w-full items-center justify-center gap-2 pb-6 text-center",
     brandNames:
         "font-[family-name:var(--font-timer)] text-[18px] font-bold whitespace-nowrap text-admin-olive xl:text-[20px]",
+    resetBrandNames:
+        "font-[family-name:var(--font-timer)] text-[20px] font-bold whitespace-nowrap text-admin-olive",
     portraitBrandNames:
         "font-[family-name:var(--font-timer)] text-[22px] font-bold whitespace-nowrap text-admin-olive",
+    portraitResetBrandNames:
+        "font-[family-name:var(--font-timer)] text-[20px] font-bold whitespace-nowrap text-admin-olive",
     mobileBrandNames:
         "font-[family-name:var(--font-timer)] w-full text-[24px] font-bold text-admin-olive",
+    mobileResetBrandNames:
+        "font-[family-name:var(--font-timer)] text-[20px] font-bold whitespace-nowrap text-admin-olive",
     brandBadge:
         "font-[family-name:var(--font-body)] text-[14px] font-medium whitespace-nowrap text-admin-muted xl:text-xs",
+    resetBrandBadge:
+        "font-[family-name:var(--font-body)] text-[14px] font-medium whitespace-nowrap text-admin-muted",
     mobileBrandBadge:
         "font-[family-name:var(--font-body)] w-full text-[14px] font-medium text-admin-muted",
     portraitCardWrap:
         "flex min-h-0 w-full flex-1 flex-col items-center justify-center",
     card: "flex w-[460px] max-w-full flex-col gap-8 rounded-[24px] bg-white px-12 py-14 shadow-[0_16px_16px_rgba(95,100,70,0.08)] lg:w-[420px] lg:gap-7 lg:rounded-[20px] lg:px-9 lg:py-12 xl:w-[460px] xl:gap-8 xl:rounded-[24px] xl:px-12 xl:py-14",
+    resetCard:
+        "flex w-[460px] max-w-full flex-col gap-8 rounded-[24px] bg-white px-12 py-14 shadow-[0_16px_16px_rgba(95,100,70,0.08)] lg:w-[440px] lg:gap-7 lg:rounded-[24px] lg:px-10 lg:py-[52px] xl:w-[460px] xl:gap-8 xl:rounded-[24px] xl:px-12 xl:py-14",
     mobileCard:
         "flex w-full flex-col gap-7 rounded-[24px] bg-white px-6 py-9 shadow-[0_16px_16px_rgba(95,100,70,0.08)]",
+    mobileResetCard:
+        "flex w-full flex-col gap-7 rounded-[24px] bg-white px-6 py-10 shadow-[0_16px_16px_rgba(95,100,70,0.08)]",
     header: "flex w-full flex-col gap-3 lg:gap-2.5 xl:gap-3",
+    resetHeader: "flex w-full flex-col gap-3",
     mobileHeader: "flex w-full flex-col gap-2",
+    mobileResetHeader: "flex w-full flex-col gap-2.5",
     eyebrow:
         "font-[family-name:var(--font-body)] text-xs font-bold tracking-[1.5px] text-admin-muted uppercase lg:tracking-normal xl:tracking-[1.5px]",
+    resetEyebrow:
+        "font-[family-name:var(--font-body)] text-xs font-bold text-admin-muted uppercase lg:tracking-[1.5px]",
     mobileEyebrow:
         "font-[family-name:var(--font-body)] text-[11px] font-bold text-admin-muted uppercase",
     title: "font-[family-name:var(--font-timer)] text-[36px] leading-[1.2] font-bold text-admin-ink lg:text-[32px] xl:text-[36px]",
     mobileTitle:
         "font-[family-name:var(--font-timer)] text-[28px] leading-[1.2] font-bold text-admin-ink",
     lead: "font-[family-name:var(--font-body)] text-sm leading-[1.5] text-admin-muted lg:text-[13px] xl:text-sm",
+    resetLead:
+        "font-[family-name:var(--font-body)] text-sm leading-[1.5] text-admin-muted",
     mobileLead:
         "font-[family-name:var(--font-body)] text-[13px] leading-[1.4] text-admin-muted",
+    mobileResetLead:
+        "font-[family-name:var(--font-body)] text-sm leading-[1.5] text-admin-muted",
     form: "flex w-full flex-col gap-5 lg:gap-4 xl:gap-5",
     fields: "flex w-full flex-col gap-5 lg:gap-4 xl:gap-5",
+    resetFields: "flex w-full flex-col gap-6 lg:gap-5 xl:gap-6",
+    resetExplanation:
+        "font-[family-name:var(--font-body)] text-sm leading-[1.6] text-admin-muted",
     mobileFields: "flex w-full flex-col gap-4",
+    mobileResetFields: "flex w-full flex-col gap-5",
     field: "flex w-full flex-col gap-2",
     mobileField: "flex w-full flex-col gap-1.5",
     label: "font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-ink",
@@ -920,6 +953,7 @@ export const adminLogin = {
     eyeIcon: "pointer-events-none size-4 max-w-none overflow-visible",
     eyeImage: "size-full max-w-none overflow-visible",
     actions: "flex w-full flex-col items-center gap-4",
+    resetActions: "flex w-full flex-col items-center gap-5",
     submit:
         "inline-flex h-12 min-h-11 w-full items-center justify-center rounded-[12px] bg-admin-olive py-3.5 font-[family-name:var(--font-body)] text-[15px] font-semibold text-white shadow-[0_4px_6px_rgba(95,100,70,0.14)] transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
     mobileSubmit:
@@ -928,10 +962,16 @@ export const adminLogin = {
         "font-[family-name:var(--font-body)] text-[13px] font-medium text-admin-muted underline decoration-solid underline-offset-2 hover:opacity-80 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
     footer:
         "absolute bottom-8 left-0 right-0 text-center font-[family-name:var(--font-body)] text-[13px] text-admin-muted xl:bottom-10 xl:text-xs",
+    resetFooter:
+        "absolute bottom-9 left-0 right-0 text-center font-[family-name:var(--font-body)] text-[13px] text-admin-muted xl:bottom-10",
     portraitFooter:
         "w-full text-center font-[family-name:var(--font-body)] text-[13px] text-admin-muted",
+    portraitResetFooter:
+        "absolute bottom-12 left-0 right-0 text-center font-[family-name:var(--font-body)] text-[13px] text-admin-muted",
     mobileFooter:
         "w-full text-center font-[family-name:var(--font-body)] text-[11px] text-admin-muted",
+    mobileResetFooter:
+        "w-full pt-8 text-center font-[family-name:var(--font-body)] text-xs text-admin-muted",
     error: "font-[family-name:var(--font-body)] text-sm text-red-800",
 } as const;
 

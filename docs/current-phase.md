@@ -26,14 +26,14 @@ may proceed when the user requests it explicitly.
 | Admin families/guests lists                 | Filters, chips, column sort, page size 25; URL debounce 300 ms; search icon padding; guests Figma `109:372` mobile, `109:36` from 834px, `103:33` from `lg`, `100:38` from `xl`; families Figma `126:29` mobile, `123:268` from 834px, `117:29` from `lg`, `109:645` from `xl`; family detail Figma `144:245` mobile, `144:29` from 834px, `143:29` from `lg`, `137:34` from `xl`; new family Figma `145:298` mobile, `145:228` from 834px, `145:151` from `lg`, `145:68` from `xl` |
 | Admin photos                                | Mobile Figma `128:528` below 834px, portrait `128:364` from 834px, landscape `128:201` from `lg`, desktop `128:34` from `xl`; QR rotate + PNG still after generate |
 | Admin Admins                                | Mobile Figma `136:29` below 834px, portrait `134:207` from 834px, landscape `134:121` from `lg`, desktop `134:35` from `xl` |
-| Admin compact chrome                        | Figma white navbar on all `AdminShell` pages; hamburger until `lg`; FAB on every viewport (hidden on `/admin/families/new`) |
+| Admin compact chrome                        | Figma white navbar on all `AdminShell` pages; hamburger until `lg`; open drawer locks page scroll; FAB on every viewport (hidden on `/admin/families/new`) |
 | Admin Resumen                               | Figma `94:414` + drawer `94:591`; `94:232` from 834px; `94:34` from `lg`; `91:40` from `xl` |
 | Admin Estadísticas                          | Figma `96:39` + `99:229` landscape + `99:419` portrait + `99:607` mobile |
 | Guest phone/email                           | Mirrored from family RSVP onto `guests`                                        |
 | Admin plain-language UI                     | Non-technical Spanish labels in admin panel                                    |
 | Delete family (admin)                       | RPC + confirm-by-name; works with unsaved edits                                |
 | Admin operations                            | Action queue, close follow-ups, family activity, **batch actions** |
-| Admin login                                 | Mobile Figma `152:29` below 834px; portrait `151:30` from 834px; landscape `149:29` from `lg`; desktop `145:364` from `xl`; password recovery stays in the same card |
+| Admin login                                 | Mobile Figma `152:29` below 834px; portrait `151:30` from 834px; landscape `149:29` from `lg`; desktop `145:364` from `xl`; recovery `153:103` below 834px + `153:80` from 834px + `153:57` from `lg` + `153:34` from `xl` |
 | Admin invite flow                          | **Implemented**; accept → `/admin/aceptar-invitacion` (set password) → `/admin` |
 | Admin invite email HTML                    | Figma `80:40` olive-gradient template in `emails/admin-invite.html` (paste into Supabase Auth) |
 | Admin password reset                       | Same Figma `80:40` layout as invite (`emails/admin-reset-password.html`); OTP 24 h |
@@ -47,14 +47,14 @@ may proceed when the user requests it explicitly.
 `/admin/login` below 834px uses the Figma canvas with stacked centered brand (24px couple names, 14px **• Admin Panel**),
 full-width 24px-radius card (24×36 padding, 28px gap, 11px overline, 28px title, 13px lead, 12px labels, 44px inputs,
 46px olive CTA), and 11px footer. Safe-area padding stays. Portrait `151:30` still starts at 834px. Recovery still lives
-in the same card. Helpers: `src/lib/admin/admin-login-layout.ts`.
+in the same card (mobile `153:103` below 834px, portrait `153:80` from 834px, landscape `153:57` from `lg`, desktop `153:34` from `xl`). Helpers: `src/lib/admin/admin-login-layout.ts`.
 
 ## Completed: admin login tablet portrait (Figma `151:30`)
 
 `/admin/login` from 834px until `lg` uses the Figma canvas with brand and footer **in the page flow** (not absolute):
 64×48×40 padding, couple names 22px + **• Admin Panel** 14px, flex-1 centered 460px card (same density as desktop:
 24px radius, 48×56 padding, 36px title, tracking overline), 13px footer. Landscape `149:29` still starts at `lg`. Mobile
-`152:29` covers below 834px. Recovery still lives in the same card. Helpers: `src/lib/admin/admin-login-layout.ts`.
+`152:29` covers below 834px. Recovery from below 834px uses Figma `153:103`; from 834px, `153:80`. Helpers: `src/lib/admin/admin-login-layout.ts`.
 
 ## Completed: admin login tablet landscape (Figma `149:29`)
 
@@ -62,7 +62,7 @@ in the same card. Helpers: `src/lib/admin/admin-login-layout.ts`.
 18px + **• Admin Panel** 14px at 48×40, centered 420px white card (20px radius, 36×48 padding, 28px gap, 32px title,
 13px lead, 16px field gap), same Inter fields / password eye / olive CTA as desktop, footer 13px at 32px. Desktop
 `145:364` density still starts at `xl`. Portrait `151:30` covers 834px until `lg`. Mobile `152:29` covers below 834px.
-Recovery still lives in the same card. Helpers: `src/lib/admin/admin-login-layout.ts`.
+Recovery below 834px uses Figma `153:103`; from 834px, `153:80`; from `lg`, `153:57`; from `xl`, `153:34`. Helpers: `src/lib/admin/admin-login-layout.ts`.
 
 ## Completed: admin login desktop (Figma `145:364`)
 
@@ -70,7 +70,39 @@ Recovery still lives in the same card. Helpers: `src/lib/admin/admin-login-layou
 white card (24px radius, olive shadow), Inter fields with **Correo electrónico** placeholder, password eye
 (inline SVG from Figma `145:390`, pupil added so the 16px glyph is legible), olive **Iniciar sesión**, underlined recovery link, and footer copyright. Landscape
 `149:29` covers `lg` until `xl`. Portrait `151:30` covers 834px until `lg`. Mobile `152:29` covers below 834px.
-Recovery still lives in the same card. Helpers: `src/lib/admin/admin-login-layout.ts`.
+Recovery below 834px uses Figma `153:103`; from 834px, `153:80`; from `lg`, `153:57`; from `xl`, `153:34`. Helpers: `src/lib/admin/admin-login-layout.ts`.
+
+## Completed: admin password recovery desktop (Figma `153:34`)
+
+`/admin/login` recovery from `xl` uses the Figma canvas in the same cream chrome as login: **PANEL PRIVADO**, Times
+**Recuperar contraseña**, the admin-only lead, a separate 14px/1.6 explanation, **Correo electrónico**, olive **Enviar
+enlace**, and underlined **Volver a iniciar sesión**. Landscape recovery uses Figma `153:57`; portrait uses `153:80`;
+mobile uses `153:103`. Helpers: `src/lib/admin/admin-login-layout.ts`.
+
+## Completed: admin password recovery tablet landscape (Figma `153:57`)
+
+`/admin/login` recovery from `lg` until `xl` uses the Figma canvas in the same cream chrome as landscape login, with
+recovery density: 20px couple names at 48×36, 440px card (24px radius, 40×52 padding, 28px gap), 12px tracking overline,
+32px Times title, 14px lead + 1.6 explanation, 20px form/actions gap, olive **Enviar enlace**, underlined **Volver a
+iniciar sesión**, 13px footer at 36px. Desktop `153:34` still starts at `xl`. Login landscape `149:29` (420px / 20px
+radius) is unchanged. Helpers: `loginResetCardWidthPx`.
+
+## Completed: admin password recovery tablet portrait (Figma `153:80`)
+
+`/admin/login` recovery from 834px until `lg` uses the Figma canvas with **absolute** chrome (unlike login portrait, which
+keeps brand and footer in the page flow): 20px couple names at 48×48, centered 460px card (24px radius, 48×56 padding,
+32px gap, 36px Times title, 14px lead + 1.6 explanation), olive **Enviar enlace**, underlined **Volver a iniciar
+sesión**, 13px footer at 48px. Login portrait `151:30` (22px brand in flow, 64×48×40 padding) is unchanged. Landscape
+`153:57` still starts at `lg`. Helpers: `src/lib/admin/admin-login-layout.ts`.
+
+## Completed: admin password recovery mobile (Figma `153:103`)
+
+`/admin/login` recovery below 834px uses the Figma canvas in the same cream board and safe-area padding as login mobile,
+with recovery density: **inline** 20px couple names + 14px **• Admin Panel** (not stacked 24px), full-width 24px-radius
+card (24×40 padding, 28px gap, 10px header gap, 28px title, 14px lead + 1.6 explanation, 13px labels, 46px input, 48px
+olive **Enviar enlace**), underlined **Volver a iniciar sesión**, 12px footer. Login mobile `152:29` (stacked 24px
+brand, 36px card padding, 44px inputs, 46px CTA, 11px footer) is unchanged. Portrait `153:80` still starts at 834px.
+Helpers: `src/lib/admin/admin-login-layout.ts`.
 
 ## Completed: admin Fotos mobile (Figma `128:528`)
 
@@ -299,13 +331,17 @@ server still checks the name stored in the database.
 ## Completed: admin compact chrome (phone + tablet)
 
 Shared Figma navbar on every `AdminShell` page (not login / accept-invite): white header, olive hamburger until
-`lg` (left cream drawer), inline pills from tablet landscape. Page titles live under the bar; back chevron on create
+`lg` (left cream drawer), inline pills from tablet landscape. While the drawer is open, page scroll is locked
+(`position: fixed` on `body` plus blocked touch/wheel outside the drawer nav — not `overflow: hidden` on `<html>`,
+which would break `position: fixed` on iPad). The menu closes if the viewport crosses `lg`. Page titles live under
+the bar; back chevron on create
 and family detail. Floating **+** (olive) is shown on every viewport; still hidden on `/admin/families/new`.
 It is portaled in `.admin-new-family-fab-layer` (`position: fixed; inset: 0`) so a flex `body` cannot hide it at the
 end of a long desktop page. **Nueva familia** also stays in the drawer.
 - Lists: cards below `lg`; tables from `lg`.
 - Path helpers + tests: `src/lib/admin/admin-chrome.ts` (`ADMIN_DESKTOP_NAV_MIN_PX` = 1024,
-  `ADMIN_RESUMEN_WIDE_MIN_PX`, `ADMIN_RESUMEN_LANDSCAPE_MIN_PX`, `ADMIN_SHELL_FAB_PADDING`).
+  `ADMIN_RESUMEN_WIDE_MIN_PX`, `ADMIN_RESUMEN_LANDSCAPE_MIN_PX`, `ADMIN_SHELL_FAB_PADDING`),
+  `src/lib/admin/lock-body-scroll.ts`.
 - Drawer respects `prefers-reduced-motion`.
 
 ## Completed: admin Figma navbar as chrome standard
@@ -328,7 +364,8 @@ The Resumen hamburger opens a **left** cream drawer (290px, scrim `admin-ink/65`
 control, existing admin routes with Lucide icons (Resumen active in olive), live Familias/Invitados counts, **Acciones
 rápidas** (Nueva familia, Descargar lista), and a footer with a name derived from the email local-part plus **Salir**.
 No Transporte / Mensajes / Configuración. Nav order: Resumen, Estadísticas, Invitados, Familias, Fotos, Admins. The
-same drawer is the standard menu on every `AdminShell` page. Helpers: `RESUMEN_DRAWER_NAV`, `adminDrawerDisplayName`.
+same drawer is the standard menu on every `AdminShell` page. Open drawer locks the page behind it. Helpers:
+`RESUMEN_DRAWER_NAV`, `adminDrawerDisplayName`, `lock-body-scroll.ts`.
 
 ## Completed: admin Resumen mobile (Figma `94:414`)
 

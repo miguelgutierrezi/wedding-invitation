@@ -57,6 +57,22 @@ describe("shared Figma admin chrome", () => {
         expect(buttonBlock).toContain("position: absolute");
     });
 
+    it("locks page scroll while the hamburger drawer is open", () => {
+        const chrome = readFileSync(
+            resolve(process.cwd(), "src/components/admin/admin-chrome.tsx"),
+            "utf8",
+        );
+        const drawer = readFileSync(
+            resolve(process.cwd(), "src/components/admin/admin-resumen-drawer.tsx"),
+            "utf8",
+        );
+        expect(chrome).toContain("useLockBodyScroll");
+        expect(chrome).not.toContain('document.body.style.overflow = "hidden"');
+        expect(adminResumen.drawerScrim).toContain("touch-none");
+        expect(drawer).toContain("data-scroll-lock-scroller");
+        expect(drawer).toContain("overscroll-y-contain");
+    });
+
     it("uses the Figma white chrome as the standard admin navbar from lg", () => {
         expect(ADMIN_DESKTOP_NAV_MIN_PX).toBe(1024);
         expect(ADMIN_DESKTOP_NAV_MIN_PX).toBe(ADMIN_RESUMEN_LANDSCAPE_MIN_PX);

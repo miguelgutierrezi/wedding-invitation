@@ -66,3 +66,34 @@ export function loginPasswordToggleLabel(visible: boolean): string {
 export function loginPasswordEyeSlashed(visible: boolean): boolean {
     return visible;
 }
+
+export type AdminLoginMode = "login" | "reset";
+
+/** Figma login `145:364` vs recovery `153:34` card title. */
+export function loginScreenTitle(mode: AdminLoginMode): string {
+    return mode === "reset"
+        ? adminCopy.login.resetTitle
+        : adminCopy.login.title;
+}
+
+/** Restriction line stays under the title on both login and recovery. */
+export function loginScreenLead(): string {
+    return adminCopy.login.lead;
+}
+
+export function loginShowsResetExplanation(mode: AdminLoginMode): boolean {
+    return mode === "reset";
+}
+
+/** Recovery card width: mobile Figma `153:103` full, landscape `153:57` 440px, portrait `153:80` / desktop `153:34` 460px. */
+export function loginResetCardWidthPx(
+    viewportPx: number,
+): 440 | 460 | "full" {
+    if (loginMobileWorkspace(viewportPx)) {
+        return "full";
+    }
+    if (loginLandscapeWorkspace(viewportPx)) {
+        return 440;
+    }
+    return 460;
+}

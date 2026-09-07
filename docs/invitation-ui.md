@@ -99,7 +99,7 @@ asks for the real name **only if that person will attend**. Each listed guest ca
 | Admin Familias (`/admin/families`)             | `--font-body` table + Times banner                | Figma `126:29` mobile (1-col family cards) + `123:268` from 834px (2-col) + `117:29` from `lg` (compact date columns) + `109:645` from `xl` |
 | Admin Fotos (`/admin/photos`)                  | `--font-body` + Times banner                      | Figma `128:528` mobile (1-col cards) + `128:364` from 834px (2-col) + `128:201` from `lg` + `128:34` from `xl` |
 | Admin directory (`/admin/admins`)              | `--font-body` + Times banner on all sizes | Figma `136:29` mobile (nested cards) + `134:207` portrait from 834px + `134:121` landscape from `lg` + `134:35` desktop from `xl`; shared Figma navbar |
-| Admin login (`/admin/login`)                   | `--font-body` + Times title on all sizes  | Figma `152:29` mobile + `151:30` from 834px + `149:29` from `lg` + `145:364` from `xl`; no navbar |
+| Admin login (`/admin/login`)                   | `--font-body` + Times title on all sizes  | Figma `152:29` mobile + `151:30` from 834px + `149:29` from `lg` + `145:364` from `xl`; recovery `153:103` below 834px + `153:80` from 834px + `153:57` from `lg` + `153:34` from `xl`; no navbar |
 
 
 
@@ -316,7 +316,8 @@ the bar uses `bg-admin-canvas`.
 
 **Navbar (all `AdminShell` pages):** white header (couple names + Admin badge + session email). Phone and tablet
 portrait use an olive hamburger that opens the Figma left drawer (`94:591`: cream 290px panel, olive active row, live
-Familias/Invitados badges, Acciones rápidas, Salir). Landscape/desktop add olive route pills (Resumen, Estadísticas,
+Familias/Invitados badges, Acciones rápidas, Salir). While open, the page behind the drawer cannot scroll.
+Landscape/desktop add olive route pills (Resumen, Estadísticas,
 Invitados, Familias, Fotos, Admins) and Salir in the header. The olive **+** FAB (nueva familia) is shown on every
 viewport except `/admin/families/new`. It is portaled in a full-viewport overlay so a flex `body` cannot park it below a
 long desktop table.
@@ -329,8 +330,11 @@ paints it; asset `public/admin/login/eye.svg`) in a 44px control, olive full-wid
 centered brand (24px names) and a full-width card (24×36 padding, 28px title, 44px inputs, 46px CTA, 11px footer) with
 safe-area padding. Portrait puts brand and footer in the page flow (64×48×40 padding, 22px brand, 460px card like
 desktop). Landscape is tighter with absolute chrome (420px card, 20px radius, 36×48 padding, 32px title, 18px brand).
-Desktop is 460px / 24px radius / 48×56 padding / 36px title. Password recovery stays in the same card (the mock is
-sign-in only). Helpers in `admin-login-layout.ts`; classes in `adminLogin`. Accept-invite is unchanged.
+Desktop is 460px / 24px radius / 48×56 padding / 36px title. Password recovery below 834px uses Figma `153:103` (inline
+20px brand, full-width card, 24×40 padding, 46px input / 48px CTA), from 834px uses `153:80` (absolute chrome, 20px
+brand at 48×48, 460px card), from `lg` uses `153:57` (440px / 24px radius / 40×52 padding / 32px title) and from `xl`
+uses `153:34` (**Recuperar contraseña**, lead + explanation, **Enviar enlace**, **Volver a iniciar sesión**). Helpers in
+`admin-login-layout.ts`; classes in `adminLogin`. Accept-invite is unchanged.
 
 **Estadísticas** (`/admin/analytics`: desktop Figma `96:39`; landscape `99:229` from `lg`; portrait `99:419` from
 834px; mobile `99:607` below 834px): same olive banner pattern as Resumen (live deadline + Excel download; **do not
@@ -413,7 +417,7 @@ only; it is not shown on the public invitation body.
 - Gallery: keyboard arrows on desktop when section is focused or in view; pause on hover/focus.
 - Submit and choice controls: min height 44px where interactive.
 - `prefers-reduced-motion: reduce` disables gallery swipe/autoplay animations. The admin hamburger drawer also skips the
-  slide.
+  slide. Open drawer locks background page scroll.
 - Music mute control must remain keyboard and screen-reader usable when shown.
 
 ## Do not

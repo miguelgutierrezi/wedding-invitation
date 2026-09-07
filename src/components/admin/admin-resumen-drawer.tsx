@@ -45,7 +45,7 @@ export function AdminResumenDrawer({
     return (
         <div
             id={menuId}
-            className={`fixed inset-0 z-50 lg:hidden ${open ? "" : "invisible pointer-events-none"}`}
+            className={`fixed inset-0 z-50 overscroll-none lg:hidden ${open ? "" : "invisible pointer-events-none"}`}
             role="dialog"
             aria-modal={open}
             aria-hidden={!open}
@@ -88,7 +88,8 @@ export function AdminResumenDrawer({
                 </div>
 
                 <nav
-                    className="flex w-full flex-1 flex-col gap-1.5 overflow-y-auto pt-3"
+                    className="flex w-full flex-1 flex-col gap-1.5 overflow-y-auto overscroll-y-contain pt-3"
+                    data-scroll-lock-scroller=""
                     aria-label="Menú de administración"
                 >
                     {RESUMEN_DRAWER_NAV.map((item) => {

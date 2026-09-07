@@ -61,7 +61,7 @@ Use:
 /fotos?code=…          guest media upload (event QR)
 /inspiracion/ellos     outfit inspiration (men)
 /inspiracion/ellas     outfit inspiration (women)
-/admin/login           administrator sign-in (Figma `152:29` mobile + `151:30` from 834px + `149:29` from `lg` + `145:364` from `xl`)
+/admin/login           administrator sign-in (Figma `152:29` mobile + `151:30` from 834px + `149:29` from `lg` + `145:364` from `xl`; recovery `153:103` below 834px + `153:80` from 834px + `153:57` from `lg` + `153:34` from `xl`)
 /admin                 dashboard (Figma Resumen workspace; shared Figma navbar)
 /admin/analytics       Figma Estadísticas `96:39` + `99:229` landscape + `99:419` portrait + `99:607` mobile
 /admin/guests          Figma Invitados `109:372` mobile + `109:36` portrait from 834px + `103:33` from `lg` + `100:38` from `xl`
@@ -122,7 +122,7 @@ confirmar”). Outfit inspiration routes are implemented under `/inspiracion/*`.
   landscape. Login has no chrome (mobile Figma `152:29` below 834px; portrait `151:30` from 834px; landscape `149:29` from `lg`; desktop `145:364` from `xl`). Accept-invite has no chrome.
   Page titles and the families back chevron live in the main column
   (family detail puts the back arrow in the olive banner from phone up, Figma `144:245` mobile / `144:29` portrait / `143:29` landscape / `137:34` desktop; nueva familia puts the back arrow in the olive banner from phone up, Figma `145:298` mobile / `145:228` portrait / `145:151` landscape / `145:68` desktop). Floating **+** (nueva familia) is shown on every `AdminShell` viewport (olive; hidden only on `/admin/families/new`); it is portaled in a full-viewport overlay (`.admin-new-family-fab-layer`) so a flex `body` cannot park it below a long desktop table. The drawer also has **Nueva familia**. Closed
-  drawer overlay does not capture taps. Cards below `lg`; tables from `lg`. Path rules live in
+  drawer overlay does not capture taps. Open drawer locks page scroll (`lock-body-scroll.ts`). Cards below `lg`; tables from `lg`. Path rules live in
   `src/lib/admin/admin-chrome.ts`.
 - Admin family/guest lists filter in memory, show active-filter chips, sort by column, and paginate at 25 rows. Query
   string (`q`, filters, `sort`, `dir`, `page`) is updated with Next `router.replace` (`useAdminListFilters`, debounced
@@ -184,7 +184,7 @@ Current coverage targets:
 - Family activity labels + open-event collapsing; family operational chips.
 - Admin batch id validation, row selection helpers, export scope.
 - Admin chrome path helpers (shared Figma navbar).
-- Admin login Figma helpers (mobile / portrait 834 / landscape `lg` / desktop `xl` workspace, copyright, password visibility). The password eye is an inline SVG (`currentColor`), not `next/image`.
+- Admin login Figma helpers (mobile / portrait 834 / landscape `lg` / desktop `xl` workspace, copyright, password visibility, recovery title/lead/card width / portrait absolute chrome). The password eye is an inline SVG (`currentColor`), not `next/image`.
 - Admin analytics Figma helpers (rate rows, 12 stat cards, boarding points).
 - Example-family name helper (`ejemplo` word, analytics exclusion).
 - Cover greeting helper (`formatCoverGreeting`).
@@ -348,7 +348,7 @@ Admin onboarding uses `inviteUserByEmail` from Supabase Auth with `redirectTo` `
 establishes the invite session (URL hash tokens or `token_hash` + `verifyOtp`), lets the invitee set a password via
 `updateUser`, then sends them to `/admin`. Pending invite **resend** uses `auth.admin.generateLink({ type: "invite" })` (no
 `deleteUser`). Active-email re-invite is rejected with an explicit error. `/admin/login` offers password recovery via
-`resetPasswordForEmail` to the same accept page. `/admin/admins` lists **active**
+`resetPasswordForEmail` to the same accept page. Below 834px, the recovery card matches Figma `153:103`; from 834px, `153:80`; from `lg`, `153:57`; from `xl`, `153:34`. `/admin/admins` lists **active**
 admins (signed-in Auth users) and **pending** invitations; pending ones can be cancelled or re-sent. Active admins can
 be deleted except the currently signed-in account and `ADMIN_ALLOWED_EMAILS` owners, and only after typing the target
 email. Lifecycle writes `audit_events` (`admin_invited`, `admin_invite_resent`, `admin_invite_cancelled`, `admin_deleted`,

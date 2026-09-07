@@ -57,8 +57,8 @@ Use:
 /                      public landing (as implemented)
 /i/[slug]              personalized invitation cover (greeting by guest count / gender)
 /i/[slug]/invitacion   full invitation + embedded RSVP
-/i/[slug]/fotos        guest media upload (family-bound)
-/fotos?code=…          guest media upload (event QR)
+/i/[slug]/fotos        guest media upload (family-bound); mobile Figma `157:165` below 834px + portrait `157:97` from 834px + landscape `157:29` from `lg` + desktop `155:34` from `xl`
+/fotos?code=…          guest media upload (event QR); same mobile/portrait/landscape/desktop chrome
 /inspiracion/ellos     outfit inspiration (men)
 /inspiracion/ellas     outfit inspiration (women)
 /admin/login           administrator sign-in (Figma `152:29` mobile + `151:30` from 834px + `149:29` from `lg` + `145:364` from `xl`; recovery `153:103` below 834px + `153:80` from 834px + `153:57` from `lg` + `153:34` from `xl`)

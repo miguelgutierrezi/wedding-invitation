@@ -38,7 +38,7 @@ may proceed when the user requests it explicitly.
 | Admin invite email HTML                    | Figma `80:40` olive-gradient template in `emails/admin-invite.html` (paste into Supabase Auth) |
 | Admin password reset                       | Same Figma `80:40` layout as invite (`emails/admin-reset-password.html`); OTP 24 h |
 | Analytics example families                  | Names containing the word **ejemplo** omitted from stats           |
-| Guest media uploads                         | **Implemented**                                                                |
+| Guest media uploads                         | **Implemented**; public `/fotos` + `/i/[slug]/fotos` mobile Figma `157:165` below 834px, portrait `157:97` from 834px, landscape `157:29` from `lg`, desktop `155:34` from `xl` |
 | WhatsApp scheduled send                     | Not implemented                                                                |
 | Resend transactional email product         | Not implemented (Auth invite/reset SMTP only)                      |
 
@@ -482,6 +482,37 @@ A companion placeholder counts as “Nombre por confirmar” while the guest is 
   guest. Existing responses are backfilled (`…_guest_contact_from_rsvp.sql`).
 - Admin guest table splits Teléfono / Correo; family detail shows both.
 - Admin can delete a family (`delete_family` RPC) after typing the family display name.
+
+## Completed: guest fotos mobile (Figma `157:165`)
+
+`/i/[slug]/fotos` and `/fotos?code=` below 834px use the Figma canvas: 20px banner/footer pad, 16px workspace, 36px
+Cormorant title (~30deg olive gradient), stacked full-width olive **Subir archivos** + outlined **Añadir más**, dropzone
+hint **Haz clic para buscar en tu dispositivo**, and the same olive card language as larger sizes. No compact yellow
+header and no family-name overline. Portrait `157:97` still starts at 834px. Helpers:
+`src/lib/media/guest-fotos-layout.ts`.
+
+## Completed: guest fotos tablet portrait (Figma `157:97`)
+
+`/i/[slug]/fotos` and `/fotos?code=` from 834px until `lg` use the Figma canvas: 48px horizontal padding, 22px brand,
+42px Cormorant title (~19deg olive gradient), 640px-capped form, 20px-radius upload card, 140px **Añadir más**. Landscape
+`157:29` still starts at `lg`; desktop `155:34` at `xl`. Mobile `157:165` covers below 834px. Helpers:
+`src/lib/media/guest-fotos-layout.ts`.
+
+## Completed: guest fotos tablet landscape (Figma `157:29`)
+
+`/i/[slug]/fotos` and `/fotos?code=` from `lg` until `xl` use the Figma canvas: 64px padding, 48px Cormorant title,
+~15deg olive gradient, same 640px upload card as desktop. Desktop `155:34` density (120px padding, 56px title, 12deg
+gradient) still starts at `xl`. Portrait `157:97` covers 834px until `lg`. Mobile `157:165` covers below 834px. Helpers:
+`src/lib/media/guest-fotos-layout.ts`.
+
+## Completed: guest fotos desktop (Figma `155:34`)
+
+`/i/[slug]/fotos` and `/fotos?code=` from `xl` use the Figma canvas: olive-gradient banner (**Nychol & Miguel • Wedding
+Gallery**, 56px Cormorant title), 640px cream workspace, optional name field with user glyph (QR only), dashed dropzone
+with drag-and-drop, progress tracker, file cards, olive **Subir archivos** + outlined **Añadir más**, success toast, and
+copyright footer. Landscape `157:29` covers `lg` until `xl`. Portrait `157:97` covers 834px until `lg`. Mobile `157:165`
+covers below 834px. Helpers: `src/lib/media/guest-fotos-layout.ts`.
+Icons live in `public/fotos/`.
 
 ## Completed: Guest Media Uploads
 

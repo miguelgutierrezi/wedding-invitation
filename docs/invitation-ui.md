@@ -35,8 +35,8 @@ Do not reintroduce “Nombre 1 / Nombre 2” placeholders for this couple.
 ```text
 /i/[slug]              invitation cover (personalized greeting by guest count / gender)
 /i/[slug]/invitacion   full invitation page (hero → footer + RSVP + share memories CTA)
-/i/[slug]/fotos        guest photo/video uploader (family-bound)
-/fotos?code=…          same uploader via event QR (no family list)
+/i/[slug]/fotos        guest photo/video uploader (family-bound); mobile Figma `157:165` below 834px + portrait `157:97` from 834px + landscape `157:29` from `lg` + desktop `155:34` from `xl`
+/fotos?code=…          same uploader via event QR (no family list); same mobile/portrait/landscape/desktop chrome
 /inspiracion/ellos     outfit inspiration board (men)
 /inspiracion/ellas     outfit inspiration board (women)
 ```
@@ -100,6 +100,7 @@ asks for the real name **only if that person will attend**. Each listed guest ca
 | Admin Fotos (`/admin/photos`)                  | `--font-body` + Times banner                      | Figma `128:528` mobile (1-col cards) + `128:364` from 834px (2-col) + `128:201` from `lg` + `128:34` from `xl` |
 | Admin directory (`/admin/admins`)              | `--font-body` + Times banner on all sizes | Figma `136:29` mobile (nested cards) + `134:207` portrait from 834px + `134:121` landscape from `lg` + `134:35` desktop from `xl`; shared Figma navbar |
 | Admin login (`/admin/login`)                   | `--font-body` + Times title on all sizes  | Figma `152:29` mobile + `151:30` from 834px + `149:29` from `lg` + `145:364` from `xl`; recovery `153:103` below 834px + `153:80` from 834px + `153:57` from `lg` + `153:34` from `xl`; no navbar |
+| Guest fotos (`/i/[slug]/fotos`, `/fotos`)      | `--font-display` + `--font-body` on all sizes | Figma `157:165` mobile below 834px (20px pad, 36px title) + `157:97` portrait from 834px (48px pad, 42px title) + `157:29` landscape from `lg` (64px pad, 48px title) + `155:34` desktop from `xl` (120px pad, 56px title) |
 
 
 
@@ -173,9 +174,21 @@ Asset: `weddingConfig.assets.coverBackground` → `Portada.jpg`.
 | RSVP shell         | `invitation-rsvp-section.tsx`   | Intro from Figma + children form                                                            |
 | RSVP form          | `rsvp-form.tsx`                 | Attendance, bus, **boarding point**, diet, contact (phone required)                         |
 | Share memories CTA | `invitation-share-memories.tsx` | Accent band + cream CTA → `/i/[slug]/fotos`                                                 |
+| Guest fotos page   | `guest-fotos-chrome.tsx` + `guest-media-uploader.tsx` | Mobile Figma `157:165` below 834px + portrait `157:97` from 834px + landscape `157:29` from `lg` + desktop `155:34` from `xl`; QR name field optional |
 | Footer             | `invitation-footer.tsx`         | Closing message + date on photo                                                             |
 
 Orchestration: `invitation-page-view.tsx`.
+
+### Guest fotos (`/i/[slug]/fotos`, `/fotos?code=`)
+
+Below 834px, both routes share Figma **photo-upload-mobile** `157:165` (20px banner/footer pad, 16px workspace, 36px
+title, ~30deg gradient, stacked full-width actions, dropzone hint without drag). From 834px,
+**photo-upload-tablet-portrait** `157:97` (48px pad, 42px title, ~19deg). From `lg`, **photo-upload-tablet-landscape**
+`157:29` (64px pad, 48px title, ~15deg). From `xl`, **photo-upload-desktop** `155:34` (120px pad, 56px title, 12deg).
+Same olive card language, dashed dropzone, progress, file list, olive primary + outlined **Añadir más**, green success
+banner, footer copyright; form caps at 640px from 834px. Optional **¿Quién comparte estos recuerdos?** only on the QR
+route. Glyphs are Figma exports in `public/fotos/` (`guest-fotos-layout.ts` `GUEST_FOTOS_ICONS`). Helpers:
+`src/lib/media/guest-fotos-layout.ts`, classes in `src/components/media/guest-fotos-ui.ts`.
 
 ### Venue directions
 

@@ -48,6 +48,7 @@ Operational checklist before sharing invitation links widely. Does not authorize
 - [ ] Venue map embed + Google / Waze links work; Apple Maps only on Apple devices.
 - [ ] Dress “Ver Inspiración” opens `/inspiracion/ellos` or `/inspiracion/ellas`.
 - [ ] Gallery, dress code, transport, gifts look correct on a real phone (WhatsApp in-app browser).
+- [ ] `/i/[slug]/fotos` and `/fotos?code=` below 834px match Figma `157:165` (20px pad, 36px title, stacked CTAs); from 834px match `157:97` (48px pad, 42px title); from `lg` match `157:29` (64px pad, 48px title); from `xl` match `155:34` (120px pad, 56px title).
 
 ## Smoke — RSVP
 

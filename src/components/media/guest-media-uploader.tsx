@@ -1,34 +1,26 @@
 "use client";
 
-import {useId, useRef} from "react";
+import {useId, useRef, useState, type DragEvent} from "react";
 
-import {type MediaUploadContext, useMediaUploadQueue,} from "@/hooks/use-media-upload-queue";
-
-function formatBytes(bytes: number): string {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 ** 2) return `${(bytes / 1024).toFixed(1)} KB`;
-    if (bytes < 1024 ** 3) return `${(bytes / 1024 ** 2).toFixed(1)} MB`;
-    return `${(bytes / 1024 ** 3).toFixed(2)} GB`;
-}
-
-function statusLabel(status: string): string {
-    switch (status) {
-        case "waiting":
-            return "Esperando";
-        case "preparing":
-            return "Preparando";
-        case "uploading":
-            return "Subiendo";
-        case "completed":
-            return "Completado";
-        case "failed":
-            return "Fallido";
-        case "cancelled":
-            return "Cancelado";
-        default:
-            return status;
-    }
-}
+import {guestFotos} from "@/components/media/guest-fotos-ui";
+import {type MediaUploadContext, useMediaUploadQueue} from "@/hooks/use-media-upload-queue";
+import {
+    formatFotosFileBytes,
+    fotosCanStartUpload,
+    fotosFileMimeLabel,
+    fotosHidesCompletedStatusLabel,
+    fotosProgressCounts,
+    fotosQueueStatusLabel,
+    fotosShowsProgress,
+    fotosShowsSuccessBanner,
+    fotosStatusTone,
+    fotosSuccessMessage,
+    fotosUploadButtonLabel,
+    GUEST_FOTOS_ICONS,
+    guestFotosCopy,
+    hasFileDragTypes,
+} from "@/lib/media/guest-fotos-layout";
+import {cn} from "@/lib/utils";
 
 type GuestMediaUploaderProps = {
     context: MediaUploadContext;
@@ -37,22 +29,51 @@ type GuestMediaUploaderProps = {
     uploaderName?: string;
 };
 
+function FotosGlyph({
+    src,
+    className,
+    size,
+}: {
+    src: string;
+    className: string;
+    size: number;
+}) {
+    return (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+            src={src}
+            alt=""
+            width={size}
+            height={size}
+            className={className}
+        />
+    );
+}
+
+function statusClass(status: string): string {
+    const tone = fotosStatusTone(status);
+    if (tone === "success") return guestFotos.statusSuccess;
+    if (tone === "danger") return guestFotos.statusDanger;
+    return guestFotos.statusMuted;
+}
+
 export function GuestMediaUploader({
-                                       context,
-                                       showUploaderName = false,
-                                       onUploaderNameChange,
-                                       uploaderName = "",
-                                   }: GuestMediaUploaderProps) {
+    context,
+    showUploaderName = false,
+    onUploaderNameChange,
+    uploaderName = "",
+}: GuestMediaUploaderProps) {
     const inputId = useId();
     const inputRef = useRef<HTMLInputElement>(null);
+    const [isDragging, setIsDragging] = useState(false);
 
     const queueContext: MediaUploadContext =
         context.source === "event_qr"
             ? {
-                source: "event_qr",
-                eventQrCode: context.eventQrCode,
-                uploaderName: uploaderName.trim() || undefined,
-            }
+                  source: "event_qr",
+                  eventQrCode: context.eventQrCode,
+                  uploaderName: uploaderName.trim() || undefined,
+              }
             : context;
 
     const {
@@ -67,31 +88,90 @@ export function GuestMediaUploader({
         retryFailed,
     } = useMediaUploadQueue({context: queueContext});
 
+    const progressVisible = fotosShowsProgress(items.length);
+    const successVisible = fotosShowsSuccessBanner({
+        completed: summary.completed,
+        pending: summary.pending,
+        isRunning,
+    });
+    const successText = fotosSuccessMessage(summary.completed, summary.failed);
+    const progressCounts = fotosProgressCounts(
+        summary.completed,
+        summary.failed,
+        summary.pending,
+    );
+    const canSubmit = fotosCanStartUpload(isRunning, summary.pending);
+
+    const onDragEnter = (event: DragEvent<HTMLLabelElement>) => {
+        if (!hasFileDragTypes(event.dataTransfer.types)) return;
+        event.preventDefault();
+        setIsDragging(true);
+    };
+
+    const onDragOver = (event: DragEvent<HTMLLabelElement>) => {
+        if (!hasFileDragTypes(event.dataTransfer.types)) return;
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "copy";
+    };
+
+    const onDragLeave = (event: DragEvent<HTMLLabelElement>) => {
+        const next = event.relatedTarget;
+        if (next instanceof Node && event.currentTarget.contains(next)) {
+            return;
+        }
+        setIsDragging(false);
+    };
+
+    const onDrop = (event: DragEvent<HTMLLabelElement>) => {
+        event.preventDefault();
+        setIsDragging(false);
+        if (event.dataTransfer.files.length) {
+            addFiles(event.dataTransfer.files);
+        }
+    };
+
     return (
-        <div className="mx-auto w-full max-w-xl px-1">
+        <div className={guestFotos.form}>
             {showUploaderName ? (
-                <label className="mb-6 block font-[family-name:var(--font-timer)] text-sm text-cover-cta-fg">
-                    ¿Quién comparte estos recuerdos?
-                    <span className="mt-1 block text-xs text-cover-cta-fg/65">
-            Opcional
-          </span>
-                    <input
-                        type="text"
-                        value={uploaderName}
-                        onChange={(event) => onUploaderNameChange?.(event.target.value)}
-                        maxLength={120}
-                        className="mt-2 min-h-11 w-full rounded-full border-2 border-cover-cta-fg/20 bg-cream-figma px-4 font-[family-name:var(--font-timer)] text-base text-cover-cta-fg outline-none focus-visible:ring-2 focus-visible:ring-cover-cta-fg"
-                        autoComplete="name"
-                    />
+                <label className={guestFotos.nameField} htmlFor={`${inputId}-name`}>
+                    <span className={guestFotos.nameLabelRow}>
+                        <span className={guestFotos.nameLabel}>
+                            {guestFotosCopy.nameLabel}
+                        </span>
+                        <span className={guestFotos.optionalBadge}>
+                            <span className={guestFotos.optionalBadgeText}>
+                                {guestFotosCopy.optional}
+                            </span>
+                        </span>
+                    </span>
+                    <span className={guestFotos.nameInputWrap}>
+                        <FotosGlyph
+                            src={GUEST_FOTOS_ICONS.user}
+                            className={guestFotos.nameIcon}
+                            size={16}
+                        />
+                        <input
+                            id={`${inputId}-name`}
+                            type="text"
+                            value={uploaderName}
+                            onChange={(event) =>
+                                onUploaderNameChange?.(event.target.value)
+                            }
+                            maxLength={120}
+                            className={guestFotos.nameInput}
+                            autoComplete="name"
+                            placeholder={guestFotosCopy.namePlaceholder}
+                        />
+                    </span>
                 </label>
             ) : null}
 
-            <div className="rounded-[1.5rem] border-2 border-cover-cta-fg/15 bg-cream-figma/80 p-5 sm:p-6">
+            <div className={guestFotos.card}>
                 <input
                     ref={inputRef}
                     id={inputId}
                     type="file"
-                    accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm,.jpg,.jpeg,.png,.webp,.mp4,.mov,.webm"
+                    accept={guestFotosCopy.accept}
                     multiple
                     className="sr-only"
                     onChange={(event) => {
@@ -104,124 +184,212 @@ export function GuestMediaUploader({
 
                 <label
                     htmlFor={inputId}
-                    className="flex min-h-14 cursor-pointer items-center justify-center rounded-full border-2 border-dashed border-cover-cta-fg/35 bg-accent/30 px-4 text-center font-[family-name:var(--font-timer)] text-base font-medium text-cover-cta-fg transition-opacity hover:opacity-90 focus-within:ring-2 focus-within:ring-cover-cta-fg"
+                    className={cn(
+                        guestFotos.dropzone,
+                        isDragging && guestFotos.dropzoneActive,
+                    )}
+                    onDragEnter={onDragEnter}
+                    onDragOver={onDragOver}
+                    onDragLeave={onDragLeave}
+                    onDrop={onDrop}
                 >
-                    Elegir fotos y videos
+                    <span className={guestFotos.dropzoneIconWrap}>
+                        <FotosGlyph
+                            src={GUEST_FOTOS_ICONS.uploadCloud}
+                            className={guestFotos.dropzoneIcon}
+                            size={24}
+                        />
+                    </span>
+                    <span className={guestFotos.dropzoneText}>
+                        <span className={guestFotos.dropzoneTitle}>
+                            {guestFotosCopy.dropzoneTitle}
+                        </span>
+                        <span
+                            className={cn(
+                                guestFotos.dropzoneHint,
+                                guestFotos.dropzoneHintMobile,
+                            )}
+                        >
+                            {guestFotosCopy.dropzoneHintMobile}
+                        </span>
+                        <span
+                            className={cn(
+                                guestFotos.dropzoneHint,
+                                guestFotos.dropzoneHintWide,
+                            )}
+                        >
+                            {guestFotosCopy.dropzoneHint}
+                        </span>
+                    </span>
                 </label>
 
-                <p className="mt-3 font-[family-name:var(--font-timer)] text-sm text-cover-cta-fg/70">
-                    Puedes seleccionar muchos archivos a la vez. No cierres esta pestaña
-                    mientras haya una carga activa.
+                <p className={guestFotos.helper}>
+                    <FotosGlyph
+                        src={GUEST_FOTOS_ICONS.info}
+                        className={guestFotos.helperIcon}
+                        size={16}
+                    />
+                    <span>{guestFotosCopy.helper}</span>
                 </p>
 
-                {items.length > 0 ? (
-                    <div className="mt-5">
+                {progressVisible ? (
+                    <div className={guestFotos.progress}>
+                        <div className={guestFotos.progressHeader}>
+                            <p className={guestFotos.progressTitle}>
+                                {guestFotosCopy.progressTitle}
+                            </p>
+                            <p className={guestFotos.progressCountsDesktop}>
+                                {progressCounts}
+                            </p>
+                        </div>
                         <div
-                            className="h-2 overflow-hidden rounded-full bg-cover-cta-fg/15"
+                            className={guestFotos.progressTrack}
                             role="progressbar"
                             aria-valuemin={0}
                             aria-valuemax={100}
                             aria-valuenow={Math.round(overallProgress * 100)}
-                            aria-label="Progreso general"
+                            aria-label={guestFotosCopy.progressTitle}
                         >
                             <div
-                                className="h-full rounded-full bg-accent motion-safe:transition-[width] motion-safe:duration-300"
-                                style={{width: `${Math.round(overallProgress * 100)}%`}}
+                                className={guestFotos.progressFill}
+                                style={{
+                                    width: `${Math.round(overallProgress * 100)}%`,
+                                }}
                             />
                         </div>
-                        <p className="mt-2 font-[family-name:var(--font-timer)] text-sm text-cover-cta-fg/75">
-                            Completados {summary.completed} · Fallidos {summary.failed} ·
-                            Pendientes {summary.pending}
-                        </p>
                     </div>
                 ) : null}
 
-                <ul className="mt-5 space-y-3">
-                    {items.map((item) => (
-                        <li
-                            key={item.localId}
-                            className="rounded-2xl border border-cover-cta-fg/10 bg-white/50 p-3"
-                        >
-                            <div className="flex gap-3">
-                                {item.previewUrl ? (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img
-                                        src={item.previewUrl}
-                                        alt=""
-                                        className="h-16 w-16 shrink-0 rounded-lg object-cover"
-                                    />
-                                ) : (
-                                    <div
-                                        className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-cover-cta-fg/10 font-[family-name:var(--font-timer)] text-xs text-cover-cta-fg">
-                                        Video
-                                    </div>
-                                )}
-                                <div className="min-w-0 flex-1">
-                                    <p className="truncate font-[family-name:var(--font-timer)] text-sm font-medium text-cover-cta-fg">
-                                        {item.file.name}
-                                    </p>
-                                    <p className="font-[family-name:var(--font-timer)] text-xs text-cover-cta-fg/65">
-                                        {item.file.type || "archivo"} · {formatBytes(item.file.size)}{" "}
-                                        · {statusLabel(item.status)}
-                                    </p>
-                                    {(item.status === "uploading" ||
-                                        item.status === "preparing") && (
-                                        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-cover-cta-fg/15">
-                                            <div
-                                                className="h-full rounded-full bg-cover-cta-fg motion-safe:transition-[width]"
-                                                style={{
-                                                    width: `${Math.round(item.progress * 100)}%`,
-                                                }}
-                                            />
+                {items.length > 0 ? (
+                    <ul className={guestFotos.fileList}>
+                        {items.map((item) => {
+                        const mime = fotosFileMimeLabel(item.file.type);
+                        const size = formatFotosFileBytes(item.file.size);
+                        const status = fotosQueueStatusLabel(item.status);
+
+                        return (
+                            <li key={item.localId} className={guestFotos.fileItem}>
+                                <div className={guestFotos.fileRow}>
+                                    {item.previewUrl ? (
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        <img
+                                            src={item.previewUrl}
+                                            alt=""
+                                            className={guestFotos.thumb}
+                                        />
+                                    ) : (
+                                        <div className={guestFotos.thumbFallback}>
+                                            Video
                                         </div>
                                     )}
-                                    {item.error ? (
-                                        <p className="mt-1 font-[family-name:var(--font-timer)] text-xs text-red-800">
-                                            {item.error}
+                                    <div className={guestFotos.fileMeta}>
+                                        <p className={guestFotos.fileName}>
+                                            {item.file.name}
                                         </p>
-                                    ) : null}
+                                        <div className={guestFotos.fileDetailsDesktop}>
+                                            <span className={guestFotos.fileMime}>
+                                                {mime}
+                                            </span>
+                                            <span className={guestFotos.fileDot}>•</span>
+                                            <span className={guestFotos.fileSize}>
+                                                {size}
+                                            </span>
+                                        </div>
+                                        {(item.status === "uploading" ||
+                                            item.status === "preparing") && (
+                                            <div className={guestFotos.fileProgress}>
+                                                <div
+                                                    className={guestFotos.fileProgressFill}
+                                                    style={{
+                                                        width: `${Math.round(item.progress * 100)}%`,
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
+                                        {item.error ? (
+                                            <p className={guestFotos.fileError}>
+                                                {item.error}
+                                            </p>
+                                        ) : null}
+                                    </div>
+                                    <div className={guestFotos.statusDesktop}>
+                                        {item.status === "completed" ? (
+                                            <FotosGlyph
+                                                src={GUEST_FOTOS_ICONS.checkCircle}
+                                                className={guestFotos.statusIcon}
+                                                size={14}
+                                            />
+                                        ) : null}
+                                        <p
+                                            className={cn(
+                                                statusClass(item.status),
+                                                fotosHidesCompletedStatusLabel(
+                                                    item.status,
+                                                ) &&
+                                                    guestFotos.statusCompletedLabel,
+                                            )}
+                                        >
+                                            {status}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="mt-3 flex flex-wrap gap-2">
-                                {item.status === "waiting" ? (
-                                    <button
-                                        type="button"
-                                        className="min-h-11 rounded-full px-3 font-[family-name:var(--font-timer)] text-sm text-cover-cta-fg underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-cover-cta-fg focus-visible:outline-none"
-                                        onClick={() => removeItem(item.localId)}
-                                    >
-                                        Retirar
-                                    </button>
+                                {(item.status === "waiting" ||
+                                item.status === "uploading" ||
+                                item.status === "preparing") ? (
+                                    <div className={guestFotos.fileActions}>
+                                        {item.status === "waiting" ? (
+                                            <button
+                                                type="button"
+                                                className={guestFotos.fileAction}
+                                                onClick={() => removeItem(item.localId)}
+                                            >
+                                                {guestFotosCopy.remove}
+                                            </button>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                className={guestFotos.fileAction}
+                                                onClick={() => cancelItem(item.localId)}
+                                            >
+                                                {guestFotosCopy.cancel}
+                                            </button>
+                                        )}
+                                    </div>
                                 ) : null}
-                                {item.status === "uploading" || item.status === "preparing" ? (
-                                    <button
-                                        type="button"
-                                        className="min-h-11 rounded-full px-3 font-[family-name:var(--font-timer)] text-sm text-cover-cta-fg underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-cover-cta-fg focus-visible:outline-none"
-                                        onClick={() => cancelItem(item.localId)}
-                                    >
-                                        Cancelar
-                                    </button>
-                                ) : null}
-                            </div>
-                        </li>
-                    ))}
+                            </li>
+                        );
+                    })}
                 </ul>
+                ) : null}
 
-                <div className="mt-6 flex flex-wrap gap-3">
-                    <button
-                        type="button"
-                        disabled={isRunning || summary.pending === 0}
-                        onClick={() => void runQueue()}
-                        className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-5 font-[family-name:var(--font-timer)] text-sm font-medium text-cover-cta-fg transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-cover-cta-fg focus-visible:outline-none"
-                    >
-                        {isRunning ? "Subiendo…" : "Subir archivos"}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => inputRef.current?.click()}
-                        className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-cover-cta-fg/25 bg-transparent px-5 font-[family-name:var(--font-timer)] text-sm font-medium text-cover-cta-fg focus-visible:ring-2 focus-visible:ring-cover-cta-fg focus-visible:outline-none"
-                    >
-                        Añadir más
-                    </button>
+                <div className={guestFotos.actions}>
+                    <div className={guestFotos.actionsRow}>
+                        <button
+                            type="button"
+                            disabled={!canSubmit}
+                            onClick={() => void runQueue()}
+                            className={guestFotos.submit}
+                        >
+                            <FotosGlyph
+                                src={GUEST_FOTOS_ICONS.upload}
+                                className={guestFotos.submitIcon}
+                                size={16}
+                            />
+                            {fotosUploadButtonLabel(isRunning)}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => inputRef.current?.click()}
+                            className={guestFotos.addMore}
+                        >
+                            <FotosGlyph
+                                src={GUEST_FOTOS_ICONS.plus}
+                                className={guestFotos.addMoreIcon}
+                                size={16}
+                            />
+                            {guestFotosCopy.addMore}
+                        </button>
+                    </div>
                     {summary.failed > 0 ? (
                         <button
                             type="button"
@@ -229,28 +397,13 @@ export function GuestMediaUploader({
                             onClick={() => {
                                 retryFailed();
                             }}
-                            className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-cover-cta-fg/25 px-5 font-[family-name:var(--font-timer)] text-sm font-medium text-cover-cta-fg focus-visible:ring-2 focus-visible:ring-cover-cta-fg focus-visible:outline-none disabled:opacity-50"
+                            className={guestFotos.retry}
                         >
-                            Reintentar fallidos
+                            {guestFotosCopy.retryFailed}
                         </button>
                     ) : null}
                 </div>
 
-                {summary.completed > 0 && summary.pending === 0 && !isRunning ? (
-                    <p
-                        className="mt-5 font-[family-name:var(--font-timer)] text-sm text-cover-cta-fg"
-                        role="status"
-                    >
-                        Gracias. Recibimos {summary.completed} archivo
-                        {summary.completed === 1 ? "" : "s"}
-                        {summary.failed > 0
-                            ? ` · ${summary.failed} no se pudieron subir`
-                            : ""}
-                        .
-                    </p>
-                ) : null}
-
-                {/* Honeypot */}
                 <input
                     type="text"
                     name="website"
@@ -261,6 +414,17 @@ export function GuestMediaUploader({
                     defaultValue=""
                 />
             </div>
+
+            {successVisible ? (
+                <p className={guestFotos.success} role="status">
+                    <FotosGlyph
+                        src={GUEST_FOTOS_ICONS.checkCircleSuccess}
+                        className={guestFotos.successIcon}
+                        size={20}
+                    />
+                    <span className={guestFotos.successText}>{successText}</span>
+                </p>
+            ) : null}
         </div>
     );
 }

@@ -119,7 +119,7 @@ confirmar”). Outfit inspiration routes are implemented under `/inspiracion/*`.
 - Cap multi-column invitation layouts on ultra-wide viewports so copy and CTAs stay visually grouped.
 - Admin chrome uses the Figma white navbar on every `AdminShell` page (`adminResumen` in `admin-ui.ts`): couple names +
   Admin badge, olive hamburger until `lg` (left cream drawer `94:591`), inline olive pills + Salir from tablet
-  landscape. Login has no chrome (mobile Figma `152:29` below 834px; portrait `151:30` from 834px; landscape `149:29` from `lg`; desktop `145:364` from `xl`). Accept-invite has no chrome.
+  landscape. Login has no chrome (mobile Figma `152:29` below 834px; portrait `151:30` from 834px; landscape `149:29` from `lg`; desktop `145:364` from `xl`). Accept-invite has no navbar (mobile Figma `158:136` below 834px; portrait `158:103` from 834px; landscape `158:72` from `lg`; desktop `158:34` from `xl`).
   Page titles and the families back chevron live in the main column
   (family detail puts the back arrow in the olive banner from phone up, Figma `144:245` mobile / `144:29` portrait / `143:29` landscape / `137:34` desktop; nueva familia puts the back arrow in the olive banner from phone up, Figma `145:298` mobile / `145:228` portrait / `145:151` landscape / `145:68` desktop). Floating **+** (nueva familia) is shown on every `AdminShell` viewport (olive; hidden only on `/admin/families/new`); it is portaled in a full-viewport overlay (`.admin-new-family-fab-layer`) so a flex `body` cannot park it below a long desktop table. The drawer also has **Nueva familia**. Closed
   drawer overlay does not capture taps. Open drawer locks page scroll (`lock-body-scroll.ts`). Cards below `lg`; tables from `lg`. Path rules live in
@@ -356,7 +356,9 @@ email. Lifecycle writes `audit_events` (`admin_invited`, `admin_invite_resent`, 
 `invited_at` is set and `last_sign_in_at` is still null (admin role in metadata); this still works when the project
 auto-confirms email on invite. Auth users are loaded with paginated `listUsers` (`listAdminDirectory`). Public auth paths (`/admin/login`, `/admin/aceptar-invitacion`) are exempt from the session gate in `src/proxy.ts`.
 The accept-invite page passes Supabase URL + anon key from the server into the client form so invite acceptance does
-not depend on a stale `NEXT_PUBLIC_*` client bundle after `.env.local` edits.
+not depend on a stale `NEXT_PUBLIC_*` client bundle after `.env.local` edits. Below 834px the page uses Figma `158:136`
+(full-width card), from 834px `158:103` (440px card, stacked brand), from `lg` `158:72` and from `xl` `158:34` (460px
+card, absolute chrome).
 
 The invite email HTML lives in `emails/admin-invite.html`; reset password HTML in `emails/admin-reset-password.html`
 (Figma `80:40` olive-gradient chrome, markers in `src/lib/email/admin-invite-template.ts` / paste into hosted Auth

@@ -975,3 +975,80 @@ export const adminLogin = {
     error: "font-[family-name:var(--font-body)] text-sm text-red-800",
 } as const;
 
+/** Figma accept-invitation mobile `158:136` below 834px, portrait `158:103` from 834px, landscape `158:72` from `lg`, desktop `158:34` from `xl`. */
+export const adminAcceptInvite = {
+    desktopRoot:
+        `relative hidden min-h-full w-full flex-1 flex-col items-center justify-center bg-admin-canvas px-10 py-10 lg:flex ${adminResumen.sans} text-admin-ink`,
+    mobileRoot:
+        `flex min-h-full w-full min-w-0 flex-1 flex-col items-center justify-between bg-admin-canvas px-4 pt-[max(3rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] min-[834px]:hidden ${adminResumen.sans} text-admin-ink`,
+    mobileStack: "flex w-full flex-col items-center gap-8",
+    brand: "absolute top-10 left-12 flex items-center gap-2 xl:top-12 xl:left-16",
+    brandNames:
+        "font-[family-name:var(--font-timer)] text-[20px] font-bold whitespace-nowrap text-admin-olive",
+    brandBadge:
+        "font-[family-name:var(--font-body)] text-[14px] font-medium whitespace-nowrap text-admin-muted",
+    mobileBrand:
+        "flex w-full flex-col items-center gap-1.5 text-center",
+    mobileBrandNames:
+        "font-[family-name:var(--font-timer)] w-full text-[22px] font-bold text-admin-olive",
+    mobileBrandBadge:
+        "font-[family-name:var(--font-body)] w-full text-[13px] font-medium text-admin-muted",
+    portraitRoot:
+        `hidden min-h-full w-full flex-1 flex-col justify-between bg-admin-canvas px-10 pt-16 pb-12 min-[834px]:flex lg:hidden ${adminResumen.sans} text-admin-ink`,
+    portraitBrand:
+        "flex w-full flex-col items-center gap-1.5 text-center",
+    portraitBrandNames:
+        "font-[family-name:var(--font-timer)] w-full text-[24px] font-bold text-admin-olive",
+    portraitBrandBadge:
+        "font-[family-name:var(--font-body)] w-full text-[13px] font-medium text-admin-muted",
+    portraitCardWrap:
+        "flex min-h-0 w-full flex-1 flex-col items-center justify-center",
+    portraitCard:
+        "flex w-[440px] max-w-full flex-col gap-7 rounded-[24px] bg-white py-12 pr-12 pl-9 shadow-[0_16px_16px_rgba(95,100,70,0.08)]",
+    portraitHeader: "flex w-full flex-col gap-2.5",
+    portraitTitle:
+        "font-[family-name:var(--font-timer)] text-[32px] leading-[1.2] font-bold text-admin-ink",
+    portraitFields: "flex w-full flex-col gap-4",
+    portraitFooter:
+        "w-full text-center font-[family-name:var(--font-body)] text-[13px] text-admin-muted",
+    mobileCard:
+        "flex w-full flex-col gap-6 rounded-[20px] bg-white p-6 shadow-[0_16px_16px_rgba(95,100,70,0.08)]",
+    mobileHeader: "flex w-full flex-col gap-2",
+    mobileEyebrow:
+        "font-[family-name:var(--font-body)] text-[11px] font-bold tracking-[1.5px] text-admin-muted uppercase",
+    mobileTitle:
+        "font-[family-name:var(--font-timer)] text-[28px] leading-[1.2] font-bold text-admin-ink",
+    mobileLead:
+        "font-[family-name:var(--font-body)] text-[13px] leading-[1.4] text-admin-muted",
+    mobileAccountRow:
+        "flex w-full min-w-0 items-center gap-1.5 font-[family-name:var(--font-body)] text-[13px] leading-normal",
+    mobileFields: "flex w-full flex-col gap-4",
+    mobileField: "flex w-full flex-col gap-1.5",
+    mobileLabel:
+        "font-[family-name:var(--font-body)] text-xs font-semibold text-admin-ink",
+    mobilePasswordInput:
+        "h-11 min-h-11 w-full rounded-[10px] border border-[#d1cfc7] bg-white py-2.5 pr-12 pl-3.5 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 [&::-ms-reveal]:hidden",
+    mobileSubmit:
+        "inline-flex h-11 min-h-11 w-full items-center justify-center rounded-[10px] bg-admin-olive py-3 font-[family-name:var(--font-body)] text-sm font-semibold text-white shadow-[0_4px_6px_rgba(95,100,70,0.14)] transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
+    mobileFooter:
+        "w-full pt-8 text-center font-[family-name:var(--font-body)] text-[11px] leading-[1.4] text-admin-muted",
+    card: "flex w-[460px] max-w-full flex-col gap-8 rounded-[24px] bg-white px-12 py-14 shadow-[0_16px_16px_rgba(95,100,70,0.08)]",
+    header: "flex w-full flex-col gap-3",
+    eyebrow:
+        "font-[family-name:var(--font-body)] text-xs font-bold tracking-[1.5px] text-admin-muted uppercase",
+    title: "font-[family-name:var(--font-timer)] text-[36px] leading-[1.2] font-bold text-admin-ink",
+    lead: "font-[family-name:var(--font-body)] text-sm leading-[1.5] text-admin-muted",
+    form: "flex w-full flex-col gap-5",
+    accountRow:
+        "flex w-full min-w-0 items-center gap-1.5 font-[family-name:var(--font-body)] text-sm leading-normal",
+    accountLabel: "shrink-0 font-normal text-admin-muted",
+    accountEmail:
+        "min-w-0 flex-1 overflow-hidden font-semibold text-ellipsis whitespace-nowrap text-admin-ink",
+    fields: "flex w-full flex-col gap-5",
+    field: "flex w-full flex-col gap-2",
+    label: "font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-ink",
+    actions: "flex w-full flex-col items-center",
+    footer:
+        "absolute bottom-10 left-0 right-0 text-center font-[family-name:var(--font-body)] text-sm text-admin-muted xl:text-xs",
+} as const;
+

@@ -34,7 +34,7 @@ may proceed when the user requests it explicitly.
 | Delete family (admin)                       | RPC + confirm-by-name; works with unsaved edits                                |
 | Admin operations                            | Action queue, close follow-ups, family activity, **batch actions** |
 | Admin login                                 | Mobile Figma `152:29` below 834px; portrait `151:30` from 834px; landscape `149:29` from `lg`; desktop `145:364` from `xl`; recovery `153:103` below 834px + `153:80` from 834px + `153:57` from `lg` + `153:34` from `xl` |
-| Admin invite flow                          | **Implemented**; accept → `/admin/aceptar-invitacion` (set password) → `/admin` |
+| Admin invite flow                          | **Implemented**; accept mobile Figma `158:136` below 834px, portrait `158:103` from 834px, landscape `158:72` from `lg`, desktop `158:34` from `xl`; set password → `/admin` |
 | Admin invite email HTML                    | Figma `80:40` olive-gradient template in `emails/admin-invite.html` (paste into Supabase Auth) |
 | Admin password reset                       | Same Figma `80:40` layout as invite (`emails/admin-reset-password.html`); OTP 24 h |
 | Analytics example families                  | Names containing the word **ejemplo** omitted from stats           |
@@ -103,6 +103,38 @@ card (24×40 padding, 28px gap, 10px header gap, 28px title, 14px lead + 1.6 exp
 olive **Enviar enlace**), underlined **Volver a iniciar sesión**, 12px footer. Login mobile `152:29` (stacked 24px
 brand, 36px card padding, 44px inputs, 46px CTA, 11px footer) is unchanged. Portrait `153:80` still starts at 834px.
 Helpers: `src/lib/admin/admin-login-layout.ts`.
+
+## Completed: admin accept-invite desktop (Figma `158:34`)
+
+`/admin/aceptar-invitacion` from `xl` uses the Figma canvas: cream board, **Nychol & Miguel • Admin Panel** at 64×48,
+centered 460px white card (24px radius, 48×56 padding, olive shadow), Inter **PANEL PRIVADO**, Times **Crear
+contraseña**, account row, two password fields with the shared eye control, olive **Guardar y entrar al panel**, 12px
+footer copyright. Landscape `158:72` covers `lg` until `xl`. Portrait `158:103` covers 834px until `lg`. Mobile `158:136`
+covers below 834px. Helpers: `src/lib/admin/admin-accept-invite-layout.ts`.
+
+## Completed: admin accept-invite tablet landscape (Figma `158:72`)
+
+`/admin/aceptar-invitacion` from `lg` until `xl` uses the same 460px create-password card as desktop (24px radius, 48×56
+padding, 36px Times title, password eyes, olive CTA), with landscape chrome: 20px couple names + 14px **• Admin Panel**
+at 48×40, and a 14px footer at 40px. Desktop `158:34` still starts at `xl` (brand at 64×48, 12px footer). Portrait
+`158:103` covers 834px until `lg`. Mobile `158:136` covers below 834px. Helpers: `acceptInviteLandscapeWorkspace`,
+`acceptInviteCardWidthPx`.
+
+## Completed: admin accept-invite tablet portrait (Figma `158:103`)
+
+`/admin/aceptar-invitacion` from 834px until `lg` uses the Figma canvas with brand and footer **in the page flow**
+(not absolute): stacked centered brand (24px couple names, 13px **• Admin Panel**), 40×64×48 padding, flex-1 centered
+440px card (24px radius, 36/48×48 padding, 28px gap, 32px Times title, 16px field gap), olive CTA, 13px footer.
+Landscape `158:72` still starts at `lg`. Mobile `158:136` covers below 834px. Helpers:
+`acceptInvitePortraitWorkspace`.
+
+## Completed: admin accept-invite mobile (Figma `158:136`)
+
+`/admin/aceptar-invitacion` below 834px uses the Figma canvas with stacked centered brand (22px couple names, 13px
+**• Admin Panel**) and a full-width 20px-radius card (24px padding, 24px gap, 11px overline, 28px title, 13px lead,
+12px labels, 44px inputs / CTA with 10px radius — Figma’s 42px inputs raised to the 44px touch minimum), olive
+**Guardar y entrar al panel**, and an 11px footer. Safe-area padding stays. Portrait `158:103` still starts at 834px.
+Helpers: `acceptInviteMobileWorkspace`.
 
 ## Completed: admin Fotos mobile (Figma `128:528`)
 
@@ -410,7 +442,8 @@ without deleting the Auth user. Inviting an email that is already an **active** 
 window). Local + recommended hosted `otp_expiry` is **86400** (24 h).
 
 The invitee clicks the email link, lands on `/admin/aceptar-invitacion` to create a password, then continues to
-`/admin`. Returning admins use `/admin/login`, which includes **¿Olvidaste tu contraseña?**
+`/admin`. Below 834px that screen uses Figma `158:136`; from 834px, `158:103`; from `lg`, `158:72`; from `xl`, `158:34`. Returning admins use
+`/admin/login`, which includes **¿Olvidaste tu contraseña?**
 (`resetPasswordForEmail` → same accept page; paste `emails/admin-reset-password.html` into Supabase **Reset password**).
 
 The **Admins** menu lists **active** admins and **pending** invitations. Cancel pending with **Cancelar**. Active

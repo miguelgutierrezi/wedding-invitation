@@ -1,250 +1,306 @@
 "use client";
 
+import {
+    useState,
+    useTransition,
+    type FormEvent,
+    type ReactNode,
+} from "react";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
-import {useEffect, useState, useTransition} from "react";
 
 import {recordAdminAcceptedAction} from "@/actions/admin/auth";
-import {admin} from "@/components/admin/admin-ui";
+import {AdminPasswordEye} from "@/components/admin/admin-password-eye";
+import {adminAcceptInvite, adminLogin} from "@/components/admin/admin-ui";
+import type {AcceptInviteSession} from "@/hooks/use-admin-accept-invite-session";
+import {acceptInviteStatusMessage} from "@/lib/admin/admin-accept-invite-layout";
+import {adminCopy} from "@/lib/admin/admin-copy";
 import {
-    isInviteAuthType,
-    parseAuthCallbackHash,
-    validateNewAdminPassword,
-} from "@/lib/auth/admin-accept-invite";
+    loginPasswordInputType,
+    loginPasswordToggleLabel,
+} from "@/lib/admin/admin-login-layout";
+import {validateNewAdminPassword} from "@/lib/auth/admin-accept-invite";
 import {createClient} from "@/lib/supabase/client";
 
-type SessionPhase = "loading" | "ready" | "missing" | "error";
+export type AdminAcceptInviteFormVariant = "desktop" | "portrait" | "mobile";
 
 type AdminAcceptInviteFormProps = {
     supabaseUrl: string;
     supabaseAnonKey: string;
+    session: AcceptInviteSession;
+    variant: AdminAcceptInviteFormVariant;
 };
+
+type FigmaSurface = {
+    card: string;
+    header: string;
+    eyebrow: string;
+    title: string;
+    lead: string;
+    accountRow: string;
+    fields: string;
+    field: string;
+    label: string;
+    passwordInput: string;
+    submit: string;
+    wrapFields: boolean;
+};
+
+function acceptInviteFigmaSurface(
+    variant: AdminAcceptInviteFormVariant,
+): FigmaSurface {
+    if (variant === "mobile") {
+        return {
+            card: adminAcceptInvite.mobileCard,
+            header: adminAcceptInvite.mobileHeader,
+            eyebrow: adminAcceptInvite.mobileEyebrow,
+            title: adminAcceptInvite.mobileTitle,
+            lead: adminAcceptInvite.mobileLead,
+            accountRow: adminAcceptInvite.mobileAccountRow,
+            fields: adminAcceptInvite.mobileFields,
+            field: adminAcceptInvite.mobileField,
+            label: adminAcceptInvite.mobileLabel,
+            passwordInput: adminAcceptInvite.mobilePasswordInput,
+            submit: adminAcceptInvite.mobileSubmit,
+            wrapFields: false,
+        };
+    }
+
+    if (variant === "portrait") {
+        return {
+            card: adminAcceptInvite.portraitCard,
+            header: adminAcceptInvite.portraitHeader,
+            eyebrow: adminAcceptInvite.eyebrow,
+            title: adminAcceptInvite.portraitTitle,
+            lead: adminAcceptInvite.lead,
+            accountRow: adminAcceptInvite.accountRow,
+            fields: adminAcceptInvite.portraitFields,
+            field: adminAcceptInvite.field,
+            label: adminAcceptInvite.label,
+            passwordInput: adminLogin.passwordInput,
+            submit: adminLogin.submit,
+            wrapFields: true,
+        };
+    }
+
+    return {
+        card: adminAcceptInvite.card,
+        header: adminAcceptInvite.header,
+        eyebrow: adminAcceptInvite.eyebrow,
+        title: adminAcceptInvite.title,
+        lead: adminAcceptInvite.lead,
+        accountRow: adminAcceptInvite.accountRow,
+        fields: adminAcceptInvite.fields,
+        field: adminAcceptInvite.field,
+        label: adminAcceptInvite.label,
+        passwordInput: adminLogin.passwordInput,
+        submit: adminLogin.submit,
+        wrapFields: true,
+    };
+}
+
+type PasswordFieldProps = {
+    name: "password" | "confirmPassword";
+    label: string;
+    visible: boolean;
+    onToggle: () => void;
+    surface: FigmaSurface;
+};
+
+function AcceptInvitePasswordField({
+    name,
+    label,
+    visible,
+    onToggle,
+    surface,
+}: PasswordFieldProps) {
+    return (
+        <label className={surface.field}>
+            <span className={surface.label}>{label}</span>
+            <div className={adminLogin.passwordWrap}>
+                <input
+                    type={loginPasswordInputType(visible)}
+                    name={name}
+                    autoComplete="new-password"
+                    required
+                    minLength={8}
+                    className={surface.passwordInput}
+                />
+                <button
+                    type="button"
+                    className={adminLogin.eyeButton}
+                    aria-label={loginPasswordToggleLabel(visible)}
+                    aria-pressed={visible}
+                    onClick={onToggle}
+                >
+                    <span className={adminLogin.eyeIcon}>
+                        <AdminPasswordEye visible={visible} />
+                    </span>
+                </button>
+            </div>
+        </label>
+    );
+}
+
+function AcceptInviteFigmaHeader({surface}: {surface: FigmaSurface}) {
+    const copy = adminCopy.acceptInvite;
+
+    return (
+        <div className={surface.header}>
+            <p className={surface.eyebrow}>{copy.eyebrow}</p>
+            <h1 className={surface.title}>{copy.title}</h1>
+            <p className={surface.lead}>{copy.lead}</p>
+        </div>
+    );
+}
+
+function wrapCard(surface: FigmaSurface, children: ReactNode) {
+    return (
+        <div className={surface.card}>
+            <AcceptInviteFigmaHeader surface={surface} />
+            {children}
+        </div>
+    );
+}
 
 export function AdminAcceptInviteForm({
     supabaseUrl,
     supabaseAnonKey,
+    session,
+    variant,
 }: AdminAcceptInviteFormProps) {
     const router = useRouter();
-    const [phase, setPhase] = useState<SessionPhase>("loading");
-    const [email, setEmail] = useState<string | null>(null);
+    const copy = adminCopy.acceptInvite;
+    const surface = acceptInviteFigmaSurface(variant);
     const [error, setError] = useState<string | null>(null);
+    const [passwordVisible, setPasswordVisible] = useState(false);
+    const [confirmVisible, setConfirmVisible] = useState(false);
     const [isPending, startTransition] = useTransition();
 
-    useEffect(() => {
-        let cancelled = false;
+    function onSubmit(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        setError(null);
 
-        async function establishInviteSession() {
-            try {
-                const supabase = createClient({
-                    url: supabaseUrl,
-                    anonKey: supabaseAnonKey,
-                });
-                const hash = parseAuthCallbackHash(window.location.hash);
+        const form = event.currentTarget;
+        const formData = new FormData(form);
+        const password = String(formData.get("password") ?? "");
+        const confirmPassword = String(formData.get("confirmPassword") ?? "");
+        const validated = validateNewAdminPassword(password, confirmPassword);
 
-                if (hash.error) {
-                    if (!cancelled) {
-                        setPhase("error");
-                        setError(
-                            hash.errorDescription?.replace(/\+/g, " ") ||
-                                "El enlace de invitación no es válido o ya expiró.",
-                        );
-                    }
-                    return;
-                }
-
-                if (hash.accessToken && hash.refreshToken) {
-                    const {data, error: sessionError} = await supabase.auth.setSession({
-                        access_token: hash.accessToken,
-                        refresh_token: hash.refreshToken,
-                    });
-
-                    window.history.replaceState(null, "", window.location.pathname);
-
-                    if (sessionError || !data.session) {
-                        if (!cancelled) {
-                            setPhase("error");
-                            setError(
-                                "No se pudo abrir la sesión de la invitación. Solicita un enlace nuevo.",
-                            );
-                        }
-                        return;
-                    }
-
-                    if (!cancelled) {
-                        setEmail(data.session.user.email ?? null);
-                        setPhase("ready");
-                    }
-                    return;
-                }
-
-                const search = new URLSearchParams(window.location.search);
-                const tokenHash = search.get("token_hash");
-                const otpType = search.get("type");
-
-                if (tokenHash && otpType && isInviteAuthType(otpType)) {
-                    const {data, error: otpError} = await supabase.auth.verifyOtp({
-                        token_hash: tokenHash,
-                        type: otpType as "invite" | "recovery" | "signup",
-                    });
-
-                    if (otpError || !data.session) {
-                        if (!cancelled) {
-                            setPhase("error");
-                            setError(
-                                "No se pudo validar la invitación. Solicita un enlace nuevo.",
-                            );
-                        }
-                        return;
-                    }
-
-                    window.history.replaceState(null, "", window.location.pathname);
-
-                    if (!cancelled) {
-                        setEmail(data.session.user.email ?? null);
-                        setPhase("ready");
-                    }
-                    return;
-                }
-
-                const {
-                    data: {session},
-                } = await supabase.auth.getSession();
-
-                if (session?.user) {
-                    if (!cancelled) {
-                        setEmail(session.user.email ?? null);
-                        setPhase("ready");
-                    }
-                    return;
-                }
-
-                if (!cancelled) {
-                    setPhase("missing");
-                }
-            } catch (caught) {
-                if (cancelled) {
-                    return;
-                }
-
-                const message =
-                    caught instanceof Error ? caught.message : "Error al validar la invitación.";
-                setPhase("error");
-                setError(
-                    message.includes("NEXT_PUBLIC_SUPABASE")
-                        ? "Faltan variables de Supabase. Reinicia `pnpm dev` y vuelve a abrir el enlace del correo."
-                        : message,
-                );
-            }
+        if (!validated.ok) {
+            setError(validated.error);
+            return;
         }
 
-        void establishInviteSession();
+        startTransition(async () => {
+            const supabase = createClient({
+                url: supabaseUrl,
+                anonKey: supabaseAnonKey,
+            });
+            const {error: updateError} = await supabase.auth.updateUser({
+                password,
+            });
 
-        return () => {
-            cancelled = true;
-        };
-    }, [supabaseAnonKey, supabaseUrl]);
+            if (updateError) {
+                setError(
+                    "No se pudo guardar la contraseña. Intenta de nuevo o pide una invitación nueva.",
+                );
+                return;
+            }
 
-    if (phase === "loading") {
-        return <p className={admin.muted}>Validando la invitación…</p>;
+            await recordAdminAcceptedAction();
+            router.replace("/admin");
+            router.refresh();
+        });
     }
 
-    if (phase === "missing" || phase === "error") {
-        return (
-            <div className="space-y-4">
-                <p className={admin.error} role="alert">
-                    {error ??
-                        "Abre el enlace del correo de invitación para crear tu contraseña."}
-                </p>
-                <Link href="/admin/login" className={`${admin.btnSecondary} w-full`}>
-                    Ir a iniciar sesión
-                </Link>
-            </div>
+    if (session.phase === "loading") {
+        return wrapCard(
+            surface,
+            <p className={surface.lead}>{copy.validating}</p>,
         );
     }
 
-    return (
-        <form
-            className="space-y-5"
-            onSubmit={(event) => {
-                event.preventDefault();
-                setError(null);
+    if (session.phase === "missing" || session.phase === "error") {
+        return wrapCard(
+            surface,
+            <div className={surface.fields}>
+                <p className={adminLogin.error} role="alert">
+                    {acceptInviteStatusMessage(session.error)}
+                </p>
+                <Link href="/admin/login" className={`${surface.submit} no-underline`}>
+                    {copy.loginLink}
+                </Link>
+            </div>,
+        );
+    }
 
-                const form = event.currentTarget;
-                const formData = new FormData(form);
-                const password = String(formData.get("password") ?? "");
-                const confirmPassword = String(formData.get("confirmPassword") ?? "");
-                const validated = validateNewAdminPassword(password, confirmPassword);
+    const account = session.email ? (
+        <p className={surface.accountRow}>
+            <span className={adminAcceptInvite.accountLabel}>
+                {copy.accountLabel}
+            </span>
+            <span className={adminAcceptInvite.accountEmail}>{session.email}</span>
+        </p>
+    ) : null;
 
-                if (!validated.ok) {
-                    setError(validated.error);
-                    return;
-                }
+    const passwords = (
+        <div className={surface.fields}>
+            <AcceptInvitePasswordField
+                name="password"
+                label={copy.passwordLabel}
+                visible={passwordVisible}
+                onToggle={() => setPasswordVisible((current) => !current)}
+                surface={surface}
+            />
+            <AcceptInvitePasswordField
+                name="confirmPassword"
+                label={copy.confirmLabel}
+                visible={confirmVisible}
+                onToggle={() => setConfirmVisible((current) => !current)}
+                surface={surface}
+            />
+        </div>
+    );
 
-                startTransition(async () => {
-                    const supabase = createClient({
-                        url: supabaseUrl,
-                        anonKey: supabaseAnonKey,
-                    });
-                    const {error: updateError} = await supabase.auth.updateUser({
-                        password,
-                    });
+    const alert = error ? (
+        <p className={adminLogin.error} role="alert">
+            {error}
+        </p>
+    ) : null;
 
-                    if (updateError) {
-                        setError(
-                            "No se pudo guardar la contraseña. Intenta de nuevo o pide una invitación nueva.",
-                        );
-                        return;
-                    }
-
-                    await recordAdminAcceptedAction();
-                    router.replace("/admin");
-                    router.refresh();
-                });
-            }}
+    const submitButton = (
+        <button
+            type="submit"
+            disabled={isPending}
+            className={surface.submit}
         >
-            {email ? (
-                <p className={admin.muted}>
-                    Cuenta: <span className="font-medium text-cover-cta-fg">{email}</span>
-                </p>
-            ) : null}
+            {isPending ? copy.submitting : copy.submit}
+        </button>
+    );
 
-            <label className="grid gap-2">
-                <span className={admin.label}>Nueva contraseña</span>
-                <input
-                    type="password"
-                    name="password"
-                    autoComplete="new-password"
-                    required
-                    minLength={8}
-                    className={admin.input}
-                />
-            </label>
+    const body = surface.wrapFields ? (
+        <>
+            <div className={adminAcceptInvite.form}>
+                {account}
+                {passwords}
+                {alert}
+            </div>
+            <div className={adminAcceptInvite.actions}>{submitButton}</div>
+        </>
+    ) : (
+        <>
+            {account}
+            {passwords}
+            {alert}
+            {submitButton}
+        </>
+    );
 
-            <label className="grid gap-2">
-                <span className={admin.label}>Confirmar contraseña</span>
-                <input
-                    type="password"
-                    name="confirmPassword"
-                    autoComplete="new-password"
-                    required
-                    minLength={8}
-                    className={admin.input}
-                />
-            </label>
-
-            {error ? (
-                <p className={admin.error} role="alert">
-                    {error}
-                </p>
-            ) : null}
-
-            <button
-                type="submit"
-                disabled={isPending}
-                className={`${admin.btnPrimary} w-full`}
-            >
-                {isPending ? "Guardando…" : "Guardar e entrar al panel"}
-            </button>
+    return (
+        <form className={surface.card} onSubmit={onSubmit}>
+            <AcceptInviteFigmaHeader surface={surface} />
+            {body}
         </form>
     );
 }

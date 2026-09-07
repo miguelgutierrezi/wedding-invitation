@@ -24,6 +24,20 @@ export const adminCopy = {
         hidePassword: "Ocultar contraseña",
         brandBadge: "• Admin Panel",
     },
+    acceptInvite: {
+        eyebrow: "Panel privado",
+        title: "Crear contraseña",
+        lead: "Aceptaste la invitación. Elige una contraseña para entrar al panel de administración.",
+        accountLabel: "Cuenta:",
+        passwordLabel: "Nueva contraseña",
+        confirmLabel: "Confirmar contraseña",
+        submit: "Guardar y entrar al panel",
+        submitting: "Guardando…",
+        validating: "Validando la invitación…",
+        loginLink: "Ir a iniciar sesión",
+        missingLink:
+            "Abre el enlace del correo de invitación para crear tu contraseña.",
+    },
     nav: {
         summary: "Resumen",
         statistics: "Estadísticas",

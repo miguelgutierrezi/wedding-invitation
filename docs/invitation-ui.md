@@ -347,7 +347,16 @@ Desktop is 460px / 24px radius / 48×56 padding / 36px title. Password recovery 
 20px brand, full-width card, 24×40 padding, 46px input / 48px CTA), from 834px uses `153:80` (absolute chrome, 20px
 brand at 48×48, 460px card), from `lg` uses `153:57` (440px / 24px radius / 40×52 padding / 32px title) and from `xl`
 uses `153:34` (**Recuperar contraseña**, lead + explanation, **Enviar enlace**, **Volver a iniciar sesión**). Helpers in
-`admin-login-layout.ts`; classes in `adminLogin`. Accept-invite is unchanged.
+`admin-login-layout.ts`; classes in `adminLogin`.
+
+**Aceptar invitación** (`/admin/aceptar-invitacion`: mobile Figma `158:136` below 834px; portrait `158:103` from 834px;
+landscape `158:72` from `lg`; desktop `158:34` from `xl`): cream canvas, Inter **PANEL PRIVADO** / Times **Crear
+contraseña**, account row, two password fields with the shared eye control, olive **Guardar y entrar al panel**. Phone
+stacks a centered brand (22px names, 13px **• Admin Panel**) and a full-width 20px-radius card (24px padding, 28px
+title, 44px inputs / CTA with 10px radius). Portrait stacks a centered brand (24px names) around a 440px card
+(36/48×48 padding, 32px title). Landscape/desktop keep a 460px card with absolute chrome (landscape brand 48×40 and
+14px footer; desktop brand 64×48 and 12px footer). Helpers in `admin-accept-invite-layout.ts`; classes in
+`adminAcceptInvite`.
 
 **Estadísticas** (`/admin/analytics`: desktop Figma `96:39`; landscape `99:229` from `lg`; portrait `99:419` from
 834px; mobile `99:607` below 834px): same olive banner pattern as Resumen (live deadline + Excel download; **do not

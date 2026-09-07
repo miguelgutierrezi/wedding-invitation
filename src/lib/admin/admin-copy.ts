@@ -104,16 +104,22 @@ export const adminCopy = {
         queueTitle: "Por revisar",
         queueIntro: "Lo que falta por confirmar o completar.",
         familiesPendingLabel: "Familias sin confirmar",
-        familiesPendingHint: "Aún no enviaron confirmación",
+        familiesPendingHint:
+            "No han enviado respuesta inicial a la invitación digital.",
+        ctaViewList: "Ver lista",
+        ctaAssign: "Asignar",
         openedPendingLabel: "Abrieron y no confirmaron",
-        openedPendingHint: "Vieron la invitación y falta responder",
+        openedPendingHint:
+            "Registraron lectura del enlace digital pero no enviaron el RSVP.",
         needsNameLabel: "Nombres por confirmar",
-        needsNameHint: "Acompañantes que aún aparecen como “Acompañante”",
+        needsNameHint:
+            "Acompañantes que solo aparecen registrados como “Acompañante”.",
         busMissingLabel: "Bus sin punto de salida",
         busMissingHint: "Pidieron bus pero no eligieron de dónde salen",
         closeTitle: "Cierre de confirmaciones",
         closeReady: "Ya se puede cerrar la lista",
         closeNotReady: "Todavía falta gente por confirmar",
+        closeActionTag: "Falta Acción",
         closeReadyBody:
             "Casi todas las familias e invitados ya tienen una respuesta.",
         closeNotReadyBody:
@@ -176,6 +182,49 @@ export const adminCopy = {
                 : `${count} no se pudieron actualizar.`,
         noneCopied: "Nada que copiar en la selección.",
         downloaded: "Lista descargada.",
+    },
+    resumen: {
+        adminBadge: "Admin",
+        bannerTitle: "Panel de Confirmaciones de Asistencia",
+        bannerBody:
+            "Monitorea el progreso de tus pases asignados, requerimientos de transporte y estado del dress code.",
+        overlineWedding: (partnerOne: string, partnerTwo: string) =>
+            `Matrimonio ${partnerOne} & ${partnerTwo}`,
+        overlineDeadline: "Fecha Límite",
+        overlineDeadlineShort: "Límite",
+        downloadCta: "Descargar Lista",
+        kpiFamilies: "Familias Invitadas",
+        kpiFamiliesPill: "Total",
+        kpiFamiliesFootnote: (percent: number) =>
+            `${percent}% ya confirmaron asistencia`,
+        kpiSeats: "Pases Asignados",
+        kpiSeatsPill: "Total Invitados",
+        kpiSeatsFootnote: (percent: number) =>
+            `${percent}% confirmados o rechazados`,
+        kpiAttending: "Asistentes Confirmados",
+        kpiAttendingPill: "Asistirán",
+        kpiAttendingFootnote: "Planeados con cupo e ingresos",
+        kpiBus: "Cupos de Bus Reservados",
+        kpiBusPill: "Transporte",
+        kpiBusFootnote: "Servicio activo Bogotá - Subachoque",
+        familyGaugeHint: "Asistencia completa por familias",
+        guestGaugeHint: "Respuestas individuales procesadas",
+        followUpsTitle:
+            "Listas de transportes, comidas, nombres y fotos",
+        followUpsTitleCompact: "Listas de transportes, comidas y fotos",
+        followUpsIntro:
+            "Haz clic en cada sección para auditar y descargar los archivos definitivos para proveedores.",
+        attentionEyebrow: "Por Revisar",
+        attentionTitle: "Atención requerida",
+        attentionIntro: (venue: string) =>
+            `Detalles que impiden cerrar el conteo definitivo para ${venue}.`,
+        attentionIntroCompact: (venue: string) =>
+            `Detalles pendientes antes de cerrar con ${venue}.`,
+        pendingBoxTitle: "Resumen de pendientes",
+        pendingTotalsLabel: "Pendientes Totales:",
+        pendingNamesLabel: "Nombres Incompletos:",
+        quickActions: "Acciones rápidas",
+        drawerUserFallback: "Administrador",
     },
     list: {
         showing: (from: number, to: number, total: number) =>

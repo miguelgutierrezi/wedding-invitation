@@ -3,7 +3,7 @@
 **Status:** implemented against Figma “Invitación boda” + post-Figma polish (maps, music, cover crop, gifts, outfit
 inspiration, personalized cover greeting)
 
-**Last reviewed:** 2026-09-06
+**Last reviewed:** 2026-09-07
 
 This document describes the **public invitation presentation layer** and shared brand rules used by the admin UI. It
 does not authorize product features outside `docs/current-phase.md`.
@@ -77,6 +77,11 @@ asks for the real name **only if that person will attend**. Each listed guest ca
 | `--olive-wash`               | `#FAF9E6`          | Admin invite input / Cancelar surface                                                    |
 | `--status-active-*`          | `#EBFEE6` / `#166500` | Activo badge                                                                          |
 | `--status-pending-*`         | `#FEF08A` / `#854D0E` | Pendiente badge                                                                       |
+| `--admin-canvas`             | `#F5F4EB`          | Admin Resumen page (all viewports, Figma `94:414` / `94:232` / `94:34` / `91:40`)       |
+| `--admin-olive` / `--admin-olive-end` | `#5F6446` / `#888F68` | Resumen header pills, banner gradient, progress fill                          |
+| `--admin-ink` / `--admin-muted` | `#303026` / `#727263` | Resumen body / secondary copy                                                   |
+| `--admin-border` / `--admin-wash` | `#E4E3DA` / `#F0F2EA` | Resumen cards, pills, gauges                                                    |
+| `--admin-logout`                 | `#A84343`          | Resumen drawer **Salir**                                                        |
 
 
 ### Typography
@@ -86,7 +91,8 @@ asks for the real name **only if that person will attend**. Each listed guest ca
 | Invitation section titles & body (Figma Times) | `--font-timer` (`Times New Roman` stack)          | Venue, transport, dress, gifts, RSVP, footer, countdown |
 | Cover subtitle                                 | Vollkorn (`--font-cover-serif`)                   | Multi-line cover invitation copy, **uppercase**         |
 | Cover / script accents                         | `--font-script` / cover fonts as loaded in layout | Cover greeting script line and specialized display      |
-| Admin UI                                       | same `--font-timer` + olive / cream tokens        | Entire `/admin` shell and forms via `admin-ui.ts`       |
+| Admin UI                                       | same `--font-timer` + olive / cream tokens        | Entire `/admin` shell and forms via `admin-ui.ts` (except Resumen desktop) |
+| Admin Resumen (`/admin`)                       | `--font-body` (Source Sans 3) + Times metrics     | Figma `94:414` mobile + `94:232` portrait + `94:34` landscape + `91:40` desktop; Inter maps to `--font-body` |
 | Admin directory (`/admin/admins`)              | Figma `85:40` / tablet `85:133` / mobile `85:220` | Phone nested cards (TÚ wash); portrait clusters; `lg+` row; Times + olive tokens; chrome unchanged |
 
 
@@ -291,7 +297,20 @@ host TZ.
 Admin must not drift into a separate purple/gray SaaS look. Use `admin` tokens from `admin-ui.ts` for forms, tables,
 nav, and metrics. Header uses `bg-accent` with cream type/pills; page shell uses `bg-cream-figma`.
 
-Compact admin: hamburger drawer until `xl` (1280px) so iPad 11" keeps it. New-family **+** is phone-only (hidden from
+**Resumen** (`/admin` on all viewports: Figma `admin-resumen-mobile` `94:414`; portrait `94:232` from 834px; landscape
+`94:34` from `lg`; desktop `91:40` from `xl`): white header (couple names + Admin badge + session email). Phone and
+portrait use an olive hamburger that opens the Figma left drawer (`94:591`: cream 290px panel, olive active row, live
+Familias/Invitados badges, Acciones rápidas, Salir). Landscape/desktop add olive route pills and Salir in the header.
+Olive banner (stacked full-width CTAs on phone, two equal-width CTAs on portrait), KPI grid (1 column on phone, 2×2
+until desktop, 4 across from `xl`), stacked close / follow-ups / attention until `lg` (`w-full` so portrait cards are not content-width), then a 340px attention rail.
+Classes live in `adminResumen`. Icons use Lucide (same glyphs as Figma: menu, download, clock, check, chevron, alert,
+plus, log-out, layout-grid, users) with explicit leaf sizes. Do not add Figma-only routes (Transporte / Mensajes /
+Configuración) or a “Notificar” WhatsApp send; attention CTAs stay **Ver lista** / **Asignar**. Do not invent a drinks
+list: follow-ups stay transporte / fotos from live data. Phone **+** FAB stays (olive on Resumen); hide it from 834px up
+and keep **Nueva familia** in the drawer.
+
+Compact admin: hamburger drawer until `xl` (1280px) on list/detail pages so iPad 11" keeps it. **Resumen** switches to
+inline Figma nav from `lg`. New-family **+** is phone-only (hidden from
 834px / iPad 11" up); the drawer includes **Nueva familia**. Closed overlay cannot intercept hamburger taps. Back
 chevron on nueva familia **and** family detail. Family list chips (sin abrir / bus / dieta). Family detail: actividad
 reciente; eliminar familia no exige guardar el formulario. Family/guest/photo **cards** replace tables until `lg`.

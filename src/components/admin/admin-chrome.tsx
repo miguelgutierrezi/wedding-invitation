@@ -6,11 +6,14 @@ import {useEffect, useId, useState} from "react";
 
 import {signOutAdminAction} from "@/actions/admin/auth";
 import {AdminNewFamilyFab} from "@/components/admin/admin-new-family-fab";
-import {admin} from "@/components/admin/admin-ui";
+import {AdminResumenDrawer} from "@/components/admin/admin-resumen-drawer";
+import {ResumenMenuIcon} from "@/components/admin/admin-resumen-icons";
+import {admin, adminResumen} from "@/components/admin/admin-ui";
 import {useVisualViewportBottom} from "@/hooks/use-visual-viewport-bottom";
 import {isAdminNavActive, showAdminBackToFamilies, showAdminNewFamilyFab,} from "@/lib/admin/admin-chrome";
 import {adminCopy} from "@/lib/admin/admin-copy";
 import {readAdminFamiliesListReturnHref} from "@/lib/admin/admin-list-return";
+import {weddingConfig} from "@/config/wedding";
 
 const navItems = [
     {href: "/admin", label: adminCopy.nav.summary},
@@ -51,9 +54,18 @@ function MenuIcon({open}: { open: boolean }) {
 type AdminChromeProps = {
     title: string;
     email: string;
+    variant?: "classic" | "resumen";
+    familyCount?: number;
+    guestCount?: number;
 };
 
-export function AdminChrome({title, email}: AdminChromeProps) {
+export function AdminChrome({
+    title,
+    email,
+    variant = "classic",
+    familyCount,
+    guestCount,
+}: AdminChromeProps) {
     const pathname = usePathname();
     const router = useRouter();
     const [open, setOpen] = useState(false);
@@ -122,7 +134,7 @@ export function AdminChrome({title, email}: AdminChromeProps) {
     return (
         <>
             <header
-                className="sticky top-0 z-30 border-b-2 border-cover-cta-fg/15 bg-accent pt-[max(0.75rem,env(safe-area-inset-top))]">
+                className={`sticky top-0 z-30 border-b-2 border-cover-cta-fg/15 bg-accent pt-[max(0.75rem,env(safe-area-inset-top))] ${variant === "resumen" ? "hidden" : ""}`}>
                 <div
                     className="mx-auto flex w-full min-w-0 max-w-6xl flex-col gap-4 px-4 py-4 lg:gap-5 lg:px-8 lg:py-5">
                     <div className="flex min-w-0 items-start justify-between gap-3">
@@ -177,6 +189,69 @@ export function AdminChrome({title, email}: AdminChromeProps) {
                 </div>
             </header>
 
+            {variant === "resumen" ? (
+                <header className={`${adminResumen.header} sticky top-0 z-30`}>
+                    <div className="flex min-w-0 items-center gap-2">
+                        <button
+                            type="button"
+                            className={adminResumen.menuButton}
+                            aria-label={open ? adminCopy.nav.closeMenu : adminCopy.nav.menu}
+                            aria-expanded={open}
+                            aria-controls={menuId}
+                            onClick={() => setOpen((value) => !value)}
+                        >
+                            <ResumenMenuIcon />
+                        </button>
+                        <p className={adminResumen.brand}>
+                            {weddingConfig.couple.partnerOne} & {weddingConfig.couple.partnerTwo}
+                        </p>
+                        <span className={adminResumen.brandBadge}>
+                            {adminCopy.resumen.adminBadge}
+                        </span>
+                    </div>
+                    <nav
+                        className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 overflow-x-auto lg:flex xl:gap-1"
+                        aria-label="Menú de administración"
+                    >
+                        {navItems.map((item) => (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                prefetch={false}
+                                className={
+                                    isAdminNavActive(pathname, item.href)
+                                        ? adminResumen.navLinkActive
+                                        : adminResumen.navLink
+                                }
+                            >
+                                {item.label}
+                            </Link>
+                        ))}
+                    </nav>
+                    <div className="flex min-w-0 items-center gap-2">
+                        <p className={adminResumen.user} title={email}>
+                            {email}
+                        </p>
+                        <form action={signOutAdminAction} className="shrink-0">
+                            <button type="submit" className={adminResumen.signOut}>
+                                {adminCopy.nav.signOut}
+                            </button>
+                        </form>
+                    </div>
+                </header>
+            ) : null}
+
+            {variant === "resumen" ? (
+                <AdminResumenDrawer
+                    open={open}
+                    menuId={menuId}
+                    pathname={pathname}
+                    email={email}
+                    familyCount={familyCount}
+                    guestCount={guestCount}
+                    onClose={closeMenu}
+                />
+            ) : (
             <div
                 id={menuId}
                 className={`fixed inset-0 z-50 xl:hidden ${open ? "" : "invisible pointer-events-none"}`}
@@ -261,8 +336,11 @@ export function AdminChrome({title, email}: AdminChromeProps) {
                     </nav>
                 </div>
             </div>
+            )}
 
-            {showFab ? <AdminNewFamilyFab /> : null}
+            {showFab ? (
+                <AdminNewFamilyFab tone={variant === "resumen" ? "olive" : "accent"} />
+            ) : null}
         </>
     );
 }

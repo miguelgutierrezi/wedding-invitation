@@ -54,7 +54,7 @@ export function buildCloseFollowUpItems(input: {
         {
             key: "rsvp",
             label: "Confirmaciones",
-            hint: "Familias que aún no responden",
+            hint: "Familias que aún no han enviado su respuesta definitiva.",
             count: input.familiesPending,
             href: input.familiesPendingHref,
             done: input.familiesPending === 0,
@@ -62,7 +62,7 @@ export function buildCloseFollowUpItems(input: {
         {
             key: "names",
             label: "Nombres por confirmar",
-            hint: "Acompañantes que siguen como “Acompañante”",
+            hint: "Acompañantes asignados que no tienen su nombre completo definido.",
             count: input.guestsPendingNameConfirmation,
             href: input.guestsPendingNameHref,
             done: input.guestsPendingNameConfirmation === 0,
@@ -70,7 +70,7 @@ export function buildCloseFollowUpItems(input: {
         {
             key: "transport",
             label: "Transporte",
-            hint: "Personas confirmadas que van en bus",
+            hint: "Personas confirmadas que van en el bus Bogotá – Subachoque.",
             count: input.guestsNeedingTransport,
             href: input.guestsTransportHref,
             done: input.guestsBusMissingPoint === 0,
@@ -85,8 +85,8 @@ export function buildCloseFollowUpItems(input: {
         },
         {
             key: "diet",
-            label: "Comida",
-            hint: "Invitados con dieta o restricción",
+            label: "Restricciones alimenticias",
+            hint: "Menú especial requerido: vegetarianos, alergias e intolerancias.",
             count: input.guestsWithDietary,
             href: input.guestsDietaryHref,
             done: true,
@@ -94,7 +94,7 @@ export function buildCloseFollowUpItems(input: {
         {
             key: "photos",
             label: "Fotos",
-            hint: "Archivos subidos por revisar",
+            hint: "Archivos subidos por los invitados que aún no se aprueban.",
             count: input.photosAwaitingReview,
             href: input.photosHref,
             done: input.photosAwaitingReview === 0,

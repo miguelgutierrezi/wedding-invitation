@@ -94,6 +94,34 @@ export function formatEventLongDate(
     );
 }
 
+/** Admin Resumen overline: compact deadline in event TZ (e.g. 15/09/2026, 11:59 p. m.). */
+export function formatEventDeadlineOverline(
+    iso: string | null | undefined,
+    emptyLabel = "Por definir",
+    timezone?: string | null,
+): string {
+    if (!iso) {
+        return emptyLabel;
+    }
+
+    try {
+        return formatInEventTimezone(
+            iso,
+            {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
+            },
+            timezone,
+        );
+    } catch {
+        return iso;
+    }
+}
+
 /** Invitation RSVP deadline chip (day + month). */
 export function formatEventDayMonth(
     iso: string,

@@ -41,6 +41,22 @@
     --status-active-fg: #166500;
     --status-pending-bg: #fef08a;
     --status-pending-fg: #854d0e;
+    /* Admin Resumen desktop — Figma 91:40 */
+    --admin-canvas: #f5f4eb;
+    --admin-olive: #5f6446;
+    --admin-olive-end: #888f68;
+    --admin-ink: #303026;
+    --admin-muted: #727263;
+    --admin-border: #e4e3da;
+    --admin-wash: #f0f2ea;
+    --admin-status-ring: #d4d7c8;
+    --admin-alert: #fffdf0;
+    --admin-alert-border: #ead6b3;
+    --admin-alert-icon: #fff9e6;
+    --admin-alert-cta: #8a6a3b;
+    --admin-tag: #fef3c7;
+    --admin-tag-fg: #d97706;
+    --admin-logout: #a84343;
 }
 
 @theme inline {
@@ -71,6 +87,21 @@
     --color-status-active-fg: var(--status-active-fg);
     --color-status-pending-bg: var(--status-pending-bg);
     --color-status-pending-fg: var(--status-pending-fg);
+    --color-admin-canvas: var(--admin-canvas);
+    --color-admin-olive: var(--admin-olive);
+    --color-admin-olive-end: var(--admin-olive-end);
+    --color-admin-ink: var(--admin-ink);
+    --color-admin-muted: var(--admin-muted);
+    --color-admin-border: var(--admin-border);
+    --color-admin-wash: var(--admin-wash);
+    --color-admin-status-ring: var(--admin-status-ring);
+    --color-admin-alert: var(--admin-alert);
+    --color-admin-alert-border: var(--admin-alert-border);
+    --color-admin-alert-icon: var(--admin-alert-icon);
+    --color-admin-alert-cta: var(--admin-alert-cta);
+    --color-admin-tag: var(--admin-tag);
+    --color-admin-tag-fg: var(--admin-tag-fg);
+    --color-admin-logout: var(--admin-logout);
     --font-sans: var(--font-body);
     --font-display: var(--font-display);
     --font-script: var(--font-script);

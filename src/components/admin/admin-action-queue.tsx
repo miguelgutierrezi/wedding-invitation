@@ -2,64 +2,16 @@ import Link from "next/link";
 
 import {admin} from "@/components/admin/admin-ui";
 import {adminCopy} from "@/lib/admin/admin-copy";
-import {adminFilterLinks} from "@/lib/admin/admin-filter-links";
+import {
+    type AdminActionQueueCounts,
+    buildActionQueueItems,
+} from "@/lib/admin/dashboard-resumen";
 
-export type AdminActionQueueCounts = {
-    familiesPending: number;
-    familiesOpenedPending: number;
-    guestsNeedsName: number;
-    guestsBusMissingPoint: number;
-    photosAwaitingReview: number;
-    familiesDisabledPending: number;
-};
+export type {AdminActionQueueCounts};
 
-type QueueItem = {
-    href: string;
-    label: string;
-    count: number;
-    hint: string;
-};
-
-export function AdminActionQueue({counts}: { counts: AdminActionQueueCounts }) {
+export function AdminActionQueue({counts}: {counts: AdminActionQueueCounts}) {
     const copy = adminCopy.operations;
-    const items: QueueItem[] = [
-        {
-            href: adminFilterLinks.familiesPending,
-            label: copy.familiesPendingLabel,
-            count: counts.familiesPending,
-            hint: copy.familiesPendingHint,
-        },
-        {
-            href: adminFilterLinks.familiesOpenedPending,
-            label: copy.openedPendingLabel,
-            count: counts.familiesOpenedPending,
-            hint: copy.openedPendingHint,
-        },
-        {
-            href: adminFilterLinks.guestsNeedsName,
-            label: copy.needsNameLabel,
-            count: counts.guestsNeedsName,
-            hint: copy.needsNameHint,
-        },
-        {
-            href: adminFilterLinks.guestsBusMissingPoint,
-            label: copy.busMissingLabel,
-            count: counts.guestsBusMissingPoint,
-            hint: copy.busMissingHint,
-        },
-        {
-            href: "/admin/photos",
-            label: copy.photosPendingLabel,
-            count: counts.photosAwaitingReview,
-            hint: copy.photosPendingHint,
-        },
-        {
-            href: adminFilterLinks.familiesDisabled,
-            label: copy.disabledPendingLabel,
-            count: counts.familiesDisabledPending,
-            hint: copy.disabledPendingHint,
-        },
-    ].filter((item) => item.count > 0);
+    const items = buildActionQueueItems(counts);
 
     return (
         <section className={`${admin.card} p-5`}>
@@ -76,15 +28,17 @@ export function AdminActionQueue({counts}: { counts: AdminActionQueueCounts }) {
                                     href={item.href}
                                     className={`${admin.panel} flex min-h-11 flex-col items-start gap-2 px-4 py-3 transition-opacity hover:opacity-90 lg:flex-row lg:items-center lg:justify-between lg:gap-3`}
                                 >
-                  <span>
-                    <span className="block font-medium text-cover-cta-fg">
-                      {item.label}
-                    </span>
-                    <span className={`block ${admin.muted}`}>{item.hint}</span>
-                  </span>
+                                    <span>
+                                        <span className="block font-medium text-cover-cta-fg">
+                                            {item.label}
+                                        </span>
+                                        <span className={`block ${admin.muted}`}>
+                                            {item.hint}
+                                        </span>
+                                    </span>
                                     <span className="text-2xl font-bold tabular-nums text-cover-cta-fg">
-                    {item.count}
-                  </span>
+                                        {item.count}
+                                    </span>
                                 </Link>
                             </li>
                         ))}

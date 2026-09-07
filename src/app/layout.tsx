@@ -28,7 +28,7 @@ const coverSerifFont = Vollkorn({
 const bodyFont = Source_Sans_3({
     variable: "--font-body",
     subsets: ["latin"],
-    weight: ["400", "500", "600"],
+    weight: ["400", "500", "600", "700"],
 });
 
 const coupleNames = `${weddingConfig.couple.partnerOne} & ${weddingConfig.couple.partnerTwo}`;

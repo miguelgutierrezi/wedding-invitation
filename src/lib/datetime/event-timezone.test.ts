@@ -5,6 +5,7 @@ import {
     EVENT_TIMEZONE,
     formatEventDate,
     formatEventDateTime,
+    formatEventDeadlineOverline,
     formatEventLongDate,
     resolveEventTimezone,
 } from "@/lib/datetime/event-timezone";
@@ -47,6 +48,17 @@ describe("event timezone", () => {
         expect(daysUntilDeadline("2026-09-15T23:59:59-05:00", now)).toBe(15);
         expect(daysUntilDeadline("2026-08-31T12:00:00-05:00", now)).toBeLessThan(0);
         expect(daysUntilDeadline(null, now)).toBeNull();
+    });
+
+    it("formats the Resumen deadline overline in event TZ", () => {
+        const label = formatEventDeadlineOverline(
+            "2026-09-15T23:59:59-05:00",
+            "—",
+            "America/Bogota",
+        );
+        expect(label).toMatch(/15\/0?9\/2026/);
+        expect(label).toMatch(/11:59/);
+        expect(label).not.toMatch(/^16\//);
     });
 
     it("formats a short calendar date without time", () => {

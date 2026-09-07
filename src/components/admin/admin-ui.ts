@@ -83,3 +83,111 @@ export const admin = {
     sortButton:
         "inline-flex min-h-11 items-center gap-1.5 px-4 py-3 text-left font-[family-name:var(--font-timer)] text-xs font-medium tracking-wide text-cover-cta-fg/70 uppercase transition-colors hover:text-cover-cta-fg",
 } as const;
+
+/**
+ * Resumen Figma: mobile `94:414`, portrait `94:232` from 834px, landscape `94:34`
+ * from `lg`, desktop `91:40` from `xl`. Sans UI + Times metrics.
+ * Do not use these on the public invitation.
+ */
+export const adminResumen = {
+    sans: "font-[family-name:var(--font-body)]",
+    serif: "font-[family-name:var(--font-timer)]",
+    header:
+        "flex w-full items-center justify-between gap-3 border-b border-admin-border bg-white px-4 py-3.5 pt-[max(0.875rem,env(safe-area-inset-top))] min-[834px]:px-8 xl:gap-6 xl:pb-4 2xl:px-12",
+    brand: "font-[family-name:var(--font-timer)] text-base font-bold whitespace-nowrap text-admin-olive min-[834px]:text-lg lg:text-xl xl:text-2xl",
+    brandBadge:
+        "rounded-md bg-admin-wash px-1.5 py-0.5 font-[family-name:var(--font-body)] text-[9px] font-semibold tracking-wide text-admin-olive uppercase min-[834px]:px-2 min-[834px]:text-[10px] xl:text-[11px]",
+    navLink:
+        "inline-flex min-h-11 shrink-0 items-center rounded-[20px] px-3 font-[family-name:var(--font-body)] text-[13px] font-medium text-admin-muted transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none xl:px-4 xl:text-sm",
+    navLinkActive:
+        "inline-flex min-h-11 shrink-0 items-center rounded-[20px] bg-admin-olive px-3 font-[family-name:var(--font-body)] text-[13px] font-semibold text-white xl:px-4 xl:text-sm",
+    user: "max-w-[7.5rem] truncate font-[family-name:var(--font-body)] text-xs font-semibold text-admin-ink min-[834px]:max-w-36 min-[834px]:text-[13px] min-[834px]:font-medium xl:max-w-48 xl:text-sm",
+    signOut:
+        "hidden min-h-11 shrink-0 items-center rounded-full px-3 font-[family-name:var(--font-body)] text-[13px] font-medium text-admin-muted transition-colors hover:text-admin-ink focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none lg:inline-flex xl:text-sm",
+    menuButton:
+        "inline-flex size-11 shrink-0 items-center justify-center rounded-full text-admin-olive hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none lg:hidden",
+    banner:
+        "flex flex-col gap-4 bg-[linear-gradient(34deg,var(--admin-olive)_25%,var(--admin-olive-end)_75%)] px-[18px] py-[18px] min-[834px]:gap-5 min-[834px]:bg-[linear-gradient(13.5deg,var(--admin-olive)_25%,var(--admin-olive-end)_75%)] min-[834px]:px-8 min-[834px]:py-7 lg:flex-row lg:items-center lg:justify-between lg:bg-[linear-gradient(8.5deg,var(--admin-olive)_25%,var(--admin-olive-end)_75%)] xl:gap-6 xl:bg-[linear-gradient(6.7deg,var(--admin-olive)_25%,var(--admin-olive-end)_75%)] xl:py-10 2xl:px-12",
+    overline:
+        "font-[family-name:var(--font-body)] text-[10px] font-semibold tracking-[0.08em] text-accent uppercase min-[834px]:text-[11px] xl:text-xs",
+    bannerTitle:
+        "font-[family-name:var(--font-timer)] text-2xl leading-tight font-bold text-white min-[834px]:text-[28px] xl:text-[clamp(1.75rem,2.4vw,2.25rem)]",
+    bannerBody:
+        "font-[family-name:var(--font-body)] text-xs leading-[1.4] text-admin-wash min-[834px]:text-[13px] xl:text-sm",
+    bannerActions:
+        "flex w-full flex-col gap-2.5 min-[834px]:flex-row min-[834px]:gap-3 lg:w-auto lg:shrink-0 xl:gap-4",
+    deadlineChip:
+        "inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-center font-[family-name:var(--font-body)] text-xs font-semibold text-white min-[834px]:w-auto min-[834px]:flex-1 min-[834px]:rounded-[10px] lg:flex-none xl:rounded-xl xl:px-4 xl:py-2.5 xl:text-sm",
+    downloadCta:
+        "inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg bg-accent px-4 py-2.5 font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-ink shadow-[0_4px_4px_rgba(0,0,0,0.06)] transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:outline-none min-[834px]:w-auto min-[834px]:flex-1 min-[834px]:rounded-[10px] lg:flex-none xl:gap-2 xl:rounded-xl xl:px-5 xl:py-3 xl:text-sm",
+    workspace:
+        "flex flex-col gap-4 px-4 pb-6 pt-4 min-[834px]:gap-6 min-[834px]:px-8 min-[834px]:pb-8 min-[834px]:pt-6 xl:gap-8 xl:pb-16 xl:pt-8 2xl:px-12",
+    actionStack:
+        "flex w-full flex-col gap-5 lg:flex-row lg:items-start xl:gap-6",
+    actionMain:
+        "flex min-w-0 w-full flex-1 flex-col gap-5 xl:gap-6",
+    kpiGrid: "grid grid-cols-1 gap-4 min-[834px]:grid-cols-2 xl:grid-cols-4 xl:gap-6",
+    kpiCard:
+        "flex min-w-0 flex-1 flex-col gap-2 rounded-[14px] border border-admin-border bg-white p-4 shadow-[0_4px_6px_rgba(95,100,70,0.02)] transition-opacity hover:opacity-90 min-[834px]:gap-2.5 min-[834px]:rounded-2xl min-[834px]:p-5 xl:gap-3 xl:rounded-[20px] xl:p-6",
+    kpiLabel:
+        "font-[family-name:var(--font-body)] text-[10px] font-semibold tracking-[0.06em] text-admin-muted uppercase min-[834px]:text-[11px] lg:text-xs",
+    kpiValue:
+        "font-[family-name:var(--font-timer)] text-[32px] leading-none font-bold tabular-nums text-admin-ink xl:text-[40px]",
+    kpiPill:
+        "rounded-full bg-admin-wash px-2 py-1 font-[family-name:var(--font-body)] text-[10px] font-semibold text-admin-olive min-[834px]:text-[11px] xl:text-xs",
+    kpiFootnote:
+        "font-[family-name:var(--font-body)] text-[11px] text-admin-muted min-[834px]:text-xs xl:text-[13px]",
+    panel:
+        "flex w-full flex-col gap-4 rounded-2xl border border-admin-border bg-white p-[18px] min-[834px]:gap-5 min-[834px]:rounded-[20px] min-[834px]:p-6 xl:gap-7 xl:rounded-3xl xl:p-8",
+    eyebrow:
+        "font-[family-name:var(--font-body)] text-[10px] font-semibold tracking-[0.06em] text-admin-olive uppercase min-[834px]:text-[11px] xl:text-xs",
+    panelTitle:
+        "font-[family-name:var(--font-timer)] text-base leading-tight font-bold text-admin-ink min-[834px]:text-lg xl:text-[22px]",
+    muted: "font-[family-name:var(--font-body)] text-[11px] text-admin-muted min-[834px]:text-xs xl:text-sm",
+    tagWarn:
+        "rounded-md bg-admin-tag px-2 py-1 font-[family-name:var(--font-body)] text-[10px] font-semibold text-admin-tag-fg min-[834px]:px-2.5 min-[834px]:text-[11px] xl:text-xs",
+    tagReady:
+        "rounded-md bg-admin-wash px-2 py-1 font-[family-name:var(--font-body)] text-[10px] font-semibold text-admin-olive min-[834px]:px-2.5 min-[834px]:text-[11px] xl:text-xs",
+    gaugeValue:
+        "font-[family-name:var(--font-timer)] text-[18px] leading-none font-bold tabular-nums text-admin-olive min-[834px]:text-[22px] xl:text-[28px]",
+    row:
+        "flex min-h-11 items-center gap-2.5 border-b border-admin-canvas px-3 py-3 last:border-0 min-[834px]:gap-3.5 min-[834px]:px-4 xl:gap-4 xl:py-3.5",
+    rowList: "overflow-hidden rounded-[10px] border border-admin-border bg-white min-[834px]:rounded-2xl",
+    countBadge:
+        "rounded-md bg-admin-wash px-1.5 py-1 font-[family-name:var(--font-body)] text-[9px] font-semibold whitespace-nowrap text-admin-olive min-[834px]:px-2 min-[834px]:text-[11px] xl:px-2.5 xl:text-xs",
+    attentionCard:
+        "flex items-center gap-2.5 rounded-xl border border-admin-alert-border bg-admin-alert p-3 min-[834px]:gap-3 min-[834px]:rounded-[14px] min-[834px]:p-3.5 xl:gap-4 xl:rounded-2xl xl:p-[18px]",
+    attentionCta:
+        "inline-flex min-h-11 shrink-0 items-center rounded-md border border-admin-alert-border bg-white px-2 font-[family-name:var(--font-body)] text-[10px] font-semibold text-admin-alert-cta min-[834px]:px-2.5 min-[834px]:text-[11px] xl:rounded-lg xl:px-3 xl:text-xs",
+    summaryBox:
+        "flex flex-col gap-1.5 rounded-[10px] bg-admin-wash p-3 min-[834px]:gap-2 min-[834px]:rounded-xl min-[834px]:p-4 xl:gap-3 xl:rounded-2xl xl:p-5",
+    drawerScrim:
+        "absolute inset-0 bg-admin-ink/65 transition-opacity duration-300 ease-out motion-reduce:transition-none",
+    drawerPanel:
+        "absolute inset-y-0 left-0 flex w-[290px] max-w-[85vw] flex-col justify-between border-r border-admin-border bg-admin-canvas px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-[4px_0_12px_rgba(48,48,38,0.15)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+    drawerBrand:
+        "font-[family-name:var(--font-timer)] text-lg font-bold whitespace-nowrap text-admin-olive",
+    drawerClose:
+        "inline-flex size-11 shrink-0 items-center justify-center rounded-full text-admin-olive hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
+    drawerCloseGlyph:
+        "inline-flex size-8 items-center justify-center rounded-2xl bg-admin-wash",
+    drawerNavItem:
+        "flex min-h-11 w-full items-center gap-3 rounded-[10px] px-4 py-3 font-[family-name:var(--font-body)] text-[15px] font-medium text-admin-ink transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
+    drawerNavItemActive:
+        "flex min-h-11 w-full items-center gap-3 rounded-[10px] bg-admin-olive px-4 py-3 font-[family-name:var(--font-body)] text-[15px] font-semibold text-white",
+    drawerBadge:
+        "rounded-full bg-admin-border px-1.5 py-0.5 font-[family-name:var(--font-body)] text-[10px] font-semibold text-admin-muted",
+    drawerSectionLabel:
+        "font-[family-name:var(--font-body)] text-[11px] font-semibold tracking-wide text-admin-muted uppercase",
+    drawerQuickAction:
+        "inline-flex min-h-11 w-full items-center gap-2.5 px-4 py-1 font-[family-name:var(--font-body)] text-sm font-medium text-admin-ink hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
+    drawerQuickActionPrimary:
+        "inline-flex min-h-11 w-full items-center gap-2.5 px-4 py-1 font-[family-name:var(--font-body)] text-sm font-semibold text-admin-olive hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
+    drawerUserName:
+        "font-[family-name:var(--font-body)] text-sm font-bold text-admin-ink",
+    drawerUserEmail:
+        "max-w-[9.5rem] truncate font-[family-name:var(--font-body)] text-[11px] text-admin-muted",
+    drawerLogout:
+        "inline-flex min-h-11 shrink-0 items-center gap-1 px-1 font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-logout hover:opacity-80 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
+} as const;
+

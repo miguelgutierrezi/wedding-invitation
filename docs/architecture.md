@@ -2,7 +2,7 @@
 
 **Status:** Guest Media Uploads complete; invitation polish documented; branded admin invite email HTML
 
-**Last reviewed:** 2026-09-06
+**Last reviewed:** 2026-09-07
 
 This document describes the intended technical architecture and its boundaries. It does not authorize implementation
 beyond `current-phase.md`.
@@ -62,7 +62,7 @@ Use:
 /inspiracion/ellos     outfit inspiration (men)
 /inspiracion/ellas     outfit inspiration (women)
 /admin/login           administrator sign-in
-/admin                 dashboard (action queue, RSVP close checklist, metrics)
+/admin                 dashboard (Figma Resumen on all viewports; compact chrome on other admin pages)
 /admin/analytics       rates + transport boarding breakdown
 /admin/guests          per-guest listing
 /admin/families        family list
@@ -75,7 +75,7 @@ Use:
 ```
 
 Public invitation presentation details live in `docs/invitation-ui.md`. Admin presentation tokens live in
-`src/components/admin/admin-ui.ts` (same brand palette/fonts as the invitation). Do not treat product roadmap sections
+`src/components/admin/admin-ui.ts` (`admin` + `adminResumen` for `/admin`). Do not treat product roadmap sections
 as authorization to implement unfinished work.
 
 ## Configuration
@@ -117,9 +117,11 @@ confirmar”). Outfit inspiration routes are implemented under `/inspiracion/*`.
 - RSVP form is embedded in the invitation (cream band); it is not a separate navigation-only CTA page.
 - Cap multi-column invitation layouts on ultra-wide viewports so copy and CTAs stay visually grouped.
 - Admin chrome reuses invitation brand (accent header, cream page, Times/olive type). Hamburger / drawer until `xl`
-  (1280px) so iPad 11" keeps it. Floating **+** is phone-only (hidden from 834px / iPad 11" up); the drawer has **Nueva
-  familia**. Closed drawer overlay does not capture taps. Cards below `lg`; tables from `lg`; inline nav from `xl`.
-  Path rules live in `src/lib/admin/admin-chrome.ts`.
+  (1280px) so iPad 11" keeps it on list/detail pages (yellow right drawer). Resumen (`/admin`) uses the Figma white
+  chrome on all viewports (hamburger until `lg`, inline pills from tablet landscape) and a left cream drawer (`94:591`).
+  Floating **+** is phone-only (hidden from 834px / iPad 11" up; olive on Resumen, accent elsewhere); the drawer has
+  **Nueva familia**. Closed drawer overlay does not capture taps. Cards below `lg`; tables from `lg`; inline nav from
+  `xl` on non-Resumen pages. Path rules live in `src/lib/admin/admin-chrome.ts`.
 - Admin family/guest lists filter in memory, show active-filter chips, sort by column, and paginate at 25 rows. Query
   string (`q`, filters, `sort`, `dir`, `page`) is updated with Next `router.replace` (`useAdminListFilters`) so browser
   back/forward restores the list filters. The chrome back chevron (and create-family “Volver al listado”) restores the

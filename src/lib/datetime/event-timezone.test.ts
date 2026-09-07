@@ -5,6 +5,7 @@ import {
     EVENT_TIMEZONE,
     formatEventDate,
     formatEventDateTime,
+    formatEventDateTimeNarrow,
     formatEventDeadlineOverline,
     formatEventLongDate,
     resolveEventTimezone,
@@ -69,5 +70,23 @@ describe("event timezone", () => {
         );
         expect(label).toMatch(/6\/09\/\d{2}/);
         expect(label).not.toMatch(/:/);
+    });
+
+    it("formats landscape table datetimes without year or meridiem", () => {
+        expect(
+            formatEventDateTimeNarrow(
+                "2026-09-06T22:49:00-05:00",
+                "—",
+                "America/Bogota",
+            ),
+        ).toBe("6/09 10:49");
+        expect(
+            formatEventDateTimeNarrow(
+                "2026-08-30T19:40:00-05:00",
+                "—",
+                "America/Bogota",
+            ),
+        ).toBe("30/08 7:40");
+        expect(formatEventDateTimeNarrow(null)).toBe("—");
     });
 });

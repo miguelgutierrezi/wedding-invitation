@@ -65,6 +65,37 @@ export function formatEventDateTimeShort(
     }
 }
 
+/**
+ * Familias landscape `117:29`: day/month + 12h time, no year and no a.m./p.m.
+ * Desktop keeps `formatEventDateTimeShort`.
+ */
+export function formatEventDateTimeNarrow(
+    iso: string | null | undefined,
+    emptyLabel = "—",
+    timezone?: string | null,
+): string {
+    if (!iso) {
+        return emptyLabel;
+    }
+
+    try {
+        const parts = new Intl.DateTimeFormat("es-CO", {
+            day: "numeric",
+            month: "2-digit",
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+            timeZone: resolveEventTimezone(timezone),
+        }).formatToParts(new Date(iso));
+        const value = (type: Intl.DateTimeFormatPartTypes) =>
+            parts.find((part) => part.type === type)?.value ?? "";
+        const month = value("month").padStart(2, "0");
+        return `${value("day")}/${month} ${value("hour")}:${value("minute")}`;
+    } catch {
+        return emptyLabel;
+    }
+}
+
 /** Admin lists that only need the calendar day (e.g. “Invitado el”). */
 export function formatEventDate(
     iso: string | null | undefined,

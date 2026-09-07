@@ -73,3 +73,8 @@ export function familyOperationChips(input: {
 
   return chips;
 }
+
+/** Figma `109:645`: Sin abrir is red; Bus / Dieta / Abrió / Nombre pendiente stay olive wash. */
+export function familyOpsChipIsAlert(key: string): boolean {
+  return key === "not-opened";
+}

@@ -96,6 +96,48 @@ export const adminCopy = {
         copyPhonesCompact: "Copiar tels",
         exportCompact: "Descargar",
     },
+    familiesList: {
+        overlineAdmin: "Administración",
+        overlineSection: "Familias",
+        bannerTitle: "Gestión de Familias",
+        bannerBody:
+            "Administra las familias, sus cupos asignados, estado de confirmación y seguimiento de invitaciones.",
+        searchPlaceholder: "Nombre de familia o enlace...",
+        searchPlaceholderPortrait: "Buscar...",
+        showFilters: "Mostrar filtros",
+        hideFilters: "Ocultar filtros",
+        sortLabel: "Ordenar",
+        sortByPrefix: "Ordenar por:",
+        summaryTotal: (total: number) =>
+            `Resumen total. En esta vista: ${total} ${total === 1 ? "familia" : "familias"}`,
+        statTotal: "Familias",
+        statTotalLong: "Total familias",
+        statResponded: "Confirmaron",
+        statPending: "Pendientes",
+        statBus: "Con bus",
+        metaBus: "Bus:",
+        metaSeats: "Cupos:",
+        metaConfirmed: "Confirmados:",
+        metaStatus: "Estado:",
+        fullListTab: "Lista completa de Invitados",
+        fullListTabCompact: "Lista completa",
+        viewFamily: "Ver",
+        viewFamilyCard: "Ver familia",
+        confirmationFilter: "Confirmación",
+        showing: (from: number, to: number, total: number) =>
+            `Mostrando ${from}–${to} de ${total} ${total === 1 ? "familia" : "familias"}`,
+        selected: (count: number) =>
+            count === 1
+                ? "1 familia seleccionada"
+                : `${count} familias seleccionadas`,
+        selectVisible: (count: number) => `Seleccionar los ${count}`,
+        selectVisibleCompact: (count: number) => `Seleccionar ${count}`,
+        colOpened: "Abrió invitación",
+        colOpenedCompact: "Abrió",
+        colSubmittedCompact: "Confirmó",
+        colUpdated: "Último cambio",
+        colUpdatedCompact: "Últ. cambio",
+    },
     media: {
         qrTitle: "Código para subir fotos del evento",
         qrBody:

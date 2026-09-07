@@ -65,7 +65,7 @@ Use:
 /admin                 dashboard (Figma Resumen workspace; shared Figma navbar)
 /admin/analytics       Figma Estadísticas `96:39` + `99:229` landscape + `99:419` portrait + `99:607` mobile
 /admin/guests          Figma Invitados `109:372` mobile + `109:36` portrait from 834px + `103:33` from `lg` + `100:38` from `xl`
-/admin/families        family list
+/admin/families        Figma Familias `126:29` mobile + `123:268` from 834px + `117:29` from `lg` + `109:645` from `xl`
 /admin/families/new    create family + invitation link
 /admin/families/[id]   family detail / edit
 /admin/photos          guest media moderation + QR URL

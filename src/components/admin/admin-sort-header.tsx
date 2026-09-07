@@ -11,6 +11,8 @@ type AdminSortHeaderProps = {
     dir: AdminSortDir;
     onSort: (column: string) => void;
     className?: string;
+    /** Shorter label until `xl` (Familias landscape `117:29`). */
+    compactLabel?: string;
 };
 
 export function AdminSortHeader({
@@ -20,6 +22,7 @@ export function AdminSortHeader({
                                     dir,
                                     onSort,
                                     className,
+                                    compactLabel,
                                 }: AdminSortHeaderProps) {
     const active = sort === column;
 
@@ -31,7 +34,14 @@ export function AdminSortHeader({
                 onClick={() => onSort(column)}
                 aria-pressed={active}
             >
-                <span>{label}</span>
+                {compactLabel ? (
+                    <>
+                        <span className="xl:hidden">{compactLabel}</span>
+                        <span className="hidden xl:inline">{label}</span>
+                    </>
+                ) : (
+                    <span>{label}</span>
+                )}
                 <span
                     className={active ? "text-cover-cta-fg" : "text-cover-cta-fg/30"}
                     aria-hidden="true"

@@ -1,9 +1,19 @@
-import {admin, adminGuests} from "@/components/admin/admin-ui";
+import {admin, adminFamilies, adminGuests} from "@/components/admin/admin-ui";
 import {familyStatusLabel} from "@/lib/admin/admin-copy";
 
 export function familyStatusBadgeClass(
     status: "pending" | "responded" | "disabled",
+    tone: "legacy" | "figma" = "legacy",
 ): string {
+    if (tone === "figma") {
+        if (status === "responded") {
+            return adminGuests.statusAttend;
+        }
+        if (status === "disabled") {
+            return adminFamilies.statusDisabled;
+        }
+        return adminGuests.statusDecline;
+    }
     if (status === "responded") {
         return admin.badgeResponded;
     }
@@ -15,11 +25,13 @@ export function familyStatusBadgeClass(
 
 export function FamilyStatusBadge({
                                       status,
+                                      tone = "legacy",
                                   }: {
     status: "pending" | "responded" | "disabled";
+    tone?: "legacy" | "figma";
 }) {
     return (
-        <span className={familyStatusBadgeClass(status)}>
+        <span className={familyStatusBadgeClass(status, tone)}>
       {familyStatusLabel(status)}
     </span>
     );

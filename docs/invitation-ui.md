@@ -96,6 +96,7 @@ asks for the real name **only if that person will attend**. Each listed guest ca
 | Admin Resumen (`/admin`)                       | `--font-body` (Source Sans 3) + Times metrics     | Shared Figma navbar; workspace `94:414` / `94:232` / `94:34` / `91:40`; Inter maps to `--font-body` |
 | Admin Estadísticas (`/admin/analytics`)        | `--font-body` + Times metrics                     | Figma `96:39` desktop + `99:229` landscape + `99:419` portrait + `99:607` mobile; 1-col phone; 2-col from 834px; 3-col from `lg` |
 | Admin Invitados (`/admin/guests`)              | `--font-body` table + Times banner                | Figma `109:372` mobile (1-col cards) + `109:36` from 834px (2-col) + `103:33` from `lg` + `100:38` from `xl` |
+| Admin Familias (`/admin/families`)             | `--font-body` table + Times banner                | Figma `126:29` mobile (1-col family cards) + `123:268` from 834px (2-col) + `117:29` from `lg` (compact date columns) + `109:645` from `xl` |
 | Admin directory (`/admin/admins`)              | Figma `85:40` / tablet `85:133` / mobile `85:220` | Phone nested cards (TÚ wash); portrait clusters; `lg+` row; Times + olive tokens; shared Figma navbar |
 
 
@@ -333,6 +334,18 @@ not change the shared navbar**). Phone stacks banner CTAs, 2×2 KPI pills, sort/
 filters, then 7 from `xl`). List checkboxes: 18px, fill `--admin-olive` when checked (not accent yellow), radius 6px
 (rounder than the 4px Figma mock), white check from `public/admin/checkbox-check.svg`. Helpers in
 `admin-guests-layout.ts`; classes in `adminGuests`.
+
+**Familias** (`/admin/families`: mobile Figma `126:29` below 834px; portrait `123:268` from 834px; landscape `117:29`
+from `lg`; desktop `109:645` from `xl`): olive banner (Administración · Familias, remaining-days chip `⏳ Quedan N días
+para confirmar` — do not use a Figma date chip; Excel download; **do not change the shared navbar**; no extra “Descargar
+lista” or “Nueva familia” nav item — **Nueva familia** stays in the drawer + phone FAB). Phone stacks the banner CTAs,
+2×2 KPI pills, always-visible search, **Ordenar por** + **Mostrar filtros**, equal tabs, then a 1-column **family** card
+list (name + slug, not guest roles; Estado / Bus / Cupos / Confirmados). Portrait uses a 2-column card grid. Landscape/
+desktop use the table: five filters in one row, in-page tabs (Estadísticas / Familias / Lista completa de Invitados).
+Landscape shortens date headers to **Abrió** / **Confirmó** / **Últ. cambio** and drops year/a.m./p.m. from cell times.
+Inter table (slug + olive chips; Sin abrir is red), **Ver**, olive batch bar (Copiar enlaces / Descargar / Desactivar /
+Activar — keep Activar even if a mock omits it; phone batch ignores Figma’s “Crear selección”). Helpers in
+`admin-families-layout.ts`; classes in `adminFamilies` (cards/table/batch reuse `adminGuests`).
 
 **Resumen** (`/admin` workspace: Figma `admin-resumen-mobile` `94:414`; portrait `94:232` from 834px; landscape
 `94:34` from `lg`; desktop `91:40` from `xl`): olive banner (stacked full-width CTAs on phone, two equal-width CTAs on

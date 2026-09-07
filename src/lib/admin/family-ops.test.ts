@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 
-import {familyGuestSignals, familyOperationChips} from "@/lib/admin/family-ops";
+import {familyGuestSignals, familyOperationChips, familyOpsChipIsAlert} from "@/lib/admin/family-ops";
 
 describe("familyGuestSignals", () => {
   it("flags name, bus, and dietary from guests", () => {
@@ -79,5 +79,11 @@ describe("familyOperationChips", () => {
         usesBus: true,
       }).map((chip) => chip.key),
     ).toEqual(["bus"]);
+  });
+
+  it("flags only Sin abrir as the red Figma chip", () => {
+    expect(familyOpsChipIsAlert("not-opened")).toBe(true);
+    expect(familyOpsChipIsAlert("opened")).toBe(false);
+    expect(familyOpsChipIsAlert("name")).toBe(false);
   });
 });

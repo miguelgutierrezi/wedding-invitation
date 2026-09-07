@@ -343,3 +343,17 @@ export const adminGuests = {
         "pointer-events-none sticky bottom-[max(5.5rem,calc(env(safe-area-inset-bottom)+4.5rem))] z-[45]",
 } as const;
 
+/**
+ * Admin Familias: mobile Figma `126:29`, portrait `123:268` from 834px, landscape `117:29` from `lg`, desktop `109:645` from `xl`.
+ * Reuses Invitados table/batch/card tokens; do not use on the public invitation.
+ */
+export const adminFamilies = {
+    filterGrid: "grid gap-4 lg:grid-cols-5",
+    tag: "inline-flex items-center rounded px-1.5 py-0.5 font-[family-name:var(--font-body)] text-[10px] font-medium tracking-wide text-admin-olive uppercase bg-admin-wash",
+    tagAlert:
+        "inline-flex items-center rounded px-1.5 py-0.5 font-[family-name:var(--font-body)] text-[10px] font-medium tracking-wide text-[#b91c1c] uppercase bg-[#fee2e2]",
+    slug: "truncate font-[family-name:var(--font-body)] text-xs text-admin-muted",
+    statusDisabled:
+        "inline-flex items-center rounded-md bg-admin-wash px-2 py-1 font-[family-name:var(--font-body)] text-xs font-semibold text-admin-olive xl:px-2.5",
+} as const;
+

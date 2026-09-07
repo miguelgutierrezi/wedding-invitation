@@ -23,7 +23,7 @@ may proceed when the user requests it explicitly.
 | Outfit inspiration pages                    | Implemented (`/inspiracion/ellos\|ellas`)                                      |
 | Event TZ display (`America/Bogota`)         | Implemented (`event-timezone.ts`)                                              |
 | Admin Excel export                          | Full workbook + `kind=attending\|transport\|dietary\|contacts`                 |
-| Admin families/guests lists                 | Filters, chips, column sort, page size 25; guests Figma `109:372` mobile, `109:36` from 834px, `103:33` from `lg`, `100:38` from `xl` |
+| Admin families/guests lists                 | Filters, chips, column sort, page size 25; guests Figma `109:372` mobile, `109:36` from 834px, `103:33` from `lg`, `100:38` from `xl`; families Figma `126:29` mobile, `123:268` from 834px, `117:29` from `lg`, `109:645` from `xl` |
 | Admin compact chrome                        | Figma white navbar on all `AdminShell` pages; hamburger until `lg`; FAB phone-only |
 | Admin Resumen                               | Figma `94:414` + drawer `94:591`; `94:232` from 834px; `94:34` from `lg`; `91:40` from `xl` |
 | Admin Estadísticas                          | Figma `96:39` + `99:229` landscape + `99:419` portrait + `99:607` mobile |
@@ -71,6 +71,29 @@ untouched. Helpers: `ADMIN_GUESTS_LANDSCAPE_MIN_PX`.
 in-page tabs (Estadísticas / Familias / Lista completa), Inter table with role badges and **Ver familia**, olive
 list checkboxes (18px, 6px radius, `--admin-olive` when checked), and an olive batch bar. Shared navbar is unchanged
 (no extra “Descargar lista” nav item). Helpers: `src/lib/admin/admin-guests-layout.ts`.
+
+## Completed: admin Familias desktop (Figma `109:645`)
+
+`/admin/families` from `xl` uses the Figma workspace: olive banner (Administración · Familias, remaining-days chip
+`⏳ Quedan N días para confirmar`, **Descargar Lista**), summary strip, five filters in one row, in-page tabs, Inter
+table with full date-column labels, slug + ops chips and **Ver**, olive batch bar (copy links / export / disable /
+enable). Shared navbar is unchanged. Helpers:
+`src/lib/admin/admin-families-layout.ts`.
+
+## Completed: admin Familias tablet landscape (Figma `117:29`)
+
+`/admin/families` from `lg` (1024px) uses the same Figma workspace as desktop, at landscape density: remaining-days
+chip (`⏳ Quedan N días para confirmar`), five filters in one row, shorter date columns (**Abrió** / **Confirmó** /
+**Últ. cambio**), narrow datetimes without year or a.m./p.m., and the full batch labels (Seleccionar los N). **Activar**
+stays even though the landscape mock omits it. Shared navbar is untouched. Helper: `ADMIN_FAMILIES_LANDSCAPE_MIN_PX`.
+
+## Completed: admin Familias tablet portrait (Figma `123:268`)
+
+`/admin/families` from 834px (iPad 11" portrait) until `lg` uses the Figma workspace: stacked olive banner (Administración · Familias, remaining-days chip `⏳ Quedan N días para confirmar`, **Descargar Lista**), 4 KPI pills on the filtered view (Familias / Confirmaron / Pendientes / Con bus), search + sort + **Mostrar filtros**, compact tabs (Estadísticas / Familias / Lista completa), and a **2-column** card grid. Cards show the family name, invitation slug, Confirmó/Sin confirmar badge, Bus/Cupos (diet on the Bus row when present), pending Estado text, and **Ver familia**. Do not copy guest role badges from the mock. Batch keeps Activar/Desactivar even if the portrait mock omits them. No tablet FAB — **Nueva familia** stays in the drawer. Phone below 834px uses Figma `126:29`. Helpers: `ADMIN_FAMILIES_PORTRAIT_MIN_PX`, `summarizeFamiliesView`.
+
+## Completed: admin Familias mobile (Figma `126:29`)
+
+`/admin/families` below 834px uses the Figma workspace with the shared hamburger chrome and the phone **+** FAB (untouched — do not add a second FAB). Banner is stacked (24px title, remaining-days chip `⏳ Quedan N días para confirmar`, full-width **Descargar Lista**). KPI pills are **2×2** in mock order (Confirmaron / Pendientes / Con bus / Total familias). Search stays visible, then **Ordenar por: Familia ↑** and **Mostrar filtros**. Equal tabs (Estadísticas / Familias / Lista completa). **1-column** family cards: name + slug (not guest roles), Confirmó/Sin confirmar, pending Estado, Bus, Cupos `n/max`, Confirmados, **Ver familia**. Pagination is stacked. Batch sits above the FAB with Copiar enlaces / Descargar / Desactivar / Activar (ignore Figma’s “Crear selección”). Helpers: `familiesMobileCardStack`, `familyCardConfirmedLabel`.
 
 ## Completed: admin Estadísticas mobile (Figma `99:607`)
 

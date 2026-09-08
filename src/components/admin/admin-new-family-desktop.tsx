@@ -33,6 +33,7 @@ export function AdminNewFamilyDesktop() {
                 <AdminNewFamilyFormCard
                     cardClassName={adminNewFamily.card}
                     textareaClassName={adminNewFamily.textarea}
+                    figmaAlerts
                 />
             </div>
         </div>

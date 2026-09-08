@@ -188,6 +188,7 @@ export function AdminGuestsBrowser({
         notice,
         batchPending,
         chips: filterChips,
+        onDismissNotice: () => setNotice(null),
         onChangeFilters: onChangeFigmaFilters,
         onToggle: selection.toggle,
         onSelectVisible: () => selection.setMany(visibleIds, true),
@@ -219,6 +220,7 @@ export function AdminGuestsBrowser({
                 onCopyPhones={onCopyPhones}
                 onCopyEmails={onCopyEmails}
                 onExportSelected={onExportSelected}
+                onDismissNotice={() => setNotice(null)}
             />
             <div ref={listTopRef} className="scroll-mt-32">
                 <AdminGuestsMobile

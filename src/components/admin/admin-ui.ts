@@ -85,6 +85,34 @@ export const admin = {
 } as const;
 
 /**
+ * In-page alerts / inline field errors: Figma `161:151` desktop, `161:371`
+ * tablet landscape, `161:560` tablet portrait, `161:738` mobile. Do not use
+ * on the public invitation.
+ */
+export const adminAlert = {
+    root: "flex w-full items-start justify-between gap-3 rounded-lg rounded-l-[4px] border-l-4 p-3 font-[family-name:var(--font-body)] shadow-[0_4px_12px_rgba(46,45,23,0.05)] min-[834px]:items-center min-[834px]:p-4",
+    success:
+        "border-admin-msg-success-accent bg-admin-msg-success text-admin-msg-success-fg",
+    warning:
+        "border-admin-msg-warning-accent bg-admin-msg-warning text-admin-msg-warning-fg",
+    error: "border-admin-msg-error-accent bg-admin-msg-error text-admin-msg-error-fg",
+    info: "border-admin-msg-info-accent bg-admin-msg-info text-admin-msg-info-fg",
+    body: "flex min-w-0 flex-1 items-start gap-2.5 min-[834px]:gap-3",
+    icon: "relative size-5 shrink-0 overflow-clip",
+    text: "flex min-w-0 flex-1 flex-col gap-0.5 min-[834px]:gap-1",
+    title: "text-[13px] font-semibold leading-normal min-[834px]:text-[14px]",
+    description:
+        "text-[12px] font-normal leading-[1.35] min-[834px]:text-[14px] min-[834px]:leading-[1.4]",
+    close:
+        "inline-flex size-11 shrink-0 items-center justify-center rounded-[14px] hover:bg-black/5 focus-visible:ring-2 focus-visible:ring-current/30 focus-visible:outline-none",
+    closeIcon: "relative size-5 shrink-0 overflow-clip",
+    fieldInvalid:
+        "user-invalid:border-2 user-invalid:border-admin-msg-error-accent",
+    fieldError:
+        "font-[family-name:var(--font-body)] text-[11px] font-medium text-admin-msg-error-accent min-[834px]:text-[13px] xl:text-[12px]",
+} as const;
+
+/**
  * Admin Figma chrome + Resumen workspace: mobile `94:414`, portrait `94:232`
  * from 834px, landscape `94:34` from `lg`, desktop `91:40` from `xl`.
  * The white header / left drawer tokens are the standard admin navbar.
@@ -233,27 +261,54 @@ export const adminResumen = {
 export const adminGuests = {
     summaryStrip:
         "flex w-full items-center rounded-xl border border-admin-border bg-white p-3.5 font-[family-name:var(--font-body)] text-[13px] text-admin-muted xl:rounded-[14px] xl:p-4 xl:text-sm",
+    /**
+     * Filter / dropdown / chip chrome: mobile `161:29`, portrait `158:469`,
+     * landscape `158:355`, desktop `158:228`. Phone in-page tabs stay a row of
+     * equal pills (`mobileSubTab`), not the stacked `161:29` nav. Chevrons stay
+     * the desktop 12px glyph. Control border is `--admin-control` (#d1cfc7).
+     */
     filterCard:
-        "flex w-full flex-col gap-4 rounded-2xl border border-admin-border bg-white p-5 xl:rounded-[20px] xl:p-6",
-    filterGrid: "grid gap-4 lg:grid-cols-3 xl:grid-cols-4",
+        "relative z-10 flex w-full flex-col gap-3 overflow-visible rounded-2xl border border-admin-control bg-white p-4 min-[834px]:gap-4 min-[834px]:rounded-[20px] min-[834px]:p-6 lg:rounded-2xl lg:p-5 xl:rounded-[20px] xl:p-6",
+    filterGrid: "grid gap-4 lg:grid-cols-4",
+    filterCellLead: "lg:col-span-2 xl:col-span-1",
     nameFilter: "hidden xl:contents",
+    filterSearch: "grid gap-1.5",
+    filterSearchCompact: "relative min-w-0 flex-1",
     filterLabel:
-        "font-[family-name:var(--font-body)] text-[11px] font-semibold tracking-wide text-admin-muted uppercase xl:text-xs",
+        "font-[family-name:var(--font-body)] text-[11px] font-bold uppercase text-admin-muted",
     filterTrigger:
-        "inline-flex min-h-11 w-full items-center justify-between gap-3 rounded-lg border border-admin-border bg-white px-3 py-2 font-[family-name:var(--font-body)] text-[13px] text-admin-ink outline-none transition-colors hover:border-admin-olive/40 focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 xl:rounded-[10px] xl:px-3.5 xl:py-2.5",
+        "inline-flex min-h-11 w-full items-center justify-between gap-2 rounded-[10px] border border-admin-control bg-white px-[14px] py-[10px] font-[family-name:var(--font-body)] text-left text-[14px] font-medium text-admin-ink outline-none transition-[border-color,box-shadow] hover:border-admin-olive/40 focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40",
+    filterTriggerOpen: "border-2 border-admin-olive hover:border-admin-olive",
+    selectMenu:
+        "absolute top-[calc(100%+4px)] z-20 m-0 flex max-h-[min(16rem,50vh)] w-full list-none flex-col gap-0.5 overflow-y-auto rounded-xl border border-admin-control bg-white p-1.5 font-[family-name:var(--font-body)] text-admin-ink shadow-[0_8px_20px_rgba(46,45,23,0.1)] min-[834px]:rounded-[14px] min-[834px]:p-2 min-[834px]:shadow-[0_8px_24px_rgba(46,45,23,0.1)] lg:gap-1 lg:rounded-xl xl:gap-0.5 xl:rounded-[14px]",
+    selectOption:
+        "flex min-h-11 w-full items-center justify-between gap-3 rounded-lg px-[14px] py-[10px] text-left font-[family-name:var(--font-body)] text-[14px] font-medium text-admin-ink outline-none transition-colors",
+    selectOptionHover: "bg-admin-wash",
+    selectOptionSelected: "bg-admin-select font-semibold",
+    selectCheck:
+        "relative size-3 shrink-0 overflow-clip min-[834px]:size-[14px]",
+    selectChevron: "size-3 max-w-none shrink-0 text-admin-muted",
+    filterChipRow: "flex flex-wrap items-center gap-2 pl-1 min-[834px]:gap-3 lg:pl-2 xl:pl-3",
+    filterChip:
+        "inline-flex min-h-11 items-center gap-1.5 rounded-full bg-admin-olive px-3 py-1.5 font-[family-name:var(--font-body)] text-xs font-semibold text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none min-[834px]:gap-2 min-[834px]:text-[13px]",
+    filterChipClear:
+        "inline-flex min-h-11 items-center py-2 font-[family-name:var(--font-body)] text-xs font-semibold text-admin-muted underline decoration-solid underline-offset-2 hover:opacity-80 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none min-[834px]:text-[13px]",
+    filterChipX: "relative size-2.5 shrink-0 overflow-clip min-[834px]:size-3",
     /**
      * Search input with a leading magnifying glass. Do not use `px-*` here:
      * Tailwind `xl:px-*` would override `pl-9` and the icon would sit on the
      * placeholder (landscape + desktop).
      */
     searchBox:
-        "min-h-11 w-full min-w-0 appearance-none rounded-lg border border-admin-border bg-white py-2 pr-3 pl-9 font-[family-name:var(--font-body)] text-[13px] text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 xl:rounded-[10px] xl:py-2.5 xl:pr-3.5 xl:pl-10 [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none",
+        "min-h-11 w-full min-w-0 appearance-none rounded-[10px] border border-admin-control bg-white py-[10px] pr-[14px] pl-9 font-[family-name:var(--font-body)] text-[14px] font-medium text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none",
     searchIcon:
-        "pointer-events-none absolute top-1/2 left-3 size-3.5 max-w-none -translate-y-1/2 text-admin-muted xl:left-3.5",
+        "pointer-events-none absolute top-1/2 left-[14px] size-[14px] max-w-none -translate-y-1/2 text-admin-muted",
+    tabBar:
+        "flex w-full flex-row items-center gap-3 rounded-[20px] border border-admin-control bg-white p-3 lg:gap-2 lg:rounded-full lg:p-2 xl:gap-3 xl:rounded-[20px] xl:p-3",
     subTab:
-        "inline-flex min-h-11 items-center rounded-full border border-admin-border bg-white px-[18px] py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-ink transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none xl:px-5",
+        "inline-flex min-h-11 flex-1 items-center justify-center overflow-hidden rounded-full border border-admin-control bg-white px-5 py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-ellipsis whitespace-nowrap text-admin-muted transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none lg:flex-none lg:px-6 xl:flex-1 xl:px-5",
     subTabActive:
-        "inline-flex min-h-11 items-center rounded-full border border-admin-olive bg-admin-olive px-[18px] py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-white xl:px-5",
+        "inline-flex min-h-11 flex-1 items-center justify-center overflow-hidden rounded-full bg-admin-olive px-5 py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-ellipsis whitespace-nowrap text-white lg:px-6 xl:px-5",
     tableCard:
         "flex w-full flex-col overflow-hidden rounded-2xl border border-admin-border bg-white xl:rounded-[20px]",
     tableHead:
@@ -311,7 +366,8 @@ export const adminGuests = {
         "w-[11.25rem] shrink-0 gap-0",
     portraitFilterToggle:
         "inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg border border-admin-olive bg-white px-4 py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-olive transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
-    portraitFilterGrid: "grid gap-4 sm:grid-cols-2",
+    portraitFilterGrid: "grid grid-cols-2 gap-4",
+    mobileFilterStack: "grid gap-3",
     portraitCardGrid: "grid grid-cols-2 gap-4",
     portraitCard:
         "flex flex-col gap-3 rounded-2xl border border-admin-border bg-white p-4",
@@ -334,12 +390,13 @@ export const adminGuests = {
     mobileStatValue:
         "font-[family-name:var(--font-timer)] text-xl leading-none font-bold tabular-nums",
     mobileToolbar: "flex w-full flex-col gap-3",
+    mobileTabRow: "flex w-full gap-1.5",
     mobileFilterToggle:
         "inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg border border-admin-olive bg-white px-4 py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-olive transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
     mobileSubTab:
-        "inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-admin-border bg-white px-3 py-2 font-[family-name:var(--font-body)] text-[11px] font-semibold text-admin-muted transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
+        "inline-flex min-h-11 flex-1 items-center justify-center overflow-hidden rounded-full border border-admin-control bg-white px-3 py-2 font-[family-name:var(--font-body)] text-[11px] font-semibold text-ellipsis whitespace-nowrap text-admin-muted transition-colors hover:bg-admin-wash focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
     mobileSubTabActive:
-        "inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-admin-olive bg-admin-olive px-3 py-2 font-[family-name:var(--font-body)] text-[11px] font-semibold text-white",
+        "inline-flex min-h-11 flex-1 items-center justify-center overflow-hidden rounded-full border border-admin-olive bg-admin-olive px-3 py-2 font-[family-name:var(--font-body)] text-[11px] font-semibold text-ellipsis whitespace-nowrap text-white",
     mobileCardGrid: "grid grid-cols-1 gap-4",
     mobileFamilyBtn:
         "inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-admin-wash py-2 font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-olive transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
@@ -359,7 +416,9 @@ export const adminGuests = {
  * Reuses Invitados table/batch/card tokens; do not use on the public invitation.
  */
 export const adminFamilies = {
-    filterGrid: "grid gap-4 lg:grid-cols-5",
+    filterGrid: "grid gap-4 lg:grid-cols-6 xl:grid-cols-5",
+    filterCellLead: "lg:col-span-3 xl:col-span-1",
+    filterCellRest: "lg:col-span-2 xl:col-span-1",
     tag: "inline-flex items-center rounded px-1.5 py-0.5 font-[family-name:var(--font-body)] text-[10px] font-medium tracking-wide text-admin-olive uppercase bg-admin-wash",
     tagAlert:
         "inline-flex items-center rounded px-1.5 py-0.5 font-[family-name:var(--font-body)] text-[10px] font-medium tracking-wide text-[#b91c1c] uppercase bg-[#fee2e2]",
@@ -547,7 +606,7 @@ export const adminAdmins = {
         "font-[family-name:var(--font-body)] text-[13px] leading-normal text-admin-muted xl:text-sm",
     inviteRow: "flex w-full items-center gap-4",
     input:
-        "min-h-11 w-full min-w-0 rounded-xl border border-admin-border bg-[#fdfdf8] px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40",
+        "min-h-11 w-full min-w-0 rounded-xl border border-admin-border bg-[#fdfdf8] px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 user-invalid:border-2 user-invalid:border-admin-msg-error-accent",
     inviteBtn:
         "inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-admin-olive px-6 py-3 font-[family-name:var(--font-body)] text-sm font-semibold text-white shadow-[0_2px_2px_rgba(95,100,70,0.08)] transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
     empty: "py-2 font-[family-name:var(--font-body)] text-sm text-admin-muted xl:py-4",
@@ -607,7 +666,7 @@ export const adminAdmins = {
     mobileInviteTitle:
         "font-[family-name:var(--font-timer)] text-[20px] leading-tight font-bold text-admin-ink",
     mobileInput:
-        "min-h-11 w-full min-w-0 rounded-[10px] border border-admin-border bg-[#fdfdf8] px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40",
+        "min-h-11 w-full min-w-0 rounded-[10px] border border-admin-border bg-[#fdfdf8] px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 user-invalid:border-2 user-invalid:border-admin-msg-error-accent",
     mobileInviteBtn:
         "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[10px] bg-admin-olive py-3 font-[family-name:var(--font-body)] text-sm font-semibold text-white shadow-[0_2px_2px_rgba(95,100,70,0.08)] transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45",
     mobileList: "flex w-full flex-col gap-3",
@@ -734,11 +793,11 @@ export const adminFamilyDetail = {
     fieldLabel:
         "font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-ink",
     input:
-        "min-h-11 w-full min-w-0 rounded-lg border border-[#d1cfc7] bg-[#fdfdf8] px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40",
+        "min-h-11 w-full min-w-0 rounded-lg border border-[#d1cfc7] bg-[#fdfdf8] px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 user-invalid:border-2 user-invalid:border-admin-msg-error-accent",
     textarea:
-        "h-20 w-full min-w-0 resize-none rounded-lg border border-[#d1cfc7] bg-[#fdfdf8] px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40",
+        "h-20 w-full min-w-0 resize-none rounded-lg border border-[#d1cfc7] bg-[#fdfdf8] px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 user-invalid:border-2 user-invalid:border-admin-msg-error-accent",
     select:
-        "min-h-11 w-full appearance-none rounded-lg border border-[#d1cfc7] bg-[#fdfdf8] bg-[url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 20 20%27 fill=%27none%27%3E%3Cpath d=%27M5 7.5 10 12.5 15 7.5%27 stroke=%27%235f6446%27 stroke-width=%271.6%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E')] bg-[length:1rem] bg-[position:right_0.9rem_center] bg-no-repeat py-3 pl-4 pr-10 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40",
+        "min-h-11 w-full appearance-none rounded-lg border border-[#d1cfc7] bg-[#fdfdf8] bg-[url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 20 20%27 fill=%27none%27%3E%3Cpath d=%27M5 7.5 10 12.5 15 7.5%27 stroke=%27%235f6446%27 stroke-width=%271.6%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E')] bg-[length:1rem] bg-[position:right_0.9rem_center] bg-no-repeat py-3 pl-4 pr-10 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 user-invalid:border-2 user-invalid:border-admin-msg-error-accent",
     hint: "font-[family-name:var(--font-body)] text-xs leading-[1.4] text-admin-muted",
     checkbox:
         "size-5 shrink-0 cursor-pointer appearance-none rounded-[6px] border border-admin-border bg-white bg-center bg-no-repeat checked:border-admin-olive checked:bg-admin-olive checked:[background-image:url('/admin/checkbox-check.svg')] checked:bg-[length:10px_10px] focus-visible:ring-2 focus-visible:ring-admin-olive/40 focus-visible:outline-none",
@@ -827,7 +886,7 @@ export const adminNewFamily = {
         "font-[family-name:var(--font-body)] text-[13px] font-semibold text-admin-ink",
     input: adminFamilyDetail.input,
     textarea:
-        "h-20 w-full min-w-0 resize-none rounded-lg border border-[#d1cfc7] bg-[#fdfdf8] px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 xl:h-[100px]",
+        "h-20 w-full min-w-0 resize-none rounded-lg border border-[#d1cfc7] bg-[#fdfdf8] px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40 xl:h-[100px] user-invalid:border-2 user-invalid:border-admin-msg-error-accent",
     portraitTextarea:
         "h-[100px] w-full min-w-0 resize-none rounded-lg border border-[#d1cfc7] bg-[#fdfdf8] px-4 py-3 font-[family-name:var(--font-body)] text-sm text-admin-ink outline-none transition-colors placeholder:text-admin-muted focus-visible:border-admin-olive focus-visible:ring-2 focus-visible:ring-admin-olive/40",
     mobileTextarea:

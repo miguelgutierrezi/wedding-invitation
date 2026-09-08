@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import {Search} from "lucide-react";
 import type {ReactNode} from "react";
 
+import {AdminAlertMessage} from "@/components/admin/admin-alert";
 import {ResumenDownloadIcon} from "@/components/admin/admin-resumen-icons";
 import {adminFamilies, adminGuests, adminResumen} from "@/components/admin/admin-ui";
+import {AdminListSearchField} from "@/components/admin/admin-list-search-field";
+import {AdminListSubnav} from "@/components/admin/admin-list-subnav";
 import {AdminRowCheckbox} from "@/components/admin/admin-row-checkbox";
 import {AdminSelect} from "@/components/admin/admin-select";
 import {AdminSortHeader} from "@/components/admin/admin-sort-header";
@@ -45,6 +47,7 @@ type AdminFamiliesDesktopProps = {
     onExportSelected: () => void;
     onDisableSelected: () => void;
     onEnableSelected: () => void;
+    onDismissNotice: () => void;
 };
 
 export function AdminFamiliesDesktop({
@@ -68,6 +71,7 @@ export function AdminFamiliesDesktop({
     onExportSelected,
     onDisableSelected,
     onEnableSelected,
+    onDismissNotice,
 }: AdminFamiliesDesktopProps) {
     const copy = adminCopy.familiesList;
     const resumen = adminCopy.resumen;
@@ -120,30 +124,17 @@ export function AdminFamiliesDesktop({
 
                 <div className={adminGuests.filterCard}>
                     <div className={adminFamilies.filterGrid}>
-                        <label className="grid gap-1.5">
-                            <span className={adminGuests.filterLabel}>Buscar</span>
-                            <span className="relative">
-                                <Search
-                                    strokeWidth={2}
-                                    className={adminGuests.searchIcon}
-                                    aria-hidden="true"
-                                />
-                                <input
-                                    type="search"
-                                    value={filters.query}
-                                    onChange={(event) =>
-                                        onChangeFilters({query: event.target.value})
-                                    }
-                                    placeholder={copy.searchPlaceholder}
-                                    aria-label={copy.searchPlaceholder}
-                                    className={adminGuests.searchBox}
-                                />
-                            </span>
-                        </label>
+                        <AdminListSearchField
+                            value={filters.query}
+                            onChange={(query) => onChangeFilters({query})}
+                            placeholder={copy.searchPlaceholder}
+                            className={adminFamilies.filterCellLead}
+                        />
                         <FigmaSelect
                             label="Estado"
                             value={filters.status}
                             onChange={(status) => onChangeFilters({status})}
+                            className={adminFamilies.filterCellLead}
                             options={[
                                 {value: "all", label: "Todos"},
                                 {value: "pending", label: adminCopy.family.status.pending},
@@ -155,6 +146,7 @@ export function AdminFamiliesDesktop({
                             label="Invitación"
                             value={filters.enabled}
                             onChange={(enabled) => onChangeFilters({enabled})}
+                            className={adminFamilies.filterCellRest}
                             options={[
                                 {value: "all", label: "Todas"},
                                 {value: "enabled", label: "Activa"},
@@ -165,6 +157,7 @@ export function AdminFamiliesDesktop({
                             label="Vió invitación"
                             value={filters.opened}
                             onChange={(opened) => onChangeFilters({opened})}
+                            className={adminFamilies.filterCellRest}
                             options={[
                                 {value: "all", label: "Todas"},
                                 {value: "opened", label: adminCopy.invitation.opened},
@@ -175,6 +168,7 @@ export function AdminFamiliesDesktop({
                             label={copy.confirmationFilter}
                             value={filters.response}
                             onChange={(response) => onChangeFilters({response})}
+                            className={adminFamilies.filterCellRest}
                             options={[
                                 {value: "all", label: "Todos"},
                                 {value: "pending", label: adminCopy.rsvp.noResponse},
@@ -187,25 +181,13 @@ export function AdminFamiliesDesktop({
                     {chips}
                 </div>
 
-                <nav className="flex flex-wrap gap-3" aria-label="Vistas">
-                    {FAMILIES_LIST_SUBNAV.map((item) => (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            className={
-                                item.current ? adminGuests.subTabActive : adminGuests.subTab
-                            }
-                            aria-current={item.current ? "page" : undefined}
-                        >
-                            {item.label}
-                        </Link>
-                    ))}
-                </nav>
+                <AdminListSubnav items={FAMILIES_LIST_SUBNAV} />
 
                 {notice ? (
-                    <p className={adminResumen.muted} role="status">
-                        {notice}
-                    </p>
+                    <AdminAlertMessage
+                        message={notice}
+                        onDismiss={onDismissNotice}
+                    />
                 ) : null}
 
                 {page.total === 0 ? (
@@ -506,11 +488,13 @@ function FigmaSelect<T extends string>({
     value,
     options,
     onChange,
+    className,
 }: {
     label: string;
     value: T;
     options: readonly {value: T; label: string}[];
     onChange: (value: T) => void;
+    className?: string;
 }) {
     return (
         <AdminSelect
@@ -518,6 +502,7 @@ function FigmaSelect<T extends string>({
             value={value}
             onChange={onChange}
             options={options}
+            className={className}
             labelClassName={adminGuests.filterLabel}
             triggerClassName={adminGuests.filterTrigger}
         />

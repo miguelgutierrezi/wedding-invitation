@@ -78,8 +78,10 @@ describe("admin families Figma helpers", () => {
         expect(familiesSubmittedColumnLabel(true)).toBe("Confirmó");
         expect(familiesUpdatedColumnLabel(true)).toBe("Últ. cambio");
         expect(familiesUpdatedColumnLabel(false)).toBe("Último cambio");
-        expect(adminFamilies.filterGrid).toContain("lg:grid-cols-5");
-        expect(adminFamilies.filterGrid).not.toContain("lg:grid-cols-3");
+        expect(adminFamilies.filterGrid).toContain("lg:grid-cols-6");
+        expect(adminFamilies.filterGrid).toContain("xl:grid-cols-5");
+        expect(adminFamilies.filterCellLead).toContain("lg:col-span-3");
+        expect(adminFamilies.filterCellRest).toContain("lg:col-span-2");
         expect(adminGuests.tableCard).toContain("xl:rounded-[20px]");
         expect(adminGuests.subTabActive).toContain("bg-admin-olive");
         expect(adminGuests.tableHead).toContain("text-admin-olive");
@@ -161,6 +163,9 @@ describe("admin families Figma helpers", () => {
         expect(familiesPortraitCardGrid(1024)).toBe(false);
         expect(familiesMobileCardStack(833)).toBe(true);
         expect(familiesMobileCardStack(834)).toBe(false);
+        expect(familiesListSubnav(false).find((item) => item.href === "/admin/guests")?.label).toBe(
+            "Lista completa de Invitados",
+        );
         expect(familiesListSubnav(true).find((item) => item.href === "/admin/guests")?.label).toBe(
             "Lista completa",
         );
@@ -168,7 +173,9 @@ describe("admin families Figma helpers", () => {
             "Lista completa de Invitados",
         );
         expect(adminCopy.familiesList.searchPlaceholderPortrait).toBe("Buscar...");
-        expect(adminCopy.familiesList.showFilters).toBe("Mostrar filtros");
+        expect(adminGuests.mobileTabRow).not.toContain("flex-col");
+        expect(adminGuests.mobileSubTab).toContain("rounded-full");
+        expect(adminGuests.mobileFilterStack).toContain("gap-3");
         expect(adminGuests.portraitCardGrid).toContain("grid-cols-2");
         expect(adminGuests.mobileCardGrid).toContain("grid-cols-1");
         expect(adminGuests.mobileStatGrid).toContain("grid-cols-2");

@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import {Search} from "lucide-react";
 import type {ReactNode} from "react";
 
 import type {AdminGuestBrowserItem} from "@/lib/admin/admin-guests-layout";
+import {AdminAlertMessage} from "@/components/admin/admin-alert";
 import {ResumenDownloadIcon} from "@/components/admin/admin-resumen-icons";
 import {adminGuests, adminResumen} from "@/components/admin/admin-ui";
+import {AdminListSearchField} from "@/components/admin/admin-list-search-field";
+import {AdminListSubnav} from "@/components/admin/admin-list-subnav";
 import {AdminRowCheckbox} from "@/components/admin/admin-row-checkbox";
 import {AdminSelect} from "@/components/admin/admin-select";
 import {AdminSortHeader} from "@/components/admin/admin-sort-header";
@@ -44,6 +46,7 @@ type AdminGuestsDesktopProps = {
     onCopyPhones: () => void;
     onCopyEmails: () => void;
     onExportSelected: () => void;
+    onDismissNotice: () => void;
 };
 
 export function AdminGuestsDesktop({
@@ -67,6 +70,7 @@ export function AdminGuestsDesktop({
     onCopyPhones,
     onCopyEmails,
     onExportSelected,
+    onDismissNotice,
 }: AdminGuestsDesktopProps) {
     const copy = adminCopy.guestsList;
     const resumen = adminCopy.resumen;
@@ -142,30 +146,18 @@ export function AdminGuestsDesktop({
 
                 <div className={adminGuests.filterCard}>
                     <div className={adminGuests.filterGrid}>
-                        <label className="grid gap-1.5">
-                            <span className={adminGuests.filterLabel}>Buscar</span>
-                            <span className="relative">
-                                <Search
-                                    strokeWidth={2}
-                                    className={adminGuests.searchIcon}
-                                    aria-hidden="true"
-                                />
-                                <input
-                                    type="search"
-                                    value={filters.query}
-                                    onChange={(event) =>
-                                        onChangeFilters({query: event.target.value})
-                                    }
-                                    placeholder={copy.searchPlaceholderCompact}
-                                    aria-label={copy.searchPlaceholder}
-                                    className={adminGuests.searchBox}
-                                />
-                            </span>
-                        </label>
+                        <AdminListSearchField
+                            value={filters.query}
+                            onChange={(query) => onChangeFilters({query})}
+                            placeholder={copy.searchPlaceholderCompact}
+                            ariaLabel={copy.searchPlaceholder}
+                            className={adminGuests.filterCellLead}
+                        />
                         <FigmaSelect
                             label="Estado"
                             value={filters.attendance}
                             onChange={(attendance) => onChangeFilters({attendance})}
+                            className={adminGuests.filterCellLead}
                             options={[
                                 {value: "all", label: "Todos"},
                                 {value: "pending", label: "Pendiente"},
@@ -229,25 +221,13 @@ export function AdminGuestsDesktop({
                     {chips}
                 </div>
 
-                <nav className="flex flex-wrap gap-3" aria-label="Vistas">
-                    {GUESTS_LIST_SUBNAV.map((item) => (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            className={
-                                item.current ? adminGuests.subTabActive : adminGuests.subTab
-                            }
-                            aria-current={item.current ? "page" : undefined}
-                        >
-                            {item.label}
-                        </Link>
-                    ))}
-                </nav>
+                <AdminListSubnav items={GUESTS_LIST_SUBNAV} />
 
                 {notice ? (
-                    <p className={adminResumen.muted} role="status">
-                        {notice}
-                    </p>
+                    <AdminAlertMessage
+                        message={notice}
+                        onDismiss={onDismissNotice}
+                    />
                 ) : null}
 
                 {page.total === 0 ? (
@@ -537,11 +517,13 @@ function FigmaSelect<T extends string>({
     value,
     options,
     onChange,
+    className,
 }: {
     label: string;
     value: T;
     options: readonly {value: T; label: string}[];
     onChange: (value: T) => void;
+    className?: string;
 }) {
     return (
         <AdminSelect
@@ -549,6 +531,7 @@ function FigmaSelect<T extends string>({
             value={value}
             onChange={onChange}
             options={options}
+            className={className}
             labelClassName={adminGuests.filterLabel}
             triggerClassName={adminGuests.filterTrigger}
         />

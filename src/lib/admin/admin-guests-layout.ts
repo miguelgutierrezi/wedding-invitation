@@ -80,7 +80,7 @@ export function formatGuestsDeadlineChip(
     return deadlineLead ? `⏳ ${deadlineLead}` : null;
 }
 
-/** Landscape `103:33` has 6 filters; desktop `100:38` adds Nombre del acompañante. */
+/** Landscape `103:33` / `158:355` has 6 filters (2+4 wrap); desktop `100:38` adds Nombre del acompañante. */
 export function guestsFilterFieldCount(viewportPx: number): 6 | 7 {
     return viewportPx >= ADMIN_GUESTS_DESKTOP_MIN_PX ? 7 : 6;
 }

@@ -1,9 +1,11 @@
 "use client";
 
+import {AdminAlert} from "@/components/admin/admin-alert";
 import {AdminMediaQrPanel} from "@/components/admin/admin-media-qr-panel";
 import {AdminMediaTable} from "@/components/admin/admin-media-table";
 import {ResumenDownloadIcon} from "@/components/admin/admin-resumen-icons";
 import {adminPhotos, adminResumen} from "@/components/admin/admin-ui";
+import {photosQuotaAlertTone} from "@/lib/admin/admin-alerts";
 import {adminCopy} from "@/lib/admin/admin-copy";
 import {
     formatPhotosDeadlineChip,
@@ -84,9 +86,14 @@ export function AdminPhotosMobile({
 
             <div className={adminResumen.workspace}>
                 {stats.quotaAlert !== "none" ? (
-                    <p className={adminPhotos.toast} role="alert">
-                        {photosQuotaAlertText(stats.quotaUsedPercent, stats.quotaAlert)}
-                    </p>
+                    <AdminAlert
+                        tone={photosQuotaAlertTone(stats.quotaAlert)}
+                        title="Atención requerida"
+                        description={photosQuotaAlertText(
+                            stats.quotaUsedPercent,
+                            stats.quotaAlert,
+                        )}
+                    />
                 ) : null}
 
                 <div className={adminPhotos.mobileKpiGrid}>

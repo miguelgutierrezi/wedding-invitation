@@ -8,6 +8,7 @@ import {
     rejectMediaUploadAction,
     reviewMediaUploadsBatchAction,
 } from "@/actions/admin/guest-media";
+import {AdminAlertMessage} from "@/components/admin/admin-alert";
 import {AdminBatchBar} from "@/components/admin/admin-batch-bar";
 import {AdminRowCheckbox} from "@/components/admin/admin-row-checkbox";
 import {MediaStatusBadge} from "@/components/admin/admin-status-badge";
@@ -131,12 +132,19 @@ export function AdminMediaTable({
     return (
         <>
             {notice ? (
-                <p
-                    className={figma ? adminPhotos.qrBody : `mt-6 ${admin.muted}`}
-                    role="status"
-                >
-                    {notice}
-                </p>
+                figma ? (
+                    <AdminAlertMessage
+                        message={notice}
+                        onDismiss={() => setNotice(null)}
+                    />
+                ) : (
+                    <p
+                        className={figma ? adminPhotos.qrBody : `mt-6 ${admin.muted}`}
+                        role="status"
+                    >
+                        {notice}
+                    </p>
+                )
             ) : null}
 
             {cards ? (

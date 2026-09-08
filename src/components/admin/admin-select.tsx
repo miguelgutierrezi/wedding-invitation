@@ -2,7 +2,12 @@
 
 import {useEffect, useId, useRef, useState} from "react";
 
-import {admin} from "@/components/admin/admin-ui";
+import {
+    AdminControlCheckIcon,
+    AdminControlChevronIcon,
+} from "@/components/admin/admin-control-icons";
+import {adminGuests} from "@/components/admin/admin-ui";
+import {adminSelectOptionTone} from "@/lib/admin/admin-controls";
 import {cn} from "@/lib/utils";
 
 export type AdminSelectOption<T extends string = string> = {
@@ -21,14 +26,14 @@ type AdminSelectProps<T extends string> = {
 };
 
 export function AdminSelect<T extends string>({
-                                                  label,
-                                                  value,
-                                                  options,
-                                                  onChange,
-                                                  className,
-                                                  labelClassName,
-                                                  triggerClassName,
-                                              }: AdminSelectProps<T>) {
+    label,
+    value,
+    options,
+    onChange,
+    className,
+    labelClassName,
+    triggerClassName,
+}: AdminSelectProps<T>) {
     const [open, setOpen] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
     const rootRef = useRef<HTMLDivElement>(null);
@@ -84,15 +89,21 @@ export function AdminSelect<T extends string>({
     }
 
     return (
-        <div ref={rootRef} className={cn("relative grid gap-2", className)}>
-      <span id={labelId} className={labelClassName ?? admin.label}>
-        {label}
-      </span>
+        <div ref={rootRef} className={cn("relative grid gap-1.5", className)}>
+            <span
+                id={labelId}
+                className={cn(
+                    labelClassName ?? adminGuests.filterLabel,
+                    open && "text-admin-olive",
+                )}
+            >
+                {label}
+            </span>
             <button
                 type="button"
                 className={cn(
-                    triggerClassName ?? admin.selectTrigger,
-                    open && "border-cover-cta-fg",
+                    triggerClassName ?? adminGuests.filterTrigger,
+                    open && adminGuests.filterTriggerOpen,
                 )}
                 aria-haspopup="listbox"
                 aria-expanded={open}
@@ -119,35 +130,22 @@ export function AdminSelect<T extends string>({
                     }
                 }}
             >
-                <span className="truncate">{selected?.label}</span>
-                <svg
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    aria-hidden="true"
-                    className={cn(
-                        "size-4 shrink-0 text-cover-cta-fg/80 transition-transform duration-200 motion-reduce:transition-none",
-                        open && "rotate-180",
-                    )}
-                >
-                    <path
-                        d="M5 7.5 10 12.5 15 7.5"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    />
-                </svg>
+                <span className="min-w-0 flex-1 truncate">{selected?.label}</span>
+                <AdminControlChevronIcon open={open} />
             </button>
             {open ? (
                 <ul
                     id={listId}
                     role="listbox"
                     aria-labelledby={labelId}
-                    className={admin.selectMenu}
+                    className={adminGuests.selectMenu}
                 >
                     {options.map((option, index) => {
                         const isSelected = option.value === value;
-                        const isActive = index === activeIndex;
+                        const tone = adminSelectOptionTone({
+                            selected: isSelected,
+                            highlighted: index === activeIndex,
+                        });
 
                         return (
                             <li key={option.value} role="none">
@@ -157,14 +155,16 @@ export function AdminSelect<T extends string>({
                                     tabIndex={-1}
                                     aria-selected={isSelected}
                                     className={cn(
-                                        admin.selectOption,
-                                        isActive && "bg-accent/25",
-                                        isSelected && "bg-accent/40 font-medium",
+                                        adminGuests.selectOption,
+                                        tone === "hover" && adminGuests.selectOptionHover,
+                                        tone === "selected" &&
+                                            adminGuests.selectOptionSelected,
                                     )}
                                     onMouseEnter={() => setActiveIndex(index)}
                                     onClick={() => commit(index)}
                                 >
-                                    {option.label}
+                                    <span className="min-w-0 truncate">{option.label}</span>
+                                    {isSelected ? <AdminControlCheckIcon /> : null}
                                 </button>
                             </li>
                         );

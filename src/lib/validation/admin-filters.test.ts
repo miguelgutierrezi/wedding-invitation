@@ -275,6 +275,21 @@ describe("filter chips", () => {
         ]);
     });
 
+    it("prefixes invitation chips like Figma 158:469", () => {
+        expect(
+            familiesFilterChips({
+                ...DEFAULT_ADMIN_FAMILIES_FILTERS,
+                enabled: "enabled",
+            }),
+        ).toEqual([{id: "enabled", label: "Invitación: Activa"}]);
+        expect(
+            familiesFilterChips({
+                ...DEFAULT_ADMIN_FAMILIES_FILTERS,
+                enabled: "disabled",
+            }),
+        ).toEqual([{id: "enabled", label: "Invitación: Desactivada"}]);
+    });
+
     it("builds guest chips for attendance and contact", () => {
         expect(
             guestsFilterChips({

@@ -1,5 +1,6 @@
 "use client";
 
+import {AdminAlert, AdminAlertMessage} from "@/components/admin/admin-alert";
 import {adminNewFamily} from "@/components/admin/admin-ui";
 import {CopyInvitationLink} from "@/components/admin/copy-invitation-link";
 import {useCreateFamilyForm} from "@/hooks/use-create-family-form";
@@ -14,10 +15,12 @@ export function AdminNewFamilyFormCard({
     cardClassName,
     textareaClassName,
     stackedGuests = false,
+    figmaAlerts = false,
 }: {
     cardClassName: string;
     textareaClassName: string;
     stackedGuests?: boolean;
+    figmaAlerts?: boolean;
 }) {
     const form = useCreateFamilyForm();
     const copy = adminCopy.newFamily;
@@ -40,12 +43,20 @@ export function AdminNewFamilyFormCard({
     if (form.invitationUrl) {
         return (
             <div className={cardClassName}>
-                <div className={adminNewFamily.success}>
-                    <p className="font-semibold">{copy.successTitle}</p>
-                    <p className={`mt-1 ${adminNewFamily.guestsHint}`}>
-                        {copy.successBody}
-                    </p>
-                </div>
+                {figmaAlerts ? (
+                    <AdminAlert
+                        tone="success"
+                        title={copy.successTitle}
+                        description={copy.successBody}
+                    />
+                ) : (
+                    <div className={adminNewFamily.success}>
+                        <p className="font-semibold">{copy.successTitle}</p>
+                        <p className={`mt-1 ${adminNewFamily.guestsHint}`}>
+                            {copy.successBody}
+                        </p>
+                    </div>
+                )}
                 <CopyInvitationLink
                     url={form.invitationUrl}
                     tone="figma"
@@ -166,9 +177,13 @@ export function AdminNewFamilyFormCard({
             ))}
 
             {form.error ? (
-                <p className={adminNewFamily.error} role="alert">
-                    {form.error}
-                </p>
+                figmaAlerts ? (
+                    <AdminAlertMessage message={form.error} tone="error" />
+                ) : (
+                    <p className={adminNewFamily.error} role="alert">
+                        {form.error}
+                    </p>
+                )
             ) : null}
 
             <button

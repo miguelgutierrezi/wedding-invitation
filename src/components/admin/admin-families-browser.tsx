@@ -200,6 +200,7 @@ export function AdminFamiliesBrowser({
         notice,
         batchPending: pending,
         chips: filterChips,
+        onDismissNotice: () => setNotice(null),
         onChangeFilters: onChangeFigmaFilters,
         onToggle: selection.toggle,
         onSelectVisible: () => selection.setMany(visibleIds, true),
@@ -233,6 +234,7 @@ export function AdminFamiliesBrowser({
                 onExportSelected={onExportSelected}
                 onDisableSelected={onDisableSelected}
                 onEnableSelected={onEnableSelected}
+                onDismissNotice={() => setNotice(null)}
             />
 
             <div ref={listTopRef} className="scroll-mt-32">

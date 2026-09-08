@@ -4,6 +4,7 @@ import {useRouter} from "next/navigation";
 import {useState, useTransition} from "react";
 
 import {inviteAdminAction} from "@/actions/admin/auth";
+import {AdminAlertMessage} from "@/components/admin/admin-alert";
 import {admin, adminAdmins} from "@/components/admin/admin-ui";
 import {AdminsInvitePlusIcon} from "@/components/admin/admin-resumen-icons";
 import {adminCopy} from "@/lib/admin/admin-copy";
@@ -92,12 +93,28 @@ export function AdminInviteForm({
             </div>
 
             {error ? (
-                <p className={figma ? adminAdmins.error : admin.error} role="alert">
-                    {error}
-                </p>
+                figma ? (
+                    <AdminAlertMessage
+                        message={error}
+                        tone="error"
+                        onDismiss={() => setError(null)}
+                    />
+                ) : (
+                    <p className={figma ? adminAdmins.error : admin.error} role="alert">
+                        {error}
+                    </p>
+                )
             ) : null}
             {message ? (
-                <p className={figma ? adminAdmins.notice : admin.muted}>{message}</p>
+                figma ? (
+                    <AdminAlertMessage
+                        message={message}
+                        tone="success"
+                        onDismiss={() => setMessage(null)}
+                    />
+                ) : (
+                    <p className={figma ? adminAdmins.notice : admin.muted}>{message}</p>
+                )
             ) : null}
         </form>
     );

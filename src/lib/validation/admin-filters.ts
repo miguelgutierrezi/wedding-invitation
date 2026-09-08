@@ -477,7 +477,7 @@ export function familiesFilterChips(
     if (filters.enabled !== "all") {
         chips.push({
             id: "enabled",
-            label: filters.enabled === "enabled" ? "Activa" : "Desactivada",
+            label: `Invitación: ${filters.enabled === "enabled" ? "Activa" : "Desactivada"}`,
         });
     }
     if (filters.opened !== "all") {

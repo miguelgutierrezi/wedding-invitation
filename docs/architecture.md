@@ -137,7 +137,16 @@ confirmar”). Outfit inspiration routes are implemented under `/inspiracion/*`.
   300 ms so typing does not refetch the Server Component on every key) so browser back/forward restores the list
   filters. Local filter state is the source of truth while typing; the URL echo of our own `replace` must not overwrite
   that draft. Search inputs reserve left padding for the magnifying glass (`adminGuests.searchBox` / `searchIcon`; do not
-  use `xl:px-*` on the input or the placeholder sits under the icon). The page-heading back chevron is unused on create
+  use `xl:px-*` on the input or the placeholder sits under the icon). Filter dropdowns and olive chips
+  follow Figma mobile `161:29` / portrait `158:469` / landscape `158:355` / desktop `158:228` (`admin-controls.ts`; `--admin-control` `#d1cfc7`, selected sage `--admin-select` `#e5e8dd`;
+  phones stack the filter card; in-page tabs stay a row of equal pills (not stacked `161:29` nav); from 834px the card stays open with full-width search and 2-col wrapping dropdowns; from `lg` families wrap 2+3
+  in a 16px card with a pill tab bar). Dropdown chevrons use the
+  desktop `158:228` 12px Lucide glyph on every list viewport.
+  Desktop notices, save/quota feedback, and invalid fields follow Figma `161:151`; tablet landscape
+  (`lg`–`xl`) follows `161:371`, portrait (from 834px) follows `161:560`, and phone (`161:738`) uses the same banners
+  with 12px padding (`admin-alerts.ts`, `adminAlert`; 4px left accent, four tones; invalid fields on every width, 11px
+  helper on phone / 13px until `xl` / 12px from `xl`). Login and accept-invite keep their own screens.
+  The page-heading back chevron is unused on create
   (the Figma banner arrow is on every width) and create-family “Volver al listado”
   restore the last Familias list URL from `sessionStorage` (`admin-list-return.ts`), because a
   bare `/admin/families` Link drops query filters. SQL push-down can wait until a commercial install outgrows a few

@@ -52,7 +52,7 @@ export const FAMILIES_LIST_SUBNAV: readonly FamiliesListSubNavItem[] = [
     },
 ];
 
-/** Portrait Figma `123:268` shortens the guests tab to “Lista completa”. */
+/** Phone and portrait shorten the guests tab to “Lista completa”. */
 export function familiesListSubnav(
     compactFullList = false,
 ): readonly FamiliesListSubNavItem[] {
@@ -79,7 +79,7 @@ export function familiesCompactTableChrome(viewportPx: number): boolean {
     );
 }
 
-/** Landscape `117:29` and desktop `109:645` both keep all five filters. */
+/** Landscape `117:29` / `158:355` wrap 2+3; desktop `109:645` keeps five in one row. */
 export function familiesFilterFieldCount(): 5 {
     return 5;
 }

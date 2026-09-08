@@ -72,12 +72,12 @@ describe("admin guests Figma helpers", () => {
         expect(guestsFilterFieldCount(1024)).toBe(6);
         expect(guestsFilterFieldCount(1279)).toBe(6);
         expect(guestsFilterFieldCount(1280)).toBe(7);
-        expect(adminGuests.filterGrid).toContain("lg:grid-cols-3");
-        expect(adminGuests.filterGrid).toContain("xl:grid-cols-4");
+        expect(adminGuests.filterGrid).toContain("lg:grid-cols-4");
+        expect(adminGuests.filterCellLead).toContain("lg:col-span-2");
         expect(adminGuests.nameFilter).toContain("hidden");
         expect(adminGuests.nameFilter).toContain("xl:contents");
-        expect(adminGuests.filterCard).toContain("rounded-2xl");
-        expect(adminGuests.filterCard).toContain("xl:rounded-[20px]");
+        expect(adminGuests.filterCard).toContain("rounded-[20px]");
+        expect(adminGuests.filterCard).toContain("border-admin-control");
         expect(adminGuests.tableCard).toContain("rounded-2xl");
         expect(adminGuests.tableCard).toContain("xl:rounded-[20px]");
         expect(adminGuests.subTabActive).toContain("bg-admin-olive");
@@ -94,13 +94,10 @@ describe("admin guests Figma helpers", () => {
         expect(adminGuests.checkbox).toContain("appearance-none");
         expect(adminGuests.checkbox).not.toContain("accent-accent");
         expect(adminGuests.searchBox).toContain("pl-9");
-        expect(adminGuests.searchBox).toContain("xl:pl-10");
-        expect(adminGuests.searchBox).toContain("pr-3");
-        expect(adminGuests.searchBox).toContain("xl:pr-3.5");
+        expect(adminGuests.searchBox).toContain("pr-[14px]");
         expect(adminGuests.searchBox).not.toContain("xl:px-");
         expect(adminGuests.searchBox).not.toMatch(/(?:^|\s)px-/);
-        expect(adminGuests.searchIcon).toContain("left-3");
-        expect(adminGuests.searchIcon).toContain("xl:left-3.5");
+        expect(adminGuests.searchIcon).toContain("left-[14px]");
     });
 
     it("keeps compact batch copy for landscape", () => {
@@ -124,7 +121,9 @@ describe("admin guests Figma helpers", () => {
         );
         expect(adminGuests.mobileStatGrid).toContain("grid-cols-2");
         expect(adminGuests.mobileCardGrid).toContain("grid-cols-1");
-        expect(adminGuests.mobileSubTabActive).toContain("flex-1");
+        expect(adminGuests.mobileTabRow).not.toContain("flex-col");
+        expect(adminGuests.mobileSubTab).toContain("rounded-full");
+        expect(adminGuests.mobileFilterStack).toContain("gap-3");
         expect(adminCopy.guestsList.sortByPrefix).toBe("Ordenar por:");
         expect(adminCopy.guestsList.selectVisible(93)).toBe("Seleccionar los 93");
     });

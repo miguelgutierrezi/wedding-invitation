@@ -1,5 +1,6 @@
 "use client";
 
+import {AdminAlertMessage} from "@/components/admin/admin-alert";
 import {
     FamilyDetailBackIcon,
     FamilyDetailBusIcon,
@@ -88,18 +89,10 @@ function EditorFeedback({
     message: string | null;
 }) {
     if (error) {
-        return (
-            <p className={adminFamilyDetail.error} role="alert">
-                {error}
-            </p>
-        );
+        return <AdminAlertMessage message={error} tone="error" />;
     }
     if (message) {
-        return (
-            <p className={adminFamilyDetail.success} role="status">
-                {message}
-            </p>
-        );
+        return <AdminAlertMessage message={message} tone="success" />;
     }
     return null;
 }

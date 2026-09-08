@@ -1,17 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import {ChevronDown, Search} from "lucide-react";
-import {type ReactNode, useState} from "react";
+import {type ReactNode} from "react";
 
-import type {AdminGuestBrowserItem} from "@/lib/admin/admin-guests-layout";
+import {AdminAlertMessage} from "@/components/admin/admin-alert";
 import {ResumenDownloadIcon} from "@/components/admin/admin-resumen-icons";
 import {adminGuests, adminResumen} from "@/components/admin/admin-ui";
+import {AdminListSearchField} from "@/components/admin/admin-list-search-field";
+import {AdminListSubnav} from "@/components/admin/admin-list-subnav";
 import {AdminRowCheckbox} from "@/components/admin/admin-row-checkbox";
 import {AdminSelect} from "@/components/admin/admin-select";
 import {GuestAttendanceBadge} from "@/components/admin/admin-status-badge";
 import {adminCopy} from "@/lib/admin/admin-copy";
 import {
+    type AdminGuestBrowserItem,
     formatGuestsDeadlineChip,
     guestBusLabel,
     guestRoleLabel,
@@ -22,10 +24,7 @@ import {
     type GuestsViewCounts,
 } from "@/lib/admin/admin-guests-layout";
 import type {PaginatedList} from "@/lib/admin/list-view";
-import {
-    type AdminGuestsFilters,
-    hasActiveAdminGuestsFilters,
-} from "@/lib/validation/admin-filters";
+import type {AdminGuestsFilters} from "@/lib/validation/admin-filters";
 import {cn} from "@/lib/utils";
 
 type AdminGuestsCardsProps = {
@@ -41,6 +40,7 @@ type AdminGuestsCardsProps = {
     notice: string | null;
     batchPending: boolean;
     chips: ReactNode;
+    onDismissNotice: () => void;
     onChangeFilters: (patch: Partial<AdminGuestsFilters>) => void;
     onToggle: (id: string) => void;
     onSelectVisible: () => void;
@@ -75,6 +75,7 @@ function AdminGuestsCards({
     notice,
     batchPending,
     chips,
+    onDismissNotice,
     onChangeFilters,
     onToggle,
     onSelectVisible,
@@ -86,10 +87,75 @@ function AdminGuestsCards({
     const copy = adminCopy.guestsList;
     const resumen = adminCopy.resumen;
     const isPhone = variant === "phone";
-    const [filtersOpen, setFiltersOpen] = useState(() =>
-        hasActiveAdminGuestsFilters(filters),
-    );
     const deadlineChip = formatGuestsDeadlineChip(deadlineLead);
+    const guestFilterSelects = (
+        <>
+            <PortraitSelect
+                label="Estado"
+                value={filters.attendance}
+                onChange={(attendance) => onChangeFilters({attendance})}
+                options={[
+                    {value: "all", label: "Todos"},
+                    {value: "pending", label: "Pendiente"},
+                    {value: "attending", label: "Asiste"},
+                    {value: "not_attending", label: "No asiste"},
+                ]}
+            />
+            <PortraitSelect
+                label="Bus"
+                value={filters.transport}
+                onChange={(transport) => onChangeFilters({transport})}
+                options={[
+                    {value: "all", label: "Todos"},
+                    {value: "with_bus", label: "Con bus"},
+                    {value: "without_bus", label: "Sin bus"},
+                ]}
+            />
+            <PortraitSelect
+                label="Punto de salida"
+                value={filters.boarding}
+                onChange={(boarding) => onChangeFilters({boarding})}
+                options={[
+                    {value: "all", label: "Todos"},
+                    {value: "modelia", label: "Modelia"},
+                    {value: "villa_sonia", label: "Villa Sonia"},
+                    {value: "none", label: "Sin punto"},
+                ]}
+            />
+            <PortraitSelect
+                label="Dieta"
+                value={filters.dietary}
+                onChange={(dietary) => onChangeFilters({dietary})}
+                options={[
+                    {value: "all", label: "Todas"},
+                    {value: "with_dietary", label: "Con restricción"},
+                    {
+                        value: "without_dietary",
+                        label: "Sin restricción",
+                    },
+                ]}
+            />
+            <PortraitSelect
+                label="Tipo de invitado"
+                value={filters.primary}
+                onChange={(primary) => onChangeFilters({primary})}
+                options={[
+                    {value: "all", label: "Todos"},
+                    {value: "primary", label: "Contacto principal"},
+                    {value: "other", label: "Otros invitados"},
+                ]}
+            />
+            <PortraitSelect
+                label="Nombre del acompañante"
+                value={filters.name}
+                onChange={(name) => onChangeFilters({name})}
+                options={[
+                    {value: "all", label: "Todos"},
+                    {value: "needs_name", label: "Falta el nombre"},
+                ]}
+            />
+        </>
+    );
 
     return (
         <div
@@ -202,25 +268,6 @@ function AdminGuestsCards({
                                 : adminGuests.portraitToolbar
                         }
                     >
-                        {isPhone ? null : (
-                        <label className="relative min-w-0 flex-1">
-                            <span className="sr-only">Buscar</span>
-                            <Search
-                                strokeWidth={2}
-                                className={adminGuests.searchIcon}
-                                aria-hidden="true"
-                            />
-                            <input
-                                type="search"
-                                value={filters.query}
-                                onChange={(event) =>
-                                    onChangeFilters({query: event.target.value})
-                                }
-                                placeholder={copy.searchPlaceholderPortrait}
-                                className={adminGuests.searchBox}
-                            />
-                        </label>
-                        )}
                         <AdminSelect
                             label={copy.sortLabel}
                             value={guestsSortSelectValue(sort, filters.dir)}
@@ -232,165 +279,36 @@ function AdminGuestsCards({
                             labelClassName="sr-only"
                             triggerClassName={adminGuests.filterTrigger}
                         />
-                        <button
-                            type="button"
-                            className={
-                                isPhone
-                                    ? adminGuests.mobileFilterToggle
-                                    : adminGuests.portraitFilterToggle
-                            }
-                            aria-expanded={filtersOpen}
-                            onClick={() => setFiltersOpen((open) => !open)}
-                        >
-                            {filtersOpen ? copy.hideFilters : copy.showFilters}
-                            <ChevronDown
-                                strokeWidth={2}
-                                className={cn(
-                                    "size-3.5 max-w-none transition-transform",
-                                    filtersOpen && "rotate-180",
-                                )}
-                                aria-hidden="true"
-                            />
-                        </button>
                     </div>
-                    {filtersOpen ? (
+                    <div className={adminGuests.filterCard}>
+                        <AdminListSearchField
+                            value={filters.query}
+                            onChange={(query) => onChangeFilters({query})}
+                            placeholder={copy.searchPlaceholder}
+                        />
                         <div
                             className={
                                 isPhone
-                                    ? "grid gap-4"
+                                    ? adminGuests.mobileFilterStack
                                     : adminGuests.portraitFilterGrid
                             }
                         >
-                            {isPhone ? (
-                                <label className="grid gap-1.5">
-                                    <span className={adminGuests.filterLabel}>
-                                        Buscar
-                                    </span>
-                                    <span className="relative">
-                                        <Search
-                                            strokeWidth={2}
-                                            className={adminGuests.searchIcon}
-                                            aria-hidden="true"
-                                        />
-                                        <input
-                                            type="search"
-                                            value={filters.query}
-                                            onChange={(event) =>
-                                                onChangeFilters({
-                                                    query: event.target.value,
-                                                })
-                                            }
-                                            placeholder={
-                                                copy.searchPlaceholderPortrait
-                                            }
-                                            className={adminGuests.searchBox}
-                                        />
-                                    </span>
-                                </label>
-                            ) : null}
-                            <PortraitSelect
-                                label="Estado"
-                                value={filters.attendance}
-                                onChange={(attendance) =>
-                                    onChangeFilters({attendance})
-                                }
-                                options={[
-                                    {value: "all", label: "Todos"},
-                                    {value: "pending", label: "Pendiente"},
-                                    {value: "attending", label: "Asiste"},
-                                    {value: "not_attending", label: "No asiste"},
-                                ]}
-                            />
-                            <PortraitSelect
-                                label="Bus"
-                                value={filters.transport}
-                                onChange={(transport) =>
-                                    onChangeFilters({transport})
-                                }
-                                options={[
-                                    {value: "all", label: "Todos"},
-                                    {value: "with_bus", label: "Con bus"},
-                                    {value: "without_bus", label: "Sin bus"},
-                                ]}
-                            />
-                            <PortraitSelect
-                                label="Punto de salida"
-                                value={filters.boarding}
-                                onChange={(boarding) =>
-                                    onChangeFilters({boarding})
-                                }
-                                options={[
-                                    {value: "all", label: "Todos"},
-                                    {value: "modelia", label: "Modelia"},
-                                    {value: "villa_sonia", label: "Villa Sonia"},
-                                    {value: "none", label: "Sin punto"},
-                                ]}
-                            />
-                            <PortraitSelect
-                                label="Dieta"
-                                value={filters.dietary}
-                                onChange={(dietary) => onChangeFilters({dietary})}
-                                options={[
-                                    {value: "all", label: "Todas"},
-                                    {value: "with_dietary", label: "Con restricción"},
-                                    {
-                                        value: "without_dietary",
-                                        label: "Sin restricción",
-                                    },
-                                ]}
-                            />
-                            <PortraitSelect
-                                label="Tipo de invitado"
-                                value={filters.primary}
-                                onChange={(primary) => onChangeFilters({primary})}
-                                options={[
-                                    {value: "all", label: "Todos"},
-                                    {value: "primary", label: "Contacto principal"},
-                                    {value: "other", label: "Otros invitados"},
-                                ]}
-                            />
-                            <PortraitSelect
-                                label="Nombre del acompañante"
-                                value={filters.name}
-                                onChange={(name) => onChangeFilters({name})}
-                                options={[
-                                    {value: "all", label: "Todos"},
-                                    {value: "needs_name", label: "Falta el nombre"},
-                                ]}
-                            />
+                            {guestFilterSelects}
                         </div>
-                    ) : null}
+                    </div>
                     {chips}
                 </div>
 
-                <nav
-                    className={isPhone ? "flex w-full gap-1.5" : "flex flex-wrap gap-2"}
-                    aria-label="Vistas"
-                >
-                    {GUESTS_LIST_SUBNAV.map((item) => (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            className={
-                                item.current
-                                    ? isPhone
-                                        ? adminGuests.mobileSubTabActive
-                                        : adminGuests.subTabActive
-                                    : isPhone
-                                      ? adminGuests.mobileSubTab
-                                      : adminGuests.subTab
-                            }
-                            aria-current={item.current ? "page" : undefined}
-                        >
-                            {item.label}
-                        </Link>
-                    ))}
-                </nav>
+                <AdminListSubnav
+                    items={GUESTS_LIST_SUBNAV}
+                    variant={isPhone ? "phone" : "bar"}
+                />
 
                 {notice ? (
-                    <p className={adminResumen.muted} role="status">
-                        {notice}
-                    </p>
+                    <AdminAlertMessage
+                        message={notice}
+                        onDismiss={onDismissNotice}
+                    />
                 ) : null}
 
                 {page.total === 0 ? (

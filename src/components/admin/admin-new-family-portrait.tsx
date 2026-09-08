@@ -28,6 +28,7 @@ export function AdminNewFamilyPortrait() {
                 <AdminNewFamilyFormCard
                     cardClassName={adminNewFamily.portraitCard}
                     textareaClassName={adminNewFamily.portraitTextarea}
+                    figmaAlerts
                 />
             </div>
         </div>

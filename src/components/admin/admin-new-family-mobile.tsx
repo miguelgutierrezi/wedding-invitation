@@ -38,6 +38,7 @@ export function AdminNewFamilyMobile() {
                     cardClassName={adminNewFamily.mobileCard}
                     textareaClassName={adminNewFamily.mobileTextarea}
                     stackedGuests
+                    figmaAlerts
                 />
             </div>
         </div>

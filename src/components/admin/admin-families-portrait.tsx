@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import {ChevronDown, Search} from "lucide-react";
-import {type ReactNode, useState} from "react";
+import {type ReactNode} from "react";
 
+import {AdminAlertMessage} from "@/components/admin/admin-alert";
 import {ResumenDownloadIcon} from "@/components/admin/admin-resumen-icons";
 import {adminFamilies, adminGuests, adminResumen} from "@/components/admin/admin-ui";
+import {AdminListSearchField} from "@/components/admin/admin-list-search-field";
+import {AdminListSubnav} from "@/components/admin/admin-list-subnav";
 import {AdminRowCheckbox} from "@/components/admin/admin-row-checkbox";
 import {AdminSelect} from "@/components/admin/admin-select";
 import {FamilyStatusBadge} from "@/components/admin/admin-status-badge";
@@ -26,10 +28,7 @@ import {
     type FamiliesViewCounts,
 } from "@/lib/admin/admin-families-layout";
 import type {PaginatedList} from "@/lib/admin/list-view";
-import {
-    type AdminFamiliesFilters,
-    hasActiveAdminFamiliesFilters,
-} from "@/lib/validation/admin-filters";
+import type {AdminFamiliesFilters} from "@/lib/validation/admin-filters";
 import {cn} from "@/lib/utils";
 
 type AdminFamiliesCardsProps = {
@@ -45,6 +44,7 @@ type AdminFamiliesCardsProps = {
     notice: string | null;
     batchPending: boolean;
     chips: ReactNode;
+    onDismissNotice: () => void;
     onChangeFilters: (patch: Partial<AdminFamiliesFilters>) => void;
     onToggle: (id: string) => void;
     onSelectVisible: () => void;
@@ -80,6 +80,7 @@ function AdminFamiliesCards({
     notice,
     batchPending,
     chips,
+    onDismissNotice,
     onChangeFilters,
     onToggle,
     onSelectVisible,
@@ -92,11 +93,79 @@ function AdminFamiliesCards({
     const copy = adminCopy.familiesList;
     const resumen = adminCopy.resumen;
     const isPhone = variant === "phone";
-    const [filtersOpen, setFiltersOpen] = useState(() =>
-        hasActiveAdminFamiliesFilters(filters),
-    );
     const deadlineChip = formatFamiliesDeadlineChip(deadlineLead);
     const noun = counts.total === 1 ? "familia" : "familias";
+    const familyFilterSelects = (
+        <>
+            <PortraitSelect
+                label="Estado"
+                value={filters.status}
+                onChange={(status) => onChangeFilters({status})}
+                options={[
+                    {value: "all", label: "Todos"},
+                    {
+                        value: "pending",
+                        label: adminCopy.family.status.pending,
+                    },
+                    {
+                        value: "responded",
+                        label: adminCopy.family.status.responded,
+                    },
+                    {
+                        value: "disabled",
+                        label: adminCopy.family.status.disabled,
+                    },
+                ]}
+            />
+            <PortraitSelect
+                label="Invitación"
+                value={filters.enabled}
+                onChange={(enabled) => onChangeFilters({enabled})}
+                options={[
+                    {value: "all", label: "Todas"},
+                    {value: "enabled", label: "Activa"},
+                    {value: "disabled", label: "Desactivada"},
+                ]}
+            />
+            <PortraitSelect
+                label="Vió invitación"
+                value={filters.opened}
+                onChange={(opened) => onChangeFilters({opened})}
+                options={[
+                    {value: "all", label: "Todas"},
+                    {
+                        value: "opened",
+                        label: adminCopy.invitation.opened,
+                    },
+                    {
+                        value: "not_opened",
+                        label: adminCopy.invitation.notOpened,
+                    },
+                ]}
+            />
+            <PortraitSelect
+                label={copy.confirmationFilter}
+                value={filters.response}
+                onChange={(response) => onChangeFilters({response})}
+                options={[
+                    {value: "all", label: "Todos"},
+                    {
+                        value: "pending",
+                        label: adminCopy.rsvp.noResponse,
+                    },
+                    {
+                        value: "responded",
+                        label: adminCopy.rsvp.responded,
+                    },
+                    {value: "attending", label: "Asistirá"},
+                    {
+                        value: "not_attending",
+                        label: "No asistirá",
+                    },
+                ]}
+            />
+        </>
+    );
 
     return (
         <div
@@ -233,23 +302,6 @@ function AdminFamiliesCards({
                                 : adminGuests.portraitToolbar
                         }
                     >
-                        <label className="relative min-w-0 flex-1">
-                            <span className="sr-only">Buscar</span>
-                            <Search
-                                strokeWidth={2}
-                                className={adminGuests.searchIcon}
-                                aria-hidden="true"
-                            />
-                            <input
-                                type="search"
-                                value={filters.query}
-                                onChange={(event) =>
-                                    onChangeFilters({query: event.target.value})
-                                }
-                                placeholder={copy.searchPlaceholderPortrait}
-                                className={adminGuests.searchBox}
-                            />
-                        </label>
                         <AdminSelect
                             label={copy.sortLabel}
                             value={familiesSortSelectValue(sort, filters.dir)}
@@ -261,139 +313,36 @@ function AdminFamiliesCards({
                             labelClassName="sr-only"
                             triggerClassName={adminGuests.filterTrigger}
                         />
-                        <button
-                            type="button"
-                            className={
-                                isPhone
-                                    ? adminGuests.mobileFilterToggle
-                                    : adminGuests.portraitFilterToggle
-                            }
-                            aria-expanded={filtersOpen}
-                            onClick={() => setFiltersOpen((open) => !open)}
-                        >
-                            {filtersOpen ? copy.hideFilters : copy.showFilters}
-                            <ChevronDown
-                                strokeWidth={2}
-                                className={cn(
-                                    "size-3.5 max-w-none transition-transform",
-                                    filtersOpen && "rotate-180",
-                                )}
-                                aria-hidden="true"
-                            />
-                        </button>
                     </div>
-                    {filtersOpen ? (
+                    <div className={adminGuests.filterCard}>
+                        <AdminListSearchField
+                            value={filters.query}
+                            onChange={(query) => onChangeFilters({query})}
+                            placeholder={copy.searchPlaceholder}
+                        />
                         <div
                             className={
                                 isPhone
-                                    ? "grid gap-4"
+                                    ? adminGuests.mobileFilterStack
                                     : adminGuests.portraitFilterGrid
                             }
                         >
-                            <PortraitSelect
-                                label="Estado"
-                                value={filters.status}
-                                onChange={(status) => onChangeFilters({status})}
-                                options={[
-                                    {value: "all", label: "Todos"},
-                                    {
-                                        value: "pending",
-                                        label: adminCopy.family.status.pending,
-                                    },
-                                    {
-                                        value: "responded",
-                                        label: adminCopy.family.status.responded,
-                                    },
-                                    {
-                                        value: "disabled",
-                                        label: adminCopy.family.status.disabled,
-                                    },
-                                ]}
-                            />
-                            <PortraitSelect
-                                label="Invitación"
-                                value={filters.enabled}
-                                onChange={(enabled) =>
-                                    onChangeFilters({enabled})
-                                }
-                                options={[
-                                    {value: "all", label: "Todas"},
-                                    {value: "enabled", label: "Activa"},
-                                    {value: "disabled", label: "Desactivada"},
-                                ]}
-                            />
-                            <PortraitSelect
-                                label="Vió invitación"
-                                value={filters.opened}
-                                onChange={(opened) => onChangeFilters({opened})}
-                                options={[
-                                    {value: "all", label: "Todas"},
-                                    {
-                                        value: "opened",
-                                        label: adminCopy.invitation.opened,
-                                    },
-                                    {
-                                        value: "not_opened",
-                                        label: adminCopy.invitation.notOpened,
-                                    },
-                                ]}
-                            />
-                            <PortraitSelect
-                                label={copy.confirmationFilter}
-                                value={filters.response}
-                                onChange={(response) =>
-                                    onChangeFilters({response})
-                                }
-                                options={[
-                                    {value: "all", label: "Todos"},
-                                    {
-                                        value: "pending",
-                                        label: adminCopy.rsvp.noResponse,
-                                    },
-                                    {
-                                        value: "responded",
-                                        label: adminCopy.rsvp.responded,
-                                    },
-                                    {value: "attending", label: "Asistirá"},
-                                    {
-                                        value: "not_attending",
-                                        label: "No asistirá",
-                                    },
-                                ]}
-                            />
+                            {familyFilterSelects}
                         </div>
-                    ) : null}
+                    </div>
                     {chips}
                 </div>
 
-                <nav
-                    className={isPhone ? "flex w-full gap-1.5" : "flex flex-wrap gap-2"}
-                    aria-label="Vistas"
-                >
-                    {familiesListSubnav(true).map((item) => (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            className={
-                                item.current
-                                    ? isPhone
-                                        ? adminGuests.mobileSubTabActive
-                                        : adminGuests.subTabActive
-                                    : isPhone
-                                      ? adminGuests.mobileSubTab
-                                      : adminGuests.subTab
-                            }
-                            aria-current={item.current ? "page" : undefined}
-                        >
-                            {item.label}
-                        </Link>
-                    ))}
-                </nav>
+                <AdminListSubnav
+                    items={familiesListSubnav(true)}
+                    variant={isPhone ? "phone" : "bar"}
+                />
 
                 {notice ? (
-                    <p className={adminResumen.muted} role="status">
-                        {notice}
-                    </p>
+                    <AdminAlertMessage
+                        message={notice}
+                        onDismiss={onDismissNotice}
+                    />
                 ) : null}
 
                 {page.total === 0 ? (

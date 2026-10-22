@@ -3,7 +3,7 @@
 **Status:** Admin operations (action queue, WhatsApp copy, RSVP close checklist, practical Excel exports) **complete**
 in repo (apply hosted migrations)
 
-**Last reviewed:** 2026-09-07
+**Last reviewed:** 2026-10-21
 
 **Authorized scope:** Guest media QR PNG download authorized by explicit request. Admin list pagination/chips/column
 sort, RSVP contact mirror onto `guests`, and admin operations (action queue, clipboard WhatsApp reminder, RSVP close
@@ -16,7 +16,8 @@ may proceed when the user requests it explicitly.
 
 | Area                                        | State                                                                          |
 |---------------------------------------------|--------------------------------------------------------------------------------|
-| Invitation + RSVP + boarding                | Implemented; **per-guest attend / not attend**                                 |
+| Invitation + RSVP + boarding                | Implemented; **per-guest attend / not attend**; bus to Subachoque **12:30 PM** |
+
 | Cover greeting (1 / 2 / 3+ guests + gender) | Implemented (`cover-greeting.ts` + `guests.gender`)                            |
 | Plus-ones “Acompañante”                     | Implemented; name required **only if that person attends**                     |
 | Gender `unspecified`                        | Implemented (admin + cover “Hola”)                                             |

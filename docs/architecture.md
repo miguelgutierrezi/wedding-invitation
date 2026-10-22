@@ -103,8 +103,9 @@ should not scatter event copy, asset paths, or brand colors across the UI.
 Asset paths under `public/invitation/` are listed in `weddingConfig.assets` and documented in `docs/invitation-ui.md`.
 
 Ceremony maps URLs live on `weddingConfig.ceremony` (`mapsUrl`, `wazeUrl`, `appleMapsUrl`, `mapsEmbedUrl`). Empty
-strings disable the corresponding CTA or embed. Do not invent private logistics (e.g. bus departure times still “por
-confirmar”). Outfit inspiration routes are implemented under `/inspiracion/*`.
+strings disable the corresponding CTA or embed. Do not invent private logistics that product has not confirmed. Bus
+departure toward Subachoque is **12:30 PM** at both boarding points (`weddingConfig.transport.meetingPoints`); return
+to Bogotá is **2:00 AM**. Outfit inspiration routes are implemented under `/inspiracion/*`.
 
 ## Presentation layer
 

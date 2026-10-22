@@ -80,6 +80,5 @@ pnpm build
 - Resend email and WhatsApp Cloud API (tracked as future work). Excel export slices and guest media uploads are
   available in admin.
 - Distributed (Redis) rate limiting — in-app limiter is best-effort per isolate; prefer Cloudflare for global edge.
-- Bus departure times toward Subachoque still “por confirmar” until product provides them.
 - Hosted Supabase Storage global limit ≥3 GiB for guest videos (see `docs/guest-media-storage.md`).
 - Backfill `guests.gender` for families created before the gender migration.

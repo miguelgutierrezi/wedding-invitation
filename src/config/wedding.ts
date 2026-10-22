@@ -78,14 +78,14 @@ export const weddingConfig = {
                 title: "Punto de Encuentro #1 y Salida",
                 place: "Calle 23B bis #75-48 Modelia",
                 departureLabel: "Hora de salida hacia Subachoque",
-                departureTime: "por confirmar",
+                departureTime: "12:30 PM",
             },
             {
                 id: "villa_sonia",
                 title: "Punto de Encuentro #2 y Salida",
                 place: "Calle 38B sur #50A-53 Villa Sonia",
                 departureLabel: "Hora de salida hacia Subachoque",
-                departureTime: "por confirmar",
+                departureTime: "12:30 PM",
             },
         ],
         returnTrip: {

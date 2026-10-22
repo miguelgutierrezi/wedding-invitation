@@ -268,9 +268,10 @@ Ya confirmados o configurados en producto / seed:
 
 Pendientes o vacíos hasta que se indiquen (no inventar):
 
-- Horas de salida del bus hacia Subachoque (“por confirmar”)
 - Archivo `soundtrack.mp3` si no está en el deploy
 - Género en familias creadas antes de la migración `guest_gender` (rellenar en admin)
+
+Confirmado en config: horas de salida del bus hacia Subachoque a las **12:30 PM** (ambos puntos); regreso a Bogotá a las **2:00 AM**.
 
 No inventar datos sensibles ni secretos.
 

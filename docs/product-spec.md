@@ -40,7 +40,8 @@ Config de copy y rutas de medios: **`src/config/wedding.ts`**. Ids de puntos de 
 Storage invitados: **`docs/guest-media-storage.md`**.
 
 Pendiente a nivel producto (salvo autorización en `current-phase.md`): email (Resend), editor de settings en admin,
-galería pública colaborativa, horarios de salida del bus hacia Subachoque si aún “por confirmar”.
+galería pública colaborativa. Horarios de salida del bus hacia Subachoque: **12:30 PM** en `weddingConfig.transport`
+(ambos puntos de encuentro).
 
 ## 1. Propósito del proyecto
 
@@ -1666,7 +1667,7 @@ Nychol
 Miguel
 ```
 
-Para datos aún no definidos (horarios de bus, URLs de mapas, etc.), usa placeholders como:
+Para datos aún no definidos (URLs de mapas, etc.), usa placeholders como:
 
 ```text
 por confirmar

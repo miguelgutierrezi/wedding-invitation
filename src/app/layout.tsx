@@ -1,4 +1,5 @@
 import type {Metadata, Viewport} from "next";
+import {Analytics} from "@vercel/analytics/next";
 import {Allura, Cormorant_Garamond, Source_Sans_3, Vollkorn} from "next/font/google";
 
 import {weddingConfig} from "@/config/wedding";
@@ -60,6 +61,7 @@ export default function RootLayout({
         >
         <body className="page-shell flex min-h-full flex-col bg-background text-foreground">
         {children}
+        <Analytics />
         </body>
         </html>
     );

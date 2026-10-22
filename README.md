@@ -131,7 +131,7 @@ Migraciones: `20260815100000_guest_gender.sql`, `20260816100000_guest_gender_uns
 - Tailwind CSS.
 - Supabase: PostgreSQL, Auth y Row Level Security.
 - pnpm.
-- Vercel y Cloudflare DNS para producción.
+- Vercel y Cloudflare DNS para producción (Web Analytics vía `@vercel/analytics` en el layout raíz).
 
 ## Requisitos locales
 
@@ -277,6 +277,7 @@ No inventar datos sensibles ni secretos.
 
 ## Despliegue
 
-Destino: Vercel + Supabase remoto + Cloudflare DNS. El checklist de go-live de producción se autoriza por fase en
+Destino: Vercel + Supabase remoto + Cloudflare DNS. Tras el deploy, habilita **Web Analytics** en el proyecto de
+Vercel (dashboard → Analytics) para ver visitas; el script ya está en el layout. El checklist de go-live se autoriza por fase en
 `docs/current-phase.md`. Asegura que las migraciones de boarding, nombres, guest media y **género de invitados** estén
 aplicadas en el Supabase de producción antes de compartir enlaces ampliamente.

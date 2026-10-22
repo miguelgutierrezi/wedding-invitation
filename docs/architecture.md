@@ -2,7 +2,7 @@
 
 **Status:** Guest Media Uploads complete; invitation polish documented; branded admin invite email HTML
 
-**Last reviewed:** 2026-09-07
+**Last reviewed:** 2026-10-21
 
 This document describes the intended technical architecture and its boundaries. It does not authorize implementation
 beyond `current-phase.md`.
@@ -405,6 +405,11 @@ events should record useful actions without copying unnecessary personal data in
 Application logs use `serverLog` (JSON). Correlate public requests with `slugFp` from `fingerprintPublicId`, never the
 raw slug in warn/error paths when avoidable. Prefer Cloudflare WAF alongside the in-app rate limiter for production edge
 abuse.
+
+**Vercel Web Analytics:** the root layout mounts `@vercel/analytics` (`Analytics` from `@vercel/analytics/next`). It
+records anonymized page views on the Vercel deployment after Web Analytics is enabled for the project in the Vercel
+dashboard. The package does not track in local development. This is traffic observability only — not a substitute for
+admin RSVP analytics (`/admin/analytics`). Do not add third-party ad trackers or identity-linked marketing pixels.
 
 Store only information required to manage the invitation. Do not collect identity documents or unrelated sensitive data.
 

@@ -41,6 +41,7 @@ may proceed when the user requests it explicitly.
 | Analytics example families                  | Names containing the word **ejemplo** omitted from stats           |
 | Guest media uploads                         | **Implemented**; public `/fotos` + `/i/[slug]/fotos` mobile Figma `157:165` below 834px, portrait `157:97` from 834px, landscape `157:29` from `lg`, desktop `155:34` from `xl` |
 | Public root `/`                             | Figma `158:213` below 834px + `158:198` from 834px + `158:183` from `lg` + `158:168` from `xl`; unmatched routes redirect here |
+| Vercel Web Analytics                        | Implemented (`@vercel/analytics` in root layout; enable in Vercel dashboard) |
 | WhatsApp scheduled send                     | Not implemented                                                                |
 | Resend transactional email product         | Not implemented (Auth invite/reset SMTP only)                      |
 

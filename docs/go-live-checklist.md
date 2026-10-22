@@ -10,6 +10,7 @@ Operational checklist before sharing invitation links widely. Does not authorize
   **`guest_contact_from_rsvp`**, and **`delete_family`**).
 - [ ] Vercel env vars set: `NEXT_PUBLIC_*`, `SUPABASE_SERVICE_ROLE_KEY`, admin emails.
 - [ ] Optional: `TZ=America/Bogota` on Vercel (display helpers already pin Colombia TZ).
+- [ ] Vercel **Web Analytics** enabled for the project (dashboard → Analytics → Enable); redeploy after enabling.
 - [ ] `NEXT_PUBLIC_APP_URL` matches the public domain.
 - [ ] Hosted Auth **Invite user** template uses `emails/admin-invite.html` (CTA still `{{ .ConfirmationURL }}`; subject `Invitación al panel · Nychol & Miguel`).
 - [ ] Auth → URL Configuration includes `https://<domain>/admin/aceptar-invitacion` in Redirect URLs (and Site URL matches `NEXT_PUBLIC_APP_URL`).
